@@ -11,6 +11,16 @@ import java.util.*;
 public class Parser {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+    public static Map<String, String> getParameters(String uri) {
+        uri = uri.split("\\?")[1];
+        List<String> queryParams = List.of(uri.split("&"));
+        Map<String, String> parameters = new HashMap<>();
+        queryParams.forEach((queryParam) ->
+                parameters.put(queryParam.split("=")[0], queryParam.split("=")[1]));
+
+        return parameters;
+    }
+
     public static byte[] getTargetBody(final String uri) {
         try {
             if (uri.endsWith(".html")) {
