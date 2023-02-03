@@ -1,19 +1,21 @@
 package webserver;
 
-import constant.DefaultConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import utils.RequestBuilder;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static constant.DefaultConstant.*;
+import static constant.PathConstant.*;
 import static utils.RequestBuilder.*;
 
 public class RequestHandler implements Runnable {
@@ -39,20 +41,46 @@ public class RequestHandler implements Runnable {
             byte[] body = DEFAULT_BODY;
 
             if (!httpRequest.getUrl().equals(DEFAULT_PATH)) {
-                body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUrl());
+                String requestURL = httpRequest.getUrl();
+                body = setBody(httpRequest, requestURL);
             }
 
-            response200Header(dos, body.length);
+            response200Header(dos, httpRequest, body.length);
             responseBody(dos, body);
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private byte[] setBody(HttpRequest httpRequest, String requestURL) throws IOException, URISyntaxException {
+        if (isStaticPath(requestURL)) {
+            return FileIoUtils.loadFileFromClasspath(STATIC + httpRequest.getUrl());
+        }
+        return FileIoUtils.loadFileFromClasspath(TEMPLATES + httpRequest.getUrl());
+    }
+
+    private boolean isStaticPath(String requestURL) {
+        return getStaticFolderNames().contains(requestURL.split("/")[1]);
+    }
+
+    private Set<String> getStaticFolderNames() {
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(STATIC);
+        File[] files = new File(resource.getPath()).listFiles();
+
+        return Arrays.stream(files)
+                .map(File::getName)
+                .collect(Collectors.toSet());
+    }
+
+    private void response200Header(DataOutputStream dos, HttpRequest httpRequest, int lengthOfBodyContent) {
         try {
+            String contentType = httpRequest.getHeaders().getOrDefault("Accept", "text/html;charset=utf-8")
+                    .split(",")[0];
+
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: " + contentType + " \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
