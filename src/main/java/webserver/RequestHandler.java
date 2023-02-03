@@ -4,11 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import utils.FileIoUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class RequestHandler implements Runnable {
@@ -29,11 +32,21 @@ public class RequestHandler implements Runnable {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
             String path = null;
+            String root = "./templates";
+            String textType = "html";
             while (!"".equals(line) && Objects.nonNull(line)) {
                 System.out.println(line);
                 String[] tokens = line.split(" ");
                 if (Objects.nonNull(HttpMethod.resolve(tokens[0]))) {
                     path = tokens[1];
+                    // TODO
+
+                    String[] pathTokens = path.split("/");
+                    String dir = pathTokens[1];
+                    if(Objects.nonNull(Directory.resolve(dir.toUpperCase()))){
+                        root = "./static";
+                        textType = dir.toLowerCase();
+                    }
                 }
                 line = bufferedReader.readLine();
             }
@@ -41,22 +54,21 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body;
             if (Objects.nonNull(path)) {
-                System.out.println("####"+path);
-                body = FileIoUtils.loadFileFromClasspath("./templates" + path);
+                body = FileIoUtils.loadFileFromClasspath(root + path);
             } else {
                 body = "Hello world".getBytes();
             }
-            response200Header(dos, body.length);
+            response200Header(dos, body.length, textType);
             responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: text/" + type + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -72,4 +84,21 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
+}
+
+enum Directory {
+    CSS, FONTS, IMAGES, JS;
+    private static final Map<String, Directory> mappings = new HashMap<>(16);
+
+    static {
+        for (Directory directory : values()) {
+            mappings.put(directory.name(), directory);
+        }
+    }
+
+    @Nullable
+    public static Directory resolve(@Nullable String dir) {
+        return (dir != null ? mappings.get(dir) : null);
+    }
+
 }
