@@ -1,7 +1,8 @@
-package webserver;
+package webserver.dao;
 
 import db.DataBase;
 import model.User;
+import model.HttpRequest;
 
 import java.util.Map;
 

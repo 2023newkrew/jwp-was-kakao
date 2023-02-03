@@ -1,6 +1,7 @@
-package webserver;
+package webserver.infra;
 
 import lombok.experimental.UtilityClass;
+import model.HttpRequest;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,10 +11,8 @@ import static constant.DefaultConstant.DEFAULT_BODY;
 import static constant.DefaultConstant.DEFAULT_PATH;
 import static constant.PathConstant.STATIC;
 import static constant.PathConstant.TEMPLATES;
-import static utils.FileIoUtils.getStaticFolderNames;
-import static utils.FileIoUtils.loadFileFromClasspath;
-import static utils.ResponseUtils.response200Header;
-import static utils.ResponseUtils.responseBody;
+import static utils.FileIoUtils.*;
+import static utils.ResponseUtils.*;
 
 @UtilityClass
 public class ViewResolver {

@@ -1,15 +1,15 @@
-package webserver;
+package webserver.controller;
 
 import constant.HttpMethod;
-import db.DataBase;
-import model.User;
+import model.annotation.Api;
+import model.HttpRequest;
+import webserver.dao.UserDao;
 
 import java.io.DataOutputStream;
-import java.util.Map;
 
 import static utils.ResponseUtils.*;
 
-public class UserController extends ApiController{
+public class UserController extends ApiController {
     private static final UserController instance;
     private UserController() {}
 

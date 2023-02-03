@@ -3,6 +3,7 @@ package webserver;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
+import webserver.infra.RequestHandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

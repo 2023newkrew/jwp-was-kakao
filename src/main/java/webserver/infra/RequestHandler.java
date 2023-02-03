@@ -1,29 +1,14 @@
-package webserver;
+package webserver.infra;
 
-import constant.HttpMethod;
-import db.DataBase;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
-import utils.ResponseUtils;
+import model.HttpRequest;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.logging.Handler;
-import java.util.stream.Collectors;
 
-import static constant.DefaultConstant.*;
-import static constant.PathConstant.*;
-import static utils.FileIoUtils.*;
 import static utils.RequestBuilder.*;
-import static utils.ResponseUtils.*;
-import static webserver.FrontController.*;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
