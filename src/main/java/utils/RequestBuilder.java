@@ -1,5 +1,6 @@
 package utils;
 
+import constant.RequestHeaderConstant;
 import lombok.experimental.UtilityClass;
 import webserver.HttpRequest;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static constant.RequestHeaderConstant.*;
 import static utils.QueryStringParser.*;
 
 @UtilityClass
@@ -41,13 +43,11 @@ public class RequestBuilder {
             }
             requestHeaderMap.put(tokens[0].substring(0, tokens[0].length() - 1), tokens[1]);
         }
-        int contentLength = Integer.parseInt(requestHeaderMap.getOrDefault("Content-Length", "0"));
-        if (contentLength > 0) {
+        int contentLength = Integer.parseInt(requestHeaderMap.getOrDefault(CONTENT_LENGTH, "0"));
+
+        if (requestHeaderMap.containsKey(CONTENT_LENGTH)) {
             body = parseQueryString(IOUtils.readData(bufferedReader, contentLength));
         }
-//        if (requestHeaderMap.get)
-//        String requestBody = IOUtils.readData(bufferedReader, Integer.parseInt(requestHeaderMap.getOrDefault("Content-Length", "0")));
-//        body = parseQueryString(requestBody);
 
         return new HttpRequest(httpMethod, requestPath, queryString, httpProtocol, requestHeaderMap, body);
     }

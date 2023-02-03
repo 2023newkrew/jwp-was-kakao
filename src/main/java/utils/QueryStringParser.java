@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 public class QueryStringParser {
     public Map<String, String> parseQueryString(String string) {
         String[] params = string.split("&");
-        System.out.println("string = " + string);
         return Arrays.stream(params)
                 .map(param -> param.split("="))
                 .collect(Collectors.toMap(split -> split[0], split -> split[1]));

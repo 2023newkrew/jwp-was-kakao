@@ -1,10 +1,12 @@
 package webserver;
 
+import constant.HttpMethod;
 import db.DataBase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import utils.ResponseUtils;
 
 import javax.xml.crypto.Data;
 import java.io.*;
@@ -13,11 +15,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Handler;
 import java.util.stream.Collectors;
 
 import static constant.DefaultConstant.*;
 import static constant.PathConstant.*;
+import static utils.FileIoUtils.*;
 import static utils.RequestBuilder.*;
+import static utils.ResponseUtils.*;
+import static webserver.FrontController.*;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -29,9 +35,6 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
-
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream();
              DataOutputStream dos = new DataOutputStream(out);
@@ -41,16 +44,18 @@ public class RequestHandler implements Runnable {
 
             byte[] body = DEFAULT_BODY;
 
-            if (httpRequest.getHttpMethod().equals("POST") && httpRequest.getUrl().equals("/user/create")) {
-                Map<String, String> requestBody = httpRequest.getBody();
-                DataBase.addUser(new User(
-                        requestBody.get("userId"),
-                        requestBody.get("password"),
-                        requestBody.get("name"),
-                        requestBody.get("email"))
-                );
+            if (httpRequest.isHttpMethodEquals(HttpMethod.POST) && httpRequest.isURLEquals("/user/create")) {
+                FrontController.handleRequest(httpRequest, dos);
 
-                response302Header(dos, "/index.html");
+//                Map<String, String> requestBody = httpRequest.getBody();
+//                DataBase.addUser(new User(
+//                        requestBody.get("userId"),
+//                        requestBody.get("password"),
+//                        requestBody.get("name"),
+//                        requestBody.get("email"))
+//                );
+//
+//                response302Header(dos, "/index.html");
                 return;
             }
 
@@ -70,55 +75,13 @@ public class RequestHandler implements Runnable {
 
     private byte[] setBody(HttpRequest httpRequest, String requestURL) throws IOException, URISyntaxException {
         if (isStaticPath(requestURL)) {
-            return FileIoUtils.loadFileFromClasspath(STATIC + httpRequest.getUrl());
+            return loadFileFromClasspath(STATIC + httpRequest.getUrl());
         }
-        return FileIoUtils.loadFileFromClasspath(TEMPLATES + httpRequest.getUrl());
+        return loadFileFromClasspath(TEMPLATES + httpRequest.getUrl());
     }
 
     private boolean isStaticPath(String requestURL) {
         return getStaticFolderNames().contains(requestURL.split("/")[1]);
     }
 
-    private Set<String> getStaticFolderNames() {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(STATIC);
-        File[] files = new File(resource.getPath()).listFiles();
-
-        return Arrays.stream(files)
-                .map(File::getName)
-                .collect(Collectors.toSet());
-    }
-
-    private void response200Header(DataOutputStream dos, HttpRequest httpRequest, int lengthOfBodyContent) {
-        try {
-            String contentType = httpRequest.getHeaders().getOrDefault("Accept", "text/html;charset=utf-8")
-                    .split(",")[0];
-
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + " \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response302Header(DataOutputStream dos, String location) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + location + " \r\n");
-            dos.writeBytes("\r\n");
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 }
