@@ -28,10 +28,14 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "Hello world".getBytes();
-            if(request.getUri().getPath().equals("/index.html")) {
-                body = FileIoUtils.loadFileFromClasspath("templates/index.html");
+            if (request.getUri().getPath().contains(".css")) {
+                body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
+                response200CssHeader(dos, body.length);
             }
-            response200Header(dos, body.length);
+            if(request.getUri().getPath().contains(".html")) {
+                body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
+                response200HtmlHeader(dos, body.length);
+            }
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -40,10 +44,21 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200HtmlHeader(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response200CssHeader(DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/css; charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
