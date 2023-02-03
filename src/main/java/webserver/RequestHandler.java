@@ -51,6 +51,11 @@ public class RequestHandler implements Runnable {
                 line = br.readLine();
             }
 
+            String requestBody = "";
+            if (tokens[0].equals("POST")) {
+                requestBody = br.readLine();
+            }
+
             DataOutputStream dos = new DataOutputStream(out);
 
             byte[] body;
@@ -63,11 +68,23 @@ public class RequestHandler implements Runnable {
             } else if (url.contains(".css")) {
                 body = FileIoUtils.loadFileFromClasspath("./static" + url);
                 response200Header(dos, body.length);
-            } else if (url.startsWith("/user/create")) {
+            } else if (url.startsWith("/user/create") && tokens[0].equals("GET")) {
                 body = "".getBytes();
                 String query = url.split("\\?")[1];
                 Map<String, String> fields = new HashMap<>();
                 Arrays.stream(query.split("&")).forEach(field -> fields.put(field.split("=")[0], field.split("=")[1]));
+                User user = new User(
+                        fields.get("userId"),
+                        fields.get("password"),
+                        fields.get("name"),
+                        fields.get("email")
+                );
+                DataBase.addUser(user);
+                response201Header(dos, "/user/create", user.getUserId());
+            } else if (url.startsWith("/user/create") && tokens[0].equals("POST")) {
+                body = "".getBytes();
+                Map<String, String> fields = new HashMap<>();
+                Arrays.stream(requestBody.split("&")).forEach(field -> fields.put(field.split("=")[0], field.split("=")[1]));
                 User user = new User(
                         fields.get("userId"),
                         fields.get("password"),
