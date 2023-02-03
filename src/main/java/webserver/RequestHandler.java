@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import utils.FileIoUtils;
-import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -34,32 +33,23 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
-            String line = bufferedReader.readLine();
-            if (line == null) {
-                return;
-            }
-            String method = line.split(" ")[0];
-            String requestedUri = line.split(" ")[1];
+            HttpRequest httpRequest = new HttpRequest(bufferedReader);
 
-            if (method.equals("POST")) {
-                int contentLength = 0;
-                while (!"".equals(line)) {
-                    if (line == null) {
-                        break;
-                    }
-                    line = bufferedReader.readLine();
-                    if (line.startsWith("Content-Length: ")) {
-                        contentLength = Integer.parseInt(line.split(" ")[1]);
-                    }
-                }
-                String requestBody = IOUtils.readData(bufferedReader, contentLength);
+            logger.info(httpRequest.getPath());
+            logger.info(httpRequest.getBody());
+            logger.info(httpRequest.getMethod()
+                    .name());
+
+            if (httpRequest.getMethod() == HttpMethod.POST) {
+                String requestBody = httpRequest.getBody();
                 requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(requestedUri)
+                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(httpRequest.getPath())
                         .query(requestBody)
                         .build()
                         .getQueryParams();
 
-                if (requestedUri.equals("/user/create")) {
+                if (httpRequest.getPath()
+                        .equals("/user/create")) {
                     addUser(requestParams);
                     response302Header(dos, "http://localhost:8080/index.html");
                     dos.flush();
@@ -67,17 +57,18 @@ public class RequestHandler implements Runnable {
                 }
             }
 
-            byte[] body = "Hello world".getBytes();
+            byte[] body;
 
-            String[] pathSplit = requestedUri.split("\\.");
+            String[] pathSplit = httpRequest.getPath()
+                    .split("\\.");
             String extension = pathSplit[pathSplit.length - 1];
             if (extension.equals("html") || extension.equals("ico")) {
-                body = FileIoUtils.loadFileFromClasspath("./templates" + requestedUri);
+                body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getPath());
             } else {
-                body = FileIoUtils.loadFileFromClasspath("./static" + requestedUri);
+                body = FileIoUtils.loadFileFromClasspath("./static" + httpRequest.getPath());
             }
 
-            String contentType = Files.probeContentType(new File(requestedUri).toPath());
+            String contentType = Files.probeContentType(new File(httpRequest.getPath()).toPath());
             response200Header(dos, body.length, contentType);
             responseBody(dos, body);
         } catch (IOException e) {
