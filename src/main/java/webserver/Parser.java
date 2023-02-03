@@ -40,7 +40,6 @@ public class Parser {
 
     public static HttpRequest parseRequestMessage(final BufferedReader reader) {
         List<String> startLineAndHeader = readRequestLines(reader);
-        List<String> body = readRequestLines(reader);
 
         String uri = getURI(startLineAndHeader);
         HttpMethod method = getMethod(startLineAndHeader);
@@ -49,6 +48,7 @@ public class Parser {
             parameters = getUriParameters(uri);
         }
         if (method.equals(HttpMethod.POST)) {
+            List<String> body = readRequestLines(reader);
             parameters.putAll(getBody(body));
         }
         return new HttpRequest(uri, method, parameters);
