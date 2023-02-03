@@ -64,5 +64,10 @@ class RequestHandlerTest {
         assertThat(user).hasFieldOrPropertyWithValue("password", "password")
                 .hasFieldOrPropertyWithValue("name", "이동규")
                 .hasFieldOrPropertyWithValue("email", "brainbackdoor@gmail.com");
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: http://localhost:8080/index.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
     }
 }

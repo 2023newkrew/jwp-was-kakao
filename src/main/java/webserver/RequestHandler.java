@@ -9,6 +9,8 @@ import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 public class RequestHandler implements Runnable {
@@ -41,13 +43,14 @@ public class RequestHandler implements Runnable {
                         headerInfo.getBodyValue("email")
                 );
                 DataBase.addUser(user);
+                response302Header(dos, new URI("http://localhost:8080/index.html"));
                 return;
             }
 
             byte[] body = headerInfo.getResponse();
             response200Header(dos, body.length, headerInfo.getAccept());
             responseBody(dos, body);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
@@ -73,6 +76,16 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + type + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, URI uri) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
+            dos.writeBytes("Location: " + uri + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
