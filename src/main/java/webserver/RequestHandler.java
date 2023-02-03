@@ -1,18 +1,18 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static constant.DefaultConstant.*;
@@ -40,6 +40,21 @@ public class RequestHandler implements Runnable {
             HttpRequest httpRequest = getHttpRequest(bufferedReader);
 
             byte[] body = DEFAULT_BODY;
+
+            if (httpRequest.getHttpMethod().equals("POST") && httpRequest.getUrl().equals("/user/create")) {
+                Map<String, String> requestBody = httpRequest.getBody();
+                DataBase.addUser(new User(
+                        requestBody.get("userId"),
+                        requestBody.get("password"),
+                        requestBody.get("name"),
+                        requestBody.get("email"))
+                );
+                Collection<User> all = DataBase.findAll();
+                for (User user : all) {
+                    System.out.println("user.toString() = " + user.toString());
+                }
+                return;
+            }
 
             if (!httpRequest.getUrl().equals(DEFAULT_PATH)) {
                 String requestURL = httpRequest.getUrl();
