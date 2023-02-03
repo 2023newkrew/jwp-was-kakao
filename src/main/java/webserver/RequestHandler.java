@@ -34,47 +34,41 @@ public class RequestHandler implements Runnable {
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
-
-            logger.info(httpRequest.getPath());
-            logger.info(httpRequest.getBody());
-            logger.info(httpRequest.getMethod()
-                    .name());
+            String path = httpRequest.getPath();
 
             if (httpRequest.getMethod() == HttpMethod.POST) {
                 String requestBody = httpRequest.getBody();
                 requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(httpRequest.getPath())
+                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(path)
                         .query(requestBody)
                         .build()
                         .getQueryParams();
 
-                if (httpRequest.getPath()
-                        .equals("/user/create")) {
+                if (path.equals("/user/create")) {
                     addUser(requestParams);
                     response302Header(dos, "http://localhost:8080/index.html");
                     dos.flush();
                     return;
                 }
             }
+            if (httpRequest.getMethod() == HttpMethod.GET) {
+                byte[] body;
+                try {
+                    body = FileIoUtils.loadFileFromClasspath("./templates" + path);
+                } catch (NullPointerException e) {
+                    body = FileIoUtils.loadFileFromClasspath("./static" + path);
+                }
 
-            byte[] body;
-
-            String[] pathSplit = httpRequest.getPath()
-                    .split("\\.");
-            String extension = pathSplit[pathSplit.length - 1];
-            if (extension.equals("html") || extension.equals("ico")) {
-                body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getPath());
-            } else {
-                body = FileIoUtils.loadFileFromClasspath("./static" + httpRequest.getPath());
+                String contentType = Files.probeContentType(new File(path).toPath());
+                response200Header(dos, body.length, contentType);
+                responseBody(dos, body);
             }
-
-            String contentType = Files.probeContentType(new File(httpRequest.getPath()).toPath());
-            response200Header(dos, body.length, contentType);
-            responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            logger.error("No File");
         }
     }
 
