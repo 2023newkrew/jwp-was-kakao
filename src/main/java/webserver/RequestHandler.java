@@ -34,10 +34,40 @@ public class RequestHandler implements Runnable {
                 doGet(request, dos);
             }
 
+            if(request.getMethod().equals("POST")) {
+                doPost(request, dos);
+            }
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void doPost(HttpRequest request, DataOutputStream dos) {
+
+        if(request.getUri().getPath().equals("/user/create")) {
+            String query = request.getBody();
+            String[] queryParameters  = query.split("&");
+            Map<String, String> attributes = new HashMap<>();
+
+            for (String queryParameter : queryParameters) {
+                String key = queryParameter.split("=")[0];
+                String value = queryParameter.split("=")[1];
+                attributes.put(key, value);
+            }
+
+            User user = new User(
+                    attributes.get("userId"),
+                    attributes.get("password"),
+                    attributes.get("name"),
+                    attributes.get("email")
+            );
+
+            DataBase.addUser(user);
+
+            response200HtmlHeader(dos, 0);
         }
     }
 

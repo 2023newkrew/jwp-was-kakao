@@ -4,6 +4,6 @@
 - [x] CSS 지원하기
 - [x] Query String 파싱
   - [x] GET 방식으로 회원가입
-- [ ] POST 방식으로 회원가입
+- [x] POST 방식으로 회원가입
 - [ ] Redirect
   - [ ] 회원가입 완료 후 index.html로 리다이렉트

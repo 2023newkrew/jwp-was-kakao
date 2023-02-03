@@ -28,7 +28,7 @@ public class HttpRequest {
         return httpRequestHeader.getHttpVersion();
     }
 
-    public HttpReqeustBody getBody() {
-        return httpReqeustBody;
+    public String  getBody() {
+        return httpReqeustBody.getContent();
     }
 }

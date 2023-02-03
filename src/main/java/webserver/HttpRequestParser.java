@@ -2,6 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,11 +28,19 @@ public class HttpRequestParser {
         while(!(line = br.readLine()).equals("")) {
             String[] header = line.split(": ");
             String key = header[0];
-            String value = header[1];
+            String value = header[1].trim();
 
             httpRequestHeader.addAttribute(key, value);
         }
 
-        return new HttpRequest(httpRequestHeader, new HttpReqeustBody());
+        return new HttpRequest(
+                httpRequestHeader,
+                new HttpReqeustBody(
+                        IOUtils.readData(
+                                br,
+                                Integer.parseInt(httpRequestHeader.getAttribute("Content-Length").orElse("0"))
+                        )
+                )
+        );
     }
 }
