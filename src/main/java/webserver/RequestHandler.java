@@ -1,12 +1,17 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -30,12 +35,6 @@ public class RequestHandler implements Runnable {
             String s = br.readLine();
             String[] tokens = s.split(" "); // GET URL HTTP/1.1
 
-            while (!"".equals(s)) {
-                s = br.readLine();
-            }
-            if (s == null) {
-                return;
-            }
 
             String requestMethod = null;
             String requestUrl  = null;
@@ -49,7 +48,6 @@ public class RequestHandler implements Runnable {
             logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", requestMethod, requestUrl, httpVersion);
             if (requestMethod.equals("GET")){
                 if (requestUrl.startsWith("/css") || requestUrl.startsWith("/js")){
-                    System.out.println("static : " + requestUrl);
                     requestUrl = "./static" + requestUrl;
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
                     String[] urlSplitByDot = requestUrl.split("\\.");
@@ -57,7 +55,6 @@ public class RequestHandler implements Runnable {
                     responseBody(dos, body);
                 }
                 else if (requestUrl.startsWith("/") && requestUrl.contains(".")){
-                    System.out.println("templates : " + requestUrl);
                     requestUrl = "./templates" + requestUrl;
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
                     String[] urlSplitByDot = requestUrl.split("\\.");
@@ -74,12 +71,37 @@ public class RequestHandler implements Runnable {
                     response200Header(dos, body.length, "html");
                     responseBody(dos, body);
                 }
+
+                while (!"".equals(s)) {
+                    s = br.readLine();
+                }
+                if (s == null) {
+                    return;
+                }
             }
-
-
-
+            else if (requestMethod.equals("POST")){
+                int contentLength = -1;
+                while (!"".equals(s)) {
+                    s = br.readLine();
+                    if ("Content-Length".equals(s.split(":")[0])){
+                        contentLength = Integer.parseInt(s.split(":")[1].trim());
+                    }
+                }
+                if (contentLength >= 0) {
+                    String requestBody = IOUtils.readData(br, contentLength);
+                    Map<String, String> bodyMap = new HashMap();
+                    for (String splitted : requestBody.split("&")) {
+                        bodyMap.put(splitted.split("=")[0], splitted.split("=")[1]);
+                    }
+                    User user = new User(bodyMap.get("userId"), bodyMap.get("password"),
+                            bodyMap.get("name"), bodyMap.get("email"));
+                    DataBase.addUser(user);
+                    response200Header(dos, 11, "html");
+                    responseBody(dos, "Hello world".getBytes());
+                }
+            }
         } catch (IOException | URISyntaxException | RuntimeException e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -90,7 +112,7 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -99,7 +121,7 @@ public class RequestHandler implements Runnable {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
