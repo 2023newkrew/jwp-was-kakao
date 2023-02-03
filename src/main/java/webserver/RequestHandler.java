@@ -1,10 +1,11 @@
 package webserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import webserver.request.Request;
+import webserver.response.MediaType;
 import webserver.response.Response;
+import webserver.view.Prefix;
+import webserver.view.View;
 import webserver.view.ViewResolver;
 
 import java.io.DataOutputStream;
@@ -12,9 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.List;
 
 public class RequestHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
 
@@ -22,26 +23,25 @@ public class RequestHandler implements Runnable {
         this.connection = connectionSocket;
     }
 
-    private String PREFIX = "./templates";
+    private List<Prefix> prefixes = List.of(
+            new Prefix("./templates", MediaType.TEXT_HTML),
+            //Todo: css를 직접 구분해야함
+            new Prefix("./static", MediaType.TEXT_CSS)
+    );
 
-    private ViewResolver viewResolver = new ViewResolver(PREFIX);
+    private ViewResolver viewResolver = new ViewResolver(prefixes);
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                     connection.getPort()
-        );
-
         try (
                 InputStream in = connection.getInputStream();
                 OutputStream out = connection.getOutputStream()
         ) {
             Request request = new Request(in);
-            byte[] view = viewResolver.resolveByPath(request.getPath());
+            View view = viewResolver.resolveByPath(request.getPath());
             Response response = new Response(HttpStatus.OK, view);
             writeResponse(out, response);
         }
-        catch (IOException e) {
-            logger.error(e.getMessage());
+        catch (IOException ignore) {
         }
     }
 

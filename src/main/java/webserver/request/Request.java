@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 public class Request {
-
     private final String path;
 
     public Request(InputStream in) throws IOException {

@@ -11,4 +11,15 @@ public class FileIoUtils {
         Path path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
         return Files.readAllBytes(path);
     }
+
+    public static boolean existsFile(String filePath) {
+        try {
+            Path path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
+            boolean exists = Files.exists(path);
+            return exists;
+        }
+        catch (Exception ignore) {
+            return false;
+        }
+    }
 }
