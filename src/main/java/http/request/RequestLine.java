@@ -10,14 +10,14 @@ public class RequestLine {
     private static final int INDEX_OF_VERSION = 2;
 
     private final HttpMethod httpMethod;
-    private final String httpPath;
+    private final RequestUri requestUri;
     private final String httpVersion;
 
     public RequestLine(String requestLine) {
         String[] params = requestLine.split(DELIMITER);
         validate(params);
         httpMethod = HttpMethod.valueOf(params[INDEX_OF_METHOD]);
-        httpPath = params[INDEX_OF_PATH];
+        requestUri = new RequestUri(params[INDEX_OF_PATH]);
         httpVersion = params[INDEX_OF_VERSION];
     }
 
@@ -31,8 +31,8 @@ public class RequestLine {
         return httpMethod;
     }
 
-    public String getHttpPath() {
-        return httpPath;
+    public RequestUri getRequestUri() {
+        return requestUri;
     }
 
     public String getHttpVersion() {

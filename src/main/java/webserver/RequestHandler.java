@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
 
     private void handle(HttpRequest request, HttpResponse response) {
         RequestLine requestLine = request.getRequestLine();
-        String path = requestLine.getHttpPath();
+        String path = requestLine.getRequestUri().getPath();
         response.forward(path);
     }
 }
