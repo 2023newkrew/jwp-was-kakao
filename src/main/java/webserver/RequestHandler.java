@@ -1,13 +1,21 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
+import utils.FileIoUtils;
+import utils.IOUtils;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -25,19 +33,108 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
+            InputStreamReader reader = new InputStreamReader(in);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line = bufferedReader.readLine();
+            if (line == null) {
+                return;
+            }
+            String method = line.split(" ")[0];
+            String requestedUri = line.split(" ")[1];
+
+            logger.info(method);
+            if (method.equals("POST")) {
+                int contentLength = 0;
+                while (!"".equals(line)) {
+                    if (line == null) {
+                        break;
+                    }
+                    line = bufferedReader.readLine();
+                    if (line.startsWith("Content-Length: ")) {
+                        contentLength = Integer.parseInt(line.split(" ")[1]);
+                    }
+                }
+                logger.info(Integer.toString(contentLength));
+                String requestBody = IOUtils.readData(bufferedReader, contentLength);
+                requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
+                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(requestedUri)
+                        .query(requestBody)
+                        .build()
+                        .getQueryParams();
+
+                if (requestedUri.equals("/user/create")) {
+                    addUser(requestParams);
+                    response302Header(dos, "http://localhost:8080/index.html");
+                    dos.flush();
+                    return;
+                }
+
+            }
+
+
+            UriComponents uriComponents = UriComponentsBuilder.fromUriString(requestedUri)
+                    .host("localhost")
+                    .port(8080)
+                    .build();
+
             byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
+            String[] pathSplit = uriComponents.getPath()
+                    .split("\\.");
+            String contentType = "text/html;charset=utf-8";
+            if (pathSplit.length < 2) { // REST API
+//                MultiValueMap<String, String> map = uriComponents.getQueryParams();
+            } else { // resource 요청
+                String extension = pathSplit[pathSplit.length - 1];
+                logger.info("extension : " + extension);
+                if (extension.equals("html") || extension.equals("ico")) {
+                    body = FileIoUtils.loadFileFromClasspath("./templates" + requestedUri);
+                } else {
+                    body = FileIoUtils.loadFileFromClasspath("./static" + requestedUri);
+                }
+
+                contentType = Files.probeContentType(new File(requestedUri).toPath());
+            }
+
+            response200Header(dos, body.length, contentType);
             responseBody(dos, body);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addUser(MultiValueMap<String, String> requestParams) {
+        String userId = requestParams.getFirst("userId");
+        String password = requestParams.getFirst("password");
+        String name = requestParams.getFirst("name");
+        String email = requestParams.getFirst("email");
+        User user = User.builder()
+                .userId(userId)
+                .password(password)
+                .name(name)
+                .email(email)
+                .build();
+        DataBase.addUser(user);
+        logger.info(DataBase.findUserById(userId)
+                .getName());
+    }
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: " + contentType + " \r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response302Header(DataOutputStream dos, String location) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location);
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
