@@ -8,6 +8,9 @@ import utils.HttpParser;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -30,26 +33,40 @@ public class RequestHandler implements Runnable {
             String line = br.readLine();
 
             while (!"".equals(line) && line != null) {
-                sb.append(line);
+                sb.append(line).append('\n');
                 line = br.readLine();
             }
 
             HttpParser httpParser = new HttpParser(sb.toString());
             String path = httpParser.getPath();
-
+            byte[] body;
+            System.out.println(path);
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-            response200Header(dos, body.length);
+            if(path.startsWith("/css")){
+                body = FileIoUtils.loadFileFromClasspath("./static" + path);
+                response200Header(dos, body.length, path);
+            }else if(path.startsWith("/js")){
+                body = FileIoUtils.loadFileFromClasspath("./static" + path);
+                response200Header(dos, body.length, path);
+            }else if(path.startsWith("/fonts")){
+                body = FileIoUtils.loadFileFromClasspath("./static" + path);
+                response200Header(dos, body.length, path);
+            }else{
+                body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
+                response200Header(dos, body.length, path);
+            }
             responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
+            Path path = Paths.get(filePath);
+            String mimeType = Files.probeContentType(path);
+
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: " + mimeType + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
