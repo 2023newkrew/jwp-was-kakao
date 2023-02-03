@@ -14,27 +14,16 @@ public class UserController extends ApiController{
     private UserController() {}
 
     static {
-        try {
-            instance = new UserController();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        instance = new UserController();
     }
     public static UserController getInstance() {
         return instance;
     }
 
     @Api(method = HttpMethod.POST, url = "/user/create")
-    public Object register(HttpRequest httpRequest, DataOutputStream dos) {
-        Map<String, String> requestBody = httpRequest.getBody();
-        DataBase.addUser(new User(
-                requestBody.get("userId"),
-                requestBody.get("password"),
-                requestBody.get("name"),
-                requestBody.get("email"))
-        );
+    public void register(HttpRequest request, DataOutputStream dos) {
+        new UserDao().saveUser(request);
 
         response302Header(dos, "/index.html");
-        return null;
     }
 }

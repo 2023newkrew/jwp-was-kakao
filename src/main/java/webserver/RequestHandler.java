@@ -41,47 +41,9 @@ public class RequestHandler implements Runnable {
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 
             HttpRequest httpRequest = getHttpRequest(bufferedReader);
-
-            byte[] body = DEFAULT_BODY;
-
-            if (httpRequest.isHttpMethodEquals(HttpMethod.POST) && httpRequest.isURLEquals("/user/create")) {
-                FrontController.handleRequest(httpRequest, dos);
-
-//                Map<String, String> requestBody = httpRequest.getBody();
-//                DataBase.addUser(new User(
-//                        requestBody.get("userId"),
-//                        requestBody.get("password"),
-//                        requestBody.get("name"),
-//                        requestBody.get("email"))
-//                );
-//
-//                response302Header(dos, "/index.html");
-                return;
-            }
-
-            if (!httpRequest.getUrl().equals(DEFAULT_PATH)) {
-                String requestURL = httpRequest.getUrl();
-                body = setBody(httpRequest, requestURL);
-            }
-
-            response200Header(dos, httpRequest, body.length);
-            responseBody(dos, body);
+            FrontController.handleRequest(httpRequest, dos);
         } catch (IOException e) {
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
-
-    private byte[] setBody(HttpRequest httpRequest, String requestURL) throws IOException, URISyntaxException {
-        if (isStaticPath(requestURL)) {
-            return loadFileFromClasspath(STATIC + httpRequest.getUrl());
-        }
-        return loadFileFromClasspath(TEMPLATES + httpRequest.getUrl());
-    }
-
-    private boolean isStaticPath(String requestURL) {
-        return getStaticFolderNames().contains(requestURL.split("/")[1]);
-    }
-
 }
