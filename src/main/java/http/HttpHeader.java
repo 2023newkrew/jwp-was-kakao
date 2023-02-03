@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestHeader {
+public class HttpHeader {
     private static final String DELIMITER = ": ";
     private static final int SPLIT_LIMIT = 2;
     private static final int INDEX_OF_KEY = 0;
@@ -13,7 +13,7 @@ public class RequestHeader {
 
     private final Map<String, String> headers = new HashMap<>();
 
-    public RequestHeader(BufferedReader reader) {
+    public HttpHeader(BufferedReader reader) {
         String line;
         try {
             while ((line = reader.readLine()).isBlank()) {

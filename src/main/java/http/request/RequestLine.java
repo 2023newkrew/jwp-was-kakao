@@ -1,4 +1,6 @@
-package http;
+package http.request;
+
+import http.HttpMethod;
 
 public class RequestLine {
     private static final String DELIMITER = " ";

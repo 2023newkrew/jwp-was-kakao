@@ -1,16 +1,18 @@
 package http;
 
+import http.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.Arrays;
 
 public class HttpResponse {
     private final static Logger logger = LoggerFactory.getLogger(HttpRequest.class);
     public static final String TEMPLATE_PATH = "./templates/";
+    public static final String STATIC_PATH = "./static/";
 
     private final DataOutputStream dos;
 
@@ -19,16 +21,23 @@ public class HttpResponse {
     }
 
     public void forward(String path) {
-        byte[] body = FileIoUtils.loadFileFromClasspath(TEMPLATE_PATH + path);
+        byte[] body = FileIoUtils.loadFileFromClasspath(getResourcePath(path));
         logger.info("Forward to file : {}", path);
-        response200Header(body.length);
+        response200Header(body.length, ContentType.from(path));
         responseBody(body);
     }
 
-    private void response200Header(int lengthOfBodyContent) {
+    private String getResourcePath(String path) {
+        if (path.endsWith(".html")) {
+            return TEMPLATE_PATH + path;
+        }
+        return STATIC_PATH + path;
+    }
+
+    private void response200Header(int lengthOfBodyContent, ContentType contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: "+ contentType.getValue() + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
