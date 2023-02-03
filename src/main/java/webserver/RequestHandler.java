@@ -49,10 +49,8 @@ public class RequestHandler implements Runnable {
                         requestBody.get("name"),
                         requestBody.get("email"))
                 );
-                Collection<User> all = DataBase.findAll();
-                for (User user : all) {
-                    System.out.println("user.toString() = " + user.toString());
-                }
+
+                response302Header(dos, "/index.html");
                 return;
             }
 
@@ -99,6 +97,17 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("Content-Type: " + contentType + " \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, String location) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location + " \r\n");
+            dos.writeBytes("\r\n");
+            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
