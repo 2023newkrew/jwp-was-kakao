@@ -147,7 +147,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUser() {
+    void createUserByGet() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1",
@@ -156,6 +156,33 @@ class RequestHandlerTest {
                 "Accept: */*",
                 "",
                 "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 Found \r\n" +
+                "Location: /index.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void createUserByPost() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 59",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
 
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
