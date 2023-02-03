@@ -32,7 +32,6 @@ public class FrontController {
             }
 
             Method method = findMethodToExecute(request, apiController);
-
             method.invoke(apiController, request, dos);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);

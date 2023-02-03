@@ -16,6 +16,7 @@ public class UserController extends ApiController {
     static {
         instance = new UserController();
     }
+    
     public static UserController getInstance() {
         return instance;
     }
