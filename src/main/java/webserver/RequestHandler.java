@@ -67,7 +67,7 @@ public class RequestHandler implements Runnable {
 
             DataBase.addUser(user);
 
-            response200HtmlHeader(dos, 0);
+            response302Header(dos, "/index.html");
         }
     }
 
@@ -101,7 +101,7 @@ public class RequestHandler implements Runnable {
                 String value = queryParameter.split("=")[1];
                 attributes.put(key, value);
             }
-            
+
             User user = new User(
                     attributes.get("userId"),
                     attributes.get("password"),
@@ -121,6 +121,16 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, String redirectUrl) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + redirectUrl + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
