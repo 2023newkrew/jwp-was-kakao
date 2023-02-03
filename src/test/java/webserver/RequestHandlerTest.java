@@ -26,7 +26,7 @@ class RequestHandlerTest {
                 "Content-Length: 11 ",
                 "",
                 "Hello world");
-
+        System.out.println(socket.output());
         assertThat(socket.output()).isEqualTo(expected);
     }
 

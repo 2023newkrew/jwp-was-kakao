@@ -26,9 +26,16 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = FileIoUtils.loadFileFromClasspath("./templates/index.html");
+            byte[] body;
             String s = br.readLine();
-            String[] tokens = s.split(" ");
+            String[] tokens = s.split(" "); // GET URL HTTP/1.1
+
+            while (!"".equals(s)) {
+                s = br.readLine();
+            }
+            if (s == null) {
+                return;
+            }
 
             String requestMethod = null;
             String requestUrl  = null;
@@ -37,35 +44,49 @@ public class RequestHandler implements Runnable {
                 requestMethod = tokens[0]; // GET, POST 등
                 requestUrl = tokens[1]; // /index.html
                 httpVersion = tokens[2]; // HTTP/1.1
-            }
 
+            }
+            logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", requestMethod, requestUrl, httpVersion);
             if (requestMethod.equals("GET")){
-                if (requestUrl.equals("/index.html")){
-                    response200Header(dos, body.length);
+                if (requestUrl.startsWith("/css") || requestUrl.startsWith("/js")){
+                    System.out.println("static : " + requestUrl);
+                    requestUrl = "./static" + requestUrl;
+                    body = FileIoUtils.loadFileFromClasspath(requestUrl);
+                    String[] urlSplitByDot = requestUrl.split("\\.");
+                    response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
                     responseBody(dos, body);
+                }
+                else if (requestUrl.startsWith("/") && requestUrl.contains(".")){
+                    System.out.println("templates : " + requestUrl);
+                    requestUrl = "./templates" + requestUrl;
+                    body = FileIoUtils.loadFileFromClasspath(requestUrl);
+                    String[] urlSplitByDot = requestUrl.split("\\.");
+                    response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
+                    responseBody(dos, body);
+                    try {
+                        Thread.sleep(100);
+                    } catch(Exception e){
+
+                    }
                 }
                 else{
                     body = "Hello world".getBytes();
-                    response200Header(dos, body.length);
+                    response200Header(dos, body.length, "html");
                     responseBody(dos, body);
                 }
             }
 
-            while (s == null || "".equals(s)) {
-                System.out.println(s);
-                s = br.readLine();
-            }
 
 
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | RuntimeException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: text/" + type + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
