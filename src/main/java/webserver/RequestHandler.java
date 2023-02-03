@@ -2,10 +2,15 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.RequestBuilder;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import static utils.RequestBuilder.*;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -25,11 +30,8 @@ public class RequestHandler implements Runnable {
              DataOutputStream dos = new DataOutputStream(out);
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 
-            String line = "";
-            while (hasNextHeader(line = bufferedReader.readLine())) {
-                logger.debug("line : {}", line);
-            }
-
+            HttpRequest httpRequest = getHttpRequest(bufferedReader);
+            
             byte[] body = "Hello world".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
@@ -38,9 +40,6 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private boolean hasNextHeader(String line) {
-        return line != null && !line.equals("");
-    }
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
