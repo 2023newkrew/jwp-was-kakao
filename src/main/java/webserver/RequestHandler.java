@@ -2,19 +2,18 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.UserService;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(final Socket connectionSocket) {
         this.connection = connectionSocket;
     }
 
@@ -23,11 +22,25 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            // 입력값을 HttpRequest로 변환
+            String uri = Parser.getURI(Parser.parseRequestMessage(reader));
+
+            byte[] body = "".getBytes();
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
+            if (uri.endsWith(".html")) {
+                body = Parser.getTargetBody(uri);
+                response200Header(dos, body.length);
+            }
+            else {
+                body = "Hello world".getBytes();
+                response200Header(dos, body.length);
+            }
+
             responseBody(dos, body);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

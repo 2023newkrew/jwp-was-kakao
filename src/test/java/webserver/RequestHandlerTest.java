@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
     @Test
-    void socket_out() {
+    void socketOut() {
         // given
         final var socket = new StubSocket();
         final var handler = new RequestHandler(socket);
@@ -49,7 +49,7 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 \r\n" +
+        var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6902 \r\n" +
                 "\r\n" +
