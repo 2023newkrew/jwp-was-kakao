@@ -1,5 +1,6 @@
 package webserver;
 
+import db.DataBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -81,5 +82,45 @@ class RequestHandlerTest {
         String requestFirstLine = "GET /index.html HTTP/1.1 ";
         String expected = "/index.html";
         assertThat(IOUtils.extractPath(requestFirstLine)).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("form으로 부터 user 생성 테스트")
+    void createUserTest(){
+        final String httpRequest = String.join("\r\n",
+                "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Accept: */*",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        handler.run();
+
+        assertThat(DataBase.findAll()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("잘못된 queryParams가 들어오면 InvalidQueryParameterException 발생")
+    void InvalidQueryParameterExceptionTest(){
+        final String httpRequest = String.join("\r\n",
+                "GET /user/createuserId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Accept: */*",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        handler.run();
+
+        var expected = "HTTP/1.1 400 BAD REQUEST \r\n" +
+                "Content-Type: text/html;charset=utf-8 \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
     }
 }

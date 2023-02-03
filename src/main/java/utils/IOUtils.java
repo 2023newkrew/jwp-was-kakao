@@ -1,11 +1,14 @@
 package utils;
 
+import exceptions.InvalidQueryParameterException;
+import model.user.User;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class IOUtils {
     /**
@@ -42,5 +45,20 @@ public class IOUtils {
     public static String extractPath(String requestFirstLine){
         String[] token = requestFirstLine.split(" ");
         return token[1];
+    }
+
+    public static Map<String,String> extractUser(String path) throws IndexOutOfBoundsException{
+        String[] token = path.split("\\?");
+        try {
+            String query = token[1];
+            String[] queryParams = query.split("&");
+            return Arrays.stream(queryParams).map(s -> s.split("="))
+                    .collect(Collectors.toMap(
+                            a -> a[0],  //key
+                            a -> a[1]   //value
+                    ));
+        } catch (IndexOutOfBoundsException e) {
+            throw new InvalidQueryParameterException();
+        }
     }
 }
