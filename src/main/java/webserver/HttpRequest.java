@@ -15,4 +15,12 @@ public class HttpRequest {
     private String protocol;
     private Map<String, String> headers;
     private Map<String, String> body;
+
+    public boolean isHttpMethodEquals(String httpMethod) {
+        return this.httpMethod.equals(httpMethod);
+    }
+
+    public boolean isURLEquals(String url) {
+        return this.url.equals(url);
+    }
 }
