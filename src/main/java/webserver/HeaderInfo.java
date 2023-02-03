@@ -16,7 +16,7 @@ class HeaderInfo {
     private final Map<String, String> mappings = new HashMap<>();
     private final Map<String, String> queryMappings = new HashMap<>();
 
-    private String accept;
+    private String accept = "text/html";
 
     public HeaderInfo(String firstLine) {
         if (Objects.isNull(firstLine)) {
@@ -56,7 +56,6 @@ class HeaderInfo {
     }
 
     private String setPath(String path) {
-
         String[] tokens = path.split("\\?");
         if (tokens.length > 2) {
             setQueryParameters(tokens[1]);
