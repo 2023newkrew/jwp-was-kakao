@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 @UtilityClass
-public class HandlerControllerAdapter {
+public class ControllerHandlerAdapter {
     public Method findMethodToExecute(HttpRequest request, ApiController apiController) {
         Method[] methods = apiController.getClass().getDeclaredMethods();
         for (Method method : methods) {
