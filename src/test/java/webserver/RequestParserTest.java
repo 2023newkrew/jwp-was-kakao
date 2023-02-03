@@ -17,7 +17,6 @@ public class RequestParserTest {
             add("Connection: keep-alive");
             add("Accept: */*");
             add("");
-            add("");
         }};
 
         Request actual = RequestParser.parse(request);
@@ -28,7 +27,7 @@ public class RequestParserTest {
         assertThat(actual.getHeaders().get("Host")).isEqualTo("localhost:8080");
         assertThat(actual.getHeaders().get("Connection")).isEqualTo("keep-alive");
         assertThat(actual.getHeaders().get("Accept")).isEqualTo("*/*");
-        assertThat(actual.getBody()).isEmpty();
+        assertThat(actual.getBody()).isNull();
     }
 
     @Test

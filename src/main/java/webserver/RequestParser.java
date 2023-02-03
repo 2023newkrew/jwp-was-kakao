@@ -25,12 +25,11 @@ public class RequestParser {
         requestDtoBuilder.headers(headers);
 
         // 바디
-        line = iterator.next();
-        if (Objects.equals(line, "")) {
+        if (!iterator.hasNext()) {
             return requestDtoBuilder.build();
         }
+
         StringBuilder body = new StringBuilder();
-        iterator.previous();
         while (iterator.hasNext()) {
             line = iterator.next();
             body.append(line).append("\n");
