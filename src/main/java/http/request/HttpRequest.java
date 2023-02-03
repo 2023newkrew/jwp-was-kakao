@@ -28,6 +28,10 @@ public class HttpRequest {
         return requestLine;
     }
 
+    public RequestParam getRequestParam() {
+        return requestLine.getRequestUri().getRequestParam();
+    }
+
     public HttpHeader getRequestHeader() {
         return httpHeader;
     }

@@ -7,7 +7,6 @@ import utils.FileIoUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class HttpResponse {
     private final static Logger logger = LoggerFactory.getLogger(HttpRequest.class);
@@ -15,6 +14,8 @@ public class HttpResponse {
     public static final String STATIC_PATH = "./static/";
 
     private final DataOutputStream dos;
+
+    private HttpHeader httpHeader = new HttpHeader();
 
     public HttpResponse(DataOutputStream dos) {
         this.dos = dos;
@@ -48,6 +49,17 @@ public class HttpResponse {
     private void responseBody(byte[] body) {
         try {
             dos.write(body, 0, body.length);
+            dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void sendRedirect(String path) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
+            dos.writeBytes(String.format("Location: %s \r\n", path));
+            dos.writeBytes("Content-Length: 0");
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());

@@ -17,4 +17,12 @@ public class RequestParam {
             params.put(keyValue[0], keyValue[1]);
         }
     }
+
+    public String get(String key) {
+        String value = params.get(key);
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+        return value;
+    }
 }
