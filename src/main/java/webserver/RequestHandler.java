@@ -5,7 +5,6 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import utils.FileIoUtils;
 import utils.IOUtils;
@@ -42,7 +41,6 @@ public class RequestHandler implements Runnable {
             String method = line.split(" ")[0];
             String requestedUri = line.split(" ")[1];
 
-            logger.info(method);
             if (method.equals("POST")) {
                 int contentLength = 0;
                 while (!"".equals(line)) {
@@ -54,7 +52,6 @@ public class RequestHandler implements Runnable {
                         contentLength = Integer.parseInt(line.split(" ")[1]);
                     }
                 }
-                logger.info(Integer.toString(contentLength));
                 String requestBody = IOUtils.readData(bufferedReader, contentLength);
                 requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
                 MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(requestedUri)
@@ -68,33 +65,19 @@ public class RequestHandler implements Runnable {
                     dos.flush();
                     return;
                 }
-
             }
-
-
-            UriComponents uriComponents = UriComponentsBuilder.fromUriString(requestedUri)
-                    .host("localhost")
-                    .port(8080)
-                    .build();
 
             byte[] body = "Hello world".getBytes();
-            String[] pathSplit = uriComponents.getPath()
-                    .split("\\.");
-            String contentType = "text/html;charset=utf-8";
-            if (pathSplit.length < 2) { // REST API
-//                MultiValueMap<String, String> map = uriComponents.getQueryParams();
-            } else { // resource 요청
-                String extension = pathSplit[pathSplit.length - 1];
-                logger.info("extension : " + extension);
-                if (extension.equals("html") || extension.equals("ico")) {
-                    body = FileIoUtils.loadFileFromClasspath("./templates" + requestedUri);
-                } else {
-                    body = FileIoUtils.loadFileFromClasspath("./static" + requestedUri);
-                }
 
-                contentType = Files.probeContentType(new File(requestedUri).toPath());
+            String[] pathSplit = requestedUri.split("\\.");
+            String extension = pathSplit[pathSplit.length - 1];
+            if (extension.equals("html") || extension.equals("ico")) {
+                body = FileIoUtils.loadFileFromClasspath("./templates" + requestedUri);
+            } else {
+                body = FileIoUtils.loadFileFromClasspath("./static" + requestedUri);
             }
 
+            String contentType = Files.probeContentType(new File(requestedUri).toPath());
             response200Header(dos, body.length, contentType);
             responseBody(dos, body);
         } catch (IOException e) {
@@ -116,8 +99,6 @@ public class RequestHandler implements Runnable {
                 .email(email)
                 .build();
         DataBase.addUser(user);
-        logger.info(DataBase.findUserById(userId)
-                .getName());
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
