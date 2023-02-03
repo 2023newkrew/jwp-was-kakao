@@ -96,11 +96,24 @@ public class RequestHandler implements Runnable {
                     User user = new User(bodyMap.get("userId"), bodyMap.get("password"),
                             bodyMap.get("name"), bodyMap.get("email"));
                     DataBase.addUser(user);
-                    response200Header(dos, 11, "html");
-                    responseBody(dos, "Hello world".getBytes());
+                    response302Header(dos, "/index.html");
                 }
             }
         } catch (IOException | URISyntaxException | RuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, String location) {
+        try {
+            /*
+                HTTP/1.1 302 Found
+                Location: http://www.iana.org/domains/example/
+             */
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
