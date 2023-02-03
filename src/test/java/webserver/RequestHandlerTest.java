@@ -121,4 +121,39 @@ class RequestHandlerTest {
         assertThat(user.getEmail()).isEqualTo(savedUser.getEmail());
         assertThat(user.getName()).isEqualTo(savedUser.getName());
     }
+
+    @Test
+    void createUserPost() throws IOException, URISyntaxException {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 92 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com"
+        );
+
+        final User user = new User(
+                "cu",
+                "password",
+                "이동규",
+                "brainbackdoor@gmail.com"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        final User savedUser = DataBase.findUserById("cu");
+        assertThat(user.getUserId()).isEqualTo(savedUser.getUserId());
+        assertThat(user.getPassword()).isEqualTo(savedUser.getPassword());
+        assertThat(user.getName()).isEqualTo(savedUser.getName());
+        assertThat(user.getEmail()).isEqualTo(savedUser.getEmail());
+    }
 }
