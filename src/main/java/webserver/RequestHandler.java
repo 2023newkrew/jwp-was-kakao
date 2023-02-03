@@ -5,6 +5,7 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
+import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -32,12 +33,12 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
 
             // TODO path 를 확인하고 처리해주
-            if (headerInfo.getMethod().equals(HttpMethod.GET) && headerInfo.getPath().equals("/user/create")) {
+            if (headerInfo.getMethod().equals(HttpMethod.POST) && headerInfo.getPath().equals("/user/create")) {
                 User user = new User(
-                        headerInfo.getQueryValue("userId"),
-                        headerInfo.getQueryValue("password"),
-                        headerInfo.getQueryValue("name"),
-                        headerInfo.getQueryValue("email")
+                        headerInfo.getBodyValue("userId"),
+                        headerInfo.getBodyValue("password"),
+                        headerInfo.getBodyValue("name"),
+                        headerInfo.getBodyValue("email")
                 );
                 DataBase.addUser(user);
                 return;
@@ -58,6 +59,11 @@ public class RequestHandler implements Runnable {
             System.out.println(line);
             headerInfo.readNextLine(line);
             line = bufferedReader.readLine();
+        }
+        String bodyLengthString = headerInfo.getHeaderValue("Content-Length");
+        if (Objects.nonNull(bodyLengthString)) {
+            String body = IOUtils.readData(bufferedReader, Integer.parseInt(bodyLengthString));
+            headerInfo.setBodyParams(body);
         }
         return headerInfo;
     }
