@@ -1,7 +1,6 @@
 package http.request;
 
 import http.HttpHeader;
-import http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.IOUtils;

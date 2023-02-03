@@ -1,7 +1,5 @@
 package http.request;
 
-import http.HttpMethod;
-
 public class RequestLine {
     private static final String DELIMITER = " ";
     private static final int VALID_REQUEST_PARAMS_LENGTH = 3;

@@ -13,7 +13,8 @@ public class HttpHeader {
 
     private final Map<String, String> headers = new HashMap<>();
 
-    public HttpHeader() {}
+    public HttpHeader() {
+    }
 
     public HttpHeader(BufferedReader reader) {
         String line;

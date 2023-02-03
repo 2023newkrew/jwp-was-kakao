@@ -1,13 +1,13 @@
 package http.request;
 
 public class RequestBody {
-    private final RequestParam requestParam;
+    private final String body;
 
-    public RequestBody(String query) {
-        requestParam = new RequestParam(query);
+    public RequestBody(String body) {
+        this.body = body;
     }
 
     public RequestParam getRequestParam() {
-        return requestParam;
+        return new RequestParam(body);
     }
 }

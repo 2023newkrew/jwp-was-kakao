@@ -9,7 +9,8 @@ public class RequestParam {
 
     private final Map<String, String> params = new HashMap<>();
 
-    public RequestParam() {}
+    public RequestParam() {
+    }
 
     public RequestParam(String query) {
         if (query == null || query.isEmpty()) {

@@ -1,6 +1,4 @@
-package http;
-
-import java.util.Arrays;
+package http.request;
 
 public enum HttpMethod {
     GET("GET"),
