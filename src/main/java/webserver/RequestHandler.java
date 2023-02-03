@@ -30,7 +30,7 @@ public class RequestHandler implements Runnable {
 
             byte[] body = "".getBytes();
             DataOutputStream dos = new DataOutputStream(out);
-            if (uri.endsWith(".html")) {
+            if (uri.endsWith(".html") | uri.endsWith(".css")) {
                 body = Parser.getTargetBody(uri);
                 response200Header(dos, body.length);
             }

@@ -13,7 +13,11 @@ public class Parser {
 
     public static byte[] getTargetBody(final String uri) {
         try {
-            return FileIoUtils.loadFileFromClasspath("./templates" + uri.replaceFirst("^\\.+", ""));
+            if (uri.endsWith(".html")) {
+                return FileIoUtils.loadFileFromClasspath("./templates" + uri.replaceFirst("^\\.+", ""));
+            } else if (uri.endsWith(".css")) {
+                return FileIoUtils.loadFileFromClasspath("./static" + uri.replaceFirst("^\\.+", ""));
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
