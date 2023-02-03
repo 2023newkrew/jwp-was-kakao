@@ -1,22 +1,13 @@
 package http.request;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 public class RequestBody {
     private final RequestParam requestParam;
 
-    public RequestBody(BufferedReader reader) {
-        requestParam = new RequestParam();
-
-//        try {
-//            requestParam = new RequestParam(reader.readLine());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-    }
-
     public RequestBody(String query) {
         requestParam = new RequestParam(query);
+    }
+
+    public RequestParam getRequestParam() {
+        return requestParam;
     }
 }

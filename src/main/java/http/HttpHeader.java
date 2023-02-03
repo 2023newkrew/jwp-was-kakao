@@ -18,8 +18,7 @@ public class HttpHeader {
     public HttpHeader(BufferedReader reader) {
         String line;
         try {
-            while ((line = reader.readLine()).isBlank()) {
-                System.out.println("line = " + line);
+            while (!(line = reader.readLine()).isBlank()) {
                 String[] keyValue = line.split(DELIMITER, SPLIT_LIMIT);
                 headers.put(keyValue[INDEX_OF_KEY], keyValue[INDEX_OF_VALUE]);
             }

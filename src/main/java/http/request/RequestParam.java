@@ -12,6 +12,9 @@ public class RequestParam {
     public RequestParam() {}
 
     public RequestParam(String query) {
+        if (query == null || query.isEmpty()) {
+            return;
+        }
         for (String param : query.split(DELIMITER)) {
             String[] keyValue = param.split(KEY_VALUE, 2);
             params.put(keyValue[0], keyValue[1]);

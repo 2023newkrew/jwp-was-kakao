@@ -1,5 +1,6 @@
 package webserver;
 
+import http.HttpMethod;
 import http.request.HttpRequest;
 import http.HttpResponse;
 import http.request.RequestLine;
@@ -24,7 +25,6 @@ public class RequestHandler implements Runnable {
         logger.info("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
 
@@ -44,8 +44,7 @@ public class RequestHandler implements Runnable {
         RequestLine requestLine = request.getRequestLine();
         String path = requestLine.getRequestUri().getPath();
 
-        // Controller controller = RequestMapping.getHandler(path);
-        if (path.equals("/user/create")) {
+        if (request.getMethod() == HttpMethod.POST && path.equals("/user/create")) {
             userController.create(request, response);
             return;
         }

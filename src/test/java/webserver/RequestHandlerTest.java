@@ -21,7 +21,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, userController);
+        final RequestHandler handler = new RequestHandler(socket);
 
         // when
         handler.run();
