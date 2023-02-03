@@ -10,8 +10,8 @@
 
 ## 요구사항
 ### GET /index.html 응답하기
-* [ ] http://localhost:8080/index.html에 접근할 수 있도록 구현한다.
-* [ ] RequestHandlerTest 테스트가 모두 통과하도록 구현한다.
+* [x] http://localhost:8080/index.html에 접근할 수 있도록 구현한다.
+* [x] RequestHandlerTest 테스트가 모두 통과하도록 구현한다.
 
 ### CSS 지원하기
 * [ ] Stylesheet 파일을 지원하도록 구현하도록 한다.
