@@ -1,5 +1,7 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -85,5 +87,38 @@ class RequestHandlerTest {
                 new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void createUserGet() throws IOException, URISyntaxException {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Accept: */* ",
+                "",
+                ""
+        );
+
+        final User user = new User(
+                "cu",
+                "password",
+                "이동규",
+                "brainbackdoor@gmail.com"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        final User savedUser = DataBase.findUserById("cu");
+        assertThat(user.getUserId()).isEqualTo(savedUser.getUserId());
+        assertThat(user.getPassword()).isEqualTo(savedUser.getPassword());
+        assertThat(user.getEmail()).isEqualTo(savedUser.getEmail());
+        assertThat(user.getName()).isEqualTo(savedUser.getName());
     }
 }
