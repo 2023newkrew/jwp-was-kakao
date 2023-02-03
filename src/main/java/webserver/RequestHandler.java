@@ -1,15 +1,19 @@
 package webserver;
 
+import constant.DefaultConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.FileIoUtils;
 import utils.RequestBuilder;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static constant.DefaultConstant.*;
 import static utils.RequestBuilder.*;
 
 public class RequestHandler implements Runnable {
@@ -31,11 +35,16 @@ public class RequestHandler implements Runnable {
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 
             HttpRequest httpRequest = getHttpRequest(bufferedReader);
-            
-            byte[] body = "Hello world".getBytes();
+
+            byte[] body = DEFAULT_BODY;
+
+            if (!httpRequest.getUrl().equals(DEFAULT_PATH)) {
+                body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUrl());
+            }
+
             response200Header(dos, body.length);
             responseBody(dos, body);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
