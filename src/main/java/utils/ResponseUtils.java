@@ -14,7 +14,8 @@ public class ResponseUtils {
 
     public void response200Header(DataOutputStream dos, HttpRequest httpRequest, int lengthOfBodyContent) {
         try {
-            String contentType = httpRequest.getHeaders().getOrDefault("Accept", "text/html;charset=utf-8")
+            String contentType = httpRequest.getHeaders()
+                    .getOrDefault("Accept", "text/html;charset=utf-8")
                     .split(",")[0];
 
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
