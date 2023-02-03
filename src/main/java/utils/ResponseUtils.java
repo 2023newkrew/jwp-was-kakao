@@ -37,6 +37,16 @@ public class ResponseUtils {
         }
     }
 
+    public void response404Header(DataOutputStream dos) {
+        try {
+            dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
+            dos.writeBytes("\r\n");
+            dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);

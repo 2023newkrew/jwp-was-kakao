@@ -15,18 +15,16 @@ public class ControllerHandlerAdapter {
         for (Method method : methods) {
             Optional<Api> annotation = Optional.ofNullable(method.getDeclaredAnnotation(Api.class));
 
-            if (annotation.isEmpty()) {
-                continue;
-            }
-
-            if (isMethodExistMatched(request, annotation.get())) {
+            if (isMethodExistMatched(request, annotation)) {
                 return method;
             }
         }
         throw new RuntimeException();
     }
 
-    private boolean isMethodExistMatched(HttpRequest request, Api annotation) {
-        return annotation.method().equals(request.getHttpMethod()) && annotation.url().equals(request.getUrl());
+    private boolean isMethodExistMatched(HttpRequest request, Optional<Api> annotation) {
+        return annotation
+                .filter(api -> api.method().equals(request.getHttpMethod()) && api.url().equals(request.getUrl()))
+                .isPresent();
     }
 }
