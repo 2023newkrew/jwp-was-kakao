@@ -1,5 +1,6 @@
 package webserver;
 
+import enums.ContentType;
 import exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
+
+        System.out.println("connection");
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
         DataOutputStream dos;
@@ -41,15 +44,18 @@ public class RequestHandler implements Runnable {
             if (path.equals("/")) {
                 body = "Hello world".getBytes();
                 dos = new DataOutputStream(out);
-                response200Header(dos, body.length);
+                response200Header(dos, body.length, ContentType.HTML);
                 responseBody(dos, body);
                 return;
             }
 
-            body = FileIoUtils.loadFileFromClasspath("./templates" + path);
+            ContentType contentType = ContentType.fromFilename(path);
+
+            String resourcePath = FileIoUtils.getResourcePath(path, contentType);
+            body = FileIoUtils.loadFileFromClasspath(resourcePath);
 
             dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
+            response200Header(dos, body.length, contentType);
             responseBody(dos, body);
         }  catch (ResourceNotFoundException e) {
             dos = new DataOutputStream(out);
@@ -71,10 +77,10 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, ContentType contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: " + contentType.getValue() + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

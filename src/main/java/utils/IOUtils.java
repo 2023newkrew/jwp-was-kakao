@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IOUtils {
     /**
@@ -24,7 +26,14 @@ public class IOUtils {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         try {
-            return bufferedReader.readLine();
+            List<String> headers = new ArrayList<>();
+            String line;
+            while (!"".equals(line = bufferedReader.readLine())) {
+                headers.add(line);
+                if (line == null) break;
+            }
+            System.out.println(headers);
+            return headers.get(0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
