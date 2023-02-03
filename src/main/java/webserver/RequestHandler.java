@@ -1,17 +1,13 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
-import utils.FileIoUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class RequestHandler implements Runnable {
@@ -35,10 +31,19 @@ public class RequestHandler implements Runnable {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
 
-            byte[] body = headerInfo.getResponse();
+            // TODO path 를 확인하고 처리해주
+            if (headerInfo.getMethod().equals(HttpMethod.GET) && headerInfo.getPath().equals("/user/create")) {
+                User user = new User(
+                        headerInfo.getQueryValue("userId"),
+                        headerInfo.getQueryValue("password"),
+                        headerInfo.getQueryValue("name"),
+                        headerInfo.getQueryValue("email")
+                );
+                DataBase.addUser(user);
+                return;
+            }
 
-            System.out.println("###################");
-            System.out.println(headerInfo);
+            byte[] body = headerInfo.getResponse();
             response200Header(dos, body.length, headerInfo.getAccept());
             responseBody(dos, body);
         } catch (IOException e) {
@@ -78,109 +83,3 @@ public class RequestHandler implements Runnable {
     }
 }
 
-enum Directory {
-    CSS, FONTS, IMAGES, JS;
-    private static final Map<String, Directory> mappings = new HashMap<>(16);
-
-    static {
-        for (Directory directory : values()) {
-            mappings.put(directory.name(), directory);
-        }
-    }
-
-    @Nullable
-    public static Directory resolve(@Nullable String dir) {
-        return (dir != null ? mappings.get(dir) : null);
-    }
-}
-
-class HeaderInfo {
-    private HttpMethod method;
-    private final String path;
-    private String root;
-    private final Map<String, String> mappings = new HashMap<>();
-
-    private String accept;
-
-    public HeaderInfo(String firstLine) {
-        if (Objects.isNull(firstLine)) {
-            throw new RuntimeException("kk");
-        }
-        String[] tokens = firstLine.split(" ");
-        HttpMethod method = HttpMethod.resolve(tokens[0]);
-        if (Objects.isNull(method)) {
-            throw new RuntimeException("zz");
-        }
-        this.method = method;
-        this.path = setPath(tokens[1]);
-    }
-
-    public void readNextLine(String line) {
-        String[] tokens = line.split(": ");
-        if (tokens[0].equals("Accept")) {
-            setAccept(tokens[1]);
-            return;
-        }
-        mappings.put(tokens[0], tokens[1]);
-    }
-
-    public byte[] getResponse() {
-        try {
-            return FileIoUtils.loadFileFromClasspath(root + path);
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException("lol");
-        } catch (NullPointerException e) {
-            return new byte[]{};
-        }
-    }
-
-    private void setAccept(String value) {
-        //TODO exception handling
-        accept = value.split(",")[0];
-    }
-
-    private String setPath(String path) {
-        String[] tokens = path.split("/");
-        if (tokens.length < 2) {
-            return path;
-        }
-        Directory directory = Directory.resolve(tokens[1].toUpperCase());
-        if (Objects.isNull(directory)) {
-            root = "./templates";
-            return path;
-        }
-        root = "./static";
-        return path;
-    }
-
-    public HttpMethod getMethod() {
-        return method;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getRoot() {
-        return root;
-    }
-
-    public Map<String, String> getMappings() {
-        return mappings;
-    }
-
-    public String getAccept() {
-        return accept;
-    }
-
-    @Override
-    public String toString() {
-        return "HeaderInfo{" +
-                "method=" + method +
-                ", path='" + path + '\'' +
-                ", root='" + root + '\'' +
-                ", mappings=" + mappings +
-                ", accept='" + accept + '\'' +
-                '}';
-    }
-}
