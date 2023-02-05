@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 
 public class IOUtilsTest {
+
     private static final Logger logger = LoggerFactory.getLogger(IOUtilsTest.class);
 
     @Test

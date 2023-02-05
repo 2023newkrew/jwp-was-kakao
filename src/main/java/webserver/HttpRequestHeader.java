@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class HttpRequestHeader {
+
     private final Map<String, String> headers = new HashMap<>();
     private final String method;
     private final URI uri;

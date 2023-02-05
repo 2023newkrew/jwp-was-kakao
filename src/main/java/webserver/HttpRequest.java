@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 
 public class HttpRequest {
+
     private final HttpRequestHeader httpRequestHeader;
     private final HttpReqeustBody httpReqeustBody;
 
@@ -28,7 +29,7 @@ public class HttpRequest {
         return httpRequestHeader.getHttpVersion();
     }
 
-    public String  getBody() {
+    public String getBody() {
         return httpReqeustBody.getContent();
     }
 }

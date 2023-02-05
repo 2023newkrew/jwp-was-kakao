@@ -6,16 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RequestHandler implements Runnable {
+
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -30,11 +34,11 @@ public class RequestHandler implements Runnable {
             HttpRequest request = HttpRequestParser.parse(in);
             DataOutputStream dos = new DataOutputStream(out);
 
-            if(request.getMethod().equals("GET")) {
+            if (request.getMethod().equals("GET")) {
                 doGet(request, dos);
             }
 
-            if(request.getMethod().equals("POST")) {
+            if (request.getMethod().equals("POST")) {
                 doPost(request, dos);
             }
 
@@ -47,9 +51,9 @@ public class RequestHandler implements Runnable {
 
     private void doPost(HttpRequest request, DataOutputStream dos) {
 
-        if(request.getUri().getPath().equals("/user/create")) {
+        if (request.getUri().getPath().equals("/user/create")) {
             String query = request.getBody();
-            String[] queryParameters  = query.split("&");
+            String[] queryParameters = query.split("&");
             Map<String, String> attributes = new HashMap<>();
 
             for (String queryParameter : queryParameters) {
@@ -79,21 +83,21 @@ public class RequestHandler implements Runnable {
             responseBody(dos, body);
         }
 
-        if(request.getUri().getPath().endsWith(".html")) {
+        if (request.getUri().getPath().endsWith(".html")) {
             body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
             response200HtmlHeader(dos, body.length);
             responseBody(dos, body);
         }
 
-        if(request.getUri().getPath().equals("/")) {
+        if (request.getUri().getPath().equals("/")) {
             body = "Hello world".getBytes();
             response200HtmlHeader(dos, body.length);
             responseBody(dos, body);
         }
 
-        if(request.getUri().getPath().equals("/user/create")) {
+        if (request.getUri().getPath().equals("/user/create")) {
             String query = request.getUri().getQuery();
-            String[] queryParameters  = query.split("&");
+            String[] queryParameters = query.split("&");
             Map<String, String> attributes = new HashMap<>();
 
             for (String queryParameter : queryParameters) {

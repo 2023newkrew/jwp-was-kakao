@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class HttpRequestParser {
+
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestHeader.class);
 
     public static HttpRequest parse(InputStream in) throws IOException {
@@ -25,7 +26,7 @@ public class HttpRequestParser {
                 startLine[2]
         );
 
-        while(!(line = br.readLine()).equals("")) {
+        while (!(line = br.readLine()).equals("")) {
             String[] header = line.split(": ");
             String key = header[0];
             String value = header[1].trim();
