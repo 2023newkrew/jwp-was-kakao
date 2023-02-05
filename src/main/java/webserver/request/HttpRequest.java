@@ -6,11 +6,11 @@ import java.util.Optional;
 public class HttpRequest {
 
     private final HttpRequestHeader httpRequestHeader;
-    private final HttpReqeustBody httpReqeustBody;
+    private final HttpRequestBody httpRequestBody;
 
-    public HttpRequest(HttpRequestHeader httpRequestHeader, HttpReqeustBody httpReqeustBody) {
+    public HttpRequest(HttpRequestHeader httpRequestHeader, HttpRequestBody httpRequestBody) {
         this.httpRequestHeader = httpRequestHeader;
-        this.httpReqeustBody = httpReqeustBody;
+        this.httpRequestBody = httpRequestBody;
     }
 
     public Optional<String> getAttribute(String key) {
@@ -30,6 +30,6 @@ public class HttpRequest {
     }
 
     public String getBody() {
-        return httpReqeustBody.getContent();
+        return httpRequestBody.getContent();
     }
 }
