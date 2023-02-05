@@ -1,7 +1,11 @@
 package utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import model.HttpRequest;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,14 +38,35 @@ public class RequestBuilder {
                 queryParamsMap = setQueryParamsMapIfExists(queryParamsMap, tokens);
                 continue;
             }
+
             requestHeaderMap.put(tokens[0].substring(0, tokens[0].length() - 1), tokens[1]);
         }
 
         if (requestHeaderMap.containsKey(CONTENT_LENGTH)) {
-            body = parseQueryString(IOUtils.readData(bufferedReader, parseInt(requestHeaderMap.get(CONTENT_LENGTH))));
+            String requestBody = IOUtils.readData(bufferedReader, parseInt(requestHeaderMap.get(CONTENT_LENGTH)));
+            body = getBody(requestBody);
         }
 
         return new HttpRequest(httpMethod, requestPath, queryParamsMap, httpProtocol, requestHeaderMap, body);
+    }
+
+    private Map<String, String> getBody(String requestBody) {
+//        추후 요구사항으로 Json 형태의 body가 들어올 경우 활성화
+//
+//        if (isJson(requestBody)) {
+//            return new ObjectMapper().readValue(requestBody, Map.class);
+//        }
+
+        return QueryStringParser.parseQueryString(requestBody);
+    }
+
+    private boolean isJson(String body) {
+        try {
+            new JSONObject(body);
+        } catch (JSONException e) {
+            return false;
+        }
+        return true;
     }
 
     private Map<String, String> setQueryParamsMapIfExists(Map<String, String> queryString, String[] tokens) {
