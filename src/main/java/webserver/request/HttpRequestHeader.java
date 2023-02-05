@@ -12,10 +12,14 @@ public class HttpRequestHeader {
     private final URI uri;
     private final String httpVersion;
 
-    public HttpRequestHeader(String method, String uri, String httpVersion) {
+    private HttpRequestHeader(String method, URI uri, String httpVersion) {
         this.method = method;
-        this.uri = URI.create(uri);
+        this.uri = uri;
         this.httpVersion = httpVersion;
+    }
+
+    public static HttpRequestHeader of(String method, String uri, String httpVersion) {
+        return new HttpRequestHeader(method, URI.create(uri), httpVersion);
     }
 
     public Optional<String> getAttribute(String key) {

@@ -7,8 +7,12 @@ public class HttpRequestBody {
 
     private final String content;
 
-    public HttpRequestBody(String content) {
-        this.content = URLDecoder.decode(content, StandardCharsets.UTF_8);
+    private HttpRequestBody(String content) {
+        this.content = content;
+    }
+
+    public static HttpRequestBody from(String content) {
+        return new HttpRequestBody(URLDecoder.decode(content, StandardCharsets.UTF_8));
     }
 
     public String getContent() {
