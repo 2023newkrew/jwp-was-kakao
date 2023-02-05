@@ -1,9 +1,16 @@
 # 웹 애플리케이션 서버
-## 진행 방법
-* 웹 애플리케이션 서버 요구사항을 파악한다.
-* 요구사항에 대한 구현을 완료한 후 자신의 github 아이디에 해당하는 브랜치에 Pull Request(이하 PR)를 통해 코드 리뷰 요청을 한다.
-* 코드 리뷰 피드백에 대한 개선 작업을 하고 다시 PUSH한다.
-* 모든 피드백을 완료하면 다음 단계를 도전하고 앞의 과정을 반복한다.
+### 구현 목록 (요구 사항)
+- [x] Request Header 읽어 오기 구현
+- [x] HttpRequestBuilder 구현
+- [x] GET /index.html 응답 구현
+- [x] css, js 등을 적용할 수 있도록 구현
+- [x] 쿼리스트링 파서 구현
+- [x] 회원 가입 구현
+- [x] 회원가입 리다이렉트 구현
 
-## 온라인 코드 리뷰 과정
-* [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+### 부가적인 코드 개선
+- [x] FrontController 구현
+- [x] Api 어노테이션을 통해 메소드 매핑 구현
+- [x] Controller를 통해서 요청을 처리하도록 구현
+- [x] 존재하지 않는 페이지에 대해 404 응답을 내려주도록 구현
+- [x] Service, Dao 레이어 분리
