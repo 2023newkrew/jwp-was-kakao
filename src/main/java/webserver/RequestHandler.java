@@ -2,12 +2,15 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.FileIoUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -23,21 +26,51 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            HttpRequest httpRequest = HttpRequestParser.parse(in);
+            byte[] body;
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
+            String accept = httpRequest.getHeader("Accept") == null ? "text/html" : httpRequest.getHeader("Accept").split(",")[0];
+
+
+            if (httpRequest.getHttpMethod() == HttpMethod.GET) {
+                body = GetRequestHandler.handle(httpRequest);
+                response200Header(accept, dos, body.length);
+            }
+
+            else if (httpRequest.getHttpMethod() == HttpMethod.POST) {
+                body = PostRequestHandler.handle(httpRequest);
+                response302Header(accept, dos, body.length, "/index.html");
+            }
+
+            else{
+                body = new byte[0];
+            }
+
             responseBody(dos, body);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void response200Header(String accept, DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: " + accept + ";charset=utf-8 \r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response302Header(String accept, DataOutputStream dos, int lengthOfBodyContent, String redirectURI) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Content-Type: " + accept + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("Location: " + redirectURI + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
