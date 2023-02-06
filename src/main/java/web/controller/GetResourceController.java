@@ -22,7 +22,7 @@ public class GetResourceController implements Controller {
     private String getSuffix(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
 
-        if (path.contains(".html")) {
+        if (path.contains(".html") || path.contains(".ico")) {
             return "templates";
         }
 
