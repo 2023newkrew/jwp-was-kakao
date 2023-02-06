@@ -1,8 +1,8 @@
-package webserver.requestmapper;
+package requestmapper;
 
-import webserver.parser.Response;
-import webserver.controller.Controller;
-import webserver.controller.MainController;
+import controller.Controller;
+import controller.MainController;
+import response.Response;
 
 import java.util.HashMap;
 import java.util.Map;

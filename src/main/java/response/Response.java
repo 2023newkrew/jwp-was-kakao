@@ -1,6 +1,6 @@
-package webserver.parser;
+package response;
 
-import webserver.type.ContentType;
+import constant.ContentType;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

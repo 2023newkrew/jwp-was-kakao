@@ -1,8 +1,8 @@
-package webserver.requestmapper;
+package requestmapper;
 
-import webserver.type.ContentType;
+import response.Response;
+import constant.ContentType;
 import utils.FileIoUtils;
-import webserver.parser.Response;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

@@ -1,4 +1,4 @@
-package webserver.parser;
+package request;
 
 import utils.IOUtils;
 

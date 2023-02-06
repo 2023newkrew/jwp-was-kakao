@@ -1,9 +1,9 @@
-package webserver.controller;
+package controller;
 
 import db.DataBase;
 import model.User;
-import webserver.type.ContentType;
-import webserver.parser.Response;
+import response.Response;
+import constant.ContentType;
 
 import java.util.Map;
 

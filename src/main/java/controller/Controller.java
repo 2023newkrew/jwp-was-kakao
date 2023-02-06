@@ -1,6 +1,6 @@
-package webserver.controller;
+package controller;
 
-import webserver.parser.Response;
+import response.Response;
 
 import java.util.Map;
 

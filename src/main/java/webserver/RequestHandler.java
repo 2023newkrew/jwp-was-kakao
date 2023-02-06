@@ -1,11 +1,11 @@
-package webserver.handler;
+package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.parser.Request;
-import webserver.parser.Response;
-import webserver.requestmapper.HandlerMapper;
-import webserver.requestmapper.ResourceMapper;
+import request.Request;
+import response.Response;
+import requestmapper.HandlerMapper;
+import requestmapper.ResourceMapper;
 
 import java.io.*;
 import java.net.Socket;

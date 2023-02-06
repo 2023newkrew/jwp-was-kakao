@@ -1,4 +1,4 @@
-package webserver.parser;
+package request;
 
 import java.util.HashMap;
 import java.util.Map;
