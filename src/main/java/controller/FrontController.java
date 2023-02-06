@@ -25,7 +25,7 @@ public class FrontController {
         controllers.stream()
                 .filter((con) -> con.canHandle(headers, params))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 메소드 입니다."))
+                .orElseThrow(() -> new IllegalArgumentException("매핑된 컨트롤러가 존재하지 않습니다."))
                 .handle(headers, params, dataOutputStream);
     }
 
