@@ -1,6 +1,10 @@
 package webserver;
 
 import controller.FrontController;
+import controller.HomeController;
+import controller.StaticController;
+import controller.UserController;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -12,7 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
 
-    private final FrontController frontController = new FrontController();
+    private final FrontController frontController;
+
+    public RequestHandlerTest() {
+        this.frontController = new FrontController();
+        this.frontController.addAll(new HomeController(), new UserController(), new StaticController());
+    }
 
     @Test
     void socket_out() {
