@@ -22,18 +22,18 @@ public class FileIoUtils {
     }
 
     public static String getResourcePath(String path, ContentType contentType) {
-        if (isNotStaticFile(contentType)) {
+        if (Boolean.TRUE.equals(isTemplatesFile(contentType))) {
             return "./templates" + path;
         }
         return "./static" + path;
     }
 
-    public static boolean isStaticFile(HttpRequest request) {
+    public static Boolean isStaticFile(HttpRequest request) {
         ContentType contentType = ContentType.fromFilename(request.getRequestPath());
         return contentType != ContentType.NONE;
     }
 
-    private static boolean isNotStaticFile(ContentType contentType) {
+    private static Boolean isTemplatesFile(ContentType contentType) {
         return contentType == ContentType.HTML || contentType == ContentType.ICON;
     }
 }
