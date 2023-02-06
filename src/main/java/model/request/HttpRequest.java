@@ -1,5 +1,6 @@
 package model.request;
 
+import constant.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class HttpRequest {
-    private String method;
+    private HttpMethod method;
     private String protocol;
     private String URL;
     private QueryParams queryParams;

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Api {
-    String method() default HttpMethod.GET;
+    HttpMethod method() default HttpMethod.GET;
 
     String url() default "/";
 }

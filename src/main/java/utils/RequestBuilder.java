@@ -47,7 +47,7 @@ public class RequestBuilder {
     }
 
     private void setFirstLineProperties(HttpRequestBuilder requestBuilder, String[] tokens) {
-        requestBuilder.method(tokens[0]);
+        requestBuilder.method(HttpMethod.valueOf(tokens[0]));
         requestBuilder.URL(tokens[1]);
         requestBuilder.protocol(tokens[2]);
         requestBuilder.queryParams(QueryParams.of(getQueryParamsMapIfExists(tokens)));
@@ -85,6 +85,6 @@ public class RequestBuilder {
     }
 
     private boolean isFirstLine(String token) {
-        return token.equals(HttpMethod.GET) || token.equals(HttpMethod.POST) || token.equals(HttpMethod.PUT) || token.equals(HttpMethod.PATCH) || token.equals(HttpMethod.DELETE);
+        return HttpMethod.isExist(token);
     }
 }
