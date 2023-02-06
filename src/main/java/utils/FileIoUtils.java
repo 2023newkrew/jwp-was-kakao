@@ -21,7 +21,7 @@ public class FileIoUtils {
     }
 
     public static String getResourcePath(String path, ContentType contentType) {
-        if (isNotStaticFile(contentType)) {
+        if (isInTemplateDirectory(contentType)) {
             return "./templates" + path;
         }
         return "./static" + path;
@@ -32,7 +32,7 @@ public class FileIoUtils {
         return contentType != ContentType.NONE;
     }
 
-    private static boolean isNotStaticFile(ContentType contentType) {
+    private static boolean isInTemplateDirectory(ContentType contentType) {
         return contentType == ContentType.HTML || contentType == ContentType.ICON;
     }
 }
