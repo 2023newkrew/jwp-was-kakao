@@ -31,8 +31,8 @@ public class UserController  implements MyController {
     public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
 
-        if(path.equals("/user/form.html") && headers.get("method").equals("POST")){
-            createUser(path, params, dataOutputStream);
+        if(path.equals("/user/create") && headers.get("method").equals("POST")){
+            createUser(params, dataOutputStream);
         }
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
@@ -40,7 +40,7 @@ public class UserController  implements MyController {
         }
     }
 
-    private void createUser(String path, MyParams params, DataOutputStream dataOutputStream){
+    private void createUser(MyParams params, DataOutputStream dataOutputStream){
         // Memory DB에 유저 데이터 저장
         addUser(UserFactory.createUser(params));
         response302Header(dataOutputStream, "/index.html");

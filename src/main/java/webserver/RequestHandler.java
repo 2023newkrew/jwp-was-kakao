@@ -56,10 +56,9 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
 
-            // Request Body (POST 일 때만)
+            // [POST] Request Body (추후 다른 메서드로 확장 가능)
             if(headers.get("method").equals("POST")){
                 getDataFromRequestBody(br, dos);
-                return;
             }
 
             // Handler Mapping (FrontController는 Dispatcher Servlet의 역할을 수행)
@@ -83,11 +82,6 @@ public class RequestHandler implements Runnable {
                 var keyAndValue = str.split("=");
                 params.put(keyAndValue[0], keyAndValue[1]);
             });
-
-            // Memory DB에 유저 데이터 저장
-            addUser(createUser(params));
-
-            response302Header(dos, "/index.html");
         }
         catch(IOException e){
             logger.error(e.getMessage());
