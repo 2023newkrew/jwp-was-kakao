@@ -29,40 +29,10 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            DataOutputStream dos = new DataOutputStream(out);
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
-            String path = httpRequest.getPath();
-
-            if (httpRequest.getMethod() == HttpMethod.POST) {
-                String requestBody = httpRequest.getBody();
-                requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(path)
-                        .query(requestBody)
-                        .build()
-                        .getQueryParams();
-
-                if (path.equals("/user/create")) {
-                    addUser(requestParams);
-                    response302Header(dos, "http://localhost:8080/index.html");
-                    dos.flush();
-                    return;
-                }
-            }
-            if (httpRequest.getMethod() == HttpMethod.GET) {
-                byte[] body;
-                try {
-                    body = FileIoUtils.loadFileFromClasspath("./templates" + path);
-                } catch (NullPointerException e) {
-                    body = FileIoUtils.loadFileFromClasspath("./static" + path);
-                }
-
-                String contentType = Files.probeContentType(new File(path).toPath());
-                response200Header(dos, body.length, contentType);
-                responseBody(dos, body);
-            }
+            handleHttpRequest(httpRequest, out);
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {
@@ -70,6 +40,52 @@ public class RequestHandler implements Runnable {
         } catch (NullPointerException e) {
             logger.error("No File");
         }
+    }
+
+    private void handleHttpRequest(HttpRequest httpRequest, OutputStream out) throws IOException, URISyntaxException, NullPointerException{
+        DataOutputStream dos = new DataOutputStream(out);
+
+        if (httpRequest.getMethod() == HttpMethod.POST) {
+            handlePostMethodHttpRequest(httpRequest, dos);
+        }
+        if (httpRequest.getMethod() == HttpMethod.GET) {
+            handleGetMethodHttpRequest(httpRequest, dos);
+        }
+    }
+
+    private void handlePostMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos) throws IOException {
+        String path = httpRequest.getPath();
+        String requestBody = httpRequest.getBody();
+        requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
+        MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(path)
+                .query(requestBody)
+                .build()
+                .getQueryParams();
+
+        if (path.equals("/user/create")) {
+            addUser(requestParams);
+            response302Header(dos, "http://localhost:8080/index.html");
+            dos.flush();
+        }
+    }
+
+    private void handleGetMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos) throws IOException, URISyntaxException {
+        String path = httpRequest.getPath();
+        byte[] body = getBodyFromPath(path);
+
+        String contentType = Files.probeContentType(new File(path).toPath());
+        response200Header(dos, body.length, contentType);
+        responseBody(dos, body);
+    }
+
+    private byte[] getBodyFromPath(String path) throws IOException, URISyntaxException, NullPointerException {
+        byte[] body;
+        try {
+            body = FileIoUtils.loadFileFromClasspath("./templates" + path);
+        } catch (NullPointerException e) {
+            body = FileIoUtils.loadFileFromClasspath("./static" + path);
+        }
+        return body;
     }
 
     private void addUser(MultiValueMap<String, String> requestParams) {
