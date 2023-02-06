@@ -6,18 +6,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static constant.DefaultConstant.*;
-import static constant.PathConstant.*;
-import static utils.RequestBuilder.*;
+import static constant.DefaultConstant.DEFAULT_BODY;
+import static constant.DefaultConstant.DEFAULT_PATH;
+import static constant.PathConstant.STATIC;
+import static constant.PathConstant.TEMPLATES;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -37,18 +40,17 @@ public class RequestHandler implements Runnable {
              DataOutputStream dos = new DataOutputStream(out);
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 
-            HttpRequest httpRequest = getHttpRequest(bufferedReader);
+            HttpRequest httpRequest = new HttpRequest(bufferedReader);
 
             byte[] body = DEFAULT_BODY;
 
-            if (httpRequest.getHttpMethod().equals("POST") && httpRequest.getUrl().equals("/user/create")) {
-                Map<String, String> requestBody = httpRequest.getBody();
+            if (httpRequest.getMethod().equals("POST") && httpRequest.getUrl().equals("/user/create")) {
                 DataBase.addUser(new User(
-                        requestBody.get("userId"),
-                        requestBody.get("password"),
-                        requestBody.get("name"),
-                        requestBody.get("email"))
-                );
+                        httpRequest.getParameter("userId"),
+                        httpRequest.getParameter("password"),
+                        httpRequest.getParameter("name"),
+                        httpRequest.getParameter("email")
+                ));
 
                 response302Header(dos, "/index.html");
                 return;
@@ -90,8 +92,9 @@ public class RequestHandler implements Runnable {
 
     private void response200Header(DataOutputStream dos, HttpRequest httpRequest, int lengthOfBodyContent) {
         try {
-            String contentType = httpRequest.getHeaders().getOrDefault("Accept", "text/html;charset=utf-8")
-                    .split(",")[0];
+            String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
+                    .map(str -> str.split(",")[0])
+                    .orElse("text/html;charset=utf-8");
 
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + contentType + " \r\n");
