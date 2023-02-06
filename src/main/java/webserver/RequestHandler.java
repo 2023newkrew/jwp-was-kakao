@@ -71,9 +71,17 @@ public class RequestHandler implements Runnable {
 
     private void handleGetMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos) throws IOException, URISyntaxException {
         String path = httpRequest.getPath();
-        byte[] body = getBodyFromPath(path);
+        byte[] body;
+        String contentType;
 
-        String contentType = Files.probeContentType(new File(path).toPath());
+        try {
+            body = getBodyFromPath(path);
+            contentType = Files.probeContentType(new File(path).toPath());
+        } catch (IOException e) {
+            body = "Hello world".getBytes();
+            contentType = "text/html;charset=utf-8";
+        }
+
         response200Header(dos, body.length, contentType);
         responseBody(dos, body);
     }
