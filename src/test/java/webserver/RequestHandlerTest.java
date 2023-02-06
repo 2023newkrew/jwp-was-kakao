@@ -1,6 +1,7 @@
 package webserver;
 
 import org.junit.jupiter.api.Test;
+import http.RequestHandler;
 import support.StubSocket;
 import utils.FileIoUtils;
 

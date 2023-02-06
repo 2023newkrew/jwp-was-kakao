@@ -1,4 +1,4 @@
-package webserver;
+package http;
 
 import db.DataBase;
 import model.User;
@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -25,11 +26,9 @@ public class RequestHandler implements Runnable {
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
-
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body;
             String s = br.readLine();
@@ -46,7 +45,7 @@ public class RequestHandler implements Runnable {
 
             }
             logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", requestMethod, requestUrl, httpVersion);
-            if (requestMethod.equals("GET")){
+            if (Objects.requireNonNull(requestMethod).equals("GET")){
                 if (requestUrl.startsWith("/css") || requestUrl.startsWith("/js")){
                     requestUrl = "./static" + requestUrl;
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
@@ -54,29 +53,24 @@ public class RequestHandler implements Runnable {
                     response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
                     responseBody(dos, body);
                 }
-                else if (requestUrl.startsWith("/") && requestUrl.contains(".")){
+                else if (requestUrl.startsWith("/") && requestUrl.endsWith("html")){
                     requestUrl = "./templates" + requestUrl;
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
                     String[] urlSplitByDot = requestUrl.split("\\.");
                     response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
                     responseBody(dos, body);
-                    try {
-                        Thread.sleep(100);
-                    } catch(Exception e){
-
-                    }
                 }
-                else{
+                else if (requestUrl.equals("/")){
                     body = "Hello world".getBytes();
                     response200Header(dos, body.length, "html");
                     responseBody(dos, body);
                 }
+                else{
+                    return;
+                }
 
                 while (!"".equals(s)) {
                     s = br.readLine();
-                }
-                if (s == null) {
-                    return;
                 }
             }
             else if (requestMethod.equals("POST")){
@@ -89,7 +83,7 @@ public class RequestHandler implements Runnable {
                 }
                 if (contentLength >= 0) {
                     String requestBody = IOUtils.readData(br, contentLength);
-                    Map<String, String> bodyMap = new HashMap();
+                    Map<String, String> bodyMap = new HashMap<>();
                     for (String splitted : requestBody.split("&")) {
                         bodyMap.put(splitted.split("=")[0], splitted.split("=")[1]);
                     }
