@@ -1,14 +1,14 @@
 package db;
 
-import java.util.HashMap;
 import model.User;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class DataBase {
 
-    private static Map<String, User> users = new HashMap<>();
+    private static ConcurrentMap<String, User> users = new ConcurrentReferenceHashMap<>();
 
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
