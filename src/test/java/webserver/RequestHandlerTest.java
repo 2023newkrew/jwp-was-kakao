@@ -1,8 +1,8 @@
 package webserver;
 
 import org.junit.jupiter.api.Test;
-import support.StubSocket;
-import utils.FileIoUtils;
+import webserver.support.StubSocket;
+import webserver.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
