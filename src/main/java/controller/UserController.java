@@ -5,13 +5,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.user.User;
 import utils.IOUtils;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
+import http.HttpRequest;
+import http.HttpResponse;
 
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserController {
+    public static final String CREATE_USER_REDIRECT_URI = "http://localhost:8080/index.html";
     private static UserController instance;
 
     public static UserController getInstance() {
@@ -24,22 +25,18 @@ public class UserController {
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestPath();
         Map<String, String> userInfo = IOUtils.extractUserFromPath(requestPath);
-        if (userInfo.isEmpty()) {
-        }
-        User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
+        User user = User.from(userInfo);
         DataBase.addUser(user);
 
-        return HttpResponse.create302FoundResponse("http://localhost:8080/index.html");
+        return HttpResponse.create302FoundResponse(CREATE_USER_REDIRECT_URI);
     }
 
     public HttpResponse createUserPost(HttpRequest request) {
         String requestBody = request.getBody();
         Map<String, String> userInfo = IOUtils.extractUser(requestBody);
-        if (userInfo.isEmpty()) {
-        }
-        User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
+        User user = User.from(userInfo);
         DataBase.addUser(user);
 
-        return HttpResponse.create302FoundResponse("http://localhost:8080/index.html");
+        return HttpResponse.create302FoundResponse(CREATE_USER_REDIRECT_URI);
     }
 }

@@ -1,8 +1,8 @@
 package utils;
 
 import exceptions.InvalidQueryParameterException;
-import webserver.HttpRequest;
-import webserver.HttpRequestHeader;
+import http.HttpRequest;
+import http.HttpRequestHeader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

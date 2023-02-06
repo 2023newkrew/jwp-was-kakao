@@ -6,6 +6,8 @@ import controller.UserController;
 import enums.ContentType;
 import exceptions.InvalidQueryParameterException;
 import exceptions.ResourceNotFoundException;
+import http.HttpRequest;
+import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -61,7 +63,8 @@ public class RequestHandler implements Runnable {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
         } catch (InvalidQueryParameterException e) {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
     }

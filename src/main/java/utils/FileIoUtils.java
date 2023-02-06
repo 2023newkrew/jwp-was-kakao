@@ -1,7 +1,7 @@
 package utils;
 
 import enums.ContentType;
-import webserver.HttpRequest;
+import http.HttpRequest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

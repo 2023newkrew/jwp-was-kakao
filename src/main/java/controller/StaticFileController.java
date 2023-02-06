@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
+import http.HttpRequest;
+import http.HttpResponse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

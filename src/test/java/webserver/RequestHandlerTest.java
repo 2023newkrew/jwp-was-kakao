@@ -1,15 +1,14 @@
 package webserver;
 
 import db.DataBase;
+import http.HttpRequestHeader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
-import utils.IOUtils;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

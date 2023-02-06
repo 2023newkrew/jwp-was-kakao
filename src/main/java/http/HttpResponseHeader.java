@@ -1,4 +1,4 @@
-package webserver;
+package http;
 
 import enums.ContentType;
 import lombok.AllArgsConstructor;
@@ -25,8 +25,10 @@ public class HttpResponseHeader {
     }
 
     public static HttpResponseHeader create302FoundHeader(String redirectURI) {
+        HttpStatus status = HttpStatus.FOUND;
+
         return new HttpResponseHeader(List.of(
-                String.format("HTTP/1.1 302 FOUND"),
+                String.format("HTTP/1.1 %d %s", status.value(), status.name()),
                 String.format("Location: %s", redirectURI)
         ));
     }

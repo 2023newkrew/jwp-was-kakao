@@ -1,4 +1,4 @@
-package webserver;
+package http;
 
 import enums.ContentType;
 import lombok.AllArgsConstructor;

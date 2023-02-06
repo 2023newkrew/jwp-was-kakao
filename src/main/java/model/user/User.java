@@ -3,6 +3,8 @@ package model.user;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Map;
+
 @Getter
 @ToString
 public class User {
@@ -16,5 +18,9 @@ public class User {
         this.password = password;
         this.name = name;
         this.email = email;
+    }
+
+    public static User from(Map<String,String> userInfo){
+        return new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
     }
 }

@@ -4,8 +4,8 @@ import enums.ContentType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
+import http.HttpRequest;
+import http.HttpResponse;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HomeController {
