@@ -2,17 +2,17 @@ package model;
 
 import java.util.Map;
 
-public class HttpRequest {
+public class CustomHttpRequest {
 
-    private final HttpMethod httpMethod;
+    private final CustomHttpMethod customHttpMethod;
     private final String url;
     private final Map<String, String> query;
     private final String protocol;
     private final Map<String, String> headers;
     private final String body;
 
-    public HttpRequest(HttpMethod httpMethod, String url, Map<String, String> query, String protocol, Map<String, String> headers, String body) {
-        this.httpMethod = httpMethod;
+    public CustomHttpRequest(CustomHttpMethod customHttpMethod, String url, Map<String, String> query, String protocol, Map<String, String> headers, String body) {
+        this.customHttpMethod = customHttpMethod;
         this.url = url;
         this.query = query;
         this.protocol = protocol;
@@ -20,8 +20,8 @@ public class HttpRequest {
         this.body = body;
     }
 
-    public HttpMethod getHttpMethod() {
-        return httpMethod;
+    public CustomHttpMethod getHttpMethod() {
+        return customHttpMethod;
     }
 
     public String getUrl() {
