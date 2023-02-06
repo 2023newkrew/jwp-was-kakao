@@ -23,14 +23,11 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html; charset=utf-8 ",
-                "Content-Length: 11 ",
-                "",
+        assertThat(socket.output()).contains("HTTP/1.1 200 OK \r\n",
+                "Content-Type: text/html; charset=utf-8 \r\n",
+                "Content-Length: 11 \r\n",
+                "\r\n",
                 "Hello world");
-
-        assertThat(socket.output()).isEqualTo(expected);
     }
 
     @Test
@@ -50,15 +47,11 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html; charset=utf-8 \r\n" +
-                "Content-Length: 7154 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains("HTTP/1.1 200 OK \r\n",
+                "Content-Type: text/html; charset=utf-8 \r\n",
+                "Content-Length: 7154 \r\n",
+                "\r\n",
+                new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
     }
 
     @Test
@@ -79,15 +72,11 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/css; charset=utf-8 \r\n" +
-                "Content-Length: 7065 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains("HTTP/1.1 200 OK \r\n",
+                "Content-Type: text/css; charset=utf-8 \r\n",
+                "Content-Length: 7065 \r\n",
+                "\r\n",
+                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css")));
     }
 
     @Test

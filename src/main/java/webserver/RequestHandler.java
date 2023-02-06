@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import webserver.request.HttpRequest;
 import webserver.request.HttpRequestParser;
+import webserver.request.QueryStringParser;
 import webserver.response.HttpResponse;
 
 import java.io.DataOutputStream;
@@ -15,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static webserver.response.HttpResponseHeader.*;
@@ -59,14 +59,7 @@ public class RequestHandler implements Runnable {
 
         if (request.getUri().getPath().equals("/user/create")) {
             String query = request.getBody();
-            String[] queryParameters = query.split("&");
-            Map<String, String> attributes = new HashMap<>();
-
-            for (String queryParameter : queryParameters) {
-                String key = queryParameter.split("=")[0];
-                String value = queryParameter.split("=")[1];
-                attributes.put(key, value);
-            }
+            Map<String, String> attributes = QueryStringParser.parseQueryString(query);
 
             User user = new User(
                     attributes.get("userId"),
@@ -100,14 +93,7 @@ public class RequestHandler implements Runnable {
 
         if (request.getUri().getPath().equals("/user/create")) {
             String query = request.getUri().getQuery();
-            String[] queryParameters = query.split("&");
-            Map<String, String> attributes = new HashMap<>();
-
-            for (String queryParameter : queryParameters) {
-                String key = queryParameter.split("=")[0];
-                String value = queryParameter.split("=")[1];
-                attributes.put(key, value);
-            }
+            Map<String, String> attributes = QueryStringParser.parseQueryString(query);
 
             User user = new User(
                     attributes.get("userId"),
