@@ -29,7 +29,9 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = setBody(httpRequest.getUri());
 
-            response200Header(dos, body.length);
+            String accept = httpRequest.getHeader("Accept").split(",")[0];
+
+            response200Header(accept, dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -38,10 +40,10 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(String accept, DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: " + accept + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -63,6 +65,14 @@ public class RequestHandler implements Runnable {
             return "Hello world".getBytes();
         }
 
-        return FileIoUtils.loadFileFromClasspath("templates" + uri);
+        String path = "";
+        if(uri.endsWith(".html")){
+            path = "templates";
+        }
+        if(uri.endsWith(".css") || uri.endsWith(".js") || uri.startsWith("/fonts") || uri.startsWith("/images")){
+            path = "static";
+        }
+        
+        return FileIoUtils.loadFileFromClasspath(path + uri);
     }
 }
