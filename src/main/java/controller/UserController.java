@@ -1,7 +1,6 @@
 package controller;
 
-import db.DataBase;
-import model.user.User;
+import model.user.UserService;
 import utils.IOUtils;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
@@ -10,10 +9,11 @@ import java.util.Map;
 
 public class UserController {
 
-
     private static UserController instance;
+    private final UserService userService;
 
     private UserController() {
+        this.userService = UserService.getInstance();
     }
 
     public static UserController getInstance() {
@@ -26,10 +26,7 @@ public class UserController {
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestPath();
         Map<String, String> userInfo = IOUtils.extractUserFromPath(requestPath);
-        if (userInfo.isEmpty()) {
-        }
-        User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
-        DataBase.addUser(user);
+        userService.save(userInfo);
 
         return HttpResponse.create302FoundResponse("http://localhost:8080/index.html");
     }
@@ -37,10 +34,7 @@ public class UserController {
     public HttpResponse createUserPost(HttpRequest request) {
         String requestBody = request.getBody();
         Map<String, String> userInfo = IOUtils.extractUser(requestBody);
-        if (userInfo.isEmpty()) {
-        }
-        User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
-        DataBase.addUser(user);
+        userService.save(userInfo);
 
         return HttpResponse.create302FoundResponse("http://localhost:8080/index.html");
     }
