@@ -2,6 +2,8 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import support.IllegalMethodException;
+import support.UnsupportedContentTypeException;
 import utils.FileIoUtils;
 
 import java.io.BufferedReader;
@@ -87,7 +89,11 @@ public class Parser {
     }
 
     private static HttpMethod getMethod(final String startLine) {
-        return HttpMethod.valueOf(startLine.split(DELIM_REQUEST_START_LINE)[0]);
+        try {
+            return HttpMethod.valueOf(startLine.split(DELIM_REQUEST_START_LINE)[0]);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalMethodException();
+        }
     }
 
     public static String getURI(final String startLine) {
@@ -95,6 +101,12 @@ public class Parser {
     }
 
     public static Map<String, String> getBody(final List<String> body) {
+        if (body.isEmpty()) {
+            return new HashMap<>();
+        }
+        else if (body.size() > 1) {
+            throw new UnsupportedContentTypeException();
+        }
         // TODO : JSON 형태 body 예외처리
         return getParameters(body.get(0));
     }

@@ -11,6 +11,10 @@ public class HttpResponse {
     public HttpResponse() {
     }
 
+    public HttpResponse(HttpStatus httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
     public String getHeader(HttpHeader header) {
         return headers.get(header);
     }

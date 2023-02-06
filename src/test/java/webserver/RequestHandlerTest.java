@@ -197,4 +197,106 @@ class RequestHandlerTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @DisplayName("존재하지 않는 경로로 요청할 경우 404가 응답된다")
+    @Test
+    void uriNotFound() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /uri/not/exist HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Accept: */*",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 404 Not Found \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("존재하지 않는 메서드로 요청할 경우 400가 응답된다")
+    @Test
+    void methodNotExist() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "ABCD /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Accept: */*",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 400 Bad Request \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("해당 경로에 존재하지 않는 메서드로 요청할 경우 405가 응답된다")
+    @Test
+    void methodNotSupported() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /index.html HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Accept: */*",
+                "",
+                "key=value");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 405 Method Not Allowed \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("이외의 예외(ex. 지원되지 않는 바디 형식 등)가 발생하는 경우 500이 반환된다")
+    @Test
+    void statusCodeNoDefined() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /index.html HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Accept: */*",
+                "",
+                "{",
+                "field: value",
+                "}");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 500 Internal Server Error \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
 }
