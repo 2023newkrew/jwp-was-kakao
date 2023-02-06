@@ -10,16 +10,16 @@ public class Request {
     private final String path;
 
     public Request(InputStream in) throws IOException {
-        try (
-                var isr = new InputStreamReader(in);
-                var br = new BufferedReader(isr)
-        ) {
-            String line = br.readLine();
-            path = parsePath(line);
-            while (Objects.nonNull(line) && !line.equals("")) {
-                line = br.readLine();
-            }
+        var br = new BufferedReader(new InputStreamReader(in));
+        String line = br.readLine();
+        System.out.println(line);
+        String[] headline = line.split(" ");
+        path = headline[1];
+        do {
+            line = br.readLine();
+            System.out.println(line);
         }
+        while (Objects.nonNull(line) && !line.equals(""));
     }
 
     private String parsePath(String line) {
