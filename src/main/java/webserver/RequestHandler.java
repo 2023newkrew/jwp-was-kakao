@@ -9,6 +9,7 @@ import webserver.request.HttpRequest;
 import webserver.request.HttpRequestParser;
 import webserver.request.QueryStringParser;
 import webserver.response.HttpResponse;
+import webserver.response.HttpResponseContentType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,8 +17,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 
+import static webserver.response.HttpResponseContentType.*;
 import static webserver.response.HttpResponseHeader.*;
 import static webserver.response.HttpResponseStatus.OK;
 import static webserver.response.HttpResponseStatus.REDIRECT;
@@ -72,21 +75,21 @@ public class RequestHandler implements Runnable {
     }
 
     private void doGet(HttpRequest request, HttpResponse response) throws IOException, URISyntaxException {
-        if (request.getUri().getPath().endsWith(".css")) {
+        if (isStaticFiles(request.getUri().getPath())) {
             byte[] body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
-            response200Css(response, body);
+            response200(response, body, getStaticFileContentType(request.getUri().getPath()));
             return;
         }
 
         if (request.getUri().getPath().endsWith(".html")) {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
-            response200Html(response, body);
+            response200(response, body, HttpResponseContentType.HTML);
             return;
         }
 
         if (request.getUri().getPath().equals("/")) {
             byte[] body = "Hello world".getBytes();
-            response200Html(response, body);
+            response200(response, body, HttpResponseContentType.HTML);
             return;
         }
 
@@ -103,16 +106,22 @@ public class RequestHandler implements Runnable {
 
             DataBase.addUser(user);
 
-            response200Html(response, new byte[0]);
+            response200(response, new byte[0], HttpResponseContentType.HTML);
             return;
         }
     }
 
-    private void response200Html(HttpResponse response, byte[] body) {
-        response.setStatusLine(OK);
-        response.addHeader(CONTENT_TYPE, "text/html; charset=utf-8");
-        response.addHeader(CONTENT_LENGTH, String.valueOf(body.length));
-        response.addBody(body);
+    private static HttpResponseContentType getStaticFileContentType(String uri) {
+        return Arrays.stream(HttpResponseContentType.values())
+                .filter(type -> uri.endsWith(type.getSuffix()))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private static boolean isStaticFiles(String uri) {
+        return uri.endsWith(CSS.getSuffix()) || uri.endsWith(JS.getSuffix()) ||
+                uri.endsWith(WOFF.getSuffix()) || uri.endsWith(TTF.getSuffix()) ||
+                uri.endsWith(ICO.getSuffix());
     }
 
     private void response302(HttpResponse response, String redirectUrl) {
@@ -120,9 +129,9 @@ public class RequestHandler implements Runnable {
         response.addHeader(LOCATION, redirectUrl);
     }
 
-    private void response200Css(HttpResponse response, byte[] body) {
+    private void response200(HttpResponse response, byte[] body, HttpResponseContentType contentType) {
         response.setStatusLine(OK);
-        response.addHeader(CONTENT_TYPE, "text/css; charset=utf-8");
+        response.addHeader(CONTENT_TYPE, contentType.getContentType());
         response.addHeader(CONTENT_LENGTH, String.valueOf(body.length));
         response.addBody(body);
     }
