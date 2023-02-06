@@ -4,7 +4,7 @@ import db.DataBase;
 import model.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import webserver.FormData;
+import webserver.request.FormData;
 import webserver.request.Request;
 
 import java.util.HashMap;
