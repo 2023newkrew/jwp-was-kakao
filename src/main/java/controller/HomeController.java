@@ -14,13 +14,13 @@ import static utils.ResponseHeaders.*;
 public class HomeController implements MyController{
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     @Override
-    public boolean canHandle(MyHeaders headers, MyParams params, Extension extension) {
+    public boolean canHandle(MyHeaders headers, MyParams params) {
         String path = headers.get("path");
         return path.equals("/") || path.equals("/index.html") || path.equals("/favicon.ico");
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, Extension extension, DataOutputStream dataOutputStream) {
+    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
         String contentType = headers.get("contentType");
 
@@ -35,7 +35,7 @@ public class HomeController implements MyController{
         }
 
         if(path.equals("/index.html")){
-            index(headers, params, extension, dataOutputStream);
+            index(headers, params, dataOutputStream);
         }
     }
 
@@ -56,7 +56,7 @@ public class HomeController implements MyController{
         responseBody(dataOutputStream, body);
     }
 
-    private void index(MyHeaders headers, MyParams params,Extension extension, DataOutputStream dataOutputStream){
+    private void index(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + headers.get("path"));
             response200Header(dataOutputStream, headers.get("contentType"), body.length);

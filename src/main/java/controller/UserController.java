@@ -22,13 +22,13 @@ public class UserController  implements MyController {
 
 
     @Override
-    public boolean canHandle(MyHeaders headers, MyParams params, Extension extension) {
+    public boolean canHandle(MyHeaders headers, MyParams params) {
         String path = headers.get("path");
         return path.startsWith("/user");
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, Extension extension, DataOutputStream dataOutputStream) {
+    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
 
         if(path.equals("/user/form.html") && headers.get("method").equals("POST")){

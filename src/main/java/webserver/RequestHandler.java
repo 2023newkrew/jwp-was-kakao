@@ -138,7 +138,14 @@ public class RequestHandler implements Runnable {
 
         headers.put("method", method);
         headers.put("path", path);
+        params.put("extension", getExtensionFromPath(path));
 
         return true;
+    }
+
+    private String getExtensionFromPath(String path){
+        String[] tokens = path.split("\\.");
+        if(tokens.length == 0) return "";
+        return tokens[tokens.length - 1];
     }
 }
