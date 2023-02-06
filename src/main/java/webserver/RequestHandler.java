@@ -36,7 +36,7 @@ public class RequestHandler implements Runnable {
             switch (httpParser.getHttpMethod()){
                 case POST:
                     Integer contentLength = httpParser.getContentLength();
-                    HashMap<String, String> requestBody = parseBody(IOUtils.readData(br, contentLength));
+                    HashMap<String, String> requestBody = parseQueryString(IOUtils.readData(br, contentLength));
 
                     if(path.startsWith("/user/create")){
                         User user = new User(requestBody.get("userId"), requestBody.get("password"), requestBody.get("name"), requestBody.get("email"));
@@ -49,6 +49,9 @@ public class RequestHandler implements Runnable {
                     break;
 
                 case GET:
+                    HashMap<String, String> queryParam = null;
+                    if(path.contains("?")) queryParam = parseQueryString(path.substring(path.indexOf('?') + 1));
+
                     if(path.equals("/")){
                         ResponseUtils.response302Header(dos, "/index.html");
                     }else if(path.endsWith(".html") || path.endsWith("/favicon.ico")){
@@ -76,7 +79,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private HashMap<String, String> parseBody(String requestBody){
+    private HashMap<String, String> parseQueryString(String requestBody){
         HashMap<String, String> result = new HashMap<>();
 
         for(String info : requestBody.split("&")){
