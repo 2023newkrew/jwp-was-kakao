@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static constant.DefaultConstant.DEFAULT_BODY;
-import static constant.DefaultConstant.DEFAULT_PATH;
+import static constant.DefaultConstant.DEFAULT_URL;
 import static constant.PathConstant.STATIC;
 import static constant.PathConstant.TEMPLATES;
 import static utils.FileIoUtils.*;
@@ -19,7 +19,7 @@ public class ViewResolver {
     public void resolve(HttpRequest request, DataOutputStream dos) {
         byte[] body = DEFAULT_BODY;
 
-        if (!request.getURL().equals(DEFAULT_PATH)) {
+        if (request.isNotDefaultURL()) {
             body = getBody(request, request.getURL(), dos);
         }
 

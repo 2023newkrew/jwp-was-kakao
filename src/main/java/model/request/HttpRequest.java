@@ -1,10 +1,13 @@
 package model.request;
 
+import constant.DefaultConstant;
 import model.annotation.Api;
 import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import static constant.DefaultConstant.*;
 
 @Getter
 @AllArgsConstructor
@@ -19,5 +22,9 @@ public class HttpRequest {
 
     public boolean methodAndURLEquals(Api annotation) {
         return method.equals(annotation.method()) && URL.equals(annotation.url());
+    }
+
+    public boolean isNotDefaultURL() {
+        return !URL.equals(DEFAULT_URL);
     }
 }
