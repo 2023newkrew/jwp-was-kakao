@@ -1,18 +1,17 @@
 package webserver;
 
 import enums.ContentType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter
+@AllArgsConstructor
 public class HttpResponseHeader {
-
     private List<String> headers;
-
-    private HttpResponseHeader(List<String> headers) {
-        this.headers = headers;
-    }
 
     public static HttpResponseHeader of(HttpStatus status, ContentType contentType, int contentLength) {
         List<String> headers = new LinkedList<>();
@@ -30,9 +29,5 @@ public class HttpResponseHeader {
                 String.format("HTTP/1.1 302 FOUND"),
                 String.format("Location: %s", redirectURI)
         ));
-    }
-
-    public List<String> getHeaders() {
-        return headers;
     }
 }

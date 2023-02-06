@@ -1,7 +1,10 @@
 package enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum ContentType {
 
     HTML("text/html", "html"),
@@ -30,14 +33,6 @@ public enum ContentType {
                 .filter(contentType -> contentType.matches(filename))
                 .findFirst()
                 .orElse(ContentType.NONE);
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public String getExtensions() {
-        return extensions;
     }
 
     private boolean matches(String filename) {

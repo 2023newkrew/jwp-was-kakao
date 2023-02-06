@@ -1,16 +1,16 @@
 package controller;
 
 import enums.ContentType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HomeController {
 
     private static HomeController instance;
-
-    private HomeController() {
-    }
 
     public static HomeController getInstance() {
         if (instance == null) {

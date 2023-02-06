@@ -1,6 +1,8 @@
 package controller;
 
 import enums.ContentType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
@@ -9,11 +11,9 @@ import webserver.HttpResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StaticFileController {
     private static StaticFileController instance;
-
-    private StaticFileController() {
-    }
 
     public static StaticFileController getInstance() {
         if (instance == null) {

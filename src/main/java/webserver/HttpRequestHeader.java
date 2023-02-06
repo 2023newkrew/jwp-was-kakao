@@ -5,7 +5,6 @@ import java.util.Optional;
 
 public class HttpRequestHeader {
     private List<String> headers;
-
     public HttpRequestHeader(List<String> headers) {
         this.headers = headers;
     }

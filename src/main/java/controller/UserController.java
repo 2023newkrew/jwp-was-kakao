@@ -1,6 +1,8 @@
 package controller;
 
 import db.DataBase;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import model.user.User;
 import utils.IOUtils;
 import webserver.HttpRequest;
@@ -8,13 +10,11 @@ import webserver.HttpResponse;
 
 import java.util.Map;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserController {
 
 
     private static UserController instance;
-
-    private UserController() {
-    }
 
     public static UserController getInstance() {
         if (instance == null) {
