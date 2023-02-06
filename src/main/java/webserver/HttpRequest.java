@@ -1,5 +1,6 @@
 package webserver;
 
+import java.util.List;
 import java.util.Map;
 
 public class HttpRequest {
@@ -7,13 +8,14 @@ public class HttpRequest {
     private final String uri;
     private final String httpVersion;
     private final Map<String, String> headers;
+    private final List<String> body;
 
-
-    public HttpRequest(HttpMethod httpMethod, String uri, String httpVersion, Map<String, String> headers) {
+    public HttpRequest(HttpMethod httpMethod, String uri, String httpVersion, Map<String, String> headers, List<String> body) {
         this.httpMethod = httpMethod;
         this.uri = uri;
         this.httpVersion = httpVersion;
         this.headers = headers;
+        this.body = body;
     }
 
     public HttpMethod getHttpMethod() {
@@ -30,5 +32,9 @@ public class HttpRequest {
 
     public String getHeader(String header) {
         return headers.get(header);
+    }
+
+    public List<String> getBody() {
+        return body;
     }
 }
