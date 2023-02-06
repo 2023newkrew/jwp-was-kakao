@@ -28,26 +28,24 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest httpRequest = HttpRequestParser.parse(in);
             byte[] body;
+            DataOutputStream dos = new DataOutputStream(out);
+            String accept = httpRequest.getHeader("Accept").split(",")[0];
+
 
             if (httpRequest.getHttpMethod() == HttpMethod.GET) {
                 body = GetRequestHandler.handle(httpRequest);
+                response200Header(accept, dos, body.length);
             }
 
             else if (httpRequest.getHttpMethod() == HttpMethod.POST) {
                 body = PostRequestHandler.handle(httpRequest);
+                response302Header(accept, dos, body.length, "/index.html");
             }
 
             else{
                 body = new byte[0];
             }
 
-            URI uri = new URI(httpRequest.getUri());
-
-            DataOutputStream dos = new DataOutputStream(out);
-
-            String accept = httpRequest.getHeader("Accept").split(",")[0];
-
-            response200Header(accept, dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -61,6 +59,18 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + accept + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(String accept, DataOutputStream dos, int lengthOfBodyContent, String redirectURI) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Content-Type: " + accept + ";charset=utf-8 \r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("Location: " + redirectURI + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
