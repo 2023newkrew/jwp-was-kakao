@@ -1,21 +1,23 @@
-package http;
+package http.response;
 
 import com.google.common.primitives.Bytes;
-import common.Protocol;
-import utils.FileIoUtils;
+import http.Body;
+import http.Headers;
+import http.ContentType;
+import http.Protocol;
+import utils.IOUtils;
 
 import java.util.Objects;
 
 public class HttpResponse {
 
-    private ResponseInfo responseInfo;
-    private Headers headers;
-    private Body body;
+    private final ResponseInfo responseInfo;
+    private final Headers headers;
+    private final Body body;
 
     public static HttpResponse of(HttpStatus httpStatus, String resourcePath) {
         ResponseInfo responseInfo = new ResponseInfo(Protocol.HTTP1_1, httpStatus);
-
-        Body body = new Body(FileIoUtils.loadFileFromClasspath(resourcePath));
+        Body body = new Body(IOUtils.readFileFromClasspath(resourcePath));
 
         Headers headers = new Headers();
         headers.put("Content-Type", ContentType.from(resourcePath).toString());
@@ -44,12 +46,12 @@ public class HttpResponse {
     }
 
     private HttpResponse(ResponseInfo responseInfo, Headers headers) {
-        this.responseInfo = responseInfo;
-        this.headers = headers;
+        this(responseInfo, headers, null);
     }
 
     private HttpResponse(ResponseInfo responseInfo, Headers headers, Body body) {
-        this(responseInfo, headers);
+        this.responseInfo = responseInfo;
+        this.headers = headers;
         this.body = body;
     }
 

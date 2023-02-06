@@ -1,6 +1,6 @@
 package web.controller;
 
-import http.HttpRequest;
+import http.request.HttpRequest;
 
 import java.util.List;
 

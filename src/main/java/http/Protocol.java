@@ -1,4 +1,4 @@
-package common;
+package http;
 
 import java.util.Arrays;
 import java.util.Objects;

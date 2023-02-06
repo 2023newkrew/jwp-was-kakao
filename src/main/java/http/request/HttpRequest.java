@@ -1,4 +1,7 @@
-package http;
+package http.request;
+
+import http.Body;
+import http.Headers;
 
 public class HttpRequest {
 

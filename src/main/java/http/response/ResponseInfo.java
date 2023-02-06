@@ -1,6 +1,6 @@
-package http;
+package http.response;
 
-import common.Protocol;
+import http.Protocol;
 
 public class ResponseInfo {
 

@@ -1,9 +1,9 @@
 package web.controller;
 
-import http.HttpMethod;
-import http.HttpRequest;
-import http.HttpResponse;
-import http.HttpStatus;
+import http.request.HttpMethod;
+import http.request.HttpRequest;
+import http.response.HttpResponse;
+import http.response.HttpStatus;
 
 import java.util.Objects;
 

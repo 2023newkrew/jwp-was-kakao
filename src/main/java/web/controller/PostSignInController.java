@@ -1,18 +1,16 @@
 package web.controller;
 
-import db.DataBase;
-import http.HttpMethod;
-import http.HttpRequest;
-import http.HttpResponse;
-import http.HttpStatus;
-import model.User;
+import utils.ParameterUtils;
+import web.domain.MemoryUserRepository;
+import http.request.HttpMethod;
+import http.request.HttpRequest;
+import http.response.HttpResponse;
+import web.domain.User;
 
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class PostSignInController implements Controller {
 
@@ -21,12 +19,8 @@ public class PostSignInController implements Controller {
 
     @Override
     public HttpResponse run(HttpRequest httpRequest) {
-        String body = httpRequest.getBody();
-        Map<String, String> params = Arrays.stream(body.split("&"))
-                .map(parameter -> parameter.split("="))
-                .collect(Collectors.toMap(parameter -> parameter[0], parameter -> parameter[1]));
-
-        DataBase.addUser(new User(
+        Map<String, String> params = ParameterUtils.parse(httpRequest.getBody());
+        MemoryUserRepository.addUser(new User(
                 params.get("userId"),
                 params.get("password"),
                 decodeParam(params.get("name")),

@@ -1,9 +1,21 @@
 package utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class IOUtils {
+
+    public static byte[] readFileFromClasspath(String filePath) {
+        try {
+            File file = new File(IOUtils.class.getClassLoader().getResource(filePath).getPath());
+            return Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
     /**
      * @param BufferedReader는
      *            Request Body를 시작하는 시점이어야

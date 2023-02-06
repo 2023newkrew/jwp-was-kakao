@@ -1,12 +1,12 @@
-package http;
+package http.request;
 
-import common.Protocol;
+import http.Protocol;
 
 public class RequestInfo {
 
-    private HttpMethod httpMethod;
-    private HttpUrl httpUrl;
-    private Protocol protocol;
+    private final HttpMethod httpMethod;
+    private final HttpUrl httpUrl;
+    private final Protocol protocol;
 
     public RequestInfo(HttpMethod httpMethod, HttpUrl httpUrl, Protocol protocol) {
         this.httpMethod = httpMethod;
@@ -20,9 +20,5 @@ public class RequestInfo {
 
     public String getPath() {
         return httpUrl.getPath();
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
     }
 }

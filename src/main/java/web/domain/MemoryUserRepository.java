@@ -1,13 +1,12 @@
-package db;
-
-import model.User;
+package web.domain;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class DataBase {
-    private static Map<String, User> users = new HashMap<>();
+public class MemoryUserRepository {
+
+    private static final Map<String, User> users = new ConcurrentHashMap<>();
 
     public static void addUser(User user) {
         users.put(user.getUserId(), user);

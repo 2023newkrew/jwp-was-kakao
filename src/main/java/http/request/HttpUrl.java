@@ -1,9 +1,9 @@
-package http;
+package http.request;
 
-import java.util.Arrays;
+import utils.ParameterUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpUrl {
 
@@ -29,9 +29,7 @@ public class HttpUrl {
         }
 
         String queryString = path.substring(path.indexOf("?") + 1);
-        return Arrays.stream(queryString.split("&"))
-                .map(parameter -> parameter.split("="))
-                .collect(Collectors.toMap(parameter -> parameter[0], parameter -> parameter[1]));
+        return ParameterUtils.parse(queryString);
     }
 
     public String getPath() {

@@ -2,7 +2,7 @@ package http;
 
 public class Body {
 
-    private byte[] body;
+    private final byte[] body;
 
     public Body(byte[] body) {
         this.body = body;

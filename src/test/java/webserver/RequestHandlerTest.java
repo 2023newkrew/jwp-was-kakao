@@ -2,7 +2,8 @@ package webserver;
 
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import utils.FileIoUtils;
+import utils.IOUtils;
+import web.RequestHandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -51,7 +52,7 @@ class RequestHandlerTest {
                 "Content-Length: 6902 \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
+                new String(IOUtils.readFileFromClasspath("templates/index.html"));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -77,7 +78,7 @@ class RequestHandlerTest {
                 "Content-Length: 7065 \r\n" +
                 "Content-Type: text/css;charset=utf-8 \r\n" +
                 "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
+                new String(IOUtils.readFileFromClasspath("static/css/styles.css"));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
