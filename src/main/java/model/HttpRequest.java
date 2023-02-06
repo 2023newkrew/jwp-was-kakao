@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.http.HttpMethod;
 
 @Getter
+@ToString
 public class HttpRequest {
 
     private final HttpMethod httpMethod;
@@ -36,5 +38,9 @@ public class HttpRequest {
 
     public String getContentType() {
         return this.headers.getOrDefault("Accept", "text/html,").split(",")[0];
+    }
+
+    public Map<String, String> getQueryParams() {
+        return new HashMap<>(queryParams);
     }
 }

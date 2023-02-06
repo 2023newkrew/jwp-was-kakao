@@ -1,5 +1,6 @@
 package webserver;
 
+import db.DataBase;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import model.HttpRequest;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -69,6 +71,12 @@ public class RequestHandler implements Runnable {
             }
 
             HttpRequest httpRequest = new HttpRequest(httpMethod, requestUrl, queryParams, headerMap, requestBody);
+            Map<String, String> userInfo = httpRequest.getQueryParams();
+
+            User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"),
+                    userInfo.get("email"));
+            DataBase.addUser(user);
+
             DataOutputStream dos = new DataOutputStream(out);
 
             byte[] body;
