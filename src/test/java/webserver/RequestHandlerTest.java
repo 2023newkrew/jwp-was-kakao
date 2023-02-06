@@ -25,7 +25,7 @@ class RequestHandlerTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Type: text/html; charset=utf-8 ",
                 "Content-Length: 11 ",
                 "",
                 "Hello world");
@@ -53,8 +53,8 @@ class RequestHandlerTest {
 
 
         var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
+                "Content-Type: text/html; charset=utf-8 \r\n" +
+                "Content-Length: 7154 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
