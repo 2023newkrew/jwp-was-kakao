@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 public class RequestBody {
     private final Map requestBody;
+
     public Map getRequestBody() {
         return Collections.unmodifiableMap(requestBody);
     }

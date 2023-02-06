@@ -29,7 +29,6 @@ public class FrontController {
                 ViewResolver.resolve(request, dos);
                 return;
             }
-
             findMethodToExecute(request, apiController).invoke(apiController, request, dos);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);

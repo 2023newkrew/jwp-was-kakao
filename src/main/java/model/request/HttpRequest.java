@@ -1,5 +1,6 @@
 package model.request;
 
+import model.annotation.Api;
 import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,4 +16,8 @@ public class HttpRequest {
     private QueryParams queryParams;
     private RequestHeader header;
     private RequestBody body;
+
+    public boolean methodAndURLEquals(Api annotation) {
+        return method.equals(annotation.method()) && URL.equals(annotation.url());
+    }
 }
