@@ -8,6 +8,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
 import utils.IOUtils;
+import webserver.controller.ControllerMethod;
+import webserver.controller.RequestController;
 import webserver.request.Request;
 import webserver.response.Response;
 
@@ -31,38 +33,35 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
             Request request = new Request(br);
             Response response = new Response(request);
 
-            if(request.getHttpMethod().equals(HttpMethod.GET) && request.getPath().equals("/")) {
-                response.setBody("Hello World!".getBytes());
-                response.setStatus(HttpStatus.OK);
-            } else if (request.getHttpMethod().equals(HttpMethod.POST) && request.getPath().equals("/user/create")) {
-                User user = new User(
-                        request.getBodyValue("userId"),
-                        request.getBodyValue("password"),
-                        request.getBodyValue("name"),
-                        request.getBodyValue("email")
-                );
-                DataBase.addUser(user);
-                response.setStatus(HttpStatus.FOUND);
-                response.setLocation("http://localhost:8080/index.html");
-            } else {
-                // resource 응답
-                String rootPath = "./templates";
-                if (request.hasStaticPath()) {
-                    rootPath = "./static";
-                }
-                setResource(rootPath + request.getPath(), response);
-            }
-
+            mapRequest(request, response);
             sendResponse(dos, response);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void mapRequest(Request request, Response response) {
+        ControllerMethod method = RequestController.getMappedMethod(request);
+
+        if (method != null) {
+            method.handle(request, response);
+            return;
+        }
+
+        // resource 응답
+        String rootPath = "./templates";
+        if (request.hasStaticPath()) {
+            rootPath = "./static";
+        }
+        setResource(rootPath + request.getPath(), response);
     }
 
     private void setResource(String path, Response response) {

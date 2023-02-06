@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class RequestHeader {
     private static final String HOST = "Host";
+    private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String ACCEPT = "Accept";
 
@@ -18,6 +19,7 @@ public class RequestHeader {
     private Map<String, String> queryParameterMap = new HashMap<>();
     private String version;
     private String host;
+    private String contentType;
     private int contentLength;
     private String accept = "text/html";
 
@@ -80,6 +82,7 @@ public class RequestHeader {
         if(acceptValue != null) {
             accept = acceptValue.split(",")[0];
         }
+        contentType = headerInfoMap.get(CONTENT_TYPE);
     }
 
     public HttpMethod getHttpMethod() {
@@ -104,6 +107,10 @@ public class RequestHeader {
 
     public String getAccept() {
         return accept;
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 
     public boolean hasStaticPath() {

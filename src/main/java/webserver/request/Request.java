@@ -23,7 +23,7 @@ public class Request {
         this.header = new RequestHeader(headerLines);
         System.out.println(header);
 
-        this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()));
+        this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()), header.getContentType());
         if (!body.isEmpty()) System.out.println(body);
     }
 
@@ -47,6 +47,10 @@ public class Request {
         return header.getAccept();
     }
 
+    public String getContentType() {
+        return header.getContentType();
+    }
+
     public String getVersion() {
         return header.getVersion();
     }
@@ -59,7 +63,7 @@ public class Request {
         return header.getHttpMethod();
     }
 
-    public String getBodyValue(String key) {
-        return body.getBodyValue(key);
+    public String getFormData(String key) {
+        return body.getFormData(key);
     }
 }

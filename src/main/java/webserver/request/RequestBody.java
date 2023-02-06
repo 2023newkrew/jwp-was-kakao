@@ -6,37 +6,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestBody {
+    private static final String FORM = "application/x-www-form-urlencoded";
+    private Map<String, String> formData = new HashMap<>();
 
-    private Map<String, String> bodyMap = new HashMap<>();
-
-    public RequestBody(String bodyString) {
+    public RequestBody(String bodyString, String contentType) {
         bodyString = URLDecoder.decode(bodyString, StandardCharsets.UTF_8);
-        setBodyMap(bodyString);
+        if(FORM.equals(contentType)) {
+            setFormData(bodyString);
+        }
     }
 
-    private void setBodyMap(String bodyString) {
+    private void setFormData(String bodyString) {
         String[] keyValueTokens = bodyString.split("&");
         for(String keyValueToken : keyValueTokens) {
             String[] keyValue = keyValueToken.split("=");
             if (keyValue.length < 2) continue;
-            bodyMap.put(keyValue[0], keyValue[1]);
+            formData.put(keyValue[0], keyValue[1]);
         }
     }
 
-    public String getBodyValue(String key) {
-        return bodyMap.get(key);
+    public String getFormData(String key) {
+        return formData.get(key);
     }
 
     public boolean isEmpty() {
-        return bodyMap.isEmpty();
+        return formData.isEmpty();
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for(String key : bodyMap.keySet()) {
-            sb.append(key).append(" : ").append(bodyMap.get(key)).append(", ");
+        for(String key : formData.keySet()) {
+            sb.append(key).append(" : ").append(formData.get(key)).append(", ");
         }
         if(sb.length() > 1) {
             sb.delete(sb.length() - 2, sb.length());
