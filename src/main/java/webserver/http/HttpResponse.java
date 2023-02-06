@@ -1,18 +1,18 @@
 package webserver.http;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class HttpResponse {
-    private final Map<String, String> headers = new HashMap<>();
+    private final HttpHeaders headers;
     private byte[] body = "".getBytes();
     private HttpStatus httpStatus;
 
     public HttpResponse() {
+        headers = new HttpHeaders(new HashMap<>());
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public String getHeader(String headerName) {
+        return headers.getHeaders().get(headerName);
     }
 
     public byte[] getBody() {
@@ -24,7 +24,7 @@ public class HttpResponse {
     }
 
     public void setHeader(String header, String value) {
-        headers.put(header, value);
+        headers.getHeaders().put(header, value);
     }
 
     public void setBody(final byte[] body) {

@@ -34,16 +34,19 @@ public class RequestHandler implements Runnable {
 
             HandlerMapping handlerMapping = new HandlerMapping();
             Handler handler = handlerMapping.getHandler(path);
+            /* 매치되는 Handler가 없을 경우 */
             if (Objects.isNull(handler)) {
                 if (path.equals("/")) {
                     response.setBody("Hello world".getBytes());
                     response.setStatus(HttpStatus.OK);
                 }
+                /* file 요청 처리 */
                 else {
                     response.setBody(RequestParser.getFileContent(request.getPath()));
                     response.setStatus(HttpStatus.OK);
                 }
             }
+            /* 매치되는 Handler가 있을 경우 */
             else {
                 handler.service(request, response);
             }
@@ -60,7 +63,7 @@ public class RequestHandler implements Runnable {
                 response200Header(dos, response.getBody().length);
                 break;
             case FOUND:
-                response302Header(dos, response.getHeaders().get("Location"));
+                response302Header(dos, response.getHeader("Location"));
                 break;
             case NOT_FOUND:
                 response404Header(dos);
