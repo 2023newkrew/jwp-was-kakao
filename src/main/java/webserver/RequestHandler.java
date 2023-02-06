@@ -5,7 +5,11 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import utils.FileIoUtils;
 import utils.IOUtils;
+import webserver.request.Request;
+import webserver.response.Response;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,77 +31,58 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(in);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            HeaderInfo headerInfo = getHeaderInfo(bufferedReader);
-
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
-            // TODO path 를 확인하고 처리해주
-            if (headerInfo.getMethod().equals(HttpMethod.POST) && headerInfo.getPath().equals("/user/create")) {
+            Request request = new Request(br);
+            Response response = new Response(request);
+
+            if(request.getHttpMethod().equals(HttpMethod.GET) && request.getPath().equals("/")) {
+                response.setBody("Hello World!".getBytes());
+                response.setStatus(HttpStatus.OK);
+            } else if (request.getHttpMethod().equals(HttpMethod.POST) && request.getPath().equals("/user/create")) {
                 User user = new User(
-                        headerInfo.getBodyValue("userId"),
-                        headerInfo.getBodyValue("password"),
-                        headerInfo.getBodyValue("name"),
-                        headerInfo.getBodyValue("email")
+                        request.getBodyValue("userId"),
+                        request.getBodyValue("password"),
+                        request.getBodyValue("name"),
+                        request.getBodyValue("email")
                 );
                 DataBase.addUser(user);
-                response302Header(dos, new URI("http://localhost:8080/index.html"));
-                return;
+                response.setStatus(HttpStatus.FOUND);
+                response.setLocation("http://localhost:8080/index.html");
+            } else {
+                // resource 응답
+                String rootPath = "./templates";
+                if (request.hasStaticPath()) {
+                    rootPath = "./static";
+                }
+                setResource(rootPath + request.getPath(), response);
             }
 
-            byte[] body = headerInfo.getResponse();
-            response200Header(dos, body.length, headerInfo.getAccept());
-            responseBody(dos, body);
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private HeaderInfo getHeaderInfo(BufferedReader bufferedReader) throws IOException {
-        HeaderInfo headerInfo = new HeaderInfo(bufferedReader.readLine());
-        String line = bufferedReader.readLine();
-        while (!"".equals(line) && Objects.nonNull(line)) {
-            System.out.println(line);
-            headerInfo.readNextLine(line);
-            line = bufferedReader.readLine();
-        }
-        String bodyLengthString = headerInfo.getHeaderValue("Content-Length");
-        if (Objects.nonNull(bodyLengthString)) {
-            String body = IOUtils.readData(bufferedReader, Integer.parseInt(bodyLengthString));
-            headerInfo.setBodyParams(body);
-        }
-        return headerInfo;
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + type + ";charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
+            sendResponse(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response302Header(DataOutputStream dos, URI uri) {
+    private void setResource(String path, Response response) {
         try {
-            dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
-            dos.writeBytes("Location: " + uri + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            response.setBody(FileIoUtils.loadFileFromClasspath(path));
+            response.setStatus(HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setBody("404 Not Found - 요청한 페이지를 찾을 수 없습니다.".getBytes());
+            response.setStatus(HttpStatus.NOT_FOUND);
         }
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
+    private void sendResponse(DataOutputStream dos, Response response) {
         try {
-            dos.write(body, 0, body.length);
+            dos.writeBytes(response.getHeader());
+            dos.write(response.getBody(), 0, response.getBody().length);
             dos.flush();
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }
