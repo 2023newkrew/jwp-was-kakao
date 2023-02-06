@@ -34,8 +34,8 @@ public class RequestHandler implements Runnable {
             String requestPath = request.split(" ")[1];
             byte[] body = new byte[0];
             String contentType = "";
-            if (requestPath.equals("/index.html")) {
-                body = FileIoUtils.loadFileFromClasspath("templates/index.html");
+            if (requestPath.endsWith(".html")) {
+                body = FileIoUtils.loadFileFromClasspath("templates" + requestPath);
                 contentType = "text/html;charset=utf-8";
             }
             else if (requestPath.startsWith("/css")) {
