@@ -30,7 +30,6 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
             StringBuilder sb = new StringBuilder();
@@ -61,6 +60,7 @@ public class RequestHandler implements Runnable {
                         queryParam.get("email")
                 );
                 DataBase.addUser(user);
+                response302Header(dos, "/index.html");
             } else {
                 body = FileIoUtils.loadFileFromClasspath("./static" + path);
                 response200Header(dos, body.length, path);
@@ -82,6 +82,7 @@ public class RequestHandler implements Runnable {
 
         return result;
     }
+
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
             Path path = Paths.get(filePath);
@@ -90,6 +91,16 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + mimeType + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, String redirectPath) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + redirectPath + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
