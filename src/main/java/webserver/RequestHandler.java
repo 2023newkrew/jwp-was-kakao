@@ -33,22 +33,22 @@ public class RequestHandler implements Runnable {
             HttpParser httpParser = new HttpParser(IOUtils.readHeader(br));
             String path = httpParser.getPath();
             byte[] body = new byte[0];
-
             switch (httpParser.getHttpMethod()){
-                case "POST":
+                case POST:
                     Integer contentLength = httpParser.getContentLength();
                     HashMap<String, String> requestBody = parseBody(IOUtils.readData(br, contentLength));
 
                     if(path.startsWith("/user/create")){
                         User user = new User(requestBody.get("userId"), requestBody.get("password"), requestBody.get("name"), requestBody.get("email"));
                         DataBase.addUser(user);
+                        System.out.println("[USER CREATED] - " + DataBase.findUserById(user.getUserId()));
                         ResponseUtils.response302Header(dos, "/index.html");
                     }else{
                         ResponseUtils.response404Header(dos);
                     }
                     break;
 
-                case "GET":
+                case GET:
                     if(path.equals("/")){
                         ResponseUtils.response302Header(dos, "/index.html");
                     }else if(path.endsWith(".html") || path.endsWith("/favicon.ico")){
@@ -62,8 +62,8 @@ public class RequestHandler implements Runnable {
                     }
                     break;
 
-                case "PUT":
-                case "DELETE":
+                case PUT:
+                case DELETE:
                     ResponseUtils.response404Header(dos);
                     break;
 
@@ -76,10 +76,10 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private HashMap<String, String> parseBody(String userBody){
+    private HashMap<String, String> parseBody(String requestBody){
         HashMap<String, String> result = new HashMap<>();
 
-        for(String info : userBody.split("\\?")){
+        for(String info : requestBody.split("&")){
             String key = info.split("=")[0];
             String value = info.split("=")[1];
             result.put(key, value);

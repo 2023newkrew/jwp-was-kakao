@@ -1,12 +1,14 @@
 package utils;
 
+import org.springframework.http.HttpMethod;
+
 import java.util.HashMap;
 
 public class HttpParser {
     private final HashMap<String, String> httpHeaderInfo = new HashMap<>();
 
     public HttpParser(String httpRequest) {
-        System.out.println(httpRequest);
+        //System.out.println(httpRequest);
 
         String[] httpInfo = httpRequest.split("\n");
         String[] firstLine = httpInfo[0].split(" ");
@@ -22,8 +24,8 @@ public class HttpParser {
         }
     }
 
-    public String getHttpMethod() {
-        return httpHeaderInfo.get("Http-Method");
+    public HttpMethod getHttpMethod() {
+        return HttpMethod.resolve(httpHeaderInfo.get("Http-Method"));
     }
 
     public String getPath() {
