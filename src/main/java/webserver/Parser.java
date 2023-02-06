@@ -3,6 +3,8 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import webserver.http.HttpMethod;
+import webserver.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,13 +12,6 @@ import java.util.*;
 
 public class Parser {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
-    public static Map<String, String> getUriParameters(String uri) {
-        if (!uri.contains("?")) {
-            return new HashMap<>();
-        }
-        return getParameters(uri.split("\\?")[1]);
-    }
 
     private static Map<String, String> getParameters(final String queryString) {
         List<String> queryParams = List.of(queryString.split("&"));
@@ -39,19 +34,22 @@ public class Parser {
     }
 
     public static HttpRequest parseRequestMessage(final BufferedReader reader) {
-        List<String> startLineAndHeader = readRequestLines(reader);
-
-        String uri = getURI(startLineAndHeader);
-        HttpMethod method = getMethod(startLineAndHeader);
+        List<String> startLineAndHeaders = readRequestLines(reader);
         Map<String, String> parameters = new HashMap<>();
-        if (method.equals(HttpMethod.GET)) {
-            parameters = getUriParameters(uri);
+
+        HttpMethod method = getMethod(startLineAndHeaders);
+        String uri = getURI(startLineAndHeaders);
+        String[] pathAndParameters = uri.split("\\?");
+        String path = pathAndParameters[0];
+
+        if (method.equals(HttpMethod.GET) && pathAndParameters.length == 2) {
+            parameters = getParameters(pathAndParameters[1]);
         }
-        if (method.equals(HttpMethod.POST)) {
+        else if (method.equals(HttpMethod.POST)) {
             List<String> body = readRequestLines(reader);
-            parameters.putAll(getBody(body));
+            parameters.putAll(getParameters(body.get(0)));
         }
-        return new HttpRequest(uri, method, parameters);
+        return new HttpRequest(path, method, parameters);
     }
 
     private static List<String> readRequestLines(final BufferedReader reader) {
@@ -61,7 +59,6 @@ public class Parser {
             while (!"".equals(line = reader.readLine())) {
                 if (Objects.isNull(line)) break;
                 lines.add(line);
-                System.out.println(line);
             }
         }
         catch (IOException e) {
@@ -70,15 +67,11 @@ public class Parser {
         return lines;
     }
 
-    private static HttpMethod getMethod(final List<String> requestMessage) {
-        return HttpMethod.valueOf(requestMessage.get(0).split(" ")[0]);
+    private static HttpMethod getMethod(final List<String> requestLines) {
+        return HttpMethod.valueOf(requestLines.get(0).split(" ")[0]);
     }
 
-    public static String getURI(final List<String> requestMessage) {
-        return requestMessage.get(0).split(" ")[1];
-    }
-
-    public static Map<String, String> getBody(final List<String> body) {
-        return getParameters(body.get(0));
+    private static String getURI(final List<String> requestLines) {
+        return requestLines.get(0).split(" ")[1];
     }
 }

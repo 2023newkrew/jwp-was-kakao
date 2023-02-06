@@ -16,7 +16,7 @@ public class DataBase {
     public static User findUserById(String userId) {
         return users.get(userId);
     }
-
+    
     public static Collection<User> findAll() {
         return users.values();
     }

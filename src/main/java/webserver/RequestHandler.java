@@ -2,12 +2,13 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.UserService;
+import webserver.handler.Handler;
+import webserver.http.HttpRequest;
+import webserver.http.HttpResponse;
+import webserver.http.HttpStatus;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -28,59 +29,25 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             HttpRequest request = Parser.parseRequestMessage(reader);
             HttpResponse response = new HttpResponse();
-            switch (request.getMethod()) {
-                case GET:
-                    doGet(request, response);
-                    break;
-                case POST:
-                    doPost(request, response);
+            String path = request.getPath();
+
+            if (path.equals("/")) {
+                response.setBody("Hello world".getBytes());
+                response.setStatus(HttpStatus.OK);
+            }
+            else if (path.endsWith(".html") | path.endsWith(".css")) {
+                response.setBody(Parser.getFileContent(request.getPath()));
+                response.setStatus(HttpStatus.OK);
+            }
+            else {
+                HandlerMapping handlerMapping = new HandlerMapping();
+                Handler handler = handlerMapping.getHandler(path);
+                handler.service(request, response);
             }
             sendResponse(response, dos);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
-        }
-    }
-
-    private void doGet(final HttpRequest request, HttpResponse response) {
-        if (request.getUri().endsWith(".html") | request.getUri().endsWith(".css")) {
-            response.setBody(Parser.getFileContent(request.getUri()));
-            response.setHttpStatus(HttpStatus.OK);
-        }
-        else if (request.getUri().startsWith("/user")) {
-            Map<String, String> map = Parser.getUriParameters(request.getUri());
-            new UserService().addUser(
-                    map.get("userId"),
-                    map.get("password"),
-                    map.get("name"),
-                    map.get("email")
-            );
-            response.setHeaders(new HashMap<>(){{
-                put("Location", "/index.html");
-            }});
-            response.setHttpStatus(HttpStatus.FOUND);
-        }
-        else {
-            response.setBody("Hello world".getBytes());
-            response.setHttpStatus(HttpStatus.OK);
-        }
-    }
-
-    private void doPost(final HttpRequest request, HttpResponse response) {
-         if (request.getUri().startsWith("/user")) {
-            Map<String, String> map = request.getParameter();
-
-            new UserService().addUser(
-                    map.get("userId"),
-                    map.get("password"),
-                    map.get("name"),
-                    map.get("email")
-            );
-
-            response.setHeaders(new HashMap<>(){{
-                put("Location", "/index.html");
-            }});
-            response.setHttpStatus(HttpStatus.FOUND);
         }
     }
 
@@ -91,6 +58,13 @@ public class RequestHandler implements Runnable {
                 break;
             case FOUND:
                 response302Header(dos, response.getHeaders().get("Location"));
+                break;
+            case NOT_FOUND:
+                response404Header(dos);
+                break;
+            case METHOD_NOT_ALLOWED:
+                response405Header(dos);
+                break;
         }
         responseBody(dos, response.getBody());
     }
@@ -116,13 +90,30 @@ public class RequestHandler implements Runnable {
         }
     }
 
+    private void response404Header(DataOutputStream dos) {
+        try {
+            dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response405Header(DataOutputStream dos) {
+        try {
+            dos.writeBytes("HTTP/1.1 405 Method Not Allowed \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
-            System.out.println(e.getMessage());
         }
     }
 }

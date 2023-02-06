@@ -1,9 +1,10 @@
-package webserver;
+package webserver.http;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
-    private Map<String, String> headers;
+    private Map<String, String> headers = new HashMap<>();
     private byte[] body = "".getBytes();
     private HttpStatus httpStatus;
 
@@ -22,15 +23,15 @@ public class HttpResponse {
         return httpStatus;
     }
 
-    public void setHeaders(final Map<String, String> headers) {
-        this.headers = headers;
+    public void setHeader(String header, String value) {
+        headers.put(header, value);
     }
 
     public void setBody(final byte[] body) {
         this.body = body;
     }
 
-    public void setHttpStatus(final HttpStatus httpStatus) {
+    public void setStatus(final HttpStatus httpStatus) {
         this.httpStatus = httpStatus;
     }
 }
