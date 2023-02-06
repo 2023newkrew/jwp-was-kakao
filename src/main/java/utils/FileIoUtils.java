@@ -1,14 +1,18 @@
 package utils;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class FileIoUtils {
-    public static byte[] loadFileFromClasspath(String filePath) throws IOException, URISyntaxException {
-        Path path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
-        return Files.readAllBytes(path);
+
+    public static byte[] loadFileFromClasspath(String filePath) {
+        try {
+            File file = new File(FileIoUtils.class.getClassLoader().getResource(filePath).getPath());
+            return Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
+
 }

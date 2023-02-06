@@ -18,8 +18,8 @@ public class RequestInfo {
         return httpMethod;
     }
 
-    public HttpUrl getHttpUrl() {
-        return httpUrl;
+    public String getPath() {
+        return httpUrl.getPath();
     }
 
     public Protocol getProtocol() {
