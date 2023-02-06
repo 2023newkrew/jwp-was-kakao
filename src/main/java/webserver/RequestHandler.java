@@ -28,7 +28,7 @@ public class RequestHandler implements Runnable {
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
-            HttpRequest request = Parser.parseRequestMessage(reader);
+            HttpRequest request = RequestParser.parseRequestMessage(reader);
             HttpResponse response = new HttpResponse();
             String path = request.getPath();
 
@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
                     response.setStatus(HttpStatus.OK);
                 }
                 else {
-                    response.setBody(Parser.getFileContent(request.getPath()));
+                    response.setBody(RequestParser.getFileContent(request.getPath()));
                     response.setStatus(HttpStatus.OK);
                 }
             }

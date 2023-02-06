@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 
-public class Parser {
+public class RequestParser {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private static Map<String, String> getParameters(final String queryString) {
