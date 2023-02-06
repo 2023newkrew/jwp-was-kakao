@@ -1,6 +1,7 @@
 package webserver.http;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class HttpRequest {
     private HttpMethod method;
@@ -34,6 +35,24 @@ public class HttpRequest {
 
     public String getBody() {
         return body;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HttpRequest request = (HttpRequest) o;
+        return method == request.method &&
+                Objects.equals(URL, request.URL) &&
+                Objects.equals(version, request.version) &&
+                Objects.equals(parameters, request.parameters) &&
+                Objects.equals(headers, request.headers) &&
+                Objects.equals(body, request.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(method, URL, version, parameters, headers, body);
     }
 
     public static final class HttpRequestBuilder {
