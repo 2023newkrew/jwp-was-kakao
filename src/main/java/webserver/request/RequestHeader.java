@@ -14,8 +14,7 @@ public class RequestHeader {
     private static final String ACCEPT = "Accept";
 
     private HttpMethod httpMethod;
-    private String path;
-    private Map<String, String> queryParameterMap = new HashMap<>();
+    private String url;
     private String protocol;
     private String contentType;
     private int contentLength;
@@ -38,24 +37,10 @@ public class RequestHeader {
             throw new RuntimeException("InvalidHttpRequestHeaderException");
         }
 
-        String[] pathToken = tokens[1].split("\\?");
-        path = pathToken[0];
-        if (pathToken.length > 1) {
-            setQueryParameters(pathToken[1]);
-        }
+        url = tokens[1];
         protocol = tokens[2];
     }
 
-    private void setQueryParameters(String queryString) {
-        String[] tokens = queryString.split("&");
-        for (String token : tokens) {
-            String[] keyValue = token.split("=");
-            if (keyValue.length != 2) {
-                throw new RuntimeException("InvalidQueryStringException");
-            }
-            queryParameterMap.put(keyValue[0], keyValue[1]);
-        }
-    }
 
     private void extractInfoFromRemainLines(List<String> headerLines) {
         Map<String, String> headerInfoMap = new HashMap<>();
@@ -80,8 +65,8 @@ public class RequestHeader {
         return httpMethod;
     }
 
-    public String getPath() {
-        return path;
+    public String getURL() {
+        return url;
     }
 
     public String getProtocol() {
@@ -95,21 +80,4 @@ public class RequestHeader {
     public String getAccept() {
         return accept;
     }
-
-    public String getQueryParam(String key) {
-        return queryParameterMap.get(key);
-    }
-
-    @Override
-    public String toString() {
-        return "RequestHeader{" +
-                "httpMethod=" + httpMethod +
-                ", path='" + path + '\'' +
-                ", queryParameterMap=" + queryParameterMap +
-                ", version='" + protocol + '\'' +
-                ", contentLength=" + contentLength +
-                ", accept='" + accept + '\'' +
-                '}';
-    }
-
 }

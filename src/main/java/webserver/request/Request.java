@@ -25,24 +25,24 @@ public class Request {
         this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()));
     }
 
-    public String getPath() {
-        return header.getPath();
-    }
-
-    public String getAccept() {
-        return header.getAccept();
-    }
-
     public String getProtocol() {
         return header.getProtocol();
     }
 
-    public String getQueryParam(String key) {
-        return header.getQueryParam(key);
-    }
-
     public HttpMethod getHttpMethod() {
         return header.getHttpMethod();
+    }
+
+    public String getURL() {
+        return header.getURL();
+    }
+
+    public String getPath() {
+        return header.getURL().split("\\?")[0];
+    }
+
+    public String getAccept() {
+        return header.getAccept();
     }
 
     public String getBody() {
