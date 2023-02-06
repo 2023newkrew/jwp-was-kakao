@@ -1,5 +1,8 @@
 package webserver;
 
+import controller.FileController;
+import controller.RootController;
+import controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.UserService;
@@ -7,7 +10,6 @@ import support.IllegalMethodException;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -27,15 +29,16 @@ public class RequestHandler implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
-            // 경로 매칭 / 요청 및 응답
-            process(reader, dos);
+            // 요청 처리 및 응답 작성
+            handle(reader, dos);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void process(BufferedReader reader, DataOutputStream dos) throws IOException {
+
+    private void handle(BufferedReader reader, DataOutputStream dos) throws IOException {
         HttpRequest request;
         HttpResponse response = new HttpResponse();
         try {
@@ -48,58 +51,23 @@ public class RequestHandler implements Runnable {
             return;
         }
 
+        UserController userController = new UserController(new UserService());
+        FileController fileController = new FileController();
+        RootController rootController = new RootController();
         String uri = request.getUri();
         if (uri.endsWith(".html") || uri.endsWith(".css")) {
-            processFileRequest(request, response);
+            fileController.processRequest(request, response);
         }
         else if (uri.startsWith("/user")) {
-            processUserRequest(request, response);
+            userController.processRequest(request, response);
         }
         else if (uri.equals("/")) {
-            processRootRequest(request, response);
+            rootController.processRequest(request, response);
         }
         else {
             response.setHttpStatus(HttpStatus.NOT_FOUND);
         }
         sendResponse(dos, response);
-    }
-
-    private void processFileRequest(HttpRequest request, HttpResponse response) {
-        if (request.getMethod().equals(HttpMethod.GET)) {
-            response.setBody(Parser.getFileContent(request.getUri()));
-            response.setHttpStatus(HttpStatus.OK);
-        }
-        else {
-            response.setHttpStatus(HttpStatus.METHOD_NOT_ALLOWED);
-        }
-    }
-
-    private void processUserRequest(HttpRequest request, HttpResponse response) {
-        if (request.getMethod().equals(HttpMethod.GET)
-                || request.getMethod().equals(HttpMethod.POST)) {
-            Map<String, String> map = request.getParameter();
-            new UserService().addUser(
-                    map.get("userId"),
-                    map.get("password"),
-                    map.get("name"),
-                    map.get("email")
-            );
-            response.setHeader(HttpHeader.LOCATION, REDIRECT_PATH);
-            response.setHttpStatus(HttpStatus.FOUND);
-        }
-        else {
-            response.setHttpStatus(HttpStatus.METHOD_NOT_ALLOWED);
-        }
-    }
-
-    private void processRootRequest(HttpRequest request, HttpResponse response) {
-        if (request.getMethod().equals(HttpMethod.GET)) {
-            response.setBody(DEFAULT_RESPONSE.getBytes());
-            response.setHttpStatus(HttpStatus.OK);
-        }
-        else {
-            response.setHttpStatus(HttpStatus.METHOD_NOT_ALLOWED);
-        }
     }
 
     private void sendResponse(DataOutputStream dos, final HttpResponse response) {
