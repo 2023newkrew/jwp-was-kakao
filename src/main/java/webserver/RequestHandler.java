@@ -3,6 +3,8 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.DataBase;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +15,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 
 import utils.FileIoUtils;
+import model.User;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -53,6 +56,12 @@ public class RequestHandler implements Runnable {
             else if (requestPath.startsWith("/fonts")) {
                 body = FileIoUtils.loadFileFromClasspath("static" + requestPath);
                 contentType = "font/*";
+            }
+            else if (requestPath.startsWith("/user/create")) {
+                String[] tokensPath = requestPath.split("\\?")[1].split("&");
+                User user = new User(tokensPath[0].split("=")[1], tokensPath[1].split("=")[1], tokensPath[2].split("=")[1], tokensPath[3].split("=")[1]);
+                DataBase.addUser(user);
+                body = "Temp_Message: successfully Signed-up".getBytes();
             }
             response200Header(dos, body.length, contentType);
             responseBody(dos, body);
