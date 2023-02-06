@@ -30,7 +30,7 @@ class RequestHandlerTest {
 
     //     assertThat(socket.output()).isEqualTo(expected);
     // }
-
+    
     @Test
     void index() throws IOException, URISyntaxException {
         // given

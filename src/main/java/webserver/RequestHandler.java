@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
 
-import utils.FileIoUtils;
+import utils.*;
 import model.User;
 
 public class RequestHandler implements Runnable {
@@ -33,8 +33,9 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
-            String request = new BufferedReader(new InputStreamReader(in)).readLine();
-            String requestPath = request.split(" ")[1];
+            String[] requests = parseRequest(in);
+            String requestPath = requests[0];
+            String requestBody = requests[1];
             byte[] body = new byte[0];
             String contentType = "";
             if (requestPath.endsWith(".html")) {
@@ -58,7 +59,7 @@ public class RequestHandler implements Runnable {
                 contentType = "font/*";
             }
             else if (requestPath.startsWith("/user/create")) {
-                String[] tokensPath = requestPath.split("\\?")[1].split("&");
+                String[] tokensPath = requestBody.split("&");
                 User user = new User(tokensPath[0].split("=")[1], tokensPath[1].split("=")[1], tokensPath[2].split("=")[1], tokensPath[3].split("=")[1]);
                 DataBase.addUser(user);
                 body = "Temp_Message: successfully Signed-up".getBytes();
@@ -68,6 +69,23 @@ public class RequestHandler implements Runnable {
         } catch (IOException|URISyntaxException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private String[] parseRequest(InputStream in) throws IOException {
+        InputStreamReader instream = new InputStreamReader(in);
+        BufferedReader buffer = new BufferedReader(instream);
+        String line = buffer.readLine();
+        String requestPath = line.split(" ")[1];
+        Integer contentLength = 0;
+        while (!line.equals("")) {
+            line = buffer.readLine();
+            if (line.startsWith("Content-Length: ")) {
+                contentLength = Integer.parseInt(line.split(" ")[1]);
+            }
+        }
+        String requestBody = utils.IOUtils.readData(buffer, contentLength);
+
+        return new String[]{requestPath, requestBody};
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
