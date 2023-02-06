@@ -11,7 +11,8 @@ import static constant.DefaultConstant.DEFAULT_BODY;
 import static constant.DefaultConstant.DEFAULT_URL;
 import static constant.PathConstant.STATIC;
 import static constant.PathConstant.TEMPLATES;
-import static utils.FileIoUtils.*;
+import static utils.FileIoUtils.getStaticFolderNames;
+import static utils.FileIoUtils.loadFileFromClasspath;
 import static utils.ResponseUtils.*;
 
 @UtilityClass
