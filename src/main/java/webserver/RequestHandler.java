@@ -50,12 +50,10 @@ public class RequestHandler implements Runnable {
 
     private void mapRequest(Request request, Response response) {
         ControllerMethod method = RequestController.getMappedMethod(request);
-
         if (method != null) {
             method.handle(request, response);
             return;
         }
-
         // resource 응답
         String rootPath = "./templates";
         if (hasStaticPath(request)){
@@ -88,9 +86,9 @@ public class RequestHandler implements Runnable {
     private boolean hasStaticPath(Request request) {
         String path = request.getPath();
         if (path == null) return false;
-        String[] pathToken = path.split("/");
-        if (pathToken.length < 2) return false;
-        return StaticDirectory.resolve(pathToken[1].toUpperCase()) != null;
+        String[] pathTokens = path.split("/");
+        if (pathTokens.length < 2) return false;
+        return StaticDirectory.resolve(pathTokens[1].toUpperCase()) != null;
     }
 }
 
