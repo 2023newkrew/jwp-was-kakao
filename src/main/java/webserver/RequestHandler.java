@@ -79,7 +79,7 @@ public class RequestHandler implements Runnable {
             dos.write(response.getBody(), 0, response.getBody().length);
             dos.flush();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

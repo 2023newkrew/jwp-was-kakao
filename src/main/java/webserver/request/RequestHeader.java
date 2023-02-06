@@ -1,6 +1,7 @@
 package webserver.request;
 
 import org.springframework.http.HttpMethod;
+import webserver.exception.InvalidRequestHeaderException;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +23,7 @@ public class RequestHeader {
 
     public RequestHeader(List<String> headerLines) {
         if (headerLines == null || headerLines.size() < 1) {
-            throw new RuntimeException("EmptyRequestHeaderException");
+            throw new InvalidRequestHeaderException();
         }
         extractInfoFromFirstLine(URLDecoder.decode(headerLines.remove(0), StandardCharsets.UTF_8));
         if (headerLines.size() > 0) {
@@ -34,7 +35,7 @@ public class RequestHeader {
         String[] tokens = firstLine.split(" ");
 
         if (tokens.length < 3 || (httpMethod = HttpMethod.resolve(tokens[0])) == null) {
-            throw new RuntimeException("InvalidHttpRequestHeaderException");
+            throw new InvalidRequestHeaderException();
         }
 
         url = tokens[1];

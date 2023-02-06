@@ -1,5 +1,7 @@
 package webserver.request.support;
 
+import webserver.exception.InvalidQueryStringException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +21,7 @@ public class QueryParamters {
         for (String token : tokens) {
             String[] keyValue = token.split("=");
             if (keyValue.length != 2) {
-                throw new RuntimeException("InvalidQueryStringException");
+                throw new InvalidQueryStringException();
             }
             parameters.put(keyValue[0], keyValue[1]);
         }
