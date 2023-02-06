@@ -7,8 +7,10 @@ import java.util.Map;
 
 public class HttpUrl {
 
-    private String path;
-    private Map<String, String> params;
+    private static final String QUERY_STRING_DELIMITER = "?";
+
+    private final String path;
+    private final Map<String, String> params;
 
     public HttpUrl(String path) {
         this.path = parsePath(path);
@@ -16,19 +18,19 @@ public class HttpUrl {
     }
 
     public String parsePath(String path) {
-        if (!path.contains("?")) {
+        if (!path.contains(QUERY_STRING_DELIMITER)) {
             return path;
         }
 
-        return path.substring(0, path.indexOf("?"));
+        return path.substring(0, path.indexOf(QUERY_STRING_DELIMITER));
     }
 
     private Map<String, String> parseParams(String path) {
-        if (!path.contains("?")) {
+        if (!path.contains(QUERY_STRING_DELIMITER)) {
             return new HashMap<>();
         }
 
-        String queryString = path.substring(path.indexOf("?") + 1);
+        String queryString = path.substring(path.indexOf(QUERY_STRING_DELIMITER) + 1);
         return ParameterUtils.parse(queryString);
     }
 

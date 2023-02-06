@@ -1,8 +1,11 @@
 package web.controller;
 
+import error.ApplicationException;
 import http.request.HttpRequest;
 
 import java.util.List;
+
+import static error.ErrorType.CONTROLLER_NOT_FOUND;
 
 public class Controllers {
 
@@ -20,7 +23,7 @@ public class Controllers {
         return controllers.stream()
                 .filter(controller -> controller.isMatch(httpRequest))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new ApplicationException(CONTROLLER_NOT_FOUND));
     }
 
 }

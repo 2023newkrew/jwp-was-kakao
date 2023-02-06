@@ -4,11 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Headers {
+public class HttpHeaders {
+
+    private static final String HEADER_DELIMITER = ": ";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String LOCATION = "Location";
 
     private final Map<String, String> headers;
 
-    public Headers () {
+    public HttpHeaders() {
         this.headers = new HashMap<>();
     }
 
@@ -25,7 +30,7 @@ public class Headers {
     }
 
     public void put(String str) {
-        String[] split = str.split(": ");
+        String[] split = str.split(HEADER_DELIMITER);
         put(split[0], split[1]);
     }
 

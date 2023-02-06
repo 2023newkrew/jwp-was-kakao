@@ -1,7 +1,11 @@
 package http;
 
+import error.ApplicationException;
+
 import java.util.Arrays;
 import java.util.List;
+
+import static error.ErrorType.UNSUPPORTED_CONTENT_TYPE;
 
 public enum ContentType {
 
@@ -11,9 +15,9 @@ public enum ContentType {
     APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded", "utf-8")
     ;
 
-    private String contentType;
-    private String charset;
-    private List<String> suffix;
+    private final String contentType;
+    private final String charset;
+    private final List<String> suffix;
 
     ContentType(String contentType, String charset, String... suffix) {
         this.contentType = contentType;
@@ -27,7 +31,7 @@ public enum ContentType {
         return Arrays.stream(ContentType.values())
                 .filter(contentType -> contentType.suffix.contains(suffix))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new ApplicationException(UNSUPPORTED_CONTENT_TYPE));
     }
 
     public String toString() {

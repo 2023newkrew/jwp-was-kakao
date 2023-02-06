@@ -1,7 +1,9 @@
 package web;
 
+import error.ApplicationException;
+import error.ErrorType;
 import http.Body;
-import http.Headers;
+import http.HttpHeaders;
 import http.Protocol;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
@@ -17,6 +19,8 @@ import web.controller.Controllers;
 import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
+
+import static error.ErrorType.*;
 
 public class RequestHandler implements Runnable {
 
@@ -36,15 +40,16 @@ public class RequestHandler implements Runnable {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
             RequestInfo requestInfo = createRequestInfo(br.readLine());
-            Headers headers = createHeader(br);
-            Body body = createBody(br, headers);
+            HttpHeaders httpHeaders = createHeader(br);
+            Body body = createBody(br, httpHeaders);
 
-            HttpRequest httpRequest = new HttpRequest(requestInfo, headers, body);
+            HttpRequest httpRequest = new HttpRequest(requestInfo, httpHeaders, body);
             HttpResponse httpResponse = doService(httpRequest);
 
             doResponse(dos, httpResponse.toByte());
         } catch (IOException e) {
             logger.error(e.getMessage());
+            throw new ApplicationException(BUFFER_READ_FAILED, e.getMessage());
         }
     }
 
@@ -54,6 +59,7 @@ public class RequestHandler implements Runnable {
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
+            throw new ApplicationException(DATA_WRITE_FAILED, e.getMessage());
         }
     }
 
@@ -62,16 +68,16 @@ public class RequestHandler implements Runnable {
         return controller.run(httpRequest);
     }
 
-    private Body createBody(BufferedReader br, Headers headers) throws IOException {
-        if (!headers.containsKey("Content-Length")) {
+    private Body createBody(BufferedReader br, HttpHeaders httpHeaders) throws IOException {
+        if (!httpHeaders.containsKey("Content-Length")) {
             return Body.empty();
         }
 
-        return new Body(IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length"))));
+        return new Body(IOUtils.readData(br, Integer.parseInt(httpHeaders.get("Content-Length"))));
     }
 
-    private Headers createHeader(BufferedReader br) throws IOException {
-        Headers headers = new Headers();
+    private HttpHeaders createHeader(BufferedReader br) throws IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
 
         while (true) {
             String line = br.readLine();
@@ -79,10 +85,10 @@ public class RequestHandler implements Runnable {
                 break;
             }
 
-            headers.put(line.trim());
+            httpHeaders.put(line.trim());
         }
 
-        return headers;
+        return httpHeaders;
     }
 
     private RequestInfo createRequestInfo(String rawRequestInfo) {

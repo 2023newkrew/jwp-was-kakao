@@ -1,21 +1,21 @@
 package http.request;
 
 import http.Body;
-import http.Headers;
+import http.HttpHeaders;
 
 public class HttpRequest {
 
-    private RequestInfo requestInfo;
-    private Headers headers;
-    private Body body;
+    private final RequestInfo requestInfo;
+    private final HttpHeaders httpHeaders;
+    private final Body body;
 
-    public HttpRequest(RequestInfo requestInfo, Headers headers) {
-        this.requestInfo = requestInfo;
-        this.headers = headers;
+    public HttpRequest(RequestInfo requestInfo, HttpHeaders httpHeaders) {
+        this(requestInfo, httpHeaders, null);
     }
 
-    public HttpRequest(RequestInfo requestInfo, Headers headers, Body body) {
-        this(requestInfo, headers);
+    public HttpRequest(RequestInfo requestInfo, HttpHeaders httpHeaders, Body body) {
+        this.requestInfo = requestInfo;
+        this.httpHeaders = httpHeaders;
         this.body = body;
     }
 

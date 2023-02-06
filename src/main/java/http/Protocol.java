@@ -1,7 +1,11 @@
 package http;
 
+import error.ApplicationException;
+
 import java.util.Arrays;
 import java.util.Objects;
+
+import static error.ErrorType.UNSUPPORTED_PROTOCOL;
 
 public enum Protocol {
 
@@ -21,7 +25,7 @@ public enum Protocol {
         return Arrays.stream(Protocol.values())
                 .filter(protocol -> Objects.equals(protocol.str, str))
                 .findAny()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new ApplicationException(UNSUPPORTED_PROTOCOL));
     }
 
 }
