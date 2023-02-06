@@ -37,11 +37,17 @@ public class Response {
 
     public String getHeader() {
         String header = String.format(
-                "%s %d %s \r\nContent-Type: %s;charset=utf-8 \r\nContent-Length: %d \r\n"
-                , version, status.value(), status.name(), contentType, body.length
+                "%s %d %s \r\n",
+                version, status.value(), status.name()
         );
+        if(body != null && body.length > 0) {
+            header += String.format(
+                    "Content-Type: %s;charset=utf-8 \r\nContent-Length: %d \r\n",
+                    contentType, body.length
+            );
+        }
         if(location != null) {
-            header += String.format("Location: %s\r\n", location);
+            header += String.format("Location: %s \r\n", location);
         }
         return header += "\r\n";
     }
