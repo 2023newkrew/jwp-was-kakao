@@ -33,9 +33,7 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
-
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             HttpRequest request = HttpRequestParser.parse(in);
@@ -56,7 +54,6 @@ public class RequestHandler implements Runnable {
     }
 
     private void doPost(HttpRequest request, HttpResponse response) {
-
         if (request.getUri().getPath().equals("/user/create")) {
             String query = request.getBody();
             Map<String, String> attributes = QueryStringParser.parseQueryString(query);
@@ -75,20 +72,22 @@ public class RequestHandler implements Runnable {
     }
 
     private void doGet(HttpRequest request, HttpResponse response) throws IOException, URISyntaxException {
-        byte[] body;
         if (request.getUri().getPath().endsWith(".css")) {
-            body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
+            byte[] body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
             response200Css(response, body);
+            return;
         }
 
         if (request.getUri().getPath().endsWith(".html")) {
-            body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
+            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
             response200Html(response, body);
+            return;
         }
 
         if (request.getUri().getPath().equals("/")) {
-            body = "Hello world".getBytes();
+            byte[] body = "Hello world".getBytes();
             response200Html(response, body);
+            return;
         }
 
         if (request.getUri().getPath().equals("/user/create")) {
@@ -105,6 +104,7 @@ public class RequestHandler implements Runnable {
             DataBase.addUser(user);
 
             response200Html(response, new byte[0]);
+            return;
         }
     }
 
