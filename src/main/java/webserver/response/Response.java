@@ -8,13 +8,13 @@ import java.nio.charset.StandardCharsets;
 public class Response {
 
     private HttpStatus status;
-    private byte[] body;
     private String contentType;
-    private String version;
+    private String protocol;
     private String location;
+    private byte[] body;
 
     public Response(Request request) {
-        version = request.getProtocol();
+        protocol = request.getProtocol();
         contentType = request.getAccept();
         body = new byte[]{};
     }
@@ -38,7 +38,7 @@ public class Response {
     public String getHeader() {
         String header = String.format(
                 "%s %d %s \r\n",
-                version, status.value(), status.name()
+                protocol, status.value(), status.name()
         );
         if(body != null && body.length > 0) {
             header += String.format(
