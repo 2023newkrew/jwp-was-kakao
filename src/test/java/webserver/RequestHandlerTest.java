@@ -4,6 +4,7 @@ import db.DataBase;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
+import webserver.handler.RequestHandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
