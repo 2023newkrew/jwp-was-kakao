@@ -1,8 +1,8 @@
 package webserver.controller;
 
 import constant.HttpMethod;
-import model.annotation.Api;
 import model.HttpRequest;
+import model.annotation.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.dao.UserDao;
@@ -10,13 +10,14 @@ import webserver.service.UserService;
 
 import java.io.DataOutputStream;
 
-import static utils.ResponseUtils.*;
+import static utils.ResponseUtils.response302Header;
 
 public class UserController extends ApiController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private static final UserController instance;
 
     private final UserService userService;
+
     private UserController(UserService userService) {
         this.userService = userService;
     }

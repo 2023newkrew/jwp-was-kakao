@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import static webserver.infra.ControllerHandlerAdapter.*;
+import static webserver.infra.ControllerHandlerAdapter.findMethodToExecute;
 
 @UtilityClass
 public class FrontController {
@@ -31,14 +31,14 @@ public class FrontController {
                 return;
             }
 
-            Method method = findMethodToExecute(request, apiController);
-            method.invoke(apiController, request, dos);
+            findMethodToExecute(request, apiController).invoke(apiController, request, dos);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
     private boolean isViewController(ApiController apiController) {
-        return apiController.getClass().isAssignableFrom(ViewController.class);
+        return apiController.getClass()
+                .isAssignableFrom(ViewController.class);
     }
 }

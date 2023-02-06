@@ -1,17 +1,15 @@
 package utils;
 
-import constant.DefaultConstant;
-import constant.RequestHeaderConstant;
 import lombok.experimental.UtilityClass;
+import model.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import model.HttpRequest;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import static constant.DefaultConstant.*;
-import static constant.RequestHeaderConstant.*;
+import static constant.DefaultConstant.DEFAULT_CONTENT_TYPE;
+import static constant.RequestHeaderConstant.ACCEPT;
 
 @UtilityClass
 public class ResponseUtils {

@@ -1,7 +1,6 @@
 package utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import model.HttpRequest;
 import org.json.JSONException;
@@ -12,9 +11,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static constant.RequestHeaderConstant.*;
-import static java.lang.Integer.*;
-import static utils.QueryStringParser.*;
+import static constant.RequestHeaderConstant.CONTENT_LENGTH;
+import static java.lang.Integer.parseInt;
+import static utils.QueryStringParser.parseQueryString;
 
 @UtilityClass
 public class RequestBuilder {

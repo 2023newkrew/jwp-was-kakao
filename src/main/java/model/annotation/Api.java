@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Api {
     String method() default HttpMethod.GET;
+
     String url() default "/";
 }
