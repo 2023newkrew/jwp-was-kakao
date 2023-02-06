@@ -15,9 +15,6 @@ import webserver.response.Response;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Objects;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
