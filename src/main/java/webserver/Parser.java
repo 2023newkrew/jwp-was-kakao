@@ -24,7 +24,7 @@ public class Parser {
         try {
             if (uri.endsWith(".html")) {
                 return FileIoUtils.loadFileFromClasspath("./templates" + uri.replaceFirst("^\\.+", ""));
-            } else if (uri.endsWith(".css")) {
+            } else {
                 return FileIoUtils.loadFileFromClasspath("./static" + uri.replaceFirst("^\\.+", ""));
             }
         } catch (Exception e) {

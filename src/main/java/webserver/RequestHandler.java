@@ -9,6 +9,7 @@ import webserver.http.HttpStatus;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -31,17 +32,19 @@ public class RequestHandler implements Runnable {
             HttpResponse response = new HttpResponse();
             String path = request.getPath();
 
-            if (path.equals("/")) {
-                response.setBody("Hello world".getBytes());
-                response.setStatus(HttpStatus.OK);
-            }
-            else if (path.endsWith(".html") | path.endsWith(".css")) {
-                response.setBody(Parser.getFileContent(request.getPath()));
-                response.setStatus(HttpStatus.OK);
+            HandlerMapping handlerMapping = new HandlerMapping();
+            Handler handler = handlerMapping.getHandler(path);
+            if (Objects.isNull(handler)) {
+                if (path.equals("/")) {
+                    response.setBody("Hello world".getBytes());
+                    response.setStatus(HttpStatus.OK);
+                }
+                else {
+                    response.setBody(Parser.getFileContent(request.getPath()));
+                    response.setStatus(HttpStatus.OK);
+                }
             }
             else {
-                HandlerMapping handlerMapping = new HandlerMapping();
-                Handler handler = handlerMapping.getHandler(path);
                 handler.service(request, response);
             }
             sendResponse(response, dos);
