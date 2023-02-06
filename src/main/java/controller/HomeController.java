@@ -1,11 +1,10 @@
 package controller;
 
 import enums.ContentType;
+import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import http.HttpRequest;
-import http.HttpResponse;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HomeController {
@@ -18,7 +17,7 @@ public class HomeController {
         return instance;
     }
 
-    public HttpResponse rootPathGet(HttpRequest request) {
+    public HttpResponse rootPathGet() {
         return HttpResponse.of(HttpStatus.OK, ContentType.HTML, "Hello world".getBytes());
     }
 }

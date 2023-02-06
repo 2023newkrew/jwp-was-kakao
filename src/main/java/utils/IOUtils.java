@@ -4,10 +4,7 @@ import exceptions.InvalidQueryParameterException;
 import http.HttpRequest;
 import http.HttpRequestHeader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,8 +57,14 @@ public class IOUtils {
         return Arrays.stream(queryParams)
                 .map(s -> s.split("="))
                 .collect(Collectors.toMap(
-                        a -> a[0],  //key
-                        a -> URLDecoder.decode(a[1])   //value
+                        a -> a[0],
+                        a -> {
+                            try {
+                                return URLDecoder.decode(a[1], "UTF-8");
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                 ));
     }
 }

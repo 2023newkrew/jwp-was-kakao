@@ -26,7 +26,7 @@ public class RequestHandler implements Runnable {
     private final HomeController homeController;
     private final UserController userController;
     private final StaticFileController staticFileController;
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -79,7 +79,7 @@ public class RequestHandler implements Runnable {
             return userController.createUserPost(request);
         }
         if (requestPath.equals("/")) {
-            return homeController.rootPathGet(request);
+            return homeController.rootPathGet();
         }
         if (FileIoUtils.isStaticFile(request)) {
             return staticFileController.staticFileGet(request);

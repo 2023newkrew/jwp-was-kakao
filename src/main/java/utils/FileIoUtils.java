@@ -1,6 +1,7 @@
 package utils;
 
 import enums.ContentType;
+import exceptions.ResourceNotFoundException;
 import http.HttpRequest;
 
 import java.io.IOException;
@@ -11,10 +12,11 @@ import java.nio.file.Paths;
 
 public class FileIoUtils {
     public static byte[] loadFileFromClasspath(String filePath) throws IOException, URISyntaxException {
-        Path path = null;
+        Path path;
         try {
             path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
         } catch (NullPointerException e) {
+            throw new ResourceNotFoundException();
         }
         return Files.readAllBytes(path);
     }
