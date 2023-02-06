@@ -8,6 +8,7 @@ public enum ContentType {
     TEXT_HTML("text/html", "utf-8", "html", "htm"),
     TEXT_CSS("text/css", "utf-8", "css"),
     TEXT_PLAIN("text/plain", "utf-8"),
+    APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded", "utf-8")
     ;
 
     private String contentType;

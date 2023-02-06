@@ -34,9 +34,22 @@ public class HttpResponse {
         return new HttpResponse(responseInfo, headers, body);
     }
 
-    private HttpResponse(ResponseInfo responseInfo, Headers headers, Body body) {
+    public static HttpResponse redirect(String resourcePath) {
+        ResponseInfo responseInfo = new ResponseInfo(Protocol.HTTP1_1, HttpStatus.FOUND);
+
+        Headers headers = new Headers();
+        headers.put("Location", resourcePath);
+
+        return new HttpResponse(responseInfo, headers);
+    }
+
+    private HttpResponse(ResponseInfo responseInfo, Headers headers) {
         this.responseInfo = responseInfo;
         this.headers = headers;
+    }
+
+    private HttpResponse(ResponseInfo responseInfo, Headers headers, Body body) {
+        this(responseInfo, headers);
         this.body = body;
     }
 

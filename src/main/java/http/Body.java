@@ -12,6 +12,10 @@ public class Body {
         this.body = body.getBytes();
     }
 
+    public static Body empty() {
+        return new Body("");
+    }
+
     public int length() {
         return body.length;
     }

@@ -4,6 +4,7 @@ import http.*;
 import common.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.IOUtils;
 import web.controller.Controller;
 import web.controller.Controllers;
 
@@ -29,19 +30,10 @@ public class RequestHandler implements Runnable {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              OutputStream out = connection.getOutputStream()) {
             RequestInfo requestInfo = parseRequestInfo(br.readLine());
-            Headers headers = new Headers();
+            Headers headers = createHeader(br);
+            Body body = createBody(br, headers);
 
-            while(true){
-                String line = br.readLine();
-                if(Objects.isNull(line) || !"".equals(line)) {
-                    break;
-                }
-
-                line = line.substring(0, line.indexOf(" \r\n"));
-                headers.put(line);
-            }
-
-            HttpRequest httpRequest = new HttpRequest(requestInfo, headers);
+            HttpRequest httpRequest = new HttpRequest(requestInfo, headers, body);
             HttpResponse httpResponse = executeLogic(httpRequest);
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -49,6 +41,29 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private Body createBody(BufferedReader br, Headers headers) throws IOException {
+        if (!headers.containsKey("Content-Length")) {
+            return Body.empty();
+        }
+
+        return new Body(IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length"))));
+    }
+
+    private Headers createHeader(BufferedReader br) throws IOException {
+        Headers headers = new Headers();
+
+        while (true) {
+            String line = br.readLine();
+            if (Objects.isNull(line) || "".equals(line)) {
+                break;
+            }
+
+            headers.put(line.trim());
+        }
+
+        return headers;
     }
 
     private HttpResponse executeLogic(HttpRequest httpRequest) {

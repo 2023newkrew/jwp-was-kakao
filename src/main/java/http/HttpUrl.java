@@ -29,9 +29,7 @@ public class HttpUrl {
         }
 
         String queryString = path.substring(path.indexOf("?") + 1);
-        String[] parameters = queryString.split("&");
-
-        return Arrays.stream(parameters)
+        return Arrays.stream(queryString.split("&"))
                 .map(parameter -> parameter.split("="))
                 .collect(Collectors.toMap(parameter -> parameter[0], parameter -> parameter[1]));
     }

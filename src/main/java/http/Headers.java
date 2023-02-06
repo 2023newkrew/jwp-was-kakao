@@ -15,7 +15,15 @@ public class Headers {
     public void put(String key, String value) {
         headers.put(key, value);
     }
-    
+
+    public boolean containsKey(String key) {
+        return headers.containsKey(key);
+    }
+
+    public String get(String key) {
+        return headers.get(key);
+    }
+
     public void put(String str) {
         String[] split = str.split(": ");
         put(split[0], split[1]);

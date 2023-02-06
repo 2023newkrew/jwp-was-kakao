@@ -11,7 +11,8 @@ public class Controllers {
     static {
         controllers = List.of(
                 new DefaultController(),
-                new GetResourceController()
+                new GetResourceController(),
+                new PostSignInController()
         );
     }
 
