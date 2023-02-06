@@ -64,6 +64,9 @@ public class HttpRequest {
         private String body;
 
         private HttpRequestBuilder() {
+            body = "";
+            parameters = Map.of();
+            headers = Map.of();
         }
 
         public static HttpRequestBuilder aHttpRequest() {
