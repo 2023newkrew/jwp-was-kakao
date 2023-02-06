@@ -34,11 +34,18 @@ public class RequestHandler implements Runnable {
             // request 파싱
             List<String> requestStrings = new ArrayList<>();
             String s = bufferedReader.readLine();
-            while (s != null) {
+            while (s != null && !"".equals(s)) {
                 requestStrings.add(s);
                 s = bufferedReader.readLine();
             }
-            Request request = RequestParser.parse(requestStrings);
+            RequestHeader requestHeader = RequestParser.parseHeader(requestStrings);
+
+            String body = "";
+            if (requestHeader.hasContentLength()) {
+                body = IOUtils.readData(bufferedReader, Integer.parseInt(requestHeader.getHeaders().get("Content-Length")));
+            }
+
+            Request request = new Request(requestHeader, body);
 
             // response 생성
             BaseResponseDto response = getResponse(request);
@@ -55,12 +62,12 @@ public class RequestHandler implements Runnable {
 
     private BaseResponseDto getResponse(Request request) throws IOException, URISyntaxException {
         // 파일 확장자
-        if (request.getHttpMethod().equals(HttpMethod.GET)) {
+        if (request.getHeader().getHttpMethod().equals(HttpMethod.GET)) {
             ResourceType resourceType = ResourceType.getResourceType(request);
             if (resourceType != ResourceType.NONE) {
-                request.convertToAbsolutePath(resourceType);
+                request.getHeader().convertToAbsolutePath(resourceType);
                 return new BaseResponseDto(StatusCode.OK,
-                        new String(FileIoUtils.loadFileFromClasspath(request.getUrl())));
+                        new String(FileIoUtils.loadFileFromClasspath(request.getHeader().getUrl())), request.getHeader().getHeaders().get("Accept").split(",")[0]);
             }
         }
 

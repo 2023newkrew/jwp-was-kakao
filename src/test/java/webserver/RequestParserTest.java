@@ -16,10 +16,9 @@ public class RequestParserTest {
             add("Host: localhost:8080");
             add("Connection: keep-alive");
             add("Accept: */*");
-            add("");
         }};
 
-        Request actual = RequestParser.parse(request);
+        RequestHeader actual = RequestParser.parseHeader(request);
 
         assertThat(actual.getHttpMethod()).isEqualTo(HttpMethod.GET);
         assertThat(actual.getUrl()).isEqualTo("/index.html");
@@ -28,7 +27,6 @@ public class RequestParserTest {
         assertThat(actual.getHeaders().get("Host")).isEqualTo("localhost:8080");
         assertThat(actual.getHeaders().get("Connection")).isEqualTo("keep-alive");
         assertThat(actual.getHeaders().get("Accept")).isEqualTo("*/*");
-        assertThat(actual.getBody()).isNull();
     }
 
     @Test
@@ -38,12 +36,9 @@ public class RequestParserTest {
             add("Host: localhost:8080");
             add("Connection: keep-alive");
             add("Accept: */*");
-            add("");
-            add("body1");
-            add("body2");
         }};
 
-        Request actual = RequestParser.parse(request);
+        RequestHeader actual = RequestParser.parseHeader(request);
 
         assertThat(actual.getHttpMethod()).isEqualTo(HttpMethod.GET);
         assertThat(actual.getUrl()).isEqualTo("/index.html");
@@ -52,7 +47,6 @@ public class RequestParserTest {
         assertThat(actual.getHeaders().get("Host")).isEqualTo("localhost:8080");
         assertThat(actual.getHeaders().get("Connection")).isEqualTo("keep-alive");
         assertThat(actual.getHeaders().get("Accept")).isEqualTo("*/*");
-        assertThat(actual.getBody()).isEqualTo("body1\nbody2");
     }
 
     @Test
@@ -62,10 +56,9 @@ public class RequestParserTest {
             add("Host: localhost:8080");
             add("Connection: keep-alive");
             add("Accept: */*");
-            add("");
         }};
 
-        Request actual = RequestParser.parse(request);
+        RequestHeader actual = RequestParser.parseHeader(request);
 
         assertThat(actual.getHttpMethod()).isEqualTo(HttpMethod.GET);
         assertThat(actual.getUrl()).isEqualTo("/user/create");
@@ -77,7 +70,6 @@ public class RequestParserTest {
         assertThat(actual.getHeaders().get("Host")).isEqualTo("localhost:8080");
         assertThat(actual.getHeaders().get("Connection")).isEqualTo("keep-alive");
         assertThat(actual.getHeaders().get("Accept")).isEqualTo("*/*");
-        assertThat(actual.getBody()).isNull();
     }
 
 

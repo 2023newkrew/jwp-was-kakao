@@ -3,20 +3,17 @@ package webserver;
 import java.util.*;
 
 public class RequestParser {
-    public static Request parse(List<String> request) {
-        Request.RequestBuilder requestDtoBuilder = Request.builder();
+    public static RequestHeader parseHeader(List<String> request) {
+        RequestHeader.RequestHeaderBuilder requestHeaderBuilder = RequestHeader.builder();
         ListIterator<String> iterator = request.listIterator();
 
-        extractStartLine(requestDtoBuilder, iterator);
-        extractHeader(requestDtoBuilder, iterator);
-        if (iterator.hasNext()) {
-            extractBody(requestDtoBuilder, iterator);
-        }
+        extractStartLine(requestHeaderBuilder, iterator);
+        extractHeader(requestHeaderBuilder, iterator);
 
-        return requestDtoBuilder.build();
+        return requestHeaderBuilder.build();
     }
 
-    private static void extractStartLine(Request.RequestBuilder requestDtoBuilder, ListIterator<String> iterator) {
+    private static void extractStartLine(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
         String line = iterator.next();
         String[] startLine = line.split(" ");
         String[] splitedUrl = startLine[1].split("\\?");
@@ -26,7 +23,7 @@ public class RequestParser {
             queryParams = extractQueryParams(splitedUrl[1]);
         }
 
-        requestDtoBuilder.httpMethod(HttpMethod.valueOf(startLine[0]))
+        requestHeaderBuilder.httpMethod(HttpMethod.valueOf(startLine[0]))
                 .url(url)
                 .queryParams(queryParams)
                 .httpVersion(startLine[2]);
@@ -43,28 +40,15 @@ public class RequestParser {
         return queryParams;
     }
 
-    private static void extractHeader(Request.RequestBuilder requestDtoBuilder, ListIterator<String> iterator) {
+    private static void extractHeader(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
         Map<String, String> headers = new HashMap<>();
         String line;
-        line = iterator.next();
-        while (!Objects.equals(line, "")) {
-            String[] splitedHeader = line.split(": ");
-            headers.put(splitedHeader[0], splitedHeader[1]);
-            line = iterator.next();
-        }
-
-        requestDtoBuilder.headers(headers);
-    }
-
-    private static void extractBody(Request.RequestBuilder requestDtoBuilder, ListIterator<String> iterator) {
-        String line;
-        StringBuilder body = new StringBuilder();
         while (iterator.hasNext()) {
             line = iterator.next();
-            body.append(line).append("\n");
+            String[] splitedHeader = line.split(": ");
+            headers.put(splitedHeader[0], splitedHeader[1]);
         }
-        body.deleteCharAt(body.length() - 1);
 
-        requestDtoBuilder.body(body.toString());
+        requestHeaderBuilder.headers(headers);
     }
 }

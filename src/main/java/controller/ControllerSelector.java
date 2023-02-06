@@ -18,14 +18,15 @@ public class ControllerSelector {
     private final UserController userController = new UserController();
 
     public BaseResponseDto runMethod(Request request) {
+        String contentType = request.getHeader().getHeaders().get("Accept").split(",")[0];
         // baseController
-        if (request.getHttpMethod() == GET
-                && Objects.equals(request.getUrl(), "/")) {
-            return new BaseResponseDto(StatusCode.OK, baseController.hello());
+        if (request.getHeader().getHttpMethod() == GET
+                && Objects.equals(request.getHeader().getUrl(), "/")) {
+            return new BaseResponseDto(StatusCode.OK, baseController.hello(), contentType);
         }
         // userController
-        if (request.getHttpMethod() == POST
-                && Objects.equals(request.getUrl(), "/user/create")) {
+        if (request.getHeader().getHttpMethod() == POST
+                && Objects.equals(request.getHeader().getUrl(), "/user/create")) {
             Map<String, String> requestBody = extractBody(request.getBody());
 
             return new BaseResponseDto(StatusCode.FOUND,
