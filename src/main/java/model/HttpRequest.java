@@ -43,4 +43,8 @@ public class HttpRequest {
     public Map<String, String> getQueryParams() {
         return new HashMap<>(queryParams);
     }
+
+    public Map<String, String> getBody() {
+        return new HashMap<>(body);
+    }
 }
