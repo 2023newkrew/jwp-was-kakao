@@ -1,5 +1,7 @@
 package webserver;
 
+import controller.ControllerSelector;
+import dto.BaseResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -14,9 +16,11 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
+    private final ControllerSelector controllerSelector;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.controllerSelector = new ControllerSelector();
     }
 
     public void run() {
@@ -37,19 +41,11 @@ public class RequestHandler implements Runnable {
             Request request = RequestParser.parse(requestStrings);
 
             // response 생성
+            BaseResponseDto response = getResponse(request);
+
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello world".getBytes();
-            if (request.getHttpMethod().equals(HttpMethod.GET)) {
-                ResourceType resourceType = ResourceType.getResourceType(request);
-                // 파일 확장자
-                if (resourceType != ResourceType.NONE) {
-                    request.convertToAbsolutePath(resourceType);
-                    body = FileIoUtils.loadFileFromClasspath(request.getUrl());
-                }
-                // path
-            }
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            responseHeader(dos, response);
+            responseBody(dos, response.getBody().getBytes());
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {        // custom 처리
@@ -57,11 +53,29 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private BaseResponseDto getResponse(Request request) throws IOException, URISyntaxException {
+        // 파일 확장자
+        if (request.getHttpMethod().equals(HttpMethod.GET)) {
+            ResourceType resourceType = ResourceType.getResourceType(request);
+            if (resourceType != ResourceType.NONE) {
+                request.convertToAbsolutePath(resourceType);
+                return new BaseResponseDto(StatusCode.OK,
+                        new String(FileIoUtils.loadFileFromClasspath(request.getUrl())));
+            }
+        }
+
+        // path
+        return controllerSelector.runMethod(request);
+    }
+
+    private void responseHeader(DataOutputStream dos, BaseResponseDto response) {
+        StatusCode statusCode = response.getStatusCode();
+        int bodyLength = response.getBody().getBytes().length;
+
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("HTTP/1.1 " + statusCode.getCodeNum() + " " + statusCode.getCodeMessage() + " \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("Content-Length: " + bodyLength + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
