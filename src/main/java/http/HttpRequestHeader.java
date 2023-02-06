@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 class HttpRequestHeader {
-    private final Map<String, String> headers = new HashMap<>();
+    private final Map<HttpHeaders, String> headers = new HashMap<>();
     private final String method;
     private final URI uri;
     private final String httpVersion;
@@ -17,12 +17,12 @@ class HttpRequestHeader {
         this.httpVersion = httpVersion;
     }
 
-    public Optional<String> getAttribute(String key) {
+    public Optional<String> getAttribute(HttpHeaders key) {
         return Optional.ofNullable(headers.get(key));
     }
 
-    public void addAttribute(String key, String value) {
-        headers.put(key, value);
+    public void addAttribute(HttpHeaders header, String value) {
+        headers.put(header, value);
     }
 
     public String getMethod() {

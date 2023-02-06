@@ -27,7 +27,7 @@ public class HttpRequestParser {
 
         while(!(line = br.readLine()).equals("")) {
             String[] header = line.split(": ");
-            String key = header[0];
+            HttpHeaders key = HttpHeaders.valueOf(header[0].toUpperCase().replace("-", "_"));
             String value = header[1].trim();
 
             httpRequestHeader.addAttribute(key, value);
@@ -38,7 +38,7 @@ public class HttpRequestParser {
                 new HttpRequestBody(
                         IOUtils.readData(
                                 br,
-                                Integer.parseInt(httpRequestHeader.getAttribute("Content-Length").orElse("0"))
+                                Integer.parseInt(httpRequestHeader.getAttribute(HttpHeaders.CONTENT_LENGTH).orElse("0"))
                         )
                 )
         );

@@ -1,10 +1,7 @@
 package webserver;
 
 import db.DataBase;
-import http.HttpRequest;
-import http.HttpRequestParser;
-import http.HttpResponse;
-import http.HttpStatus;
+import http.*;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,13 +47,14 @@ public class RequestHandler implements Runnable {
 
         if(request.getUri().getPath().equals("/user/create")) {
             String query = request.getBody();
+            logger.info("query" + query);
             User user = User.fromQueryString(query);
 
             DataBase.addUser(user);
 
             HttpResponse response = new HttpResponse.Builder()
                     .status(HttpStatus.FOUND)
-                    .addAttribute("Location", "/index.html")
+                    .addAttribute(HttpHeaders.LOCATION, "/index.html")
                     .build();
 
             response(dos, response.getBytes());
@@ -65,21 +63,21 @@ public class RequestHandler implements Runnable {
 
     private void doGet(HttpRequest request, DataOutputStream dos) throws IOException, URISyntaxException {
         byte[] body = null;
-        if (request.getUri().getPath().endsWith(".css")) {
+        if (request.checkStaticResource()) {
             body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
 
             HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute("Content-Type", "text/css;charset=utf-8")
+                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/css;charset=utf-8")
                     .body(body)
                     .build();
 
             response(dos, response.getBytes());
         }
 
-        if(request.getUri().getPath().endsWith(".html")) {
+        if(request.checkHtmlResource()) {
             body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
             HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute("Content-Type", "text/html;charset=utf-8")
+                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
                     .body(body)
                     .build();
             response(dos, response.getBytes());
@@ -88,7 +86,7 @@ public class RequestHandler implements Runnable {
         if(request.getUri().getPath().equals("/")) {
             body = "Hello world".getBytes();
             HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute("Content-Type", "text/html;charset=utf-8")
+                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
                     .body(body)
                     .build();
             response(dos, response.getBytes());
@@ -101,7 +99,7 @@ public class RequestHandler implements Runnable {
             DataBase.addUser(user);
 
             HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute("Content-Type", "text/html;charset=utf-8")
+                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
                     .build();
 
             response(dos, response.getBytes());

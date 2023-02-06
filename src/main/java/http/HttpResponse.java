@@ -18,7 +18,7 @@ public class HttpResponse {
         private String httpVersion = "1.1";
         private HttpStatus status = HttpStatus.OK;
         private byte[] body = {};
-        private Map<String, String> attributes;
+        private Map<HttpHeaders, String> attributes;
 
         public Builder() {
             this.attributes = new HashMap<>();
@@ -34,14 +34,14 @@ public class HttpResponse {
             return this;
         }
 
-        public Builder addAttribute(String key, String value) {
+        public Builder addAttribute(HttpHeaders key, String value) {
             this.attributes.put(key, value);
             return this;
         }
 
         public Builder body(byte[] body) {
             this.body = body;
-            this.attributes.put("Content-Length", Integer.toString(body.length));
+            this.attributes.put(HttpHeaders.CONTENT_LENGTH, Integer.toString(body.length));
             return this;
         }
 
