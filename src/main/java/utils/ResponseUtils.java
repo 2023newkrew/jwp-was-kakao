@@ -1,5 +1,7 @@
 package utils;
 
+import constant.DefaultConstant;
+import constant.RequestHeaderConstant;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +10,9 @@ import model.HttpRequest;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import static constant.DefaultConstant.*;
+import static constant.RequestHeaderConstant.*;
+
 @UtilityClass
 public class ResponseUtils {
     private static final Logger logger = LoggerFactory.getLogger(ResponseUtils.class);
@@ -15,7 +20,7 @@ public class ResponseUtils {
     public void response200Header(DataOutputStream dos, HttpRequest httpRequest, int lengthOfBodyContent) {
         try {
             String contentType = httpRequest.getHeaders()
-                    .getOrDefault("Accept", "text/html;charset=utf-8")
+                    .getOrDefault(ACCEPT, DEFAULT_CONTENT_TYPE)
                     .split(",")[0];
 
             dos.writeBytes("HTTP/1.1 200 OK \r\n");

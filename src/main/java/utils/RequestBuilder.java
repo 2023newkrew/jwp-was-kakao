@@ -50,12 +50,10 @@ public class RequestBuilder {
         return new HttpRequest(httpMethod, requestPath, queryParamsMap, httpProtocol, requestHeaderMap, body);
     }
 
-    private Map<String, String> getBody(String requestBody) {
-//        추후 요구사항으로 Json 형태의 body가 들어올 경우 활성화
-//
-//        if (isJson(requestBody)) {
-//            return new ObjectMapper().readValue(requestBody, Map.class);
-//        }
+    private Map<String, String> getBody(String requestBody) throws JsonProcessingException {
+        if (isJson(requestBody)) {
+            return new ObjectMapper().readValue(requestBody, Map.class);
+        }
 
         return QueryStringParser.parseQueryString(requestBody);
     }
