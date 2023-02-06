@@ -1,4 +1,4 @@
-package webserver;
+package controller;
 
 import http.HttpHeaders;
 import http.HttpRequest;
