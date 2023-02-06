@@ -19,8 +19,8 @@ public class RequestParser {
 
     public RequestParser(BufferedReader bufferedReader) throws IOException {
         this.bufferedReader = bufferedReader;
-        parseParams();
         parseHeader();
+        parseParams();
         parseBody();
     }
 
@@ -29,6 +29,7 @@ public class RequestParser {
         // 요청에 파라미터가 없는 경우 requestParams는 null
         if (!uri.contains("?")) {
             requestParams = null;
+            return;
         }
 
         String requestMethod = requestHeader.get("method").get();
