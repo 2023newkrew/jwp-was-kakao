@@ -31,14 +31,23 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
             String[] requests = parseRequest(in);
             String requestPath = requests[0];
             String requestBody = requests[1];
+            String indexLocation = "/index.html";
             byte[] body = new byte[0];
             String contentType = "";
-            if (requestPath.endsWith(".html")) {
+            if (requestPath.startsWith("/user/create")) {
+                String[] tokensPath = requestBody.split("&");
+                User user = new User(tokensPath[0].split("=")[1], tokensPath[1].split("=")[1], tokensPath[2].split("=")[1], tokensPath[3].split("=")[1]);
+                DataBase.addUser(user);
+                body = "Temp_Message: successfully Signed-up".getBytes();
+                response302Header(dos, indexLocation);
+                responseBody(dos, body);
+                return;
+            }
+            else if (requestPath.endsWith(".html")) {
                 body = FileIoUtils.loadFileFromClasspath("templates" + requestPath);
                 contentType = "text/html;charset=utf-8";
             }
@@ -57,12 +66,6 @@ public class RequestHandler implements Runnable {
             else if (requestPath.startsWith("/fonts")) {
                 body = FileIoUtils.loadFileFromClasspath("static" + requestPath);
                 contentType = "font/*";
-            }
-            else if (requestPath.startsWith("/user/create")) {
-                String[] tokensPath = requestBody.split("&");
-                User user = new User(tokensPath[0].split("=")[1], tokensPath[1].split("=")[1], tokensPath[2].split("=")[1], tokensPath[3].split("=")[1]);
-                DataBase.addUser(user);
-                body = "Temp_Message: successfully Signed-up".getBytes();
             }
             response200Header(dos, body.length, contentType);
             responseBody(dos, body);
@@ -93,6 +96,16 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + contentType + " \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, String location) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
