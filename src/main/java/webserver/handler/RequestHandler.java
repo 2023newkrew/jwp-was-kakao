@@ -10,8 +10,9 @@ import webserver.requestmapper.ResourceMapper;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import static utils.IOUtils.writeResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -42,17 +43,7 @@ public class RequestHandler implements Runnable {
 
             Response response = ResourceMapper.INSTANCE.handle(uri);
             writeResponse(dataOutputStream, response.toString());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException ignored) {
-        }
-    }
-
-    private void writeResponse(DataOutputStream dos, String response) {
-        try {
-            dos.write(response.getBytes(StandardCharsets.UTF_8));
-            dos.flush();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
