@@ -25,20 +25,13 @@ public final class MainController implements Controller {
     }
 
     private Response handleRootPage() {
-        String header = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: " + ContentType.HTML.getString() + " \r\n";
-        String body = "Hello world";
-
-        return new Response(header, body);
+        return Response.ok().contentType(ContentType.HTML).body("Hello world").build();
     }
 
     private Response handleUserCreate(Map<String, String> params) {
         User user = User.from(params);
         DataBase.addUser(user);
 
-        String header = "HTTP/1.1 302 Redirect \r\n" +
-                "Location: /index.html \r\n";
-
-        return new Response(header);
+        return Response.redirect().location("/index.html").build();
     }
 }
