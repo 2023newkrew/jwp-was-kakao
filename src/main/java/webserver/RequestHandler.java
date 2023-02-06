@@ -18,9 +18,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static webserver.response.HttpResponse.HttpResponseHeader.*;
-import static webserver.response.HttpResponse.HttpResponseStatus.OK;
-import static webserver.response.HttpResponse.HttpResponseStatus.REDIRECT;
+import static webserver.response.HttpResponseHeader.*;
+import static webserver.response.HttpResponseStatus.OK;
+import static webserver.response.HttpResponseStatus.REDIRECT;
 
 public class RequestHandler implements Runnable {
 
