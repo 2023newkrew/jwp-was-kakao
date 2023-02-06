@@ -5,6 +5,7 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -28,10 +29,9 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+             OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            InputStreamReader reader = new InputStreamReader(in);
-            BufferedReader br = new BufferedReader(reader);
             String line = br.readLine();
 
             if (line == null || "".equals(line)) {
@@ -40,12 +40,10 @@ public class RequestHandler implements Runnable {
 
             String[] tokens = line.split(" ");
             String url = tokens[1];
-
             line = br.readLine();
 
             while (!"".equals(line)) {
                 if (line == null) { return; }
-                System.out.println(line);
                 String[] header = line.split(": ");
                 headers.put(header[0], header[1]);
                 line = br.readLine();
@@ -53,7 +51,7 @@ public class RequestHandler implements Runnable {
 
             String requestBody = "";
             if (tokens[0].equals("POST")) {
-                requestBody = br.readLine();
+                requestBody = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
             }
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -68,20 +66,7 @@ public class RequestHandler implements Runnable {
             } else if (url.contains(".css")) {
                 body = FileIoUtils.loadFileFromClasspath("./static" + url);
                 response200Header(dos, body.length);
-            } else if (url.startsWith("/user/create") && tokens[0].equals("GET")) {
-                body = "".getBytes();
-                String query = url.split("\\?")[1];
-                Map<String, String> fields = new HashMap<>();
-                Arrays.stream(query.split("&")).forEach(field -> fields.put(field.split("=")[0], field.split("=")[1]));
-                User user = new User(
-                        fields.get("userId"),
-                        fields.get("password"),
-                        fields.get("name"),
-                        fields.get("email")
-                );
-                DataBase.addUser(user);
-                response201Header(dos, "/user/create", user.getUserId());
-            } else if (url.startsWith("/user/create") && tokens[0].equals("POST")) {
+            } else if (url.startsWith("/user/create")) {
                 body = "".getBytes();
                 Map<String, String> fields = new HashMap<>();
                 Arrays.stream(requestBody.split("&")).forEach(field -> fields.put(field.split("=")[0], field.split("=")[1]));
@@ -92,7 +77,7 @@ public class RequestHandler implements Runnable {
                         fields.get("email")
                 );
                 DataBase.addUser(user);
-                response201Header(dos, "/user/create", user.getUserId());
+                response302Header(dos, "/index.html");
             } else {
                 body = "Hello world".getBytes();
                 response200Header(dos, body.length);
@@ -120,11 +105,11 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response201Header(DataOutputStream dos, String url, String id) {
+    private void response302Header(DataOutputStream dos, String redirectUrl) {
         try {
-            String location = url.split("\\?")[0];
-            dos.writeBytes("HTTP/1.1 201 CREATED \r\n");
-            dos.writeBytes("Location: " + location + "/" + id + " \r\n");
+            dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
+            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Location: " + redirectUrl + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
