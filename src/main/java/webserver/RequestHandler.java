@@ -1,9 +1,6 @@
 package webserver;
 
-import annotation.Controller;
-import annotation.Mapping;
-import annotation.MethodAnnotationScanner;
-import annotation.Request;
+import annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.RequestUtils;
@@ -15,10 +12,13 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final Response RESPONSE_404 = Response.builder().version(Version.HTTP_1_1)
+            .statusCode(StatusCode.NOT_FOUND).build();
 
     private Socket connection;
     private Map<Request, Method> map;
@@ -39,36 +39,33 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = body(RequestUtils.getRequest(in));
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            Response response = body(RequestUtils.getRequest(in)).orElse(RESPONSE_404);
+            responseHeader(dos, response);
+            responseBody(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private byte[] body(Request request) {
+    private Optional<Response> body(Request request) {
         try {
-            return (byte[]) map.get(request).invoke(null);
+            return (Optional<Response>) map.get(request).invoke(null);
         } catch (Exception e) {
-            return new byte[]{};
+            return Optional.ofNullable(null);
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void responseHeader(DataOutputStream dos, Response response) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes(response.getHeader());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
+    private void responseBody(DataOutputStream dos, Response response) {
         try {
-            dos.write(body, 0, body.length);
+            dos.write(response.getBody(), 0, response.getBody().length);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
