@@ -1,10 +1,8 @@
 package webserver.controller;
 
-import constant.HttpMethod;
+import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.annotation.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import webserver.dao.UserDao;
 import webserver.service.UserService;
 

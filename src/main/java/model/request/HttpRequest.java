@@ -1,6 +1,6 @@
 package model.request;
 
-import constant.HttpMethod;
+import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

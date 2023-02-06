@@ -1,11 +1,10 @@
 package utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import constant.HttpMethod;
+import model.enumeration.HttpMethod;
 import lombok.experimental.UtilityClass;
 import model.request.*;
 import model.request.HttpRequest.HttpRequestBuilder;
-import org.json.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,7 +16,6 @@ import java.util.Map;
 
 import static constant.RequestHeaderConstant.CONTENT_LENGTH;
 import static java.lang.Integer.parseInt;
-import static utils.IOUtils.*;
 import static utils.QueryStringParser.*;
 
 @UtilityClass
