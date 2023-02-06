@@ -1,5 +1,7 @@
 package webserver;
 
+import db.DataBase;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -55,5 +57,33 @@ class RequestHandlerTest {
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("유저 생성 테스트")
+    void Should_CreateUser_WhenRequest() {
+        // given
+        String contentLength = String.valueOf(
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com".length()
+        );
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: " + contentLength + " ",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com",
+                ""
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(DataBase.findUserById("cu").getEmail()).isEqualTo("brainbackdoor%40gmail.com");
     }
 }

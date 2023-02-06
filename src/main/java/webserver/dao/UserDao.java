@@ -1,19 +1,17 @@
 package webserver.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import db.DataBase;
 import model.User;
 import model.HttpRequest;
+import utils.ObjectMapperFactory;
 
 import java.util.Map;
 
 public class UserDao {
     public void saveUser(HttpRequest request) {
-        Map<String, String> requestBody = request.getBody();
-        DataBase.addUser(new User(
-                requestBody.get("userId"),
-                requestBody.get("password"),
-                requestBody.get("name"),
-                requestBody.get("email"))
-        );
+        DataBase.addUser(ObjectMapperFactory
+                        .getInstance()
+                        .convertValue(request.getBody(), User.class));
     }
 }

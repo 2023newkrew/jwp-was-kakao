@@ -13,7 +13,9 @@ import java.io.DataOutputStream;
 import static utils.ResponseUtils.*;
 
 public class UserController extends ApiController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private static final UserController instance;
+
     private final UserService userService;
     private UserController(UserService userService) {
         this.userService = userService;
