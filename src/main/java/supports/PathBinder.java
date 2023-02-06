@@ -71,12 +71,13 @@ public class PathBinder {
                 queryParam.get("email")
         );
         DataBase.addUser(user);
+        System.out.println(DataBase.findAll());
     }
 
     private HashMap<String, String> parseQueryParameter(String userBody) {
         HashMap<String, String> result = new HashMap<>();
 
-        for (String info : userBody.split("\\?")) {
+        for (String info : userBody.split("&")) {
             String key = info.split("=")[0];
             String value = info.split("=")[1];
             result.put(key, value);
