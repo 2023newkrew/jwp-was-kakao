@@ -23,9 +23,9 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
+
+            // 요청 및 응답
             HttpRequest request = Parser.parseRequestMessage(reader);
             HttpResponse response = new HttpResponse();
             switch (request.getMethod()) {
@@ -43,11 +43,12 @@ public class RequestHandler implements Runnable {
     }
 
     private void doGet(final HttpRequest request, HttpResponse response) {
-        if (request.getUri().endsWith(".html") | request.getUri().endsWith(".css")) {
-            response.setBody(Parser.getFileContent(request.getUri()));
+        String uri = request.getUri();
+        if (uri.endsWith(".html") | uri.endsWith(".css")) {
+            response.setBody(Parser.getFileContent(uri));
             response.setHttpStatus(HttpStatus.OK);
         }
-        else if (request.getUri().startsWith("/user")) {
+        else if (uri.startsWith("/user")) {
             Map<String, String> map = Parser.getUriParameters(request.getUri());
             new UserService().addUser(
                     map.get("userId"),
@@ -64,12 +65,14 @@ public class RequestHandler implements Runnable {
             response.setBody("Hello world".getBytes());
             response.setHttpStatus(HttpStatus.OK);
         }
+        // TODO : NOT FOUND
     }
 
     private void doPost(final HttpRequest request, HttpResponse response) {
          if (request.getUri().startsWith("/user")) {
             Map<String, String> map = request.getParameter();
 
+            // TODO : BAD REQUEST
             new UserService().addUser(
                     map.get("userId"),
                     map.get("password"),
@@ -122,7 +125,6 @@ public class RequestHandler implements Runnable {
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
-            System.out.println(e.getMessage());
         }
     }
 }
