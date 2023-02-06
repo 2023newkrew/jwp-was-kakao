@@ -23,7 +23,7 @@ public class FrontController {
 
     public void handleRequest(HttpRequest request, DataOutputStream dos) {
         try {
-            ApiController apiController = handleControllerMap.getOrDefault(request.getRequestURL().getURL(), ViewController.getInstance());
+            ApiController apiController = handleControllerMap.getOrDefault(request.getURL(), ViewController.getInstance());
 
             if (isViewController(apiController)) {
                 ViewResolver.resolve(request, dos);

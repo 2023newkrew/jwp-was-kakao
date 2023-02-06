@@ -5,18 +5,19 @@ import constant.HttpMethod;
 import lombok.experimental.UtilityClass;
 import model.request.*;
 import model.request.HttpRequest.HttpRequestBuilder;
+import org.json.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.http.HttpHeaders;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static constant.RequestHeaderConstant.CONTENT_LENGTH;
 import static java.lang.Integer.parseInt;
+import static utils.IOUtils.*;
 import static utils.QueryStringParser.*;
 
 @UtilityClass
@@ -28,14 +29,13 @@ public class RequestBuilder {
 
         while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
             String[] tokens = line.split(" ");
-            if (isFirstLine(line)) {
+            if (isFirstLine(tokens[0])) {
                 setFirstLineProperties(requestBuilder, tokens);
                 continue;
             }
 
             requestHeaderMap.put(tokens[0].substring(0, tokens[0].length() - 1), tokens[1]);
         }
-
 
         if (requestHeaderMap.containsKey(CONTENT_LENGTH)) {
             String requestBody = IOUtils.readData(bufferedReader, parseInt(requestHeaderMap.get(CONTENT_LENGTH)));
@@ -48,9 +48,9 @@ public class RequestBuilder {
 
     private void setFirstLineProperties(HttpRequestBuilder requestBuilder, String[] tokens) {
         requestBuilder.method(tokens[0]);
-        requestBuilder.requestURL(new RequestURL(tokens[1]));
+        requestBuilder.URL(tokens[1]);
         requestBuilder.protocol(tokens[2]);
-        requestBuilder.queryString(QueryString.of(getQueryParamsMapIfExists(tokens)));
+        requestBuilder.queryParams(QueryParams.of(getQueryParamsMapIfExists(tokens)));
     }
 
     private RequestBody getBody(String requestBody) throws JsonProcessingException {
@@ -84,7 +84,7 @@ public class RequestBuilder {
         return tokens[1].contains("?");
     }
 
-    private boolean isFirstLine(String line) {
-        return !line.contains(":");
+    private boolean isFirstLine(String token) {
+        return token.equals(HttpMethod.GET) || token.equals(HttpMethod.POST) || token.equals(HttpMethod.PUT) || token.equals(HttpMethod.PATCH) || token.equals(HttpMethod.DELETE);
     }
 }

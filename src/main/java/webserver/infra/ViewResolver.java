@@ -19,8 +19,8 @@ public class ViewResolver {
     public void resolve(HttpRequest request, DataOutputStream dos) {
         byte[] body = DEFAULT_BODY;
 
-        if (!request.getRequestURL().getURL().equals(DEFAULT_PATH)) {
-            String requestURL = request.getRequestURL().getURL();
+        if (!request.getURL().equals(DEFAULT_PATH)) {
+            String requestURL = request.getURL();
             body = getBody(request, requestURL, dos);
         }
 
@@ -31,9 +31,9 @@ public class ViewResolver {
     private byte[] getBody(HttpRequest httpRequest, String requestURL, DataOutputStream dos) {
         try {
             if (isStaticPath(requestURL)) {
-                return loadFileFromClasspath(STATIC + httpRequest.getRequestURL().getURL());
+                return loadFileFromClasspath(STATIC + httpRequest.getURL());
             }
-            return loadFileFromClasspath(TEMPLATES + httpRequest.getRequestURL().getURL());
+            return loadFileFromClasspath(TEMPLATES + httpRequest.getURL());
         } catch (IOException | URISyntaxException | NullPointerException e) {
             response404Header(dos);
             throw new RuntimeException(e);

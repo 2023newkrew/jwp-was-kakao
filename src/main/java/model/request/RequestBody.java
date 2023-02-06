@@ -6,11 +6,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestBody {
-    private Map requestBody = new HashMap<>();
-
+    private final Map requestBody;
     public Map getRequestBody() {
         return Collections.unmodifiableMap(requestBody);
     }
