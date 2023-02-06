@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Map;
+
 public class User {
     private String userId;
     private String password;
@@ -27,6 +29,11 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public static User from(Map<String, String> map) {
+        User user = new User(map.get("userId"), map.get("password"), map.get("name"), map.get("email"));
+        return user;
     }
 
     @Override
