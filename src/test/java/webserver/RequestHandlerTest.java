@@ -12,11 +12,14 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+    final ResourceController resourceController = new ResourceController();
+    final UserController userController = new UserController();
+
     @Test
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, resourceController, userController);
 
         // when
         handler.run();
@@ -43,7 +46,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, resourceController, userController);
 
         // when
         handler.run();
@@ -72,7 +75,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, resourceController, userController);
 
         // when
         handler.run();
@@ -109,7 +112,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, resourceController, userController);
 
         // when
         handler.run();
@@ -144,7 +147,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, resourceController, userController);
 
         // when
         handler.run();
@@ -172,7 +175,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, resourceController, userController);
 
         // when
         handler.run();
