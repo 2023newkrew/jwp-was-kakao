@@ -3,6 +3,7 @@ package webserver;
 public enum StatusCode {
     OK(200, "OK"),
     CREATED(201, "CREATED"),
+    FOUND(302, "FOUND"),
     NOT_FOUND(404, "NOT FOUND")
     ;
 

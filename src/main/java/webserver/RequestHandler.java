@@ -76,6 +76,9 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 " + statusCode.getCodeNum() + " " + statusCode.getCodeMessage() + " \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + bodyLength + " \r\n");
+            if (statusCode == StatusCode.FOUND) {
+                dos.writeBytes("Location: /index.html");
+            }
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());

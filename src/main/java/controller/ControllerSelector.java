@@ -28,7 +28,7 @@ public class ControllerSelector {
                 && Objects.equals(request.getUrl(), "/user/create")) {
             Map<String, String> requestBody = extractBody(request.getBody());
 
-            return new BaseResponseDto(StatusCode.CREATED,
+            return new BaseResponseDto(StatusCode.FOUND,
                     userController.createUser(requestBody));
         }
 
