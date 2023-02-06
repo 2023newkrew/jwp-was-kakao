@@ -2,7 +2,7 @@ package webserver.controller;
 
 import db.DataBase;
 import model.User;
-import type.ContentType;
+import webserver.type.ContentType;
 import webserver.parser.Response;
 
 import java.util.Map;

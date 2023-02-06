@@ -1,6 +1,6 @@
 package webserver.parser;
 
-import type.ContentType;
+import webserver.type.ContentType;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

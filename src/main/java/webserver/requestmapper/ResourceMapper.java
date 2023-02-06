@@ -1,6 +1,6 @@
 package webserver.requestmapper;
 
-import type.ContentType;
+import webserver.type.ContentType;
 import utils.FileIoUtils;
 import webserver.parser.Response;
 
