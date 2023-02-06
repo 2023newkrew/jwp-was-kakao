@@ -1,7 +1,7 @@
 package utils;
 
 import lombok.experimental.UtilityClass;
-import model.HttpRequest;
+import model.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +17,9 @@ public class ResponseUtils {
 
     public void response200Header(DataOutputStream dos, HttpRequest httpRequest, int lengthOfBodyContent) {
         try {
-            String contentType = httpRequest.getHeaders()
+            String contentType = httpRequest.getHeader().getHeaders()
                     .getOrDefault(ACCEPT, DEFAULT_CONTENT_TYPE)
                     .split(",")[0];
-
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + contentType + " \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");

@@ -1,18 +1,17 @@
 package webserver.infra;
 
 import lombok.experimental.UtilityClass;
-import model.HttpRequest;
+import model.request.HttpRequest;
 import webserver.controller.ApiController;
 import webserver.controller.UserController;
 import webserver.controller.ViewController;
 
 import java.io.DataOutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import static webserver.infra.ControllerHandlerAdapter.findMethodToExecute;
+import static webserver.infra.ControllerHandlerAdapter.*;
 
 @UtilityClass
 public class FrontController {
@@ -24,7 +23,7 @@ public class FrontController {
 
     public void handleRequest(HttpRequest request, DataOutputStream dos) {
         try {
-            ApiController apiController = handleControllerMap.getOrDefault(request.getUrl(), ViewController.getInstance());
+            ApiController apiController = handleControllerMap.getOrDefault(request.getRequestURL().getURL(), ViewController.getInstance());
 
             if (isViewController(apiController)) {
                 ViewResolver.resolve(request, dos);

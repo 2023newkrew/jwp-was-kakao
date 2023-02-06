@@ -1,6 +1,6 @@
 package webserver.service;
 
-import model.HttpRequest;
+import model.request.HttpRequest;
 import webserver.dao.UserDao;
 
 public class UserService {

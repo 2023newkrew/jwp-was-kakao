@@ -1,14 +1,14 @@
 package webserver.dao;
 
 import db.DataBase;
-import model.HttpRequest;
-import model.User;
+import model.request.HttpRequest;
+import model.user.User;
 import utils.ObjectMapperFactory;
 
 public class UserDao {
     public void saveUser(HttpRequest request) {
         DataBase.addUser(ObjectMapperFactory
                 .getInstance()
-                .convertValue(request.getBody(), User.class));
+                .convertValue(request.getBody().getRequestBody(), User.class));
     }
 }

@@ -1,60 +1,67 @@
 package utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import constant.HttpMethod;
 import lombok.experimental.UtilityClass;
-import model.HttpRequest;
+import model.request.*;
+import model.request.HttpRequest.HttpRequestBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.http.HttpHeaders;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static constant.RequestHeaderConstant.CONTENT_LENGTH;
 import static java.lang.Integer.parseInt;
-import static utils.QueryStringParser.parseQueryString;
+import static utils.QueryStringParser.*;
 
 @UtilityClass
 public class RequestBuilder {
     public HttpRequest getHttpRequest(BufferedReader bufferedReader) throws IOException {
         String line = "";
-        String requestPath = "";
-        Map<String, String> queryParamsMap = new HashMap<>();
-        String httpMethod = "";
-        String httpProtocol = "";
-        Map<String, String> body = new HashMap<>();
-
         Map<String, String> requestHeaderMap = new HashMap<>();
+        HttpRequestBuilder requestBuilder = HttpRequest.builder();
 
         while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
             String[] tokens = line.split(" ");
-
             if (isFirstLine(line)) {
-                httpMethod = tokens[0];
-                requestPath = tokens[1].split("\\?")[0];
-                httpProtocol = tokens[2];
-                queryParamsMap = setQueryParamsMapIfExists(queryParamsMap, tokens);
+                setFirstLineProperties(requestBuilder, tokens);
                 continue;
             }
 
             requestHeaderMap.put(tokens[0].substring(0, tokens[0].length() - 1), tokens[1]);
         }
 
+
         if (requestHeaderMap.containsKey(CONTENT_LENGTH)) {
             String requestBody = IOUtils.readData(bufferedReader, parseInt(requestHeaderMap.get(CONTENT_LENGTH)));
-            body = getBody(requestBody);
+            requestBuilder.body(getBody(requestBody));
         }
 
-        return new HttpRequest(httpMethod, requestPath, queryParamsMap, httpProtocol, requestHeaderMap, body);
+        return requestBuilder.header(RequestHeader.of(requestHeaderMap))
+                .build();
     }
 
-    private Map<String, String> getBody(String requestBody) throws JsonProcessingException {
+    private void setFirstLineProperties(HttpRequestBuilder requestBuilder, String[] tokens) {
+        requestBuilder.method(tokens[0]);
+        requestBuilder.requestURL(new RequestURL(tokens[1]));
+        requestBuilder.protocol(tokens[2]);
+        requestBuilder.queryString(QueryString.of(getQueryParamsMapIfExists(tokens)));
+    }
+
+    private RequestBody getBody(String requestBody) throws JsonProcessingException {
         if (isJson(requestBody)) {
-            return ObjectMapperFactory.getInstance().readValue(requestBody, Map.class);
+            return RequestBody.of(
+                    (ObjectMapperFactory.getInstance()
+                    .readValue(requestBody, Map.class)
+            ));
         }
 
-        return QueryStringParser.parseQueryString(requestBody);
+        return RequestBody.of(QueryStringParser.parseQueryString(requestBody));
     }
 
     private boolean isJson(String body) {
@@ -66,11 +73,11 @@ public class RequestBuilder {
         return true;
     }
 
-    private Map<String, String> setQueryParamsMapIfExists(Map<String, String> queryString, String[] tokens) {
+    private Map getQueryParamsMapIfExists(String[] tokens) {
         if (isPathHasQueryString(tokens)) {
-            queryString = parseQueryString(tokens[1].split("\\?")[1]);
+           return parseQueryString(tokens[1].split("\\?")[1]);
         }
-        return queryString;
+        return Collections.emptyMap();
     }
 
     private boolean isPathHasQueryString(String[] tokens) {

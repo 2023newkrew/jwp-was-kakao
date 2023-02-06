@@ -1,7 +1,7 @@
 package webserver.infra;
 
 import lombok.experimental.UtilityClass;
-import model.HttpRequest;
+import model.request.HttpRequest;
 import model.annotation.Api;
 import webserver.controller.ApiController;
 
@@ -23,6 +23,6 @@ public class ControllerHandlerAdapter {
     }
 
     private boolean isMethodExistMatched(HttpRequest request, Api annotation) {
-        return annotation.method().equals(request.getHttpMethod()) && annotation.url().equals(request.getUrl());
+        return annotation.method().equals(request.getMethod()) && annotation.url().equals(request.getRequestURL().getURL());
     }
 }
