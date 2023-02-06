@@ -20,6 +20,9 @@ public class HttpRequest {
     private RequestHeader header;
     private RequestBody body;
 
+    public String getBodyValue(String key) {
+        return body.getRequestBody().get(key).toString();
+    }
     public boolean methodAndURLEquals(Api annotation) {
         return method.equals(annotation.method()) && URL.equals(annotation.url());
     }

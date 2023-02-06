@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static constant.RequestHeaderConstant.CONTENT_LENGTH;
+import static constant.HeaderConstant.CONTENT_LENGTH;
 import static java.lang.Integer.parseInt;
 import static utils.QueryStringParser.*;
 

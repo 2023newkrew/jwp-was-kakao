@@ -1,14 +1,19 @@
 package webserver.infra;
 
+import constant.HeaderConstant;
 import lombok.experimental.UtilityClass;
 import model.request.HttpRequest;
+import model.response.HttpResponse;
+import model.response.ResponseHeader;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 
 import static constant.DefaultConstant.DEFAULT_BODY;
 import static constant.DefaultConstant.DEFAULT_URL;
+import static constant.HeaderConstant.*;
 import static constant.PathConstant.STATIC;
 import static constant.PathConstant.TEMPLATES;
 import static utils.FileIoUtils.getStaticFolderNames;
@@ -24,7 +29,9 @@ public class ViewResolver {
             body = getBody(request, request.getURL(), dos);
         }
 
-        response200Header(dos, request, body.length);
+        HttpResponse response = new HttpResponse(ResponseHeader.of(new HashMap()));
+        response.setAttribute(CONTENT_LENGTH, String.valueOf(body.length));
+        response200Header(dos, request, response);
         responseBody(dos, body);
     }
 

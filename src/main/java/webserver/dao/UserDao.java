@@ -13,4 +13,8 @@ public class UserDao {
                         .convertValue(request.getBody().getRequestBody(), User.class)
         );
     }
+
+    public User findUserByUserId(String userId) {
+        return DataBase.findUserById(userId);
+    }
 }

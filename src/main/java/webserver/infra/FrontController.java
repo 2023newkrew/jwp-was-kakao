@@ -3,6 +3,7 @@ package webserver.infra;
 import lombok.experimental.UtilityClass;
 import model.request.HttpRequest;
 import webserver.controller.ApiController;
+import webserver.controller.LoginController;
 import webserver.controller.UserController;
 import webserver.controller.ViewController;
 
@@ -19,6 +20,7 @@ public class FrontController {
 
     static {
         handleControllerMap.put("/user/create", UserController.getInstance());
+        handleControllerMap.put("/user/login", LoginController.getInstance());
     }
 
     public void handleRequest(HttpRequest request, DataOutputStream dos) {

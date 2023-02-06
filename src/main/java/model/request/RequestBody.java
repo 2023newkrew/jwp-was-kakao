@@ -7,17 +7,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 public class RequestBody {
-    private final Map requestBody;
+    private final Map<String, String> requestBody;
 
-    public Map getRequestBody() {
+    public Map<String, String> getRequestBody() {
         return Collections.unmodifiableMap(requestBody);
     }
 
-    private RequestBody(Map requestBody) {
+    private RequestBody(HashMap<String, String> requestBody) {
         this.requestBody = requestBody;
     }
 
     public static RequestBody of(Map map) {
-        return new RequestBody(map);
+        return new RequestBody((HashMap<String, String>) map);
     }
 }
