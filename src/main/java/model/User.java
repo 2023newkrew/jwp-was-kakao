@@ -17,16 +17,14 @@ public class User {
         return userId;
     }
 
+    /* 2단계에서 사용 예정 */
+    @SuppressWarnings("unused")
     public String getPassword() {
         return password;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     @Override
