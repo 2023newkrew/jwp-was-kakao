@@ -2,6 +2,7 @@ package utils;
 
 import enums.ContentType;
 import exceptions.ResourceNotFoundException;
+import webserver.HttpRequest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -27,7 +28,12 @@ public class FileIoUtils {
         return "./static" + path;
     }
 
+    public static boolean isStaticFile(HttpRequest request) {
+        ContentType contentType = ContentType.fromFilename(request.getRequestPath());
+        return contentType != ContentType.NONE;
+    }
+
     private static boolean isNotStaticFile(ContentType contentType) {
-        return contentType == ContentType.HTML || contentType == ContentType.NONE;
+        return contentType == ContentType.HTML || contentType == ContentType.ICON;
     }
 }

@@ -1,125 +1,87 @@
 package webserver;
 
-import db.DataBase;
+import controller.HomeController;
+import controller.StaticFileController;
+import controller.UserController;
 import enums.ContentType;
 import exceptions.InvalidQueryParameterException;
 import exceptions.ResourceNotFoundException;
-import model.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
 import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.util.Map;
-
-import static utils.IOUtils.*;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
+    private final HomeController homeController;
+    private final UserController userController;
+    private final StaticFileController staticFileController;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.homeController = HomeController.getInstance();
+        this.userController = UserController.getInstance();
+        this.staticFileController = StaticFileController.getInstance();
     }
 
 
     public void run() {
-
-        System.out.println("connection");
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
-        DataOutputStream dos;
-        InputStream in;
-        OutputStream out;
-        try {
-            in = connection.getInputStream();
-            out = connection.getOutputStream();
+
+        try(InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            HttpRequest request = IOUtils.parseReqeust(in);
+            HttpResponse response = handleHttpRequest(request);
+
+            DataOutputStream dos = new DataOutputStream(out);
+            response.writeToOutputStream(dos);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
-            return;
         }
+    }
+
+    private HttpResponse handleHttpRequest(HttpRequest request) {
         try {
-            String path = extractPath(extractRequestFirstLine(in));
-            byte[] body;
-
-            if (path.startsWith("/user/create")) {
-                Map<String, String> userInfo = IOUtils.extractUser(path);
-                if (userInfo.isEmpty()) {
-                }
-                User user = new User(userInfo.get("userId"), userInfo.get("password"), URLDecoder.decode(userInfo.get("name")), userInfo.get("email"));
-                DataBase.addUser(user);
-            }
-            if (path.equals("/")) {
-                body = "Hello world".getBytes();
-                dos = new DataOutputStream(out);
-                response200Header(dos, body.length, ContentType.HTML);
-                responseBody(dos, body);
-                return;
-            }
-
-            ContentType contentType = ContentType.fromFilename(path);
-
-            String resourcePath = FileIoUtils.getResourcePath(path, contentType);
-            body = FileIoUtils.loadFileFromClasspath(resourcePath);
-
-            dos = new DataOutputStream(out);
-            response200Header(dos, body.length, contentType);
-            responseBody(dos, body);
+            return doHandleHttpRequest(request);
         } catch (ResourceNotFoundException e) {
-            dos = new DataOutputStream(out);
-            response404NotFoundHeader(dos);
+            return HttpResponse.of(HttpStatus.NOT_FOUND, ContentType.JSON, "Resource Not Found".getBytes());
+        } catch (IOException e) {
+            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Connection Error".getBytes());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
         } catch (InvalidQueryParameterException e) {
-            dos = new DataOutputStream(out);
-            response400BadRequestHeader(dos);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
+        } catch (Exception e) {
+            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
+
     }
 
-    private void response404NotFoundHeader(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 404 NOT FOUND \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
+    private HttpResponse doHandleHttpRequest(HttpRequest request) throws IOException, URISyntaxException {
+        String requestPath = request.getRequestPath();
 
-    private void response400BadRequestHeader(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 400 BAD REQUEST \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        if (requestPath.startsWith("/user/create") && "GET".equals(request.getRequestMethod())) {
+            return userController.createUserGet(request);
         }
-    }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, ContentType contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType.getValue() + ";charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        if (requestPath.startsWith("/user/create") && "POST".equals(request.getRequestMethod())) {
+            return userController.createUserPost(request);
         }
-    }
+        if (requestPath.equals("/")) {
+            return homeController.rootPathGet(request);
+        }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        if (FileIoUtils.isStaticFile(request)) {
+            return staticFileController.staticFileGet(request);
         }
+        throw new ResourceNotFoundException();
     }
 }

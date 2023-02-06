@@ -5,6 +5,7 @@ import java.util.Arrays;
 public enum ContentType {
 
     HTML("text/html", "html"),
+    JSON("application/json", "json"),
     CSS("text/css", "css"),
 
     JS("application/javascript", "js"),
@@ -13,6 +14,7 @@ public enum ContentType {
     FONT_EOT("font/eot", "eot"),
     FONT_TTF("font/ttf", "ttf"),
     FONT_SVG("font/svg", "svg"),
+    ICON("image/x-icon", "ico"),
     NONE("","");
 
     private final String value;
