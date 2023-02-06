@@ -3,6 +3,7 @@ package webserver.controller;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.annotation.Api;
+import model.response.HttpResponse;
 import webserver.dao.UserDao;
 import webserver.service.UserService;
 
@@ -28,7 +29,7 @@ public class UserController extends ApiController {
     }
 
     @Api(method = HttpMethod.POST, url = "/user/create")
-    public void register(HttpRequest request, DataOutputStream dos) {
+    public void register(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         userService.addUser(request);
 
         response302Header(dos, "/index.html");

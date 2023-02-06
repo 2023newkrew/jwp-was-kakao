@@ -22,14 +22,13 @@ import static utils.ResponseUtils.*;
 
 @UtilityClass
 public class ViewResolver {
-    public void resolve(HttpRequest request, DataOutputStream dos) {
+    public void resolve(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         byte[] body = DEFAULT_BODY;
 
         if (request.isNotDefaultURL()) {
             body = getBody(request, request.getURL(), dos);
         }
 
-        HttpResponse response = new HttpResponse(ResponseHeader.of(new HashMap()));
         response.setAttribute(CONTENT_LENGTH, String.valueOf(body.length));
         response200Header(dos, request, response);
         responseBody(dos, body);

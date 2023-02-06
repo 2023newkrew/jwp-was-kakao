@@ -2,6 +2,8 @@ package webserver.infra;
 
 import lombok.experimental.UtilityClass;
 import model.request.HttpRequest;
+import model.response.HttpResponse;
+import model.response.ResponseHeader;
 import webserver.controller.ApiController;
 import webserver.controller.LoginController;
 import webserver.controller.UserController;
@@ -26,12 +28,12 @@ public class FrontController {
     public void handleRequest(HttpRequest request, DataOutputStream dos) {
         try {
             ApiController apiController = handleControllerMap.getOrDefault(request.getURL(), ViewController.getInstance());
-
+            HttpResponse response = new HttpResponse(ResponseHeader.of(new HashMap()));
             if (isViewController(apiController)) {
-                ViewResolver.resolve(request, dos);
+                ViewResolver.resolve(request, response, dos);
                 return;
             }
-            findMethodToExecute(request, apiController).invoke(apiController, request, dos);
+            findMethodToExecute(request, apiController).invoke(apiController, request, response, dos);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
