@@ -52,7 +52,7 @@ public class RequestBuilder {
 
     private Map<String, String> getBody(String requestBody) throws JsonProcessingException {
         if (isJson(requestBody)) {
-            return new ObjectMapper().readValue(requestBody, Map.class);
+            return ObjectMapperFactory.getInstance().readValue(requestBody, Map.class);
         }
 
         return QueryStringParser.parseQueryString(requestBody);
