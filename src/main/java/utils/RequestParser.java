@@ -1,19 +1,20 @@
 package utils;
 
 import webserver.Headers;
+import webserver.RequestParameters;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class HeaderParser {
+public class RequestParser {
     public static Headers parse(BufferedReader br) {
         Headers headers = new Headers();
-        parseFirstLine(headers, br);
-        parseRemaining(headers, br);
+        parseRequestLine(headers, br);
+        parseHeader(headers, br);
         return headers;
     }
 
-    private static void parseFirstLine(Headers headers, BufferedReader br) {
+    private static void parseRequestLine(Headers headers, BufferedReader br) {
         try {
             String line = br.readLine();
             if (line == null) return;
@@ -26,7 +27,7 @@ public class HeaderParser {
         }
     }
 
-    private static void parseRemaining(Headers headers, BufferedReader br) {
+    private static void parseHeader(Headers headers, BufferedReader br) {
         try{
             String line = br.readLine();
             while (!"".equals(line)) {
@@ -38,5 +39,18 @@ public class HeaderParser {
         } catch (IOException e) {
             return;
         }
+    }
+
+    public static RequestParameters parse(String query) {
+        RequestParameters requestParameters = new RequestParameters();
+        String[] params = query.split("&");
+        for (String param : params) {
+            String[] splitParam = param.split("=");
+            if (splitParam.length != 2) {
+                return null;
+            }
+            requestParameters.put(splitParam[0], splitParam[1]);
+        }
+        return requestParameters;
     }
 }

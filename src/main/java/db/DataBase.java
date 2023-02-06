@@ -1,19 +1,15 @@
 package db;
 
 import model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DataBase {
-    private static final Logger logger = LoggerFactory.getLogger(DataBase.class);
     private static Map<String, User> users = new HashMap<>();
 
     public static void addUser(User user) {
-        logger.info("Created " + user.toString());
         users.put(user.getUserId(), user);
     }
 

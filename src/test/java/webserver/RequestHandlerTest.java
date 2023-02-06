@@ -10,26 +10,6 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
-//    @Test
-//    void socket_out() {
-//        // given
-//        final var socket = new StubSocket();
-//        final var handler = new RequestHandler(socket);
-//
-//        // when
-//        handler.run();
-//
-//        // then
-//        var expected = String.join("\r\n",
-//                "HTTP/1.1 200 OK ",
-//                "Content-Type: text/html;charset=utf-8 ",
-//                "Content-Length: 11 ",
-//                "",
-//                "Hello world");
-//
-//        assertThat(socket.output()).isEqualTo(expected);
-//    }
-
     @Test
     void index() throws IOException, URISyntaxException {
         // given
@@ -43,11 +23,7 @@ class RequestHandlerTest {
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
-        // when
         handler.run();
-
-        // then
-
 
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
@@ -71,11 +47,7 @@ class RequestHandlerTest {
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
-        // when
         handler.run();
-
-        // then
-
 
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/css;charset=utf-8 \r\n" +

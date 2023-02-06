@@ -5,9 +5,8 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import utils.HeaderParser;
+import utils.RequestParser;
 import utils.IOUtils;
-import utils.RequestParameterParser;
 
 import java.io.*;
 import java.net.Socket;
@@ -30,7 +29,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
-            Headers headers = HeaderParser.parse(br);
+            Headers headers = RequestParser.parse(br);
             if ("GET".equals(headers.getHttpMethod())) {
                 handleGet(headers, dos);
             }
@@ -81,7 +80,7 @@ public class RequestHandler implements Runnable {
     }
 
     private void responseRegister(String params, DataOutputStream dos) {
-        RequestParameters requestParameters = RequestParameterParser.parse(params);
+        RequestParameters requestParameters = RequestParser.parse(params);
         DataBase.addUser(new User(
                 requestParameters.get("userId"),
                 requestParameters.get("password"),
