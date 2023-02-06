@@ -71,7 +71,7 @@ public class RequestHandler implements Runnable {
             }
 
             HttpRequest httpRequest = new HttpRequest(httpMethod, requestUrl, queryParams, headerMap, requestBody);
-            Map<String, String> userInfo = httpRequest.getQueryParams();
+            Map<String, String> userInfo = httpRequest.getBody();
 
             User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"),
                     userInfo.get("email"));
@@ -79,8 +79,12 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
 
-            byte[] body;
             // resolver
+            byte[] body;
+            if (httpRequest.isPOSTMethod()) {
+                responseRedirectHome(dos);
+                return;
+            }
             try {
                 if (httpRequest.getUrl().endsWith("html")) {
                     body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUrl());
@@ -93,6 +97,18 @@ public class RequestHandler implements Runnable {
 
             response200Header(dos, httpRequest.getContentType(), body.length);
             responseBody(dos, body);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void responseRedirectHome(DataOutputStream dos) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
+            dos.writeBytes("Content-Type: text/html; charset=utf-8 \r\n");
+            dos.writeBytes("Location: /index.html \r\n");
+            dos.writeBytes("\r\n");
+            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
