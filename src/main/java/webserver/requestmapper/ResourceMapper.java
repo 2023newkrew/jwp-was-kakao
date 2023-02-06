@@ -31,6 +31,6 @@ public class ResourceMapper {
                         .build();
             }
         }
-        return Response.notFound().contentType(ContentType.HTML).build();
+        return Response.notFound().build();
     }
 }

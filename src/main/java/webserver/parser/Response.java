@@ -72,7 +72,7 @@ public class Response {
     }
 
     public static ResponseBuilder notFound() {
-        return new ResponseBuilder("HTTP/1.1 404 Not found");
+        return new ResponseBuilder("HTTP/1.1 404 Not Found");
     }
 
     public static ResponseBuilder redirect() {

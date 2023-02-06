@@ -34,6 +34,29 @@ class RequestHandlerTest {
     }
 
     @Test
+    void 없는_페이지_접근시_404_반환() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /no_such.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final var handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 404 Not Found ",
+                "Content-Length: 0 ");
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
     void 인덱스_페이지_접근() throws IOException, URISyntaxException {
         // given
         final String httpRequest = String.join("\r\n",
