@@ -1,4 +1,4 @@
-package webserver;
+package http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class HttpRequestParser {
 
         return new HttpRequest(
                 httpRequestHeader,
-                new HttpReqeustBody(
+                new HttpRequestBody(
                         IOUtils.readData(
                                 br,
                                 Integer.parseInt(httpRequestHeader.getAttribute("Content-Length").orElse("0"))

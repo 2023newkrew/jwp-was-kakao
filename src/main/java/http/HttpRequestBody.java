@@ -1,13 +1,13 @@
-package webserver;
+package http;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-public class HttpReqeustBody {
+class HttpRequestBody {
 
     private final String content;
 
-    public HttpReqeustBody(String content) {
+    public HttpRequestBody(String content) {
         this.content = URLDecoder.decode(content, StandardCharsets.UTF_8);
     }
 

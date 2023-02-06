@@ -1,11 +1,11 @@
-package webserver;
+package http;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class HttpRequestHeader {
+class HttpRequestHeader {
     private final Map<String, String> headers = new HashMap<>();
     private final String method;
     private final URI uri;
