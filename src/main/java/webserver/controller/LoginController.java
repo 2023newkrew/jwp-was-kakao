@@ -1,5 +1,6 @@
 package webserver.controller;
 
+import constant.HeaderConstant;
 import model.annotation.Api;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
@@ -14,6 +15,7 @@ import java.io.DataOutputStream;
 import java.util.Optional;
 import java.util.UUID;
 
+import static constant.HeaderConstant.*;
 import static utils.ResponseUtils.*;
 
 public class LoginController extends ApiController{
@@ -41,7 +43,7 @@ public class LoginController extends ApiController{
             response302Header(dos, "/user/login_failed.html");
             return;
         }
-
+        response.setAttribute(SET_COOKIE, "JSESSIONID=" + loginUUID.get() + "; Path=/");
         response200Header(dos, request, response);
     }
 }

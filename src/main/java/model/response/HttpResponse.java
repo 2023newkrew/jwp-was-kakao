@@ -1,8 +1,10 @@
 package model.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class HttpResponse {
     private final ResponseHeader header;
 

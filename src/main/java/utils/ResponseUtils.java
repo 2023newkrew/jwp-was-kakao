@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import static constant.DefaultConstant.DEFAULT_CONTENT_TYPE;
 import static constant.HeaderConstant.ACCEPT;
@@ -25,6 +27,11 @@ public class ResponseUtils {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + contentType + " \r\n");
             dos.writeBytes("Content-Length: " + response.getBodyValue(CONTENT_LENGTH) + " \r\n");
+
+            for (Map.Entry<String, String> entry : response.getHeader().getHeaders().entrySet()) {
+                dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");
+            }
+
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
