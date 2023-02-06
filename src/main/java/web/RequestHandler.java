@@ -1,24 +1,16 @@
 package web;
 
 import error.ApplicationException;
-import error.ErrorType;
-import http.Body;
-import http.HttpHeaders;
-import http.Protocol;
-import http.request.HttpMethod;
 import http.request.HttpRequest;
-import http.request.HttpUrl;
-import http.request.RequestInfo;
 import http.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.IOUtils;
+import utils.HttpRequestUtils;
 import web.controller.Controller;
 import web.controller.Controllers;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Objects;
 
 import static error.ErrorType.*;
 
@@ -39,11 +31,7 @@ public class RequestHandler implements Runnable {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
-            RequestInfo requestInfo = createRequestInfo(br.readLine());
-            HttpHeaders httpHeaders = createHeader(br);
-            Body body = createBody(br, httpHeaders);
-
-            HttpRequest httpRequest = new HttpRequest(requestInfo, httpHeaders, body);
+            HttpRequest httpRequest = HttpRequestUtils.createHttpRequest(br);
             HttpResponse httpResponse = doService(httpRequest);
 
             doResponse(dos, httpResponse.toByte());
@@ -66,37 +54,5 @@ public class RequestHandler implements Runnable {
     private HttpResponse doService(HttpRequest httpRequest) {
         Controller controller = controllers.getController(httpRequest);
         return controller.run(httpRequest);
-    }
-
-    private Body createBody(BufferedReader br, HttpHeaders httpHeaders) throws IOException {
-        if (!httpHeaders.containsKey("Content-Length")) {
-            return Body.empty();
-        }
-
-        return new Body(IOUtils.readData(br, Integer.parseInt(httpHeaders.get("Content-Length"))));
-    }
-
-    private HttpHeaders createHeader(BufferedReader br) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-
-        while (true) {
-            String line = br.readLine();
-            if (Objects.isNull(line) || "".equals(line)) {
-                break;
-            }
-
-            httpHeaders.put(line.trim());
-        }
-
-        return httpHeaders;
-    }
-
-    private RequestInfo createRequestInfo(String rawRequestInfo) {
-        String[] requestInfo = rawRequestInfo.split(" ");
-        HttpMethod httpMethod = HttpMethod.valueOf(requestInfo[0]);
-        HttpUrl url = new HttpUrl(requestInfo[1]);
-        Protocol protocol = Protocol.from(requestInfo[2]);
-
-        return new RequestInfo(httpMethod, url, protocol);
     }
 }

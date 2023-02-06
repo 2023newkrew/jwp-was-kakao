@@ -34,6 +34,10 @@ public class HttpHeaders {
         put(split[0], split[1]);
     }
 
+    public String getOrDefault(String key, String defaultValue) {
+        return headers.getOrDefault(key, defaultValue);
+    }
+
     public String toString() {
         return headers.keySet()
                 .stream()
