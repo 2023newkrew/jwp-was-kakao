@@ -58,7 +58,7 @@ public class RequestHandler implements Runnable {
 
         // resource 응답
         String rootPath = "./templates";
-        if (request.hasStaticPath()) {
+        if (hasStaticPath(request)){
             rootPath = "./static";
         }
         setResource(rootPath + request.getPath(), response);
@@ -83,6 +83,14 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean hasStaticPath(Request request) {
+        String path = request.getPath();
+        if (path == null) return false;
+        String[] pathToken = path.split("/");
+        if (pathToken.length < 2) return false;
+        return StaticDirectory.resolve(pathToken[1].toUpperCase()) != null;
     }
 }
 

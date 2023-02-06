@@ -39,16 +39,8 @@ public class Request {
         return header.getPath();
     }
 
-    public boolean hasStaticPath() {
-        return header.hasStaticPath();
-    }
-
     public String getAccept() {
         return header.getAccept();
-    }
-
-    public String getContentType() {
-        return header.getContentType();
     }
 
     public String getVersion() {

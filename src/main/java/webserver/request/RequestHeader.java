@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestHeader {
-    private static final String HOST = "Host";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String ACCEPT = "Accept";
@@ -18,7 +17,6 @@ public class RequestHeader {
     private String path;
     private Map<String, String> queryParameterMap = new HashMap<>();
     private String version;
-    private String host;
     private String contentType;
     private int contentLength;
     private String accept = "text/html";
@@ -36,11 +34,7 @@ public class RequestHeader {
     private void extractInfoFromFirstLine(String firstLine) {
         String[] tokens = firstLine.split(" ");
 
-        if (tokens.length < 3) {
-            throw new RuntimeException("InvalidHttpRequestHeaderException");
-        }
-
-        if ((httpMethod = HttpMethod.resolve(tokens[0])) == null) {
+        if (tokens.length < 3 || (httpMethod = HttpMethod.resolve(tokens[0])) == null) {
             throw new RuntimeException("InvalidHttpRequestHeaderException");
         }
 
@@ -49,7 +43,6 @@ public class RequestHeader {
         if (pathToken.length > 1) {
             setQueryParameters(pathToken[1]);
         }
-
         version = tokens[2];
     }
 
@@ -71,8 +64,6 @@ public class RequestHeader {
             if (tokens.length < 2) continue;
             headerInfoMap.put(tokens[0], tokens[1].trim());
         }
-
-        host = headerInfoMap.get(HOST);
 
         String contentLengthString = headerInfoMap.get(CONTENT_LENGTH);
         if (contentLengthString != null) {
@@ -97,10 +88,6 @@ public class RequestHeader {
         return version;
     }
 
-    public String getHost() {
-        return host;
-    }
-
     public int getContentLength() {
         return contentLength;
     }
@@ -113,12 +100,6 @@ public class RequestHeader {
         return contentType;
     }
 
-    public boolean hasStaticPath() {
-        if(path == null) return false;
-        String[] pathToken = path.split("/");
-        if(pathToken.length < 2) return false;
-        return StaticDirectory.resolve(pathToken[1].toUpperCase()) != null;
-    }
 
     public String getQueryParam(String key) {
         return queryParameterMap.get(key);
@@ -131,7 +112,6 @@ public class RequestHeader {
                 ", path='" + path + '\'' +
                 ", queryParameterMap=" + queryParameterMap +
                 ", version='" + version + '\'' +
-                ", host='" + host + '\'' +
                 ", contentLength=" + contentLength +
                 ", accept='" + accept + '\'' +
                 '}';
