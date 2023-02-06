@@ -1,7 +1,6 @@
 package webserver;
 
 import controller.FrontController;
-import model.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.MyHeaders;
@@ -22,93 +21,124 @@ public class RequestHandler implements Runnable {
 
     private Socket connection;
     private FrontController frontController;
+    private MyHeaders headers;
+    private MyParams params;
 
     public RequestHandler(Socket connection, FrontController frontController){
         this.frontController = frontController;
         this.connection = connection;
+        this.headers = new MyHeaders();
+        this.params = new MyParams();
     }
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream(); BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            MyHeaders headers = new MyHeaders();
+        try (InputStream in = connection.getInputStream();
+             OutputStream out = connection.getOutputStream();
+             BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+
             String line = br.readLine();
 
             boolean isFirstLine = false;
-            // ßString path = "" , method = "", contentType= "", contentLength = "";
-            MyParams params = new MyParams();
 
+            // Request Header
             while(!(Objects.isNull(line) || line.equals(""))){
-                logger.info(line);
+                isFirstLine = getFirstLineData(isFirstLine, line);
 
-                if(!isFirstLine){
-                    String[] tokens = line.split(" ");
-                    String method = tokens[0];
-                    headers.put("method", method);
-                    String path = tokens[1];
-                    if(path.contains("?")){
-                        Arrays.stream(path.split("\\?")[1].split("&")).forEach(str -> {
-                            var keyAndValue = str.split("=");
-                            params.put(keyAndValue[0], keyAndValue[1]);
-                        });
-                        path = path.split("\\?")[0];
-                    }
-                    headers.put("path", path);
+                getContentType(line);
 
-                    isFirstLine = true;
-                }
-                if(line.startsWith("Accept: ")){
-                    var tokens = line.split(" ")[1];
-                    String contentType = null;
-                    if(tokens.length() == 1){
-                        contentType = tokens.split(";")[0];
-                    }
-                    if(tokens.length() > 1){
-                        contentType = tokens.split(",")[0];
-                    }
-                    headers.put("contentType", contentType);
-                }
-
-                if(line.startsWith("Content-Length: ")){
-                    String contentLength = line.split(" ")[1];
-                    headers.put("contentLength", contentLength);
-                    logger.info("CONTENT_LENGTH : {}", contentLength);
-                }
+                getContentLength(line);
 
                 line = br.readLine();
             }
+
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = null;
 
+            // Request Body (POST 일 때만)
             if(headers.get("method").equals("POST")){
-                String result = readData(br, Integer.parseInt(headers.get("contentLength")));
-                Arrays.stream(result.split("&")).forEach(str -> {
-                    var keyAndValue = str.split("=");
-                    params.put(keyAndValue[0], keyAndValue[1]);
-                });
-
-                // Memory DB에 유저 데이터 저장
-                addUser(createUser(params));
-
-                response302Header(dos, "/index.html");
+                getDataFromRequestBody(br, dos);
                 return;
             }
-            String path = headers.get("path");
 
-
-            logger.info("===========================================================================================");
-
-            String[] tokens = path.split("\\.");
-            Extension extension = new Extension(tokens[tokens.length - 1]);
-            String contentType = headers.get("contentType");
-            if(frontController.canHandle(headers, params, extension)){
-                frontController.handlerMapping(headers, params, extension, dos);
+            // Handler Mapping (FrontController는 Dispatcher Servlet의 역할을 수행)
+            if(frontController.canHandle(headers, params)){
+                frontController.handlerMapping(headers, params, dos);
             }
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    // RequestBody에서 데이터 추출
+    private void getDataFromRequestBody(BufferedReader br, DataOutputStream dos) {
+        try{
+            // Body 데이터 읽기
+            String result = readData(br, Integer.parseInt(headers.get("contentLength")));
+
+            // Key & Value로 Param값 추출
+            Arrays.stream(result.split("&")).forEach(str -> {
+                var keyAndValue = str.split("=");
+                params.put(keyAndValue[0], keyAndValue[1]);
+            });
+
+            // Memory DB에 유저 데이터 저장
+            addUser(createUser(params));
+
+            response302Header(dos, "/index.html");
+        }
+        catch(IOException e){
+            logger.error(e.getMessage());
+        }
+    }
+
+    // ContentLength 추출
+    private void getContentLength(String line) {
+        if(!line.startsWith("Content-Length: ")) return;
+
+        String contentLength = line.split(" ")[1];
+        headers.put("contentLength", contentLength);
+    }
+
+    // ContentType 추출
+    private void getContentType(String line) {
+        if(!line.startsWith("Accept: ")) return;
+
+        var tokens = line.split(" ")[1];
+        String contentType = null;
+
+        if(tokens.length() == 1){
+            contentType = tokens.split(";")[0];
+        }
+        if(tokens.length() > 1){
+            contentType = tokens.split(",")[0];
+        }
+
+        headers.put("contentType", contentType);
+    }
+
+    // Request Header의 첫 줄에서 필요한 데이터(method, path) 추출
+    private boolean getFirstLineData(boolean isFirstLine, String line){
+        if(isFirstLine) return true;
+
+        String[] tokens = line.split(" ");
+        String method = tokens[0];
+        String path = tokens[1];
+
+        if(path.contains("?")){
+            Arrays.stream(path.split("\\?")[1].split("&")).forEach(str -> {
+                var keyAndValue = str.split("=");
+                params.put(keyAndValue[0], keyAndValue[1]);
+            });
+            path = path.split("\\?")[0];
+        }
+
+        headers.put("method", method);
+        headers.put("path", path);
+
+        return true;
     }
 }

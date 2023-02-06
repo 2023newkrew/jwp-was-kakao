@@ -1,6 +1,5 @@
 package controller;
 
-import model.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -19,12 +18,12 @@ public class StaticController implements MyController{
     private final Logger logger = LoggerFactory.getLogger(StaticController.class);
 
     @Override
-    public boolean canHandle(MyHeaders headers, MyParams params, Extension extension) {
-        return extension.isStatic();
+    public boolean canHandle(MyHeaders headers, MyParams params) {
+        return isStatic(params.get("extension"));
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, Extension extension, DataOutputStream dataOutputStream) {
+    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
         String contentType = headers.get("contentType");
 
@@ -41,5 +40,12 @@ public class StaticController implements MyController{
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isStatic(String extension){
+        if(extension.equals("html") || extension.equals("ico")){
+            return false;
+        }
+        return true;
     }
 }
