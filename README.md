@@ -1,7 +1,7 @@
 # 웹 애플리케이션 서버
 ## 기능 요구사항
 - [ ] GET /index.html 응답하기
-  - [ ] RequestHandlerTest 통과하도록 구현
+  - [x] RequestHandlerTest 통과하도록 구현
   - [ ] http header 전체 출력
     - [x] 헤더 정보를 담기 위한 `RequestHeader` 클래스 구현
     - [ ] `while (!"".equals(line)) {}`로 header 마지막 판단
