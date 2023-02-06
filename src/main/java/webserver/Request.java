@@ -21,4 +21,12 @@ public class Request {
     private Map<String, String> headers;
 
     private String body;
+
+    public void convertToAbsolutePath(ResourceType resourceType) {
+        if (resourceType == ResourceType.STATIC) {
+            url = resourceType.getPath() + url.substring(1);
+            return;
+        }
+        url = resourceType.getPath() + url;
+    }
 }

@@ -2,9 +2,11 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.FileIoUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class RequestHandler implements Runnable {
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
+            // request 파싱
             List<String> requestStrings = new ArrayList<>();
             String s = bufferedReader.readLine();
             while (s != null) {
@@ -33,12 +36,24 @@ public class RequestHandler implements Runnable {
             }
             Request request = RequestParser.parse(requestStrings);
 
+            // response 생성
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "Hello world".getBytes();
+            if (request.getHttpMethod().equals(HttpMethod.GET)) {
+                ResourceType resourceType = ResourceType.getResourceType(request);
+                // 파일 확장자
+                if (resourceType != ResourceType.NONE) {
+                    request.convertToAbsolutePath(resourceType);
+                    body = FileIoUtils.loadFileFromClasspath(request.getUrl());
+                }
+                // path
+            }
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } catch (URISyntaxException e) {        // custom 처리
+            throw new RuntimeException(e);
         }
     }
 

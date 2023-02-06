@@ -14,6 +14,7 @@
   - [x] 메서드, 리소스, http 버전 추출
   - [x] 각종 헤더값들
     - [x] 헤더를 파싱해서 저장할 Request 생성
-- [ ] RequestHandler -> 메서드에 따라서 분기
-  - [ ] 분기
+- [x] RequestHandler -> 메서드, uri에 따라서 분기
+  - [x] html -> templates/
+  - [x] 이 외 -> static/
 - [ ] URL 파싱 -> 파라미터 추출
