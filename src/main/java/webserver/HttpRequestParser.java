@@ -1,12 +1,12 @@
 package webserver;
 
+import utils.IOUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HttpRequestParser {
@@ -23,7 +23,7 @@ public class HttpRequestParser {
         String httpVersion = lineParts[2];
 
         Map<String, String> headers = new HashMap<>();
-        List<String> body = new ArrayList<>();
+        String body = "";
 
         while ((line = br.readLine()) != null && line.length() > 0) {
             int headerSeparatorIndex = line.indexOf(HEADER_SEPARATOR);
@@ -32,8 +32,8 @@ public class HttpRequestParser {
             headers.put(headerName, headerValue);
         }
 
-        while ((line = br.readLine()) != null) {
-            body.add(line);
+        if (headers.containsKey("Content-Length")) {
+            body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
         }
 
         return new HttpRequest(httpMethod, uri, httpVersion, headers, body);
