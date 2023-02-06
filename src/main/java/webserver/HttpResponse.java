@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 public class HttpResponse {
 
@@ -23,6 +22,10 @@ public class HttpResponse {
         return new HttpResponse(status, HttpResponseHeader.of(status, contentType, body.length), body);
     }
 
+    public static HttpResponse create302FoundResponse(String redirectURI) {
+        return new HttpResponse(HttpStatus.FOUND, HttpResponseHeader.create302FoundHeader(redirectURI), new byte[0]);
+    }
+
     public HttpResponseHeader getHeaders() {
         return headers;
     }
@@ -36,7 +39,7 @@ public class HttpResponse {
         writeBodyToOutputStream(dos);
     }
 
-    private void writeHeaderToOutputStream(DataOutputStream dos) throws IOException{
+    private void writeHeaderToOutputStream(DataOutputStream dos) throws IOException {
         for (String header : headers.getHeaders()) {
             dos.writeBytes(header + " \r\n");
         }

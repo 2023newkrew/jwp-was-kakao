@@ -15,7 +15,7 @@ public enum ContentType {
     FONT_TTF("font/ttf", "ttf"),
     FONT_SVG("font/svg", "svg"),
     ICON("image/x-icon", "ico"),
-    NONE("","");
+    NONE("", "");
 
     private final String value;
     private final String extensions;
@@ -25,19 +25,19 @@ public enum ContentType {
         this.extensions = extensions;
     }
 
+    public static ContentType fromFilename(String filename) {
+        return Arrays.stream(ContentType.values())
+                .filter(contentType -> contentType.matches(filename))
+                .findFirst()
+                .orElse(ContentType.NONE);
+    }
+
     public String getValue() {
         return value;
     }
 
     public String getExtensions() {
         return extensions;
-    }
-
-    public static ContentType fromFilename(String filename) {
-        return Arrays.stream(ContentType.values())
-                .filter(contentType -> contentType.matches(filename))
-                .findFirst()
-                .orElse(ContentType.NONE);
     }
 
     private boolean matches(String filename) {

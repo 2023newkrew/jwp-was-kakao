@@ -9,14 +9,15 @@ public class HomeController {
 
     private static HomeController instance;
 
+    private HomeController() {
+    }
+
     public static HomeController getInstance() {
         if (instance == null) {
             return new HomeController();
         }
         return instance;
     }
-
-    private HomeController() {}
 
     public HttpResponse rootPathGet(HttpRequest request) {
         return HttpResponse.of(HttpStatus.OK, ContentType.HTML, "Hello world".getBytes());

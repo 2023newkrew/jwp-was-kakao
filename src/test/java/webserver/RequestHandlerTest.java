@@ -56,7 +56,7 @@ class RequestHandlerTest {
 
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6943 \r\n" +
+                "Content-Length: 6902 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
@@ -72,8 +72,8 @@ class RequestHandlerTest {
     }
 
     @Test
-    @DisplayName("form으로 부터 user 생성 테스트")
-    void createUserTest(){
+    @DisplayName("GET 방식으로 form으로 부터 user 생성 테스트")
+    void createUserTestGet(){
         final String httpRequest = String.join("\r\n",
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -86,7 +86,12 @@ class RequestHandlerTest {
 
         handler.run();
 
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: http://localhost:8080/index.html \r\n" +
+                "\r\n";
+
         assertThat(DataBase.findAll()).hasSize(1);
+        assertThat(socket.output()).isEqualTo(expected);
     }
 
     @Test
@@ -121,7 +126,8 @@ class RequestHandlerTest {
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
                 "Content-Length: 92 ",
-                "Content-Type: application/x-www-form-urlencoded ",
+//                "Content-Type: application/x-www-form-urlencoded ",
+                "Content-Type: text/plain ",
                 "Accept: */*",
                 "",
                 "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com",
@@ -132,6 +138,11 @@ class RequestHandlerTest {
 
         handler.run();
 
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: http://localhost:8080/index.html \r\n" +
+                "\r\n";
+
         assertThat(DataBase.findAll()).hasSize(1);
+        assertThat(socket.output()).isEqualTo(expected);
     }
 }

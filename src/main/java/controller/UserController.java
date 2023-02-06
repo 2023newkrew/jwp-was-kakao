@@ -1,9 +1,7 @@
 package controller;
 
 import db.DataBase;
-import enums.ContentType;
 import model.user.User;
-import org.springframework.http.HttpStatus;
 import utils.IOUtils;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
@@ -15,15 +13,15 @@ public class UserController {
 
     private static UserController instance;
 
+    private UserController() {
+    }
+
     public static UserController getInstance() {
         if (instance == null) {
             return new UserController();
         }
         return instance;
     }
-
-    private UserController() {}
-
 
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestPath();
@@ -33,7 +31,7 @@ public class UserController {
         User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
         DataBase.addUser(user);
 
-        return HttpResponse.of(HttpStatus.OK, ContentType.JSON, new byte[0]);
+        return HttpResponse.create302FoundResponse("http://localhost:8080/index.html");
     }
 
     public HttpResponse createUserPost(HttpRequest request) {
@@ -44,6 +42,6 @@ public class UserController {
         User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
         DataBase.addUser(user);
 
-        return HttpResponse.of(HttpStatus.OK, ContentType.JSON, new byte[0]);
+        return HttpResponse.create302FoundResponse("http://localhost:8080/index.html");
     }
 }

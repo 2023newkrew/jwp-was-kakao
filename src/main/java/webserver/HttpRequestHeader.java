@@ -15,7 +15,7 @@ public class HttpRequestHeader {
         return token[0];
     }
 
-    public String getRequestPath(){
+    public String getRequestPath() {
         String[] token = headers.get(0).split(" ");
         return token[1];
     }
