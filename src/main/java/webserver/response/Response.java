@@ -14,7 +14,7 @@ public class Response {
     private String location;
 
     public Response(Request request) {
-        version = request.getVersion();
+        version = request.getProtocol();
         contentType = request.getAccept();
         body = new byte[]{};
     }

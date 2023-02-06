@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Request {
     private RequestHeader header;
@@ -21,18 +22,8 @@ public class Request {
         }
 
         this.header = new RequestHeader(headerLines);
-        System.out.println(header);
-
-        this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()), header.getContentType());
+        this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()));
         if (!body.isEmpty()) System.out.println(body);
-    }
-
-    public RequestHeader getHeader() {
-        return header;
-    }
-
-    public RequestBody getBody() {
-        return body;
     }
 
     public String getPath() {
@@ -43,8 +34,8 @@ public class Request {
         return header.getAccept();
     }
 
-    public String getVersion() {
-        return header.getVersion();
+    public String getProtocol() {
+        return header.getProtocol();
     }
 
     public String getQueryParam(String key) {
@@ -55,7 +46,7 @@ public class Request {
         return header.getHttpMethod();
     }
 
-    public String getFormData(String key) {
-        return body.getFormData(key);
+    public String getBody() {
+        return body.getBody();
     }
 }

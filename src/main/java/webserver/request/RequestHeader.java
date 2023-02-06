@@ -16,7 +16,7 @@ public class RequestHeader {
     private HttpMethod httpMethod;
     private String path;
     private Map<String, String> queryParameterMap = new HashMap<>();
-    private String version;
+    private String protocol;
     private String contentType;
     private int contentLength;
     private String accept = "text/html";
@@ -43,7 +43,7 @@ public class RequestHeader {
         if (pathToken.length > 1) {
             setQueryParameters(pathToken[1]);
         }
-        version = tokens[2];
+        protocol = tokens[2];
     }
 
     private void setQueryParameters(String queryString) {
@@ -84,8 +84,8 @@ public class RequestHeader {
         return path;
     }
 
-    public String getVersion() {
-        return version;
+    public String getProtocol() {
+        return protocol;
     }
 
     public int getContentLength() {
@@ -95,11 +95,6 @@ public class RequestHeader {
     public String getAccept() {
         return accept;
     }
-
-    public String getContentType() {
-        return contentType;
-    }
-
 
     public String getQueryParam(String key) {
         return queryParameterMap.get(key);
@@ -111,7 +106,7 @@ public class RequestHeader {
                 "httpMethod=" + httpMethod +
                 ", path='" + path + '\'' +
                 ", queryParameterMap=" + queryParameterMap +
-                ", version='" + version + '\'' +
+                ", version='" + protocol + '\'' +
                 ", contentLength=" + contentLength +
                 ", accept='" + accept + '\'' +
                 '}';
