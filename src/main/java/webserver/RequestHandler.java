@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
@@ -26,8 +27,23 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest httpRequest = HttpRequestParser.parse(in);
+            byte[] body;
+
+            if (httpRequest.getHttpMethod() == HttpMethod.GET) {
+                body = GetRequestHandler.handle(httpRequest);
+            }
+
+            else if (httpRequest.getHttpMethod() == HttpMethod.POST) {
+                body = PostRequestHandler.handle(httpRequest);
+            }
+
+            else{
+                body = new byte[0];
+            }
+
+            URI uri = new URI(httpRequest.getUri());
+
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = setBody(httpRequest.getUri());
 
             String accept = httpRequest.getHeader("Accept").split(",")[0];
 
@@ -58,21 +74,5 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private byte[] setBody(String uri) throws IOException, URISyntaxException {
-        if (uri.equals("/")) {
-            return "Hello world".getBytes();
-        }
-
-        String path = "";
-        if(uri.endsWith(".html")){
-            path = "templates";
-        }
-        if(uri.endsWith(".css") || uri.endsWith(".js") || uri.startsWith("/fonts") || uri.startsWith("/images")){
-            path = "static";
-        }
-        
-        return FileIoUtils.loadFileFromClasspath(path + uri);
     }
 }
