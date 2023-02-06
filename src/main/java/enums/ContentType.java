@@ -33,7 +33,7 @@ public enum ContentType {
                 .orElse(ContentType.NONE);
     }
 
-    private boolean matches(String filename) {
+    private Boolean matches(String filename) {
         return filename.matches(String.format("^\\S+.(?i)(%s)$", this.extensions));
     }
 }
