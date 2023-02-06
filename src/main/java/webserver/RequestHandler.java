@@ -1,9 +1,12 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import utils.HttpParser;
+import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -11,6 +14,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -39,26 +43,44 @@ public class RequestHandler implements Runnable {
 
             HttpParser httpParser = new HttpParser(sb.toString());
             String path = httpParser.getPath();
-            byte[] body;
+            byte[] body = new byte[0];
             System.out.println(path);
             DataOutputStream dos = new DataOutputStream(out);
-            if(path.startsWith("/css")){
-                body = FileIoUtils.loadFileFromClasspath("./static" + path);
-                response200Header(dos, body.length, path);
-            }else if(path.startsWith("/js")){
-                body = FileIoUtils.loadFileFromClasspath("./static" + path);
-                response200Header(dos, body.length, path);
-            }else if(path.startsWith("/fonts")){
-                body = FileIoUtils.loadFileFromClasspath("./static" + path);
-                response200Header(dos, body.length, path);
-            }else{
+            if(path.endsWith("html") ||  path.endsWith("html/")){
                 body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
+                response200Header(dos, body.length, path);
+            } else if(path.startsWith("/user/create")){
+                Integer contentLength = httpParser.getContentLength();
+                String userBody = IOUtils.readData(br, contentLength);
+                HashMap<String, String> queryParam = parseQueryParameter(userBody);
+                
+                User user = new User(
+                        queryParam.get("userId"),
+                        queryParam.get("password"),
+                        queryParam.get("name"),
+                        queryParam.get("email")
+                );
+                DataBase.addUser(user);
+            } else {
+                body = FileIoUtils.loadFileFromClasspath("./static" + path);
                 response200Header(dos, body.length, path);
             }
             responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private HashMap<String, String> parseQueryParameter(String userBody){
+        HashMap<String, String> result = new HashMap<>();
+
+        for(String info : userBody.split("\\?")){
+            String key = info.split("=")[0];
+            String value = info.split("=")[1];
+            result.put(key, value);
+        }
+
+        return result;
     }
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
