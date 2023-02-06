@@ -1,4 +1,4 @@
-package utils;
+package model.dto;
 
 import java.util.HashMap;
 import java.util.Map;

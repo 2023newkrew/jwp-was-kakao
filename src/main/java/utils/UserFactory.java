@@ -1,8 +1,7 @@
 package utils;
 
 import model.User;
-
-import java.util.Map;
+import model.dto.MyParams;
 
 public class UserFactory {
 

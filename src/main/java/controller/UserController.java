@@ -3,8 +3,8 @@ package controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import utils.MyHeaders;
-import utils.MyParams;
+import model.dto.MyHeaders;
+import model.dto.MyParams;
 import utils.UserFactory;
 
 import java.io.DataOutputStream;
@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static db.DataBase.addUser;
-import static utils.ResponseBodies.responseBody;
-import static utils.ResponseHeaders.response200Header;
-import static utils.ResponseHeaders.response302Header;
+import static model.dto.ResponseBodies.responseBody;
+import static model.dto.ResponseHeaders.response200Header;
+import static model.dto.ResponseHeaders.response302Header;
 
 public class UserController  implements MyController {
 

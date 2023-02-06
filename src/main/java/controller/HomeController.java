@@ -1,5 +1,7 @@
 package controller;
 
+import model.dto.MyHeaders;
+import model.dto.MyParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.*;
@@ -8,8 +10,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static utils.ResponseBodies.responseBody;
-import static utils.ResponseHeaders.*;
+import static model.dto.ResponseBodies.responseBody;
+import static model.dto.ResponseHeaders.*;
 
 public class HomeController implements MyController{
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
@@ -35,7 +37,7 @@ public class HomeController implements MyController{
         }
 
         if(path.equals("/index.html")){
-            index(headers, params, dataOutputStream);
+            index(headers, dataOutputStream);
         }
     }
 
@@ -56,7 +58,7 @@ public class HomeController implements MyController{
         responseBody(dataOutputStream, body);
     }
 
-    private void index(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream){
+    private void index(MyHeaders headers, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + headers.get("path"));
             response200Header(dataOutputStream, headers.get("contentType"), body.length);

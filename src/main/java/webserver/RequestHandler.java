@@ -3,8 +3,8 @@ package webserver;
 import controller.FrontController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.MyHeaders;
-import utils.MyParams;
+import model.dto.MyHeaders;
+import model.dto.MyParams;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static db.DataBase.addUser;
 import static utils.IOUtils.readData;
-import static utils.ResponseHeaders.response302Header;
+import static model.dto.ResponseHeaders.response302Header;
 import static utils.UserFactory.createUser;
 
 public class RequestHandler implements Runnable {
@@ -55,7 +55,6 @@ public class RequestHandler implements Runnable {
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = null;
 
             // Request Body (POST 일 때만)
             if(headers.get("method").equals("POST")){

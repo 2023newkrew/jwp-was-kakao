@@ -1,7 +1,7 @@
 package controller;
 
-import utils.MyHeaders;
-import utils.MyParams;
+import model.dto.MyHeaders;
+import model.dto.MyParams;
 
 import java.io.DataOutputStream;
 import java.util.ArrayList;
