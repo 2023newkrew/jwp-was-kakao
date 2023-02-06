@@ -51,14 +51,4 @@ public class Response {
         }
         return header += "\r\n";
     }
-
-    @Override
-    public String toString() {
-        return "Response{" +
-                "status=" + status +
-                ", body=" + new String(body, StandardCharsets.UTF_8) +
-                ", contentType='" + contentType + '\'' +
-                ", version='" + version + '\'' +
-                '}';
-    }
 }
