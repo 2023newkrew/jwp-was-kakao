@@ -3,6 +3,7 @@
 - [ ] GET /index.html 응답하기
   - [ ] RequestHandlerTest 통과하도록 구현
   - [ ] http header 전체 출력
+    - [x] 헤더 정보를 담기 위한 `RequestHeader` 클래스 구현
     - [ ] `while (!"".equals(line)) {}`로 header 마지막 판단
     - [ ] `if (line == null) { return;}`로 line이 null인 경우에 대한 예외 처리
     - [ ] `utils.FileIoUtils`의 `loadFileFromClasspath()` 이용하여 파일 읽기
