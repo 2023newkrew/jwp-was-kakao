@@ -1,9 +1,13 @@
-package webserver.http;
+package http.response;
 
 public class Response {
-    private String statusLine;
-    private String headers;
-    private byte[] body;
+    private final String statusLine;
+    private final String headers;
+    private final byte[] body;
+
+    public static ResponseBuilder builder() {
+        return new ResponseBuilder();
+    }
 
     public Response(String statusLine, String headers, byte[] body) {
         this.statusLine = statusLine;

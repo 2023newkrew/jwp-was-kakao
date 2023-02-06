@@ -6,30 +6,34 @@ import java.util.List;
 import java.util.Map;
 
 public class ParsingUtils {
+    public static Map<String, String> parseStartLine(String rawStartLine) {
+        String[] splittedLine = rawStartLine.split(" ");
+        return new HashMap<>() {{
+            put("method", splittedLine[0]);
+            put("uri", splittedLine[1]);
+            put("version", splittedLine[2]);
+        }};
+    }
+
     public static Map<String, String> parseHeader(List<String> rawHeader) {
         Map<String, String> headers = new HashMap<>();
-        String[] startLine = rawHeader.get(0).split(" ");
-        headers.put("method", startLine[0]);
-        headers.put("path", startLine[1]);
-        headers.put("protocol version", startLine[2]);
 
-        rawHeader.subList(1,rawHeader.size()).stream().forEach(param -> {
-            String[] kv = param.split(":", 2);
-            headers.put(kv[0].trim(), kv[1].trim());
-        });
+        rawHeader.forEach(item -> {
+                    String[] kv = item.split(":", 2);
+                    headers.put(kv[0].trim(), kv[1].trim());
+                });
         return headers;
     }
 
-    public static Map<String, String> parseQueryString(String query) {
-        Map<String, String> params = new HashMap<>();
-        //String query = path.split("\\?")[1];
+    public static Map<String, String> parseQueryString(String queryString) {
+        Map<String, String> newParams = new HashMap<>();
+        Arrays.stream(queryString.split("&"))
+                .forEach(item -> {
+                    String[] tuple = item.split("=");
+                    newParams.put(tuple[0], tuple[1]);
+                });
 
-        Arrays.stream(query.split("&")).forEach(param -> {
-            String[] kv = param.split("=");
-            params.put(kv[0].trim(), kv[1].trim());
-        });
-
-        return params;
+        return newParams;
     }
 
 }

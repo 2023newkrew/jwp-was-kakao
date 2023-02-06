@@ -1,7 +1,6 @@
 package webserver;
 
 import db.DataBase;
-import model.User;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -26,7 +25,7 @@ class RequestHandlerTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/plain;charset=utf-8 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 11 ",
                 "",
                 "Hello world");
@@ -86,15 +85,15 @@ class RequestHandlerTest {
                         "Content-Type: application/x-www-form-urlencoded\n" +
                         "Accept: */*\n" +
                         "\n" +
-                        "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+                        "userId=cu&password=password&name=lee&email=brainbackdoor@gmail.com");
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
         handler.run();
         List<String> response = Arrays.asList(socket.output().split("\r\n"));
 
-        assertThat(response.get(0).equals("HTTP/1.1 302 Found"));
-        assertThat(response.stream().filter(s -> s.contains("Location")).findAny().get()).isEqualTo("Location: /index.html ");
+        assertThat(response.get(0)).isEqualTo("HTTP/1.1 302 Found ");
+        assertThat(response.stream().filter(s -> s.contains("Location")).findAny().orElse("")).isEqualTo("Location: /index.html ");
         assertThat(DataBase.findUserById("cu").getPassword()).isEqualTo("password");
     }
 }

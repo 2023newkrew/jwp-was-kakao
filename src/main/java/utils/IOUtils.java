@@ -1,12 +1,10 @@
 package utils;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
-
-import static utils.ParsingUtils.parseHeader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class IOUtils {
     /**
@@ -21,13 +19,17 @@ public class IOUtils {
         return String.copyValueOf(body);
     }
 
-    public static Map<String, String> readRequestHeader(BufferedReader br) throws IOException {
+    public static List<String> readRequestHeader(BufferedReader br) throws IOException {
         List<String> requestHeader = new ArrayList<>();
         String line = br.readLine();
-        while (!"".equals(line) || line == null) {
+        while (!"".equals(line) || Objects.isNull(line)) {
             requestHeader.add(line);
             line = br.readLine();
         }
-        return parseHeader(requestHeader);
+        return requestHeader;
+    }
+
+    public static String readStartLine(BufferedReader br) throws IOException {
+        return br.readLine();
     }
 }
