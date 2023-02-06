@@ -1,5 +1,6 @@
 package webserver;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -10,6 +11,7 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+    @DisplayName("루트 요청시 Hello world를 응답한다")
     @Test
     void socketOut() {
         // given
@@ -30,6 +32,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("HTML 파일 요청시 해당 파일을 읽어 응답한다")
     @Test
     void index() throws IOException, URISyntaxException {
         // given
@@ -47,8 +50,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6902 \r\n" +
@@ -58,11 +59,12 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("CSS 파일 요청시 해당 파일을 읽어 응답한다")
     @Test
     void css() throws IOException, URISyntaxException {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET ./css/styles.css HTTP/1.1",
+                "GET /css/styles.css HTTP/1.1",
                 "Host: localhost:8080",
                 "Accept: text/css,*/*;q=0.1",
                 "Connection: keep-alive",
@@ -77,8 +79,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 7065 \r\n" +
@@ -88,6 +88,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("파일 요청시 현재 위치(.)를 포함해도 파일을 읽어 응답할 수 있다")
     @Test
     void anotherCss() throws IOException, URISyntaxException {
         // given
@@ -107,8 +108,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 109518 \r\n" +
@@ -118,6 +117,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("파일 요청에 특정 API 경로가 포함되어도 파일 응답으로 처리된다")
     @Test
     void form() throws IOException, URISyntaxException {
         // given
@@ -135,8 +135,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 5167 \r\n" +
@@ -146,6 +144,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("GET 요청의 쿼리 파라미터를 통해 사용자를 생성할 수 있다")
     @Test
     void createUserByGet() {
         // given
@@ -171,6 +170,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("POST 요청의 바디 파라미터를 통해 사용자를 생성할 수 있다")
     @Test
     void createUserByPost() {
         // given

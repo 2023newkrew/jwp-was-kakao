@@ -6,11 +6,12 @@ import service.UserService;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final String DEFAULT_RESPONSE = "Hello world";
+    private static final String REDIRECT_PATH = "/index.html";
 
     private final Socket connection;
 
@@ -56,13 +57,11 @@ public class RequestHandler implements Runnable {
                     map.get("name"),
                     map.get("email")
             );
-            response.setHeaders(new HashMap<>(){{
-                put("Location", "/index.html");
-            }});
+            response.setHeader(HttpHeader.LOCATION, REDIRECT_PATH);
             response.setHttpStatus(HttpStatus.FOUND);
         }
         else {
-            response.setBody("Hello world".getBytes());
+            response.setBody(DEFAULT_RESPONSE.getBytes());
             response.setHttpStatus(HttpStatus.OK);
         }
         // TODO : NOT FOUND
@@ -80,39 +79,38 @@ public class RequestHandler implements Runnable {
                     map.get("email")
             );
 
-            response.setHeaders(new HashMap<>(){{
-                put("Location", "/index.html");
-            }});
+            response.setHeader(HttpHeader.LOCATION, REDIRECT_PATH);
             response.setHttpStatus(HttpStatus.FOUND);
         }
+        // TODO : NOT FOUND
     }
 
     private void sendResponse(HttpResponse response, DataOutputStream dos) {
         switch (response.getHttpStatus()) {
             case OK:
-                response200Header(dos, response.getBody().length);
+                response200Header(dos, response);
                 break;
             case FOUND:
-                response302Header(dos, response.getHeaders().get("Location"));
+                response302Header(dos, response);
         }
         responseBody(dos, response.getBody());
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, HttpResponse response) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("Content-Length: " + response.getHeader(HttpHeader.CONTENT_LENGTH) + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response302Header(DataOutputStream dos, String location) {
+    private void response302Header(DataOutputStream dos, HttpResponse response) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: "+location+" \r\n");
+            dos.writeBytes("Location: " + response.getHeader(HttpHeader.LOCATION) + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
