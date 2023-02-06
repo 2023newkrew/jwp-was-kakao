@@ -1,4 +1,4 @@
-package utils;
+package supports;
 
 import java.util.HashMap;
 
@@ -6,8 +6,6 @@ public class HttpParser {
     private final HashMap<String, String> httpHeaderInfo = new HashMap<>();
 
     public HttpParser(String httpRequest) {
-        System.out.println(httpRequest);
-
         String[] httpInfo = httpRequest.split("\n");
         String[] firstLine = httpInfo[0].split(" ");
 
