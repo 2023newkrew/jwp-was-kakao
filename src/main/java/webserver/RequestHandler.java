@@ -29,7 +29,7 @@ public class RequestHandler implements Runnable {
             HttpRequest httpRequest = HttpRequestParser.parse(in);
             byte[] body;
             DataOutputStream dos = new DataOutputStream(out);
-            String accept = httpRequest.getHeader("Accept").split(",")[0];
+            String accept = httpRequest.getHeader("Accept") == null ? "text/html" : httpRequest.getHeader("Accept").split(",")[0];
 
 
             if (httpRequest.getHttpMethod() == HttpMethod.GET) {
