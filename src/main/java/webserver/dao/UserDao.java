@@ -7,8 +7,10 @@ import utils.ObjectMapperFactory;
 
 public class UserDao {
     public void saveUser(HttpRequest request) {
-        DataBase.addUser(ObjectMapperFactory
-                .getInstance()
-                .convertValue(request.getBody().getRequestBody(), User.class));
+        DataBase.addUser(
+                ObjectMapperFactory
+                        .getInstance()
+                        .convertValue(request.getBody().getRequestBody(), User.class)
+        );
     }
 }

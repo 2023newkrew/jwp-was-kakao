@@ -20,8 +20,7 @@ public class ViewResolver {
         byte[] body = DEFAULT_BODY;
 
         if (!request.getURL().equals(DEFAULT_PATH)) {
-            String requestURL = request.getURL();
-            body = getBody(request, requestURL, dos);
+            body = getBody(request, request.getURL(), dos);
         }
 
         response200Header(dos, request, body.length);

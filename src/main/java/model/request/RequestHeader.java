@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestHeader {
-    private Map<String, String> headers = new HashMap<>();
+    private final Map<String, String> headers;
 
     public Map<String, String> getHeaders() {
         return Collections.unmodifiableMap(headers);

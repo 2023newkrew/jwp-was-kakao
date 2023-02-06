@@ -22,7 +22,7 @@ public class FileIoUtils {
         return Files.readAllBytes(path);
     }
 
-    public Set<String> getStaticFolderNames() {
+    public Set getStaticFolderNames() {
         return Arrays.stream(
                 new File(Thread.currentThread()
                         .getContextClassLoader()
