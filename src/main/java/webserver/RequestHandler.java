@@ -1,25 +1,21 @@
 package webserver;
 
 import db.DataBase;
+import model.HttpRequest;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import utils.IOUtils;
+import utils.HttpRequestUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-
-    private final Map<String, String> headers = new HashMap<>();
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -32,55 +28,32 @@ public class RequestHandler implements Runnable {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            String line = br.readLine();
-
-            if (line == null || "".equals(line)) {
-                throw new RuntimeException("잘못된 요청 형식입니다.");
-            }
-
-            String[] tokens = line.split(" ");
-            String url = tokens[1];
-            line = br.readLine();
-
-            while (!"".equals(line)) {
-                if (line == null) { return; }
-                String[] header = line.split(": ");
-                headers.put(header[0], header[1]);
-                line = br.readLine();
-            }
-
-            String requestBody = "";
-            if (tokens[0].equals("POST")) {
-                requestBody = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
-            }
-
+            HttpRequest request = HttpRequestUtils.createHttpRequest(br);
             DataOutputStream dos = new DataOutputStream(out);
 
             byte[] body;
-            if (url.equals("/")) {
+            if (request.getUrl().equals("/")) {
                 body = "Hello world".getBytes();
-                response200Header(dos, body.length);
-            } else if (url.contains(".html")) {
-                body = FileIoUtils.loadFileFromClasspath("./templates" + url);
-                response200Header(dos, body.length);
-            } else if (url.contains(".css")) {
-                body = FileIoUtils.loadFileFromClasspath("./static" + url);
-                response200Header(dos, body.length);
-            } else if (url.startsWith("/user/create")) {
+                response200Header(dos, body.length, request);
+            } else if (request.getUrl().contains(".html")) {
+                body = FileIoUtils.loadFileFromClasspath("./templates" + request.getUrl());
+                response200Header(dos, body.length, request);
+            } else if (request.getUrl().contains(".css")) {
+                body = FileIoUtils.loadFileFromClasspath("./static" + request.getUrl());
+                response200Header(dos, body.length, request);
+            } else if (request.getUrl().startsWith("/user/create")) {
                 body = "".getBytes();
-                Map<String, String> fields = new HashMap<>();
-                Arrays.stream(requestBody.split("&")).forEach(field -> fields.put(field.split("=")[0], field.split("=")[1]));
                 User user = new User(
-                        fields.get("userId"),
-                        fields.get("password"),
-                        fields.get("name"),
-                        fields.get("email")
+                        request.getQuery().get("userId"),
+                        request.getQuery().get("password"),
+                        request.getQuery().get("name"),
+                        request.getQuery().get("email")
                 );
                 DataBase.addUser(user);
                 response302Header(dos, "/index.html");
             } else {
                 body = "Hello world".getBytes();
-                response200Header(dos, body.length);
+                response200Header(dos, body.length, request);
             }
 
             responseBody(dos, body);
@@ -93,10 +66,10 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, HttpRequest request) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            String contentType = headers.getOrDefault("Accept", "text/html").split(",")[0];
+            String contentType = request.getHeaders().getOrDefault("Accept", "text/html").split(",")[0];
             dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
