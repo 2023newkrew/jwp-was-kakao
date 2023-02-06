@@ -8,8 +8,8 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public enum ResourceType {
-    HTML("./templates", List.of("html")),
-    STATIC("./static", List.of("css", "js")),
+    HTML("./templates", List.of("html", "ico")),
+    STATIC("./static", List.of("css", "js", "png", "eot", "svg", "ttf", "woff", "woff2")),
     NONE("", Collections.emptyList());
 
     private final String path;
@@ -20,7 +20,7 @@ public enum ResourceType {
     }
 
     public static ResourceType getResourceType(Request request) {
-        String[] splitedUrl = request.getUrl().split("\\.");
+        String[] splitedUrl = request.getHeader().getUrl().split("\\.");
         String requestExtension = splitedUrl[splitedUrl.length - 1];
 
         return Arrays.stream(ResourceType.values())

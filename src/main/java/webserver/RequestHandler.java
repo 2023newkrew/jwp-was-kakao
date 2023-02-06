@@ -5,6 +5,7 @@ import dto.BaseResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -81,7 +82,7 @@ public class RequestHandler implements Runnable {
 
         try {
             dos.writeBytes("HTTP/1.1 " + statusCode.getCodeNum() + " " + statusCode.getCodeMessage() + " \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: " + response.getContentType() + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + bodyLength + " \r\n");
             if (statusCode == StatusCode.FOUND) {
                 dos.writeBytes("Location: /index.html");

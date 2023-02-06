@@ -30,10 +30,10 @@ public class ControllerSelector {
             Map<String, String> requestBody = extractBody(request.getBody());
 
             return new BaseResponseDto(StatusCode.FOUND,
-                    userController.createUser(requestBody));
+                    userController.createUser(requestBody), contentType);
         }
 
-        return new BaseResponseDto(StatusCode.NOT_FOUND, "");
+        return new BaseResponseDto(StatusCode.NOT_FOUND, "", contentType);
     }
 
     private static Map<String, String> extractBody(String rawBody) {
