@@ -12,8 +12,6 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserController {
-
-
     private static UserController instance;
 
     public static UserController getInstance() {

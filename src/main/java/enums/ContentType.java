@@ -6,11 +6,9 @@ import java.util.Arrays;
 
 @Getter
 public enum ContentType {
-
     HTML("text/html", "html"),
     JSON("application/json", "json"),
     CSS("text/css", "css"),
-
     JS("application/javascript", "js"),
     FONT_WOFF("font/woff", "woff"),
     FONT_WOFF2("font/woff2", "woff2"),

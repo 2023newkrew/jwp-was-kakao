@@ -9,7 +9,6 @@ import webserver.HttpResponse;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HomeController {
-
     private static HomeController instance;
 
     public static HomeController getInstance() {

@@ -1,7 +1,6 @@
 package exceptions;
 
 public class InvalidQueryParameterException extends RuntimeException {
-
     public InvalidQueryParameterException() {
     }
 

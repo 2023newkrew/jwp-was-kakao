@@ -64,7 +64,6 @@ public class RequestHandler implements Runnable {
         } catch (Exception e) {
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
-
     }
 
     private HttpResponse doHandleHttpRequest(HttpRequest request) throws IOException, URISyntaxException {
@@ -73,14 +72,12 @@ public class RequestHandler implements Runnable {
         if (requestPath.startsWith("/user/create") && "GET".equals(request.getRequestMethod())) {
             return userController.createUserGet(request);
         }
-
         if (requestPath.startsWith("/user/create") && "POST".equals(request.getRequestMethod())) {
             return userController.createUserPost(request);
         }
         if (requestPath.equals("/")) {
             return homeController.rootPathGet(request);
         }
-
         if (FileIoUtils.isStaticFile(request)) {
             return staticFileController.staticFileGet(request);
         }

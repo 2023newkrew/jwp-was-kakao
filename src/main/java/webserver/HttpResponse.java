@@ -11,7 +11,6 @@ import java.io.IOException;
 @Getter
 @AllArgsConstructor
 public class HttpResponse {
-
     private HttpStatus status;
     private HttpResponseHeader headers;
     private byte[] body;
