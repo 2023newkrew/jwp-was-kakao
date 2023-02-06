@@ -6,7 +6,7 @@ import http.request.RequestLine;
 import http.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.controller.UserController;
+import webserver.controller.Controller;
 
 import java.io.*;
 import java.net.Socket;
@@ -15,7 +15,6 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final UserController userController = new UserController();
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -42,13 +41,16 @@ public class RequestHandler implements Runnable {
 
     private void handle(HttpRequest request, HttpResponse response) {
         RequestLine requestLine = request.getRequestLine();
+        HttpMethod method = requestLine.getHttpMethod();
         String path = requestLine.getRequestUri().getPath();
 
-        if (request.getMethod() == HttpMethod.POST && path.equals("/user/create")) {
-            userController.create(request, response);
+        Controller controller = Router.getController(method, path);
+
+        if (controller == null) {
+            response.forward(path);
             return;
         }
 
-        response.forward(path);
+        controller.handle(request, response);
     }
 }

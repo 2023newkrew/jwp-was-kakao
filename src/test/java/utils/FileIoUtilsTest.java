@@ -10,6 +10,6 @@ public class FileIoUtilsTest {
     @Test
     void loadFileFromClasspath() {
         byte[] body = FileIoUtils.loadFileFromClasspath("./templates/index.html");
-        log.info("file : {}", new String(body));
+//        log.info("file : {}", new String(body));
     }
 }

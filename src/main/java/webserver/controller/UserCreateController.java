@@ -7,13 +7,11 @@ import http.response.HttpResponse;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.RequestHandler;
 
-public class UserController {
+public class UserCreateController extends PostController {
+    static final Logger logger = LoggerFactory.getLogger(UserCreateController.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
-    public void create(HttpRequest request, HttpResponse response) {
+    public void doPost(HttpRequest request, HttpResponse response) {
         RequestParam requestParam = request.getRequestBodyParam();
         User user = new User(
                 requestParam.get("userId"),
@@ -21,7 +19,6 @@ public class UserController {
                 requestParam.get("name"),
                 requestParam.get("email")
         );
-
         DataBase.addUser(user);
         response.sendRedirect("/index.html");
     }

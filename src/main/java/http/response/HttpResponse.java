@@ -1,9 +1,9 @@
 package http.response;
 
-import http.HttpHeader;
 import http.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
 
 import java.io.DataOutputStream;
@@ -16,8 +16,6 @@ public class HttpResponse {
 
     private final DataOutputStream dos;
 
-    private HttpHeader httpHeader = new HttpHeader();
-
     public HttpResponse(DataOutputStream dos) {
         this.dos = dos;
     }
@@ -25,8 +23,7 @@ public class HttpResponse {
     public void forward(String path) {
         byte[] body = FileIoUtils.loadFileFromClasspath(getResourcePath(path));
         logger.info("Forward to file : {}", path);
-        response200Header(body.length, ContentType.from(path));
-        responseBody(body);
+        response(HttpStatus.OK, ContentType.from(path), body);
     }
 
     private String getResourcePath(String path) {
@@ -36,11 +33,16 @@ public class HttpResponse {
         return STATIC_PATH + path;
     }
 
-    private void response200Header(int lengthOfBodyContent, ContentType contentType) {
+    private void response(HttpStatus status, ContentType type, byte[] body) {
+        responseHeader(status, type, body.length);
+        responseBody(body);
+    }
+
+    private void responseHeader(HttpStatus status, ContentType contentType, int length) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType.getValue() + ";charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes(String.format("HTTP/1.1 %s\r\n", status.toString()));
+            dos.writeBytes("Content-Type: " + contentType.getValue() + "\r\n");
+            dos.writeBytes("Content-Length: " + length + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
