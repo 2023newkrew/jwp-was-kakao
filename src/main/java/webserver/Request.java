@@ -16,6 +16,8 @@ public class Request {
 
     private String url;
 
+    private Map<String, String> queryParams;
+
     private String httpVersion;
 
     private Map<String, String> headers;
