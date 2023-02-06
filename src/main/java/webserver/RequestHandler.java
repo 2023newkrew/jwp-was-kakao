@@ -1,6 +1,10 @@
 package webserver;
 
 import db.DataBase;
+import http.HttpRequest;
+import http.HttpRequestParser;
+import http.HttpResponse;
+import http.HttpStatus;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +13,6 @@ import utils.FileIoUtils;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -26,7 +28,6 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             HttpRequest request = HttpRequestParser.parse(in);
             DataOutputStream dos = new DataOutputStream(out);
 
@@ -45,29 +46,20 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void doPost(HttpRequest request, DataOutputStream dos) {
+    private void doPost(HttpRequest request, DataOutputStream dos) throws IOException {
 
         if(request.getUri().getPath().equals("/user/create")) {
             String query = request.getBody();
-            String[] queryParameters  = query.split("&");
-            Map<String, String> attributes = new HashMap<>();
-
-            for (String queryParameter : queryParameters) {
-                String key = queryParameter.split("=")[0];
-                String value = queryParameter.split("=")[1];
-                attributes.put(key, value);
-            }
-
-            User user = new User(
-                    attributes.get("userId"),
-                    attributes.get("password"),
-                    attributes.get("name"),
-                    attributes.get("email")
-            );
+            User user = User.fromQueryString(query);
 
             DataBase.addUser(user);
 
-            response302Header(dos, "/index.html");
+            HttpResponse response = new HttpResponse.Builder()
+                    .status(HttpStatus.FOUND)
+                    .addAttribute("Location", "/index.html")
+                    .build();
+
+            response(dos, response.getBytes());
         }
     }
 
@@ -75,83 +67,51 @@ public class RequestHandler implements Runnable {
         byte[] body = null;
         if (request.getUri().getPath().endsWith(".css")) {
             body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
-            response200CssHeader(dos, body.length);
-            responseBody(dos, body);
+
+            HttpResponse response = new HttpResponse.Builder()
+                    .addAttribute("Content-Type", "text/css;charset=utf-8")
+                    .body(body)
+                    .build();
+
+            response(dos, response.getBytes());
         }
 
         if(request.getUri().getPath().endsWith(".html")) {
             body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
-            response200HtmlHeader(dos, body.length);
-            responseBody(dos, body);
+            HttpResponse response = new HttpResponse.Builder()
+                    .addAttribute("Content-Type", "text/html;charset=utf-8")
+                    .body(body)
+                    .build();
+            response(dos, response.getBytes());
         }
 
         if(request.getUri().getPath().equals("/")) {
             body = "Hello world".getBytes();
-            response200HtmlHeader(dos, body.length);
-            responseBody(dos, body);
+            HttpResponse response = new HttpResponse.Builder()
+                    .addAttribute("Content-Type", "text/html;charset=utf-8")
+                    .body(body)
+                    .build();
+            response(dos, response.getBytes());
         }
 
         if(request.getUri().getPath().equals("/user/create")) {
             String query = request.getUri().getQuery();
-            String[] queryParameters  = query.split("&");
-            Map<String, String> attributes = new HashMap<>();
-
-            for (String queryParameter : queryParameters) {
-                String key = queryParameter.split("=")[0];
-                String value = queryParameter.split("=")[1];
-                attributes.put(key, value);
-            }
-
-            User user = new User(
-                    attributes.get("userId"),
-                    attributes.get("password"),
-                    attributes.get("name"),
-                    attributes.get("email")
-            );
+            User user = User.fromQueryString(query);
 
             DataBase.addUser(user);
 
-            response200HtmlHeader(dos, 0);
+            HttpResponse response = new HttpResponse.Builder()
+                    .addAttribute("Content-Type", "text/html;charset=utf-8")
+                    .build();
+
+            response(dos, response.getBytes());
         }
 
     }
 
-    private void response200HtmlHeader(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response(DataOutputStream dos, byte[] data) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response302Header(DataOutputStream dos, String redirectUrl) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + redirectUrl + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response200CssHeader(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/css; charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
+            dos.write(data, 0, data.length);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
