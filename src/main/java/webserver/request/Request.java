@@ -1,32 +1,20 @@
 package webserver.request;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Objects;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class Request {
-    private final String path;
 
-    public Request(InputStream in) throws IOException {
-        var br = new BufferedReader(new InputStreamReader(in));
-        String line = br.readLine();
-        System.out.println(line);
+    private final Path path;
+
+    public Request(List<String> request) {
+        String line = URLDecoder.decode(request.get(0), StandardCharsets.UTF_8);
         String[] headline = line.split(" ");
-        path = headline[1];
-        do {
-            line = br.readLine();
-            System.out.println(line);
-        }
-        while (Objects.nonNull(line) && !line.equals(""));
+        path = new Path(headline[1]);
     }
 
-    private String parsePath(String line) {
-        return line.split(" ")[1];
-    }
-
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
 }

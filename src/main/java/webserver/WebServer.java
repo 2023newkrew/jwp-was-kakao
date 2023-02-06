@@ -1,7 +1,11 @@
 package webserver;
 
+import webserver.resolver.ResourceResolver;
+import webserver.resolver.ViewResolver;
+
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class WebServer {
     private static final int DEFAULT_PORT = 8080;
@@ -20,7 +24,10 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection));
+                Thread thread = new Thread(new RequestHandler(
+                        connection,
+                        List.of(new ResourceResolver(), new ViewResolver())
+                ));
                 thread.start();
             }
         }

@@ -4,9 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
+import webserver.resolver.ResourceResolver;
+import webserver.resolver.ViewResolver;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +18,7 @@ class RequestHandlerTest {
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, List.of(new ResourceResolver(), new ViewResolver()));
 
         // when
         handler.run();
@@ -46,7 +49,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, List.of(new ResourceResolver(), new ViewResolver()));
 
         // when
         handler.run();
@@ -76,7 +79,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, List.of(new ResourceResolver(), new ViewResolver()));
 
         // when
         handler.run();
