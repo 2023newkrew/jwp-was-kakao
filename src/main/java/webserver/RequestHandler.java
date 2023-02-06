@@ -1,7 +1,5 @@
 package webserver;
 
-import db.DataBase;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import type.ContentType;
@@ -15,8 +13,9 @@ import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final List<String> roots = List.of("templates", "static");
 
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -27,28 +26,18 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            List<String> roots = List.of("templates", "static");
-            InputStreamReader inputStreamReader = new InputStreamReader(in);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            RequestParser requestParser = new RequestParser(bufferedReader);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+            DataOutputStream dataOutputStream = new DataOutputStream(out);
 
-            RequestHeader header = requestParser.getRequestHeader();
-            Map<String, String> requestParameter = requestParser.getParams();
+            Request request = new Request(bufferedReader);
+            Map<String, String> requestParameter = request.getRequestParams();
 
-            DataOutputStream dos = new DataOutputStream(out);
-            //TODO: RequestHeader에 URI가 포함되지 않은 상황을 고려해야 할까?
             byte[] returnBody = null;
-            String uri = header.get("URI").orElseThrow(RuntimeException::new);
+            String uri = request.getUri();
 
-            String[] uriSplit = uri.split("\\?");
-            String uriWithOutParams = uriSplit[0];
-
-            if (uriWithOutParams.equals("/user/create")) {
-                User user = User.from(requestParameter);
-                DataBase.addUser(user);
-                response302Header(dos);
-                responseBody(dos, new byte[0]);
+            if (HandlerMapper.INSTANCE.isHandleAvailable(uri)) {
+                Response response = HandlerMapper.INSTANCE.handle(uri, requestParameter);
+                writeResponse(dataOutputStream, response.toBytes());
                 return;
             }
 
@@ -57,45 +46,25 @@ public class RequestHandler implements Runnable {
                 if (returnBody != null) {
                     String[] split = uri.split("\\.");
                     String ext = split[split.length - 1];
-                    response200Header(dos, returnBody.length, ContentType.valueOf(ext.toUpperCase()));
+                    response200Header(dataOutputStream, returnBody.length, ContentType.valueOf(ext.toUpperCase()));
                     break;
                 }
             }
             if (returnBody == null) {
-                response404Header(dos);
+                response404Header(dataOutputStream);
             }
-            responseBody(dos, returnBody);
+            responseBody(dataOutputStream, returnBody);
         } catch (IOException e) {
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            return;
+        } catch (URISyntaxException ignored) {
         }
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, ContentType type) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + type.getToResponseText() + " \r\n");
+            dos.writeBytes("Content-Type: " + type.getString() + " \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response201Header(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 201 CREATED \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response302Header(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 REDIRECT \r\n");
-            dos.writeBytes("Location: /index.html");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -115,6 +84,15 @@ public class RequestHandler implements Runnable {
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
+            dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void writeResponse(DataOutputStream dos, byte[] response) {
+        try {
+            dos.write(response);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());

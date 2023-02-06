@@ -1,17 +1,19 @@
 package webserver;
 
+import db.DataBase;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
     @Test
-    void socket_out() {
+    void 안녕세상() {
         // given
         final var socket = new StubSocket();
         final var handler = new RequestHandler(socket);
@@ -31,7 +33,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void index() throws IOException, URISyntaxException {
+    void 인덱스_페이지_접근() throws IOException, URISyntaxException {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
@@ -53,8 +55,39 @@ class RequestHandlerTest {
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6902 \r\n" +
                 "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
+                new String(Objects.requireNonNull(FileIoUtils.loadFileFromClasspath("templates/index.html")));
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void 유저를_생성할_수_있다() {
+        // given
+        final String httpBody = "userId=test&" +
+                "password=passtest&" +
+                "name=Sanghwa&" +
+                "email=sss@ss.ss";
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: " + httpBody.getBytes().length,
+                "",
+                httpBody);
+        final var socket = new StubSocket(httpRequest);
+        final var handler = new RequestHandler(socket);
+        int save = DataBase.findAll().size();
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Redirect ",
+                "Location: /index.html ",
+                "Content-Length: 0 ");
+
+        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(DataBase.findAll().size()).isEqualTo(save + 1);
     }
 }

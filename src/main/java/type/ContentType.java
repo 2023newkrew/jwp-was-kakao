@@ -9,13 +9,13 @@ public enum ContentType {
     ICO("image/x-icon"),
     ;
 
-    private String toResponseText;
+    private final String string;
 
     ContentType(String toResponseText) {
-        this.toResponseText = toResponseText;
+        this.string = toResponseText;
     }
 
-    public String getToResponseText() {
-        return toResponseText;
+    public String getString() {
+        return string;
     }
 }

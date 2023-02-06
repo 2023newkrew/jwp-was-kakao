@@ -25,4 +25,23 @@ public class RequestHeader {
     public Optional<String> get(String key) {
         return Optional.ofNullable(header.get(key));
     }
+
+    public String getUri() {
+        return header.get("URI");
+    }
+
+    public String getMethod() {
+        return header.get("method");
+    }
+
+    public String parseUriParams() {
+        String uri = header.get("URI");
+
+        if (uri.contains("?")) {
+            String[] split = uri.split("\\?");
+            header.put("URI", split[0]);
+            return split[1];
+        }
+        return null;
+    }
 }
