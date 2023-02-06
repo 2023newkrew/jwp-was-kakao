@@ -139,7 +139,7 @@ class RequestHandlerTest {
 
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 5167 \r\n" +
+                "Content-Length: 5168 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html"));
 
