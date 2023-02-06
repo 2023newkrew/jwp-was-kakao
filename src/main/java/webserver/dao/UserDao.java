@@ -5,6 +5,8 @@ import model.request.HttpRequest;
 import model.user.User;
 import utils.ObjectMapperFactory;
 
+import java.util.Optional;
+
 public class UserDao {
     public void saveUser(HttpRequest request) {
         DataBase.addUser(
@@ -14,7 +16,7 @@ public class UserDao {
         );
     }
 
-    public User findUserByUserId(String userId) {
+    public Optional<User> findUserByUserId(String userId) {
         return DataBase.findUserById(userId);
     }
 }
