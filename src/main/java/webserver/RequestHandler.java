@@ -1,13 +1,9 @@
 package webserver;
 
-import db.DataBase;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
-import utils.IOUtils;
 import webserver.controller.ControllerMethod;
 import webserver.controller.RequestController;
 import webserver.request.Request;
