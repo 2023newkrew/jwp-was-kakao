@@ -23,10 +23,13 @@ public class FileIoUtils {
     }
 
     public Set<String> getStaticFolderNames() {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(STATIC);
-        File[] files = new File(resource.getPath()).listFiles();
-
-        return Arrays.stream(files)
+        return Arrays.stream(
+                new File(Thread.currentThread()
+                        .getContextClassLoader()
+                        .getResource(STATIC)
+                        .getPath())
+                        .listFiles()
+                )
                 .map(File::getName)
                 .collect(Collectors.toSet());
     }
