@@ -34,7 +34,6 @@ public class RequestHandler implements Runnable {
             RequestParser requestParser = new RequestParser(bufferedReader);
 
             RequestHeader header = requestParser.getRequestHeader();
-            Map<String, String> requestParameter = requestParser.getParams();
 
             DataOutputStream dos = new DataOutputStream(out);
             //TODO: RequestHeader에 URI가 포함되지 않은 상황을 고려해야 할까?
@@ -45,7 +44,12 @@ public class RequestHandler implements Runnable {
             String uriWithOutParams = uriSplit[0];
 
             if (uriWithOutParams.equals("/user/create")) {
-                User user = User.from(requestParameter);
+                User user = new User(
+                        requestParser.getParam("userId"),
+                        requestParser.getParam("password"),
+                        requestParser.getParam("name"),
+                        requestParser.getParam("email")
+                );
                 DataBase.addUser(user);
                 response302Header(dos);
                 responseBody(dos, new byte[0]);
