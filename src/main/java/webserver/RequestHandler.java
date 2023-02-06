@@ -5,7 +5,6 @@ import http.*;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,10 +13,14 @@ import java.net.URISyntaxException;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
+    private final ResourceController resourceController;
+    private final UserController userController;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, ResourceController resourceController, UserController userController) {
         this.connection = connectionSocket;
+        this.resourceController = resourceController;
+        this.userController = userController;
     }
 
     public void run() {
@@ -46,63 +49,30 @@ public class RequestHandler implements Runnable {
     private void doPost(HttpRequest request, DataOutputStream dos) throws IOException {
 
         if(request.getUri().getPath().equals("/user/create")) {
-            String query = request.getBody();
-            logger.info("query" + query);
-            User user = User.fromQueryString(query);
-
-            DataBase.addUser(user);
-
-            HttpResponse response = new HttpResponse.Builder()
-                    .status(HttpStatus.FOUND)
-                    .addAttribute(HttpHeaders.LOCATION, "/index.html")
-                    .build();
-
-            response(dos, response.getBytes());
+            response(dos, userController.createUserPost(request).getBytes());
         }
     }
 
     private void doGet(HttpRequest request, DataOutputStream dos) throws IOException, URISyntaxException {
-        byte[] body = null;
-        if (request.checkStaticResource()) {
-            body = FileIoUtils.loadFileFromClasspath("static" + request.getUri().getPath());
-
+        if(request.getUri().getPath().equals("/")) {
+            byte[] body = "Hello world".getBytes();
             HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/css;charset=utf-8")
+                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
                     .body(body)
                     .build();
-
             response(dos, response.getBytes());
+        }
+
+        if (request.checkStaticResource()) {
+            response(dos, resourceController.staticResource(request).getBytes());
         }
 
         if(request.checkHtmlResource()) {
-            body = FileIoUtils.loadFileFromClasspath("templates" + request.getUri().getPath());
-            HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
-                    .body(body)
-                    .build();
-            response(dos, response.getBytes());
-        }
-
-        if(request.getUri().getPath().equals("/")) {
-            body = "Hello world".getBytes();
-            HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
-                    .body(body)
-                    .build();
-            response(dos, response.getBytes());
+            response(dos, resourceController.templateResource(request).getBytes());
         }
 
         if(request.getUri().getPath().equals("/user/create")) {
-            String query = request.getUri().getQuery();
-            User user = User.fromQueryString(query);
-
-            DataBase.addUser(user);
-
-            HttpResponse response = new HttpResponse.Builder()
-                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
-                    .build();
-
-            response(dos, response.getBytes());
+            response(dos, userController.createUserGet(request).getBytes());
         }
 
     }
