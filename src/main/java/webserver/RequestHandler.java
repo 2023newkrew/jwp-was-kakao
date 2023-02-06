@@ -42,7 +42,8 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void handleHttpRequest(HttpRequest httpRequest, OutputStream out) throws IOException, URISyntaxException, NullPointerException{
+    private void handleHttpRequest(HttpRequest httpRequest, OutputStream out)
+            throws IOException, URISyntaxException, NullPointerException {
         DataOutputStream dos = new DataOutputStream(out);
 
         if (httpRequest.getMethod() == HttpMethod.POST) {
@@ -69,7 +70,8 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void handleGetMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos) throws IOException, URISyntaxException {
+    private void handleGetMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos)
+            throws IOException, URISyntaxException {
         String path = httpRequest.getPath();
         byte[] body;
         String contentType;
