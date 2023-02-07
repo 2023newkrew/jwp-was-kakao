@@ -3,6 +3,7 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.Request;
+import request.RequestParser;
 import response.Response;
 import requestmapper.HandlerMapper;
 import requestmapper.ResourceMapper;
@@ -31,7 +32,7 @@ public class RequestHandler implements Runnable {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dataOutputStream = new DataOutputStream(out);
 
-            Request request = new Request(bufferedReader);
+            Request request = RequestParser.getRequestFrom(bufferedReader);
             Map<String, String> requestParameter = request.getRequestParams();
             String uri = request.getUri();
 

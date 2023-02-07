@@ -24,9 +24,9 @@ public class ResourceMapper {
             returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
             if (returnBody != null) {
                 String[] split = uri.split("\\.");
-                String ext = split[split.length - 1];
+                String extension = split[split.length - 1];
                 return Response.ok()
-                        .contentType(ContentType.valueOf(ext.toUpperCase()))
+                        .contentType(ContentType.valueOf(extension.toUpperCase()))
                         .body(new String(returnBody, StandardCharsets.UTF_8))
                         .build();
             }

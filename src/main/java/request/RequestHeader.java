@@ -34,7 +34,7 @@ public class RequestHeader {
         return header.get("method");
     }
 
-    public String parseUriParams() {
+    public String parseGetParams() {
         String uri = header.get("URI");
 
         if (uri.contains("?")) {
