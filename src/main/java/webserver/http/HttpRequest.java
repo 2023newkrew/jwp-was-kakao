@@ -56,6 +56,18 @@ public class HttpRequest {
         return Objects.hash(method, URL, version, parameters, headers, body);
     }
 
+    @Override
+    public String toString() {
+        return "HttpRequest{" +
+                "method=" + method +
+                ", URL='" + URL + '\'' +
+                ", version='" + version + '\'' +
+                ", parameters=" + parameters +
+                ", headers=" + headers +
+                ", body='" + body + '\'' +
+                '}';
+    }
+
     public static final class HttpRequestBuilder {
         private HttpMethod method;
         private String URL;
