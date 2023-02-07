@@ -34,32 +34,35 @@ public class RequestHandler implements Runnable {
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
-            String path = httpRequest.getPath();
+            String requestPath = httpRequest.getTarget()
+                    .getPath();
 
-            if (httpRequest.getMethod() == HttpMethod.POST) {
+            if (httpRequest.getTarget()
+                    .getMethod() == HttpMethod.POST) {
                 String requestBody = httpRequest.getBody();
                 requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(path)
+                MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(requestPath)
                         .query(requestBody)
                         .build()
                         .getQueryParams();
 
-                if (path.equals("/user/create")) {
+                if (requestPath.equals("/user/create")) {
                     addUser(requestParams);
                     response302Header(dos, "http://localhost:8080/index.html");
                     dos.flush();
                     return;
                 }
             }
-            if (httpRequest.getMethod() == HttpMethod.GET) {
+            if (httpRequest.getTarget()
+                    .getMethod() == HttpMethod.GET) {
                 byte[] body;
                 try {
-                    body = FileIoUtils.loadFileFromClasspath("./templates" + path);
+                    body = FileIoUtils.loadFileFromClasspath("./templates" + requestPath);
                 } catch (NullPointerException e) {
-                    body = FileIoUtils.loadFileFromClasspath("./static" + path);
+                    body = FileIoUtils.loadFileFromClasspath("./static" + requestPath);
                 }
 
-                String contentType = Files.probeContentType(new File(path).toPath());
+                String contentType = Files.probeContentType(new File(requestPath).toPath());
                 response200Header(dos, body.length, contentType);
                 responseBody(dos, body);
             }

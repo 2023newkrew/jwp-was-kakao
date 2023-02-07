@@ -1,51 +1,31 @@
 package webserver;
 
 import lombok.Getter;
+import org.springframework.http.HttpHeaders;
 import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 public class HttpRequest {
 
-    private final HttpMethod method;
+    private HttpRequestTarget target;
 
-    private final String path;
+    private HttpRequestHeaders headers;
 
-    private final Map<String, String> header;
+    private String body;
 
-    private final String body;
-
-    public HttpRequest(BufferedReader bufferedReader) throws IOException {
-        String firstLine = bufferedReader.readLine();
-        this.method = HttpMethod.valueOf(firstLine.split(" ")[0]);
-        this.path = firstLine.split(" ")[1];
-        this.header = parseHttpHeaders(bufferedReader);
-        this.body = parseHttpBody(bufferedReader);
+    public HttpRequest(BufferedReader reader) throws IOException {
+        this.target = new HttpRequestTarget(reader);
+        this.headers = new HttpRequestHeaders(reader);
+        parseBody(reader);
     }
 
-    private String parseHttpBody(BufferedReader bufferedReader) throws IOException {
-        if (!this.header.containsKey("Content-Length")) {
-            return "";
+    private void parseBody(BufferedReader reader) throws IOException {
+        if (headers.containsKey(HttpHeaders.CONTENT_LENGTH)) {
+            int contentLength = Integer.parseInt(headers.get(HttpHeaders.CONTENT_LENGTH));
+            this.body = IOUtils.readData(reader, contentLength);
         }
-
-        int contentLength = Integer.parseInt(this.header.get("Content-Length"));
-        return IOUtils.readData(bufferedReader, contentLength);
-    }
-
-    private Map<String, String> parseHttpHeaders(BufferedReader bufferedReader) throws IOException {
-        Map<String, String> header = new HashMap<>();
-        String line = bufferedReader.readLine();
-        while (!"".equals(line)) {
-            int index = line.indexOf(":");
-            header.put(line.substring(0, index), line.substring(index + 1)
-                    .trim());
-            line = bufferedReader.readLine();
-        }
-
-        return header;
     }
 }
