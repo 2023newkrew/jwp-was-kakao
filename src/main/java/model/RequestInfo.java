@@ -1,28 +1,27 @@
-package webserver;
-
-import org.springframework.http.HttpMethod;
-import utils.FileIoUtils;
+package model;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.springframework.http.HttpMethod;
+import utils.FileIoUtils;
 
-class HeaderInfo {
+public class RequestInfo {
     private HttpMethod method;
     private final String path;
-    private String root;
+    private String root = "./templates";
     private final Map<String, String> mappings = new HashMap<>();
     private final Map<String, String> queryMappings = new HashMap<>();
     private final Map<String, String> bodyMappings = new HashMap<>();
 
     private String accept = "text/html";
 
-    public HeaderInfo(String firstLine) {
+    public RequestInfo(String firstLine) {
+        System.out.println(firstLine);
         if (Objects.isNull(firstLine)) {
             throw new RuntimeException("잘못된 HTTP 메시지입니다. 첫 줄은 \"메소드 경로\" 의 형식이어야 합니다.");
         }
@@ -46,6 +45,7 @@ class HeaderInfo {
 
     public byte[] getResponse() {
         try {
+            System.out.println("######## : " + root + path);
             return FileIoUtils.loadFileFromClasspath(root + path);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException("잘못된 경로의 요청");
@@ -127,12 +127,9 @@ class HeaderInfo {
             return tokens[0];
         }
         StaticDirectory directory = StaticDirectory.resolve(pathTokens[1].toUpperCase());
-        if (Objects.isNull(directory)) {
-            root = "./templates";
-            return tokens[0];
+        if (Objects.nonNull(directory)) {
+            root = "./static";
         }
-        root = "./static";
-
         return tokens[0];
     }
 }

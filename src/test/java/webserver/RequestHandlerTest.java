@@ -1,16 +1,14 @@
 package webserver;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import db.DataBase;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import model.User;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
 
@@ -33,7 +31,7 @@ class RequestHandlerTest {
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
+                "Content-Length: 7153 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 

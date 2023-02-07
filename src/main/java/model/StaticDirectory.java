@@ -1,11 +1,10 @@
-package webserver;
-
-import org.springframework.lang.Nullable;
+package model;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.lang.Nullable;
 
-enum StaticDirectory {
+public enum StaticDirectory {
     CSS, FONTS, IMAGES, JS;
     private static final Map<String, StaticDirectory> mappings = new HashMap<>(16);
 

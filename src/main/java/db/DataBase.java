@@ -1,10 +1,9 @@
 package db;
 
-import model.User;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import model.User;
 
 public class DataBase {
     private static Map<String, User> users = new HashMap<>();
