@@ -13,7 +13,17 @@ import support.PathNotFoundException;
 import java.util.Objects;
 
 public class DispatcherServlet {
-    public static void dispatch(HttpRequest request, HttpResponse response) {
+    private final FileController fileController;
+    private final UserController userController;
+    private final RootController rootController;
+
+    public DispatcherServlet() {
+        this.fileController = new FileController();
+        this.userController = new UserController(new UserService());
+        this.rootController = new RootController();
+    }
+
+    public void dispatch(HttpRequest request, HttpResponse response) {
         Controller controller = chooseHandler(request.getUri());
         controller.process(request, response);
 
@@ -22,15 +32,15 @@ public class DispatcherServlet {
         }
     }
 
-    public static Controller chooseHandler(String uri) {
+    public Controller chooseHandler(String uri) {
         if (uri.endsWith(".html") || uri.endsWith(".css")) {
-            return new FileController();
+            return fileController;
         }
         else if (uri.startsWith("/user")) {
-            return new UserController(new UserService());
+            return userController;
         }
         else if (uri.equals("/")) {
-            return new RootController();
+            return rootController;
         }
         else {
             throw new PathNotFoundException();

@@ -57,7 +57,10 @@ public class RequestHandler implements Runnable {
     private void handle(BufferedReader reader, DataOutputStream dos) throws IOException {
         HttpRequest request = Parser.parseRequest(reader);
         HttpResponse response = new HttpResponse();
-        DispatcherServlet.dispatch(request, response);
+
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();
+        dispatcherServlet.dispatch(request, response);
+
         sendResponse(dos, response);
     }
 

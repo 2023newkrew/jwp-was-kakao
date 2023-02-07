@@ -20,7 +20,7 @@ public class Parser {
     private static final String DELIM_QUERY_PARAMETER = "=";
     private static final String DELIM_REQUEST_START_LINE = " ";
 
-    public static HttpRequest parseRequest(final BufferedReader reader) {
+    public static HttpRequest parseRequest(BufferedReader reader) {
         String startLine = readRequestStartLine(reader);
         String uri = getURI(startLine);
         HttpMethod method = getMethod(startLine);
@@ -35,11 +35,11 @@ public class Parser {
         return new HttpRequest(uri, method, parameters);
     }
 
-    private static String readRequestStartLine(final BufferedReader reader) {
+    private static String readRequestStartLine(BufferedReader reader) {
         return readRequestLines(reader).get(0);
     }
 
-    private static List<String> readRequestLines(final BufferedReader reader) {
+    private static List<String> readRequestLines(BufferedReader reader) {
         List<String> lines = new ArrayList<>();
         String line;
         try {
@@ -67,7 +67,7 @@ public class Parser {
         return startLine.split(DELIM_REQUEST_START_LINE)[1];
     }
 
-    public static Map<String, String> getUriParameters(String uri) {
+    public static Map<String, String> getUriParameters(final String uri) {
         if (!uri.contains(DELIM_QUERY_STRING)) {
             return new HashMap<>();
         }
