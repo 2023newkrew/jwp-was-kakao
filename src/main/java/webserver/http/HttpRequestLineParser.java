@@ -6,7 +6,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpRequestLineParser {
 
@@ -18,21 +17,20 @@ public class HttpRequestLineParser {
     public String extractUrl(String requestLine) {
         validateRequestLine(requestLine);
         String urlAndParams = requestLine.split(" ")[1];
-        return urlAndParams.split("\\?")[0];
+        return urlAndParams.split("\\?", 2)[0];
     }
 
     public Map<String, String> extractParams(String requestLine) {
         validateRequestLine(requestLine);
 
         String url = requestLine.split(" ")[1];
-        String[] urlAndParams = url.split("\\?");
+        String[] urlAndParams = url.split("\\?", 2);
 
         if (urlAndParams.length == 1) {
             return Map.of();
         }
 
-        String paramString = Arrays.stream(urlAndParams).skip(1).collect(Collectors.joining());
-        return extractParamMap(paramString);
+        return extractParamMap(urlAndParams[1]);
     }
 
     public String extractHttpVersion(String requestLine) {
@@ -53,7 +51,7 @@ public class HttpRequestLineParser {
 
         Arrays.stream(splitParam)
                 .filter(param -> !param.isBlank())
-                .map(param -> param.split("="))
+                .map(param -> param.split("=", 2))
                 .map(this::convertToEntry)
                 .forEach(paramEntry -> paramMap.put(paramEntry.getKey(), paramEntry.getValue()));
 
@@ -64,10 +62,7 @@ public class HttpRequestLineParser {
         if (nameAndValue.length == 1) {
             return new SimpleEntry<>(nameAndValue[0], "");
         } else {
-            String value = Arrays.stream(nameAndValue)
-                    .skip(1)
-                    .collect(Collectors.joining("="));
-            return new SimpleEntry<>(nameAndValue[0], value);
+            return new SimpleEntry<>(nameAndValue[0], nameAndValue[1]);
         }
     }
 }
