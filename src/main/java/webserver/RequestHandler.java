@@ -9,16 +9,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import model.HttpRequest;
+import java.util.stream.Collectors;
+
+import model.enumeration.HttpMethod;
+import model.request.HttpRequest;
 import model.User;
+import model.request.HttpRequestFactory;
+import model.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 import utils.FileIoUtils;
-import utils.IOUtils;
 
 public class RequestHandler implements Runnable {
 
@@ -34,91 +36,86 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream(); BufferedReader br = new BufferedReader(
-                new InputStreamReader(in))) {
-            String line = br.readLine();
-            String[] tokens = line.split(" ");
-            String httpMethod = tokens[0];
-            String requestUrl = tokens[1];
-            Map<String, String> queryParams = new HashMap<>();
-            Map<String, String> headerMap = new HashMap<>();
-            Map<String, String> requestBody = new HashMap<>();
+        try (InputStream in = connection.getInputStream();
+             OutputStream out = connection.getOutputStream();
+             DataOutputStream dos = new DataOutputStream(out);
+             BufferedReader br = new BufferedReader(new InputStreamReader(in))
+        ) {
+            HttpRequest httpRequest = HttpRequestFactory.parse(br);
+            HttpResponse httpResponse = getResponse(httpRequest);
+            writeResponse(dos, httpResponse);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            logger.error(e.getMessage());
+        }
+    }
 
-            // url parsing
-            if (requestUrl.contains("?")) {
-                String queries = requestUrl.split("\\?")[1];
-                requestUrl = requestUrl.split("\\?")[0];
-                for (String query : queries.split("&")) {
-                    String[] keyValueSet = query.split("=");
-                    queryParams.put(keyValueSet[0], keyValueSet[1]);
-                }
-            }
+    private HttpResponse getResponse(HttpRequest httpRequest) throws IOException, URISyntaxException {
+        String contentType = getContentType(httpRequest);
 
-            // header parsing
-            while (!StringUtils.isEmpty(line)) {
-                String[] headers = line.split(" ");
-                headerMap.put(headers[0].substring(0, headers[0].length() - 1), headers[1]);
-                line = br.readLine();
-            }
+        if (httpRequest.getPath().endsWith(".html")) {
+            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + httpRequest.getPath());
+            return HttpResponse.ok(Map.of("Content-Type", contentType), body);
+        }
 
-            String requestBodyString;
-            if (headerMap.containsKey("Content-Length")) {
-                requestBodyString = IOUtils.readData(br, Integer.parseInt(headerMap.get("Content-Length")));
-                for (String query : requestBodyString.split("&")) {
-                    String[] keyValueSet = query.split("=");
-                    requestBody.put(keyValueSet[0], keyValueSet[1]);
-                }
-            }
+        if (httpRequest.getPath().equals("/")) {
+            return HttpResponse.ok(Map.of("Content-Type", contentType), "Hello world".getBytes());
+        }
 
-            HttpRequest httpRequest = new HttpRequest(httpMethod, requestUrl, queryParams, headerMap, requestBody);
-            Map<String, String> userInfo = httpRequest.getBody();
+        if (httpRequest.getPath().equals("/query")) {
+            return HttpResponse.ok(Map.of("Content-Type", contentType),
+                    ("hello " + httpRequest.getParameter("name")).getBytes()
+            );
+        }
 
-            User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"),
-                    userInfo.get("email"));
+        if (httpRequest.getMethod().equals(HttpMethod.POST) && httpRequest.getPath().equals("/user/create")) {
+            Map<String, String> body = httpRequest.getBody();
+
+            User user = new User(
+                    body.get("userId"),
+                    body.get("password"),
+                    body.get("name"),
+                    body.get("email"));
             DataBase.addUser(user);
 
-            DataOutputStream dos = new DataOutputStream(out);
+            return HttpResponse.redirect(Map.of(), "/index.html");
 
-            // resolver
-            byte[] body;
-            if (httpRequest.isPOSTMethod()) {
-                responseRedirectHome(dos);
-                return;
-            }
-            try {
-                if (httpRequest.getUrl().endsWith("html")) {
-                    body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUrl());
-                } else {
-                    body = FileIoUtils.loadFileFromClasspath("./static" + httpRequest.getUrl());
-                }
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException(e);
-            }
-
-            response200Header(dos, httpRequest.getContentType(), body.length);
-            responseBody(dos, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
         }
+
+        if (httpRequest.getMethod().equals(HttpMethod.POST) && httpRequest.getPath().equals("/post")) {
+            String bodyString = String.format("hello %s", httpRequest.getBody().get("name"));
+            return HttpResponse.ok(Map.of("Content-Type", contentType), bodyString.getBytes());
+        }
+
+        return HttpResponse.ok(
+                Map.of("Content-Type", contentType),
+                FileIoUtils.loadFileFromClasspath("static" + httpRequest.getPath())
+        );
     }
 
-    private void responseRedirectHome(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
-            dos.writeBytes("Content-Type: text/html; charset=utf-8 \r\n");
-            dos.writeBytes("Location: /index.html \r\n");
-            dos.writeBytes("\r\n");
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+
+
+    private void writeResponse(DataOutputStream dos, HttpResponse httpResponse) {
+        responseHeader(dos, httpResponse);
+        responseBody(dos, httpResponse.getBody());
     }
 
-    private void response200Header(DataOutputStream dos, String contentType, int lengthOfBodyContent) {
+    private String getContentType(HttpRequest httpRequest) throws IOException, URISyntaxException {
+        String acceptValue = httpRequest.getHeaders().get("Accept");
+
+        if (acceptValue == null || acceptValue.isBlank()) {
+            return "text/html;charset=utf-8";
+        }
+        return acceptValue.split(",")[0];
+    }
+
+    private void responseHeader(DataOutputStream dos, HttpResponse response) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + "; charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes(response.getStatusLine() + " \r\n");
+            for (var entry : response.getHeader().entrySet()) {
+                dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");
+            }
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
