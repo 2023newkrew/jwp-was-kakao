@@ -21,8 +21,6 @@ public class UserApiHandler implements Handler {
 
         DataBase.addUser(user);
 
-        System.out.println(DataBase.findUserById(user.getUserId()));
-
         return HttpResponse.HttpResponseBuilder.aHttpResponse()
                 .withStatus(HttpStatus.FOUND)
                 .withVersion("HTTP/1.1")
