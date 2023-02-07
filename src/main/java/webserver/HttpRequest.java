@@ -11,13 +11,13 @@ import java.util.Set;
 /**
  * BufferedReader를 주입 받아 RequestHeader 객체와 Map 자료형의 requestParams, String 자료형의 requestBody를 만듦.
  */
-public class RequestParser {
+public class HttpRequest {
     private final BufferedReader bufferedReader;
     private RequestHeader requestHeader;
     private Map<String, String> requestParams = new HashMap<>();
     private String requestBody;
 
-    public RequestParser(BufferedReader bufferedReader) throws IOException {
+    public HttpRequest(BufferedReader bufferedReader) throws IOException {
         this.bufferedReader = bufferedReader;
         parseHeader();
         parseParams();
