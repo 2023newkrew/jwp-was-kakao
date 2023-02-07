@@ -32,35 +32,25 @@ public class RequestHandler implements Runnable {
             byte[] body;
 
             String s = br.readLine();
-            String[] tokens = requestParser.splitSpare(s);
+            RequestParams request = requestParser.getRequestParams(s);
 
-            String requestMethod = null;
-            String requestUrl  = null;
-            String httpVersion = null;
-            if (tokens.length == 3) {
-                requestMethod = tokens[0]; // GET, POST 등
-                requestUrl = tokens[1]; // /index.html
-                httpVersion = tokens[2]; // HTTP/1.1
-            }
-            logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", requestMethod, requestUrl, httpVersion);
-            if (Objects.requireNonNull(requestMethod).equals("GET")){
-                if (requestUrl.startsWith("/css") || requestUrl.startsWith("/js")){
-                    requestUrl = "./static" + requestUrl;
+            logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", request.getMethod(), request.getUrl(), request.getHttpVersion());
+            if (Objects.requireNonNull(request.getMethod()).equals("GET")){
+                if (request.getUrl().startsWith("/css") || request.getUrl().startsWith("/js")){
+                    String requestUrl = "./static" + request.getUrl();
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
-                    String[] urlSplitByDot = requestParser.splitDot(requestUrl);
-                    response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
+                    response200Header(dos, body.length, requestParser.getUrlType(requestUrl));
                     responseBody(dos, body);
                     return;
                 }
-                if (requestUrl.startsWith("/") && requestUrl.endsWith("html")){
-                    requestUrl = "./templates" + requestUrl;
+                if (request.getUrl().startsWith("/") && request.getUrl().endsWith("html")){
+                    String requestUrl = "./templates" + request.getUrl();
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
-                    String[] urlSplitByDot = requestParser.splitDot(requestUrl);
-                    response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
+                    response200Header(dos, body.length, requestParser.getUrlType(requestUrl));
                     responseBody(dos, body);
                     return;
                 }
-                if (requestUrl.equals("/")){
+                if (request.getUrl().equals("/")){
                     body = "Hello world".getBytes();
                     response200Header(dos, body.length, "html");
                     responseBody(dos, body);
@@ -70,7 +60,7 @@ public class RequestHandler implements Runnable {
                     s = br.readLine();
                 }
             }
-            if (requestMethod.equals("POST")){
+            if (request.getMethod().equals("POST")){
                 while (requestParser.getContentLength(s) != -1) {
                     s = br.readLine();
                 }

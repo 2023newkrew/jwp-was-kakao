@@ -16,12 +16,12 @@ public class RequestParser {
         return new DataOutputStream(out);
     }
 
-    public String[] splitSpare(String s){
-        return s.split(" ");
-    }
-
-    public String[] splitDot(String s){
-        return s.split("\\.");
+    public RequestParams getRequestParams(String s){
+        String[] splitString = s.split(" ");
+        if (splitString.length == 3) {
+            return new RequestParams(splitString[0], splitString[1], splitString[2]);
+        }
+        return null;
     }
 
     public boolean isContentLength(String s){
@@ -42,5 +42,10 @@ public class RequestParser {
         }
         return new User(bodyMap.get("userId"), bodyMap.get("password"),
                 bodyMap.get("name"), bodyMap.get("email"));
+    }
+
+    public String getUrlType(String requestUrl) {
+        String[] urlSplitByDot = requestUrl.split("\\.");
+        return urlSplitByDot[urlSplitByDot.length - 1];
     }
 }
