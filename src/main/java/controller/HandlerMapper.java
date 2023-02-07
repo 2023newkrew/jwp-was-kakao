@@ -2,12 +2,14 @@ package controller;
 
 import model.User;
 import request.RequestParams;
+import service.UserService;
 import utils.StringParser;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import static response.ResponseBody.responseBody;
 import static response.ResponseHeader.response200Header;
@@ -32,20 +34,20 @@ public class HandlerMapper {
             getControllerMapping(request, body);
         }
         if (request.getMethod().equals("POST")){
-            String responseUrl = getHomeUrl();
-            String requestBody = requestPostBody(requestInfo, stringParser, br);
-            postControllerMapping(request, requestBody, responseUrl);
+            String requestBody = Objects.requireNonNull(requestPostBody(requestInfo, stringParser, br)).orElseThrow(() ->
+                    new NullPointerException("There's no request body"));
+            postControllerMapping(request, requestBody);
         }
     }
 
-    private void postControllerMapping(RequestParams request, String requestBody, String responseUrl){
+    private void postControllerMapping(RequestParams request, String requestBody){
         if (request.getUrl().equals("/user/create")){
+            String responseUrl = getIndexUrl();
             User user = stringParser.getUserInfo(requestBody);
-            UserController userController = new UserController(dos, responseUrl);
-            userController.saveUser(user);
+            UserController userController = new UserController(dos, new UserService());
+            userController.saveUser(user, responseUrl);
         }
     }
-
 
     private void getControllerMapping(RequestParams request, byte[] body){
         response200Header(dos, body.length, request.getContentType());

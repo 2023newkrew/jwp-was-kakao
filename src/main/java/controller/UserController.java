@@ -9,17 +9,15 @@ import static response.ResponseHeader.response302Header;
 
 public class UserController {
     private final DataOutputStream dos;
-    private final String requestUrl;
+    private final UserService userService;
 
-    public UserController(DataOutputStream dos, String requestUrl) {
+    public UserController(DataOutputStream dos, UserService userService) {
         this.dos = dos;
-        this.requestUrl = requestUrl;
+        this.userService = userService;
     }
 
-    public void saveUser(User user){
-        UserService userService = new UserService();
+    public void saveUser(User user, String responseUrl){
         userService.saveUser(user);
-
-        response302Header(dos, requestUrl);
+        response302Header(dos, responseUrl);
     }
 }

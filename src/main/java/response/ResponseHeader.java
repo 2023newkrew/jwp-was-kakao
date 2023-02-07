@@ -9,10 +9,6 @@ public class ResponseHeader {
 
     public static void response302Header(DataOutputStream dos, String location) {
         try {
-            /*
-                HTTP/1.1 302 Found
-                Location: http://www.iana.org/domains/example/
-             */
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: " + location + " \r\n");
             dos.writeBytes("\r\n");

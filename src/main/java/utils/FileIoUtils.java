@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 
 import static utils.ContentType.*;
 
@@ -42,17 +43,17 @@ public class FileIoUtils {
         return loadFileFromClasspath(requestUrl);
     }
 
-    public static String requestPostBody(String requestInfo, StringParser stringParser, BufferedReader br) throws IOException {
+    public static Optional<String> requestPostBody(String requestInfo, StringParser stringParser, BufferedReader br) throws IOException {
         while (stringParser.getContentLength(requestInfo) == -1) {
             requestInfo = br.readLine();
         }
         if (requestInfo.length() == 0) {
-            return null;
+            return Optional.empty();
         }
-        return IOUtils.readData(br, stringParser.getContentLength(requestInfo));
+        return Optional.of(IOUtils.readData(br, stringParser.getContentLength(requestInfo)));
     }
 
-    public static String getHomeUrl() {
-        return "./templates/index.html";
+    public static String getIndexUrl() {
+        return "/index.html";
     }
 }
