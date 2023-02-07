@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * BufferedReader를 주입 받아 RequestHeader 객체와 String 자료형의 requestBody를 만듦.
+ * BufferedReader를 주입 받아 RequestHeader 객체와 Map 자료형의 requestParams, String 자료형의 requestBody를 만듦.
  */
 public class RequestParser {
     private final BufferedReader bufferedReader;
@@ -32,13 +32,7 @@ public class RequestParser {
             return;
         }
 
-        String requestMethod = requestHeader.get("method").get();
-        if (requestMethod.equals("GET")) {
-            extractParams(uri.split("\\?")[1]);
-        }
-        if (requestMethod.equals("POST")) {
-            extractParams(requestBody);
-        }
+        extractParams(uri.split("\\?")[1]);
     }
 
     // 쿼리스트링으로부터 key와 value를 추출하여 requestParams Map에 추가
