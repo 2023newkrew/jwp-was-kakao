@@ -52,10 +52,21 @@ public class Controller {
      * make response when httpRequest is given.
      * @param httpRequest from clients.
      * @return HttpResponse which can directly respond to client.
-     * @throws IOException when have a trouble in accessing files in resources.
+     * @throws IllegalArgumentException when request contains wrong information such as inappropriate path.
      */
-    public HttpResponse makeResponse(HttpRequest httpRequest) throws IOException {
-        if (httpRequest.getRequestMethod().equals(RequestMethod.GET)){
+    public HttpResponse makeResponse(HttpRequest httpRequest) {
+        try {
+            return makeResponseByMethod(httpRequest);
+        } catch (IOException e){
+            // IOException in Controller is related to file access in resources,
+            // which should be distinguished from network IO exception(connection error).
+            // Therefore, It should be converted to IllegalArgumentException(given request contains inappropriate path).
+            throw new IllegalArgumentException("Request contains inappropriate path.");
+        }
+    }
+
+    private HttpResponse makeResponseByMethod(HttpRequest httpRequest) throws IOException {
+        if (httpRequest.getRequestMethod().equals(RequestMethod.GET)) {
             return respondGET(httpRequest);
         }
         return respondPOST(httpRequest);
@@ -94,12 +105,6 @@ public class Controller {
         return splitFilename[splitFilename.length-1];
     }
 
-    /**
-     * Identify the url whether indicates static contents or dynamic contents(.html),
-     * and modify url to refer to static or templates(in case of dynamic contents).
-     * @param url original url in httpRequest.
-     * @return modified url which contains absolute route(static/templates).
-     */
     private String urlConverter(String url){
         if (!url.startsWith("/")){
             url = "/" + url;

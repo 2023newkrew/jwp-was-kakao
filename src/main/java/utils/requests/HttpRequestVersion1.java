@@ -53,7 +53,7 @@ public class HttpRequestVersion1 implements HttpRequest {
             httpRequestVersion1.body = IOUtils.readData(br, contentLength);
         } catch(NumberFormatException e){
             // No attribute of Content-Length, so there isn't body in request.
-            httpRequestVersion1.body = null;
+            httpRequestVersion1.body = "";
         }
     }
 
