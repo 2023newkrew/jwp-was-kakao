@@ -4,6 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class IOUtils {
+
+    public static String getHttpRequest(BufferedReader br) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        String line = br.readLine();
+
+        while (!"".equals(line) && line != null) {
+            sb.append(line).append('\n');
+            line = br.readLine();
+        }
+        return sb.toString();
+    }
+
     /**
      * @param BufferedReader는
      *            Request Body를 시작하는 시점이어야
