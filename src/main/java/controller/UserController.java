@@ -18,7 +18,7 @@ public class UserController {
 
     public static UserController getInstance() {
         if (instance == null) {
-            return new UserController();
+            instance = new UserController();
         }
         return instance;
     }

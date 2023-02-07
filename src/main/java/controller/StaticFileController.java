@@ -17,7 +17,7 @@ public class StaticFileController {
 
     public static StaticFileController getInstance() {
         if (instance == null) {
-            return new StaticFileController();
+            instance = new StaticFileController();
         }
         return instance;
     }

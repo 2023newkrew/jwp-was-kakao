@@ -12,7 +12,7 @@ public class UserService {
 
     public static UserService getInstance() {
         if (instance == null) {
-            return new UserService();
+            instance = new UserService();
         }
         return instance;
     }
