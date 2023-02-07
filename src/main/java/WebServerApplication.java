@@ -1,5 +1,6 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ForkJoinPoolUtil;
 import web.RequestHandler;
 
 import java.net.ServerSocket;
@@ -18,7 +19,7 @@ public class WebServerApplication {
 
             Socket connection;
             while ((connection = listenSocket.accept()).isConnected()) {
-                new Thread(new RequestHandler(connection)).start();
+                ForkJoinPoolUtil.execute(new RequestHandler(connection));
             }
         }
     }
