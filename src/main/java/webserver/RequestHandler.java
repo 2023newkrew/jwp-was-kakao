@@ -1,15 +1,15 @@
 package webserver;
 
+import model.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
+import webserver.handler.request.RequestMethodHandler;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
@@ -26,27 +26,11 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            HttpRequest httpRequest = HttpRequestParser.parse(in);
-            byte[] body;
-            DataOutputStream dos = new DataOutputStream(out);
-            String accept = httpRequest.getHeader("Accept") == null ? "text/html" : httpRequest.getHeader("Accept").split(",")[0];
+            HttpRequest httpRequest = HttpRequest.parse(in);
 
+            RequestMethodHandler requestMethodHandler = httpRequest.getHttpMethod().getRequestMethodHandler();
 
-            if (httpRequest.getHttpMethod() == HttpMethod.GET) {
-                body = GetRequestHandler.handle(httpRequest);
-                response200Header(accept, dos, body.length);
-            }
-
-            else if (httpRequest.getHttpMethod() == HttpMethod.POST) {
-                body = PostRequestHandler.handle(httpRequest);
-                response302Header(accept, dos, body.length, "/index.html");
-            }
-
-            else{
-                body = new byte[0];
-            }
-
-            responseBody(dos, body);
+            requestMethodHandler.handle(httpRequest, out);
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {
