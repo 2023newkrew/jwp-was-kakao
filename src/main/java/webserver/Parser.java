@@ -32,7 +32,7 @@ public class Parser {
         else if (method.equals(HttpMethod.POST)) {
             parameters = getBodyParameters(reader);
         }
-        return new HttpRequest(uri, method, parameters);
+        return new HttpRequest(uri.replaceAll("\\?.*", ""), method, parameters);
     }
 
     private static String readRequestStartLine(BufferedReader reader) {

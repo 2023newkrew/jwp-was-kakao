@@ -203,7 +203,7 @@ class RequestHandlerTest {
     void uriNotFound() {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET /uri/not/exist HTTP/1.1",
+                "GET /user/not/exist/path HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
                 "Accept: */*",
@@ -273,7 +273,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
-    @DisplayName("지원하지 않는 바디 형식의 요청은 415가 반환된다")
+    @DisplayName("지원하지 않는 바디 형식의 POST 요청은 415가 반환된다")
     @Test
     void statusCodeNoDefined() {
         // given
