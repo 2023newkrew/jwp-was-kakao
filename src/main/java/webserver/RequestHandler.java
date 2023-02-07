@@ -11,12 +11,9 @@ import utils.FileIoUtils;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.List;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private static final String PROTOCOL = "HTTP";
-    private static final String VERSION = "1.1";
 
     private Socket connection;
 
@@ -25,8 +22,7 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logConnected();
 
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream()
@@ -36,7 +32,7 @@ public class RequestHandler implements Runnable {
 
             RequestParser requestParser = new RequestParser(bufferedReader);
             RequestHeader header = requestParser.getRequestHeader();
-            //TODO: RequestHeader에 URI가 포함되지 않은 상황을 고려해야 할까?
+
             String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -56,32 +52,38 @@ public class RequestHandler implements Runnable {
                 return;
             }
 
-            List<String> roots = List.of("templates", "static");
             byte[] returnBody = null;
 
-            for (String root : roots) {
-                returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
-                if (returnBody != null) {
-                    String[] split = uri.split("\\.");
-                    String fileType = split[split.length - 1];
-                    dos.writeBytes(
-                            ResponseHeader.of(HttpStatusCode.OK,
-                                            ContentType.valueOf(fileType.toUpperCase()),
-                                            returnBody.length)
-                                    .getValue()
-                    );
-                    break;
-                }
+            String root = "static";
+            String[] split = uri.split("\\.");
+            String fileType = split[split.length - 1];
+
+            if (fileType.equals("html")) {
+                root = "templates";
             }
+
+            returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
+
             if (returnBody == null) {
                 dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
+                dos.flush();
+                return;
             }
+
+            dos.writeBytes(
+                    ResponseHeader.of(HttpStatusCode.OK,
+                                    ContentType.valueOf(fileType.toUpperCase()),
+                                    returnBody.length)
+                            .getValue()
+            );
             responseBody(dos, returnBody);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            return;
         }
+    }
+
+    private void logConnected() {
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
     }
 
     private void responseBody(DataOutputStream dos, byte[] body) {
