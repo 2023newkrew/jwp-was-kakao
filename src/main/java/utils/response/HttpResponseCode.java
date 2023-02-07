@@ -1,5 +1,8 @@
 package utils.response;
 
+/**
+ * Express server response code such as OK(200), BAD_REQUEST(400), etc.
+ */
 public enum HttpResponseCode {
     OK(200, "OK"), FOUND(302, "Found"),
     BAD_REQUEST(400, "Bad Request"), NOT_FOUND(404, "Not Found"),

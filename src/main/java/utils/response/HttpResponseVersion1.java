@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * HttpResponseVersion1 is for producing response with HTTP/1.1
+ */
 public class HttpResponseVersion1 implements HttpResponse{
     private HttpResponseCode responseCode = null;
     private final Map<String, String> header = new LinkedHashMap<>();
@@ -35,6 +38,12 @@ public class HttpResponseVersion1 implements HttpResponse{
         return this;
     }
 
+    /**
+     * Respond made-response through dos.
+     * @param dos which DataOutStream to write.
+     * @throws IOException when writing through dos has problem.
+     * @throws IllegalStateException when insufficient information is provided by setter.
+     */
     @Override
     public void respond(DataOutputStream dos) throws IOException {
         respondFirstLine(dos);

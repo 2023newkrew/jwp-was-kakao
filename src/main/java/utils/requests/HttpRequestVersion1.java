@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * HttpRequestVersion1 is for parsing request written in HTTP/1.1
+ */
 public class HttpRequestVersion1 implements HttpRequest {
     private RequestMethod requestMethod;
     private URI uri;
@@ -17,9 +20,18 @@ public class HttpRequestVersion1 implements HttpRequest {
     private final Map<String, String> httpHeader = new HashMap<>();
     private String body;
 
+    /**
+     * cannot make instance through constructor. use HttpRequestVersion1.readFrom method instead.
+     */
     private HttpRequestVersion1(){}
 
-    public static HttpRequestVersion1 readFrom(BufferedReader br) throws IOException {
+    /**
+     * read primitive Http request and parse it into HttpRequest instance.
+     * @param br where to read.
+     * @return parsed HttpRequest
+     * @throws IOException when reading data from bufferedreader has problem.
+     */
+    public static HttpRequest readFrom(BufferedReader br) throws IOException {
         HttpRequestVersion1 httpRequestVersion1 = new HttpRequestVersion1();
         readFirstLine(httpRequestVersion1, br);
         readHeader(httpRequestVersion1, br);

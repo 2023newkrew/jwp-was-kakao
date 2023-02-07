@@ -11,6 +11,9 @@ import utils.response.HttpResponseVersion1;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * This class handles all about accepting request and produces response.
+ */
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
