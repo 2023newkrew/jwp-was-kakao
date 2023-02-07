@@ -2,16 +2,17 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.IOUtils;
 import webserver.handler.Handler;
 import webserver.http.HttpRequest;
-import webserver.http.HttpRequestParser;
+import webserver.http.HttpRequestReader;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -27,56 +28,33 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}",
+                connection.getInetAddress(),
                 connection.getPort());
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        try (HttpRequestReader httpRequestReader = new HttpRequestReader(connection.getInputStream());
+             DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
 
-            StringBuilder requestStringBuilder = new StringBuilder();
+            HttpRequest httpRequest = httpRequestReader.readHttpRequest();
 
-            String line = br.readLine();
-            if (line == null) {
+            if (httpRequest == null) {
+                logger.debug("HTTP Request is null! Connection closed.");
+                connection.close();
                 return;
             }
 
-            requestStringBuilder.append(line).append("\r\n");
-
-            Map<String, List<String>> headers = new LinkedHashMap<>();
-            while ((line = br.readLine()) != null && !"".equals(line)) {
-                String[] headerAndVaules = line.split(": ");
-                String header = headerAndVaules[0];
-                List<String> values = new ArrayList<>();
-                Arrays.stream(headerAndVaules).skip(1).forEach(values::add);
-                headers.put(header, values);
-                requestStringBuilder.append(line).append("\r\n");
-            }
-
-            if (requestStringBuilder.length() == 0) {
-                System.out.println("exit");
-                return;
-            }
-
-            requestStringBuilder.append("\r\n");
-
-            if (headers.containsKey("Content-Length")) {
-                String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length").get(0)));
-                requestStringBuilder.append(body);
-            }
-
-            System.out.println(requestStringBuilder.toString());
-
-            HttpRequest request = new HttpRequestParser().parse(requestStringBuilder.toString());
+            logger.debug("HTTP Request: {}", httpRequest);
 
             HttpResponse httpResponse = null;
-            Handler urlHandler = urlHandlerMapping.get(request.getURL());
+            Handler urlHandler = urlHandlerMapping.get(httpRequest.getURL());
             if (urlHandler != null) {
-                httpResponse = urlHandler.handle(request);
+                httpResponse = urlHandler.handle(httpRequest);
             } else {
                 for (Handler handler : defaultHandlerMapping) {
                     try {
-                        httpResponse = handler.handle(request);
+                        httpResponse = handler.handle(httpRequest);
                         break;
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
                 if (httpResponse == null) {
                     httpResponse = HttpResponse.HttpResponseBuilder.aHttpResponse()
@@ -86,9 +64,8 @@ public class RequestHandler implements Runnable {
                 }
             }
 
-            System.out.println(httpResponse);
+            logger.debug("HTTP Response: {}", httpResponse);
 
-            DataOutputStream dos = new DataOutputStream(out);
             dos.write(httpResponse.toBytes());
             dos.flush();
 
