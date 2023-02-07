@@ -1,12 +1,13 @@
-package http;
+package supports;
 
 import model.User;
+import request.RequestParams;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestParser {
+public class StringParser {
 
     public BufferedReader getBufferReader(InputStream in) {
         return new BufferedReader(new InputStreamReader(in));
@@ -45,7 +46,11 @@ public class RequestParser {
     }
 
     public String getUrlType(String requestUrl) {
-        String[] urlSplitByDot = requestUrl.split("\\.");
-        return urlSplitByDot[urlSplitByDot.length - 1];
+        try {
+            String[] urlSplitByDot = requestUrl.split("\\.");
+            return urlSplitByDot[urlSplitByDot.length - 1];
+        } catch (NullPointerException e){
+            return "html";
+        }
     }
 }

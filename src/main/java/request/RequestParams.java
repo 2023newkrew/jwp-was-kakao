@@ -1,4 +1,4 @@
-package http;
+package request;
 
 public class RequestParams {
     private final String method;

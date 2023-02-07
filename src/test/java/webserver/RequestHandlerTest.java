@@ -1,9 +1,9 @@
 package webserver;
 
-import http.RequestParser;
 import org.junit.jupiter.api.Test;
-import http.RequestHandler;
+import request.RequestHandler;
 import support.StubSocket;
+import supports.StringParser;
 import utils.FileIoUtils;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ class RequestHandlerTest {
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, new RequestParser());
+        final var handler = new RequestHandler(socket, new StringParser());
 
         // when
         handler.run();
@@ -43,7 +43,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new RequestParser());
+        final RequestHandler handler = new RequestHandler(socket, new StringParser());
 
         // when
         handler.run();

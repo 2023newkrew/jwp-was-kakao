@@ -1,9 +1,9 @@
 package webserver;
 
-import http.RequestParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import http.RequestHandler;
+import request.RequestHandler;
+import supports.StringParser;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,7 +27,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection, new RequestParser()));
+                Thread thread = new Thread(new RequestHandler(connection, new StringParser()));
                 thread.start();
             }
         }
