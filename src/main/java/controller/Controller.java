@@ -13,7 +13,7 @@ public abstract class Controller {
 
     public abstract void process(HttpRequest request, DataOutputStream dos) throws IOException;
 
-    protected void responseBody(DataOutputStream dos, byte[] body) {
+    void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();
