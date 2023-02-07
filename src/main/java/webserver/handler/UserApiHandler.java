@@ -2,10 +2,10 @@ package webserver.handler;
 
 import db.DataBase;
 import model.User;
-import webserver.http.HttpMethod;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
-import webserver.http.HttpStatus;
+import http.HttpMethod;
+import http.HttpRequest;
+import http.HttpResponse;
+import http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;

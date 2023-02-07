@@ -1,11 +1,10 @@
 package webserver.handler;
 
 import utils.FileIoUtils;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
-import webserver.http.HttpStatus;
+import http.HttpRequest;
+import http.HttpResponse;
+import http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

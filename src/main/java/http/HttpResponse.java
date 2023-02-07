@@ -1,6 +1,5 @@
-package webserver.http;
+package http;
 
-import java.nio.charset.StandardCharsets;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;

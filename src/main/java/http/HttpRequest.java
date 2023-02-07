@@ -1,4 +1,4 @@
-package webserver.http;
+package http;
 
 import java.util.List;
 import java.util.Map;

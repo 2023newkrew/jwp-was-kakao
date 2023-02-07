@@ -1,5 +1,7 @@
 package webserver.http;
 
+import http.HttpMethod;
+import http.HttpRequest;
 import utils.IOUtils;
 
 import java.io.*;

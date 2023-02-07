@@ -1,5 +1,7 @@
 package webserver.http;
 
+import http.HttpMethod;
+import http.HttpRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
