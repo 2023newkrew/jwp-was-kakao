@@ -1,12 +1,16 @@
 package web.controller;
 
 import http.Body;
+import http.HttpHeaders;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
 import http.response.HttpResponse;
-import http.response.HttpStatus;
 
 import java.util.Objects;
+
+import static http.ContentType.TEXT_PLAIN;
+import static http.HttpHeaders.CONTENT_LENGTH;
+import static http.HttpHeaders.CONTENT_TYPE;
 
 public class DefaultController implements Controller {
 
@@ -14,7 +18,14 @@ public class DefaultController implements Controller {
 
     @Override
     public HttpResponse run(HttpRequest httpRequest) {
-        return HttpResponse.of(HttpStatus.OK, new Body("Hello world"));
+        return HttpResponse.ok(
+                () -> new Body("Hello world"),
+                (body) -> {
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    httpHeaders.put(CONTENT_TYPE, TEXT_PLAIN.toString());
+                    httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
+                    return httpHeaders;
+                });
     }
 
     @Override

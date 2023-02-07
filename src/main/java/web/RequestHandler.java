@@ -32,16 +32,16 @@ public class RequestHandler implements Runnable {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
             HttpRequest httpRequest = HttpRequestUtils.createHttpRequest(br);
-            HttpResponse httpResponse = doService(httpRequest);
+            HttpResponse httpResponse = handleRequest(httpRequest);
 
-            doResponse(dos, httpResponse.toByte());
+            handleResponse(dos, httpResponse.toByte());
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new ApplicationException(BUFFER_READ_FAILED, e.getMessage());
         }
     }
 
-    private void doResponse(DataOutputStream dos, byte[] body) {
+    private void handleResponse(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();
@@ -51,7 +51,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private HttpResponse doService(HttpRequest httpRequest) {
+    private HttpResponse handleRequest(HttpRequest httpRequest) {
         Controller controller = controllers.getController(httpRequest);
         return controller.run(httpRequest);
     }

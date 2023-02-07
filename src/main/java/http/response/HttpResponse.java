@@ -3,11 +3,11 @@ package http.response;
 import com.google.common.primitives.Bytes;
 import http.Body;
 import http.HttpHeaders;
-import http.ContentType;
 import http.Protocol;
-import utils.IOUtils;
 
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static http.HttpHeaders.*;
 
@@ -17,23 +17,20 @@ public class HttpResponse {
     private final HttpHeaders httpHeaders;
     private final Body body;
 
-    public static HttpResponse of(HttpStatus httpStatus, String resourcePath) {
-        ResponseInfo responseInfo = new ResponseInfo(Protocol.HTTP1_1, httpStatus);
-        Body body = new Body(IOUtils.readFileFromClasspath(resourcePath));
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put(CONTENT_TYPE, ContentType.from(resourcePath).toString());
-        httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
-
-        return new HttpResponse(responseInfo, httpHeaders, body);
+    private HttpResponse(ResponseInfo responseInfo, HttpHeaders httpHeaders) {
+        this(responseInfo, httpHeaders, null);
     }
 
-    public static HttpResponse of(HttpStatus httpStatus, Body body) {
-        ResponseInfo responseInfo = new ResponseInfo(Protocol.HTTP1_1, httpStatus);
+    private HttpResponse(ResponseInfo responseInfo, HttpHeaders httpHeaders, Body body) {
+        this.responseInfo = responseInfo;
+        this.httpHeaders = httpHeaders;
+        this.body = body;
+    }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put(CONTENT_TYPE, ContentType.TEXT_PLAIN.toString());
-        httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
+    public static HttpResponse ok(Supplier<Body> bodySupplier, Function<Body, HttpHeaders> headersFunction) {
+        ResponseInfo responseInfo = new ResponseInfo(Protocol.HTTP1_1, HttpStatus.OK);
+        Body body = bodySupplier.get();
+        HttpHeaders httpHeaders = headersFunction.apply(body);
 
         return new HttpResponse(responseInfo, httpHeaders, body);
     }
@@ -45,16 +42,6 @@ public class HttpResponse {
         httpHeaders.put(LOCATION, resourcePath);
 
         return new HttpResponse(responseInfo, httpHeaders);
-    }
-
-    private HttpResponse(ResponseInfo responseInfo, HttpHeaders httpHeaders) {
-        this(responseInfo, httpHeaders, null);
-    }
-
-    private HttpResponse(ResponseInfo responseInfo, HttpHeaders httpHeaders, Body body) {
-        this.responseInfo = responseInfo;
-        this.httpHeaders = httpHeaders;
-        this.body = body;
     }
 
     public byte[] toByte() {

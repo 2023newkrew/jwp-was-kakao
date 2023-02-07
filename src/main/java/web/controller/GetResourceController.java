@@ -1,17 +1,32 @@
 package web.controller;
 
+import http.Body;
+import http.ContentType;
+import http.HttpHeaders;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
 import http.response.HttpResponse;
-import http.response.HttpStatus;
+import utils.IOUtils;
 
 import java.util.Objects;
+
+import static http.HttpHeaders.CONTENT_LENGTH;
+import static http.HttpHeaders.CONTENT_TYPE;
 
 public class GetResourceController implements Controller {
 
     @Override
     public HttpResponse run(HttpRequest httpRequest) {
-        return HttpResponse.of(HttpStatus.OK, getSuffix(httpRequest) + httpRequest.getPath());
+        String resourcePath = getSuffix(httpRequest) + httpRequest.getPath();
+        return HttpResponse.ok(
+                () -> new Body(IOUtils.readFileFromClasspath(resourcePath)),
+                (body) -> {
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    httpHeaders.put(CONTENT_TYPE, ContentType.from(resourcePath).toString());
+                    httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
+
+                    return httpHeaders;
+                });
     }
 
     @Override
