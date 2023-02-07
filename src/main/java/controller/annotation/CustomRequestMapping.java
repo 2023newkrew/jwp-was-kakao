@@ -1,6 +1,6 @@
 package controller.annotation;
 
-import http.CustomHttpMethod;
+import http.request.CustomHttpMethod;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

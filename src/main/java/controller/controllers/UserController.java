@@ -2,9 +2,10 @@ package controller.controllers;
 
 import controller.annotation.CustomRequestMapping;
 import db.DataBase;
-import http.CustomHttpMethod;
-import http.CustomHttpRequest;
-import http.CustomHttpResponse;
+import http.request.CustomHttpMethod;
+import http.request.CustomHttpRequest;
+import http.response.CustomHttpResponse;
+import http.response.CustomHttpStatus;
 import model.User;
 
 import java.util.HashMap;
@@ -21,10 +22,11 @@ public class UserController extends BaseController {
                 request.getQuery().get("email")
         );
         DataBase.addUser(user);
+
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");
         headers.put("Location", "/index.html");
-        return new CustomHttpResponse("HTTP/1.1 302 FOUND", headers, "");
+        return new CustomHttpResponse("HTTP/1.1", CustomHttpStatus.FOUND, headers, "");
     }
 
 }

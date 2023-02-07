@@ -4,8 +4,8 @@ import controller.annotation.CustomRequestMapping;
 import controller.controllers.BaseController;
 import controller.controllers.UserController;
 import controller.controllers.ViewController;
-import http.CustomHttpRequest;
-import http.CustomHttpResponse;
+import http.request.CustomHttpRequest;
+import http.response.CustomHttpResponse;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

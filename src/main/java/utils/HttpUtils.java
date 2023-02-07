@@ -1,8 +1,9 @@
 package utils;
 
-import http.CustomHttpMethod;
-import http.CustomHttpRequest;
-import http.CustomHttpResponse;
+import http.request.CustomHttpMethod;
+import http.request.CustomHttpRequest;
+import http.response.CustomHttpResponse;
+import http.response.CustomHttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.RequestHandler;
@@ -60,12 +61,19 @@ public class HttpUtils {
 
     public static void respondHttpResponse(DataOutputStream dos, CustomHttpResponse response){
         try {
-            dos.writeBytes(response.getHttpStatus() + " \r\n");
+            CustomHttpStatus status = response.getHttpStatus();
+            String statusLine = String.join(" ",
+                    response.getProtocol(),
+                    String.valueOf(status.getValue()),
+                    status.getReasonPhrase());
+            dos.writeBytes(statusLine + " \r\n");
+
             for (Map.Entry<String, String> entry : response.getHeaders().entrySet()) {
                 String k = entry.getKey();
                 String v = entry.getValue();
                 dos.writeBytes(k + ": " + v + " \r\n");
             }
+
             dos.writeBytes("\r\n");
             dos.write(response.getBody().getBytes(), 0, response.getBody().getBytes().length);
             dos.flush();

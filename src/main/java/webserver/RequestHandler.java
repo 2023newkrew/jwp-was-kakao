@@ -1,8 +1,8 @@
 package webserver;
 
 import controller.FrontController;
-import http.CustomHttpRequest;
-import http.CustomHttpResponse;
+import http.request.CustomHttpRequest;
+import http.response.CustomHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpUtils;
