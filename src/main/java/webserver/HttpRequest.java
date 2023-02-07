@@ -81,7 +81,7 @@ public class HttpRequest {
             while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
                 String[] tokens = line.split(": ");
                 String headerName = tokens[0];
-                String headerValue = tokens[1];
+                String headerValue = tokens[1].trim();
                 headerMap.put(headerName, headerValue);
             }
 
