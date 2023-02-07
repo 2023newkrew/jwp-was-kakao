@@ -37,6 +37,15 @@ public class Request {
     private static final String QUERY_STRING_SEPARATOR = "=";
     private static final String CONTENT_LENGTH = "Content-Length";
 
+    // Number Constant
+    private static final int METHOD_INDEX = 0;
+    private static final int URL_INDEX = 1;
+    private static final int PROTOCOL_INDEX = 2;
+    private static final int PATH_INDEX = 0;
+    private static final int QUERY_STRING_INDEX = 1;
+    private static final int KEY_INDEX = 0;
+    private static final int VALUE_INDEX = 1;
+
     // Method
     public static Request parse(BufferedReader reader) throws IOException {
         String firstLine = reader.readLine();
@@ -60,23 +69,23 @@ public class Request {
     }
 
     private static Method parseMethod(String firstLine) {
-        return Method.of(firstLine.split(WHITE_SPACE_REGEX)[0]);
+        return Method.of(firstLine.split(WHITE_SPACE_REGEX)[METHOD_INDEX]);
     }
 
     private static String parsePath(String firstLine) {
-        return firstLine.split(WHITE_SPACE_REGEX)[1].split(QUERY_STRING_IDENTIFIER)[0];
+        return firstLine.split(WHITE_SPACE_REGEX)[URL_INDEX].split(QUERY_STRING_IDENTIFIER)[PATH_INDEX];
     }
 
     private static Map<String, String> parseQueryString(String firstLine) {
-        String[] splitUrl = firstLine.split(WHITE_SPACE_REGEX)[1].split(QUERY_STRING_IDENTIFIER);
+        String[] splitUrl = firstLine.split(WHITE_SPACE_REGEX)[URL_INDEX].split(QUERY_STRING_IDENTIFIER);
         if (splitUrl.length == 1) {
             return new HashMap<>();
         }
-        return parseQueryStringFormat(splitUrl[1]);
+        return parseQueryStringFormat(splitUrl[QUERY_STRING_INDEX]);
     }
 
     private static String parseProtocol(String firstLine) {
-        return firstLine.split(WHITE_SPACE_REGEX)[2];
+        return firstLine.split(WHITE_SPACE_REGEX)[PROTOCOL_INDEX];
     }
 
     private static Map<String, String> parseHeader(BufferedReader reader) throws IOException {
@@ -84,7 +93,7 @@ public class Request {
         String header;
         while (!Objects.equals(header = reader.readLine(), "")) {
             String[] headerInformation = header.split(HEADER_KEY_SEPARATOR);
-            requestHeader.put(headerInformation[0].trim(), headerInformation[1].trim());
+            requestHeader.put(headerInformation[KEY_INDEX].trim(), headerInformation[VALUE_INDEX].trim());
         }
         return requestHeader;
     }
@@ -100,7 +109,7 @@ public class Request {
     private static Map<String, String> parseQueryStringFormat(String input) {
         return Arrays.stream(input.split(QUERY_STRING_CONNECTOR))
                 .map(s -> s.split(QUERY_STRING_SEPARATOR))
-                .collect(Collectors.toMap(keyValuePair -> keyValuePair[0], keyValuePair -> keyValuePair[1], (a, b) -> b));
+                .collect(Collectors.toMap(keyValuePair -> keyValuePair[KEY_INDEX], keyValuePair -> keyValuePair[VALUE_INDEX], (a, b) -> b));
     }
 
     public Map<String, String> getRequestBodyAsQueryString() {
