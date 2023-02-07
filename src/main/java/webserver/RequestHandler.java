@@ -1,6 +1,5 @@
 package webserver;
 
-import db.DataBase;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,21 +8,28 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 import model.HttpRequest;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import webserver.controller.StaticController;
+import webserver.controller.UserSaveController;
+import webserver.controller.ViewController;
 
 public class RequestHandler implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
+    private final Map<String, Controller> controllerMap = new HashMap<>();
+    private final Controller viewController = new ViewController();
+    private final Controller staticController = new StaticController();
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        controllerMap.put("/user/create", new UserSaveController());
     }
 
     public void run() {
@@ -35,35 +41,27 @@ public class RequestHandler implements Runnable {
             RequestParser requestParser = new RequestParser(br);
 
             HttpRequest httpRequest = requestParser.buildHttpRequest();
-            Map<String, String> userInfo = httpRequest.getBody();
 
-            User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"),
-                    userInfo.get("email"));
-            DataBase.addUser(user);
+            Controller controller = handleControllerMapping(httpRequest);
+            String viewName = controller.process(httpRequest);
 
             DataOutputStream dos = new DataOutputStream(out);
 
-            // resolver
-            byte[] body;
-            if (httpRequest.isPOSTMethod()) {
+            if (controller.isRedirectRequired()) {
                 responseRedirectHome(dos);
                 return;
             }
-            try {
-                if (httpRequest.getUrl().endsWith("html")) {
-                    body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUrl());
-                } else {
-                    body = FileIoUtils.loadFileFromClasspath("./static" + httpRequest.getUrl());
-                }
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException(e);
-            }
-
-            response200Header(dos, httpRequest.getContentType(), body.length);
-            responseBody(dos, body);
-        } catch (IOException e) {
+            sendBody(httpRequest, viewName, dos);
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private Controller handleControllerMapping(HttpRequest httpRequest) {
+        if (httpRequest.isStaticRequest()) {
+            return this.staticController;
+        }
+        return this.controllerMap.getOrDefault(httpRequest.getUrl(), this.viewController);
     }
 
     private void responseRedirectHome(DataOutputStream dos) {
@@ -76,6 +74,14 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void sendBody(HttpRequest httpRequest, String viewName, DataOutputStream dos)
+            throws IOException, URISyntaxException {
+
+        byte[] body = FileIoUtils.loadFileFromClasspath(viewName);
+        response200Header(dos, httpRequest.getContentType(), body.length);
+        responseBody(dos, body);
     }
 
     private void response200Header(DataOutputStream dos, String contentType, int lengthOfBodyContent) {

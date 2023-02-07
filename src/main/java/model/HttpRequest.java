@@ -1,9 +1,9 @@
 package model;
 
-import java.io.BufferedReader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.http.HttpMethod;
@@ -17,6 +17,7 @@ public class HttpRequest {
     private final Map<String, String> queryParams;
     private final Map<String, String> headers;
     private final Map<String, String> body;
+    private final List<String> staticUrls = Arrays.asList("css", "js", "images", "fonts", "favicon");
 
     public HttpRequest(String httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
             Map<String, String> body) {
@@ -32,8 +33,9 @@ public class HttpRequest {
         this.body = new HashMap<>(body);
     }
 
-    public boolean isPOSTMethod() {
-        return this.httpMethod.equals(HttpMethod.POST);
+    public boolean isStaticRequest() {
+        return staticUrls.stream()
+                .anyMatch(staticUrl -> this.url.startsWith(staticUrl, 1));
     }
 
     public String getContentType() {
