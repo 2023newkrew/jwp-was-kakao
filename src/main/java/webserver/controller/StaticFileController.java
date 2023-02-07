@@ -1,4 +1,4 @@
-package application.controller;
+package webserver.controller;
 
 import webserver.enums.ContentType;
 import org.springframework.http.HttpStatus;

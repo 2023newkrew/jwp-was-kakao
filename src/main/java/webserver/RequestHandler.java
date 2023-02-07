@@ -1,16 +1,20 @@
 package webserver;
 
-import application.controller.HomeController;
-import application.controller.StaticFileController;
-import application.controller.UserController;
+import webserver.controller.StaticFileController;
 import webserver.enums.ContentType;
-import webserver.enums.RequestMethod;
+import webserver.exceptions.HandlerNotFoundException;
 import webserver.exceptions.InvalidQueryParameterException;
 import webserver.exceptions.InvalidRequestException;
 import webserver.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import webserver.http.exceptionhandler.DefaultHttpExceptionHandlerMapping;
+import webserver.http.exceptionhandler.HttpExceptionHandler;
+import webserver.http.exceptionhandler.HttpExceptionHandlerMapping;
+import webserver.http.requesthandler.DefaultHttpRequestHandlerMapping;
+import webserver.http.requesthandler.HttpRequestHandler;
+import webserver.http.requesthandler.HttpRequestHandlerMapping;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 import webserver.utils.FileIoUtils;
@@ -25,18 +29,21 @@ import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private final HomeController homeController;
-    private final UserController userController;
-    private final StaticFileController staticFileController;
     private final Socket connection;
+    private final HttpRequestHandlerMapping httpRequestHandlerMapping;
+    private final HttpExceptionHandlerMapping httpExceptionHandlerMapping;
+    private final StaticFileController staticFileController;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, HttpRequestHandlerMapping requestMapping, HttpExceptionHandlerMapping exceptionMapping) {
         this.connection = connectionSocket;
-        this.homeController = HomeController.getInstance();
-        this.userController = UserController.getInstance();
+        this.httpRequestHandlerMapping = requestMapping;
+        this.httpExceptionHandlerMapping = exceptionMapping;
         this.staticFileController = StaticFileController.getInstance();
     }
 
+    public RequestHandler(Socket connectionSocket) {
+        this(connectionSocket, new DefaultHttpRequestHandlerMapping(), new DefaultHttpExceptionHandlerMapping());
+    }
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
@@ -56,40 +63,37 @@ public class RequestHandler implements Runnable {
 
     private HttpResponse handleHttpRequest(HttpRequest request) {
         try {
-            return doHandleHttpRequest(request);
-        } catch (ResourceNotFoundException e) {
-            return HttpResponse.status(HttpStatus.NOT_FOUND).contentType(ContentType.JSON).body("Resource Not Found");
-        } catch (InvalidRequestException e) {
-            return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body("Invalid Request Format");
-        } catch (URISyntaxException e) {
-            return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body("Wrong URI Format");
-        } catch (InvalidQueryParameterException e) {
-            return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body("Invalid Query Parameter");
-        } catch (IOException e) {
-            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body("Connection Error");
+            HttpRequestHandler handler = findHandler(request);
+            return handler.doHandle(request);
         } catch (Exception e) {
-            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body("Internal Server Error");
+            return handleException(e);
         }
-
     }
 
-    private HttpResponse doHandleHttpRequest(HttpRequest request) throws IOException, URISyntaxException {
-        String requestURL = request.getRequestURL();
-
-        if (requestURL.startsWith("/user/create") && request.getRequestMethod() == RequestMethod.GET) {
-            return userController.createUserGet(request);
-        }
-        if (requestURL.startsWith("/user/create") && request.getRequestMethod() == RequestMethod.POST) {
-            return userController.createUserPost(request);
-        }
-
-        if (requestURL.equals("/") && request.getRequestMethod() == RequestMethod.GET) {
-            return homeController.rootPathGet(request);
-        }
-
+    private HttpRequestHandler findHandler(HttpRequest request) throws Exception {
         if (FileIoUtils.isStaticFile(request)) {
-            return staticFileController.staticFileGet(request);
+            return staticFileController::staticFileGet;
         }
-        throw new ResourceNotFoundException();
+
+        return httpRequestHandlerMapping.findHandler(request);
+    }
+
+    private HttpResponse handleException(Exception e) {
+        if (e instanceof HandlerNotFoundException || e instanceof ResourceNotFoundException) {
+            return HttpResponse.status(HttpStatus.NOT_FOUND).contentType(ContentType.JSON).body(e.getMessage());
+        }
+        if (e instanceof InvalidRequestException || e instanceof URISyntaxException || e instanceof InvalidQueryParameterException) {
+            return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body(e.getMessage());
+        }
+        if (e instanceof IOException) {
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body(e.getMessage());
+        }
+
+        try {
+            HttpExceptionHandler handler = httpExceptionHandlerMapping.findHandler(e);
+            return handler.doHandle(e);
+        } catch (HandlerNotFoundException exception) {
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body("Internal Server Error");
+        }
     }
 }
