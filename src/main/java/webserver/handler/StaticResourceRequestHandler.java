@@ -1,8 +1,11 @@
 package webserver.handler;
 
 import http.*;
+import http.exception.HttpRequestFormatException;
 import utils.FileIoUtils;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +20,10 @@ public class StaticResourceRequestHandler implements Handler {
         byte[] bytes;
         try {
             bytes = FileIoUtils.loadFileFromClasspath(STATIC_FILEPATH + httpRequest.getURL());
-        } catch (Exception e) {
-            throw new RuntimeException();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
         }
 
         return HttpResponse.HttpResponseBuilder.aHttpResponse()

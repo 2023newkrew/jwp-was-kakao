@@ -8,9 +8,11 @@ import webserver.handler.StaticResourceRequestHandler;
 import webserver.handler.UrlMappingHandler;
 import webserver.http.HttpRequestReader;
 import http.HttpResponse;
+import webserver.support.GlobalExceptionHandler;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -21,6 +23,7 @@ public class RequestHandler implements Runnable {
     private final Socket connection;
     private final Map<String, UrlMappingHandler> urlMappingHandlerMappings;
     private final Handler defaultHandler;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
     public RequestHandler(Socket connectionSocket,
                           Map<String, UrlMappingHandler> urlMappingHandlerMappings,
@@ -28,6 +31,7 @@ public class RequestHandler implements Runnable {
         this.connection = connectionSocket;
         this.urlMappingHandlerMappings = urlMappingHandlerMappings;
         this.defaultHandler = defaultHandler;
+        this.globalExceptionHandler = new GlobalExceptionHandler(connection);
     }
 
     public RequestHandler(Socket connection, Map<String, UrlMappingHandler> urlMappingHandlerMappings) {
@@ -39,14 +43,17 @@ public class RequestHandler implements Runnable {
                 connection.getInetAddress(),
                 connection.getPort());
 
-        try (HttpRequestReader httpRequestReader = new HttpRequestReader(connection.getInputStream());
-             DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
+        HttpRequestReader httpRequestReader = null;
+        DataOutputStream dos = null;
+        try {
+            httpRequestReader = new HttpRequestReader(connection.getInputStream());
+            dos = new DataOutputStream(connection.getOutputStream());
 
             HttpRequest httpRequest = httpRequestReader.readHttpRequest();
 
             if (httpRequest == null) {
                 logger.debug("HTTP Request is null! Connection closed.");
-                connection.close();
+                close(httpRequestReader, dos, connection);
                 return;
             }
 
@@ -54,16 +61,18 @@ public class RequestHandler implements Runnable {
 
             HttpResponse httpResponse = handle(httpRequest);
 
-            logger.debug("HTTP Response: {}", httpResponse);
+            logger.debug("HTTP Response Status Line: {} {} {}",
+                    httpResponse.getVersion(),
+                    httpResponse.getStatus().getCode(),
+                    httpResponse.getStatus().getMessage());
 
             dos.write(httpResponse.toBytes());
             dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Exception! - {}", e.getMessage());
+            globalExceptionHandler.handle(e);
         } finally {
-            try {
-                connection.close();
-            } catch (IOException ignored) {}
+            close(httpRequestReader, dos, connection);
         }
     }
 
@@ -82,5 +91,21 @@ public class RequestHandler implements Runnable {
                 .filter(handler -> handler.support(httpRequest))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private void close(HttpRequestReader reader, OutputStream os, Socket connection) {
+        try {
+            if (reader != null) {
+                reader.close();
+            }
+            if (os != null) {
+                os.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (IOException ignored) {
+            throw new IllegalStateException();
+        }
     }
 }

@@ -44,7 +44,7 @@ public class UserCreateRequestHandler implements UrlMappingHandler {
                 !params.containsKey("password") ||
                 !params.containsKey("name") ||
                 !params.containsKey("email")) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException();
         }
     }
 

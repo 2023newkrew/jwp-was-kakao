@@ -58,7 +58,7 @@ public class HttpRequestReader implements Closeable {
         try {
             return IOUtils.readData(br, contentLength);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -89,7 +89,7 @@ public class HttpRequestReader implements Closeable {
             }
             return headerLines;
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new IllegalStateException(e);
         }
     }
 
@@ -104,7 +104,7 @@ public class HttpRequestReader implements Closeable {
         try {
             return br.readLine();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
