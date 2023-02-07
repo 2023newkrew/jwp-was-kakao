@@ -32,16 +32,7 @@ public class HttpRequest {
             return;
         }
 
-        extractParams(uri.split("\\?")[1]);
-    }
-
-    // 쿼리스트링으로부터 key와 value를 추출하여 requestParams Map에 추가
-    private void extractParams(String queryString) {
-        String[] datas = queryString.split("&");
-        for (String data : datas) {
-            String[] strArr = data.split("=");
-            requestParams.put(strArr[0], strArr[1]);
-        }
+        requestParams = IOUtils.extractParams(uri.split("\\?")[1]);
     }
 
     private void parseHeader() throws IOException {
