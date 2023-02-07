@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,9 +28,9 @@ class HttpRequestParserTest {
         assertThat(httpRequest.getURL()).isEqualTo("/index.html");
         assertThat(httpRequest.getVersion()).isEqualTo("HTTP/1.1");
         assertThat(httpRequest.getHeaders())
-                .containsEntry("Host", "localhost:8080");
+                .containsEntry("Host", List.of("localhost:8080"));
         assertThat(httpRequest.getHeaders())
-                .containsEntry("Connection", "keep-alive");
+                .containsEntry("Connection", List.of("keep-alive"));
         assertThat(httpRequest.getBody()).isNull();
     }
 

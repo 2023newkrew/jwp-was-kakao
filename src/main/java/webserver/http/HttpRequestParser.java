@@ -1,6 +1,7 @@
 package webserver.http;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpRequestParser {
@@ -8,7 +9,7 @@ public class HttpRequestParser {
     private String URL;
     private String version;
     private Map<String, String> parameters;
-    private Map<String, String> headers;
+    private Map<String, List<String>> headers;
     private String body;
 
 
@@ -41,7 +42,7 @@ public class HttpRequestParser {
             String[] keyValue = splited[i].split(": ");
             String key = keyValue[0];
             String value = keyValue[1].trim();
-            this.headers.put(key, value);
+            this.headers.put(key, List.of(value));
         }
     }
 

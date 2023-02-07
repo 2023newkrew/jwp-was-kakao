@@ -1,5 +1,6 @@
 package webserver.http;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -8,7 +9,7 @@ public class HttpRequest {
     private String URL;
     private String version;
     private Map<String, String> parameters;
-    private Map<String, String> headers;
+    private Map<String, List<String>> headers;
     private String body;
 
     private HttpRequest() {}
@@ -29,7 +30,7 @@ public class HttpRequest {
         return parameters;
     }
 
-    public Map<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
@@ -60,7 +61,7 @@ public class HttpRequest {
         private String URL;
         private String version;
         private Map<String, String> parameters;
-        private Map<String, String> headers;
+        private Map<String, List<String>> headers;
         private String body;
 
         private HttpRequestBuilder() {
@@ -93,7 +94,7 @@ public class HttpRequest {
             return this;
         }
 
-        public HttpRequestBuilder withHeaders(Map<String, String> headers) {
+        public HttpRequestBuilder withHeaders(Map<String, List<String>> headers) {
             this.headers = headers;
             return this;
         }
