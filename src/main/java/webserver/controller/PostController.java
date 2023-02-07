@@ -11,7 +11,7 @@ public abstract class PostController implements Controller {
         if (!method.equals(HttpMethod.POST)) {
             throw new RuntimeException();
         }
-
+        doPost(httpRequest, httpResponse);
     }
 
     protected abstract void doPost(HttpRequest httpRequest, HttpResponse httpResponse);
