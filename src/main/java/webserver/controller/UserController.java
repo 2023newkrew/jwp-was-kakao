@@ -6,13 +6,16 @@ import model.request.HttpRequest;
 import model.annotation.Api;
 import model.response.HttpResponse;
 import utils.ResponseUtils;
+import utils.TemplateUtils;
 import webserver.dao.UserDao;
+import webserver.infra.ViewResolver;
 import webserver.service.UserService;
 
 import java.io.DataOutputStream;
 
 import static constant.HeaderConstant.*;
 import static utils.ResponseUtils.*;
+import static utils.TemplateUtils.*;
 
 public class UserController extends ApiController {
     private static final UserController instance;
@@ -48,6 +51,6 @@ public class UserController extends ApiController {
             return;
         }
 
-        System.out.println("UserController.showUserList");
+        ViewResolver.resolve(handleUserListTemplate(), response, dos);
     }
 }
