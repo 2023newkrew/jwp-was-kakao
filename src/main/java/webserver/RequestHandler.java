@@ -29,18 +29,19 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
+            DispatcherServlet servlet = new DispatcherServlet();
 
             // 요청 처리 및 응답
-            handleWithException(reader, dos);
+            handleWithException(reader, dos, servlet);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void handleWithException(BufferedReader reader, DataOutputStream dos) throws IOException {
+    private void handleWithException(BufferedReader reader, DataOutputStream dos, DispatcherServlet servlet) throws IOException {
        try {
-           handle(reader, dos);
+           handle(reader, dos, servlet);
        } catch (IllegalMethodException e) {
            sendResponse(dos, new HttpResponse(HttpStatus.BAD_REQUEST));
        } catch (PathNotFoundException e) {
@@ -54,12 +55,11 @@ public class RequestHandler implements Runnable {
        }
     }
 
-    private void handle(BufferedReader reader, DataOutputStream dos) throws IOException {
+    private void handle(BufferedReader reader, DataOutputStream dos, DispatcherServlet servlet) throws IOException {
         HttpRequest request = Parser.parseRequest(reader);
         HttpResponse response = new HttpResponse();
 
-        DispatcherServlet dispatcherServlet = new DispatcherServlet();
-        dispatcherServlet.dispatch(request, response);
+        servlet.dispatch(request, response);
 
         sendResponse(dos, response);
     }
