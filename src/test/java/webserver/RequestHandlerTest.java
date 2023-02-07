@@ -60,7 +60,7 @@ class RequestHandlerTest {
     void css() throws IOException, URISyntaxException {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET ./css/styles.css HTTP/1.1 ",
+                "GET /css/styles.css HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Accept: text/css,*/*;q=0.1 ",
                 "Connection: keep-alive",
@@ -75,7 +75,7 @@ class RequestHandlerTest {
 
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
+                "Content-Type: text/css;charset=utf-8 \r\n" +
                 "Content-Length: 7065 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));

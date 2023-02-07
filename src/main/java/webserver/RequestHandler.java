@@ -68,16 +68,27 @@ public class RequestHandler implements Runnable {
     private BaseResponseDto getResponse(Request request) throws IOException, URISyntaxException {
         // 파일 확장자
         if (request.getHeader().getHttpMethod().equals(HttpMethod.GET)) {
-            ResourceType resourceType = ResourceType.getResourceType(request);
+            String requestExtension = getExtension(request);
+            ResourceType resourceType = ResourceType.getResourceType(requestExtension);
             if (resourceType != ResourceType.NONE) {
                 request.getHeader().convertToAbsolutePath(resourceType);
+                String contentType = "text/" + requestExtension;
+                if (request.getHeader().getHeaders().containsKey("Accept")) {
+                    contentType = request.getHeader().getHeaders().get("Accept").split(",")[0];
+                }
+
                 return new BaseResponseDto(StatusCode.OK,
-                        new String(FileIoUtils.loadFileFromClasspath(request.getHeader().getUrl())), request.getHeader().getHeaders().get("Accept").split(",")[0]);
+                        new String(FileIoUtils.loadFileFromClasspath(request.getHeader().getUrl())), contentType);
             }
         }
 
         // path
         return controllerSelector.runMethod(request);
+    }
+
+    private static String getExtension(Request request) {
+        String[] splitedUrl = request.getHeader().getUrl().split("\\.");
+        return splitedUrl[splitedUrl.length - 1];
     }
 
     private void responseHeader(DataOutputStream dos, BaseResponseDto response) {

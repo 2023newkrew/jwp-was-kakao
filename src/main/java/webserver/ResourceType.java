@@ -19,12 +19,11 @@ public enum ResourceType {
         return path;
     }
 
-    public static ResourceType getResourceType(Request request) {
-        String[] splitedUrl = request.getHeader().getUrl().split("\\.");
-        String requestExtension = splitedUrl[splitedUrl.length - 1];
+    public static ResourceType getResourceType(String extension) {
+
 
         return Arrays.stream(ResourceType.values())
-                .filter(v -> v.extensions.contains(requestExtension))
+                .filter(v -> v.extensions.contains(extension))
                 .findFirst()
                 .orElse(NONE);
     }

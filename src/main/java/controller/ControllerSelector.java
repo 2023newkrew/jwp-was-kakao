@@ -17,7 +17,10 @@ public class ControllerSelector {
     private final UserController userController = new UserController();
 
     public BaseResponseDto runMethod(Request request) {
-        String contentType = request.getHeader().getHeaders().get("Accept").split(",")[0];
+        String contentType = "text/html";
+        if (request.getHeader().getHeaders().containsKey("Accept")) {
+            contentType = request.getHeader().getHeaders().get("Accept").split(",")[0];
+        }
 
         // baseController
         if (request.getHeader().getHttpMethod() == GET
