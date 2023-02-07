@@ -3,20 +3,24 @@ package webserver;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import repository.MemoryUserRepository;
 import utils.FileIoUtils;
-import webserver.handler.HandlerMapping;
+import webserver.controller.GlobalController;
+import webserver.controller.RequestMappingHandler;
 import webserver.request.Request;
 import webserver.response.Response;
+import webserver.service.UserService;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.URISyntaxException;
 
 @RequiredArgsConstructor
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
     private final Socket connection;
+    private final RequestMappingHandler requestMappingHandler = new RequestMappingHandler(new GlobalController(new UserService(new MemoryUserRepository())));
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
@@ -28,14 +32,14 @@ public class RequestHandler implements Runnable {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in))
         ) {
             Request request = Request.parse(reader);
-            Response response = findResponseByPath(request);
+            Response response = getResponseByPath(request);
             response.flush(new DataOutputStream(out));
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InvocationTargetException | IllegalAccessException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private Response findResponseByPath(Request request) throws IOException, URISyntaxException {
+    private Response getResponseByPath(Request request) throws IOException, URISyntaxException, InvocationTargetException, IllegalAccessException {
         String path = request.getPath();
         FileType fileType = request.getRequestFileType();
 
@@ -47,6 +51,6 @@ public class RequestHandler implements Runnable {
             return Response.ok(FileIoUtils.loadFileFromClasspath("./static" + path), fileType);
         }
 
-        return HandlerMapping.handle(request);
+        return requestMappingHandler.handle(request);
     }
 }
