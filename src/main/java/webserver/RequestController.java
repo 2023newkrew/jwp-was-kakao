@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Controller {
+public class RequestController {
 
     public HttpResponse requestMapping(HttpRequest httpRequest) throws IOException, URISyntaxException{
         HttpMethod httpMethod = httpRequest.getHttpMethod();
