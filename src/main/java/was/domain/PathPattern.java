@@ -1,8 +1,10 @@
-package annotation;
+package was.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import was.annotation.Mapping;
+import was.annotation.RequestMethod;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode

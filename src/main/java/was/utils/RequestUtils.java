@@ -1,9 +1,9 @@
-package utils;
+package was.utils;
 
-import annotation.Request;
-import annotation.RequestMethod;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import was.annotation.RequestMethod;
+import was.domain.request.Request;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package annotation;
+package was.domain.response;
 
 public enum Version {
     HTTP_1_1("HTTP/1.1");

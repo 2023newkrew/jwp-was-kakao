@@ -1,4 +1,4 @@
-package annotation;
+package was.domain.response;
 
 import lombok.Builder;
 

@@ -1,9 +1,15 @@
 package controller;
 
-import annotation.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import service.UserService;
+import was.annotation.Controller;
+import was.annotation.Mapping;
+import was.annotation.RequestBody;
+import was.annotation.RequestMethod;
+import was.domain.response.Response;
+import was.domain.response.StatusCode;
+import was.domain.response.Version;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package annotation;
+package was.annotation;
 
 public enum RequestMethod {
     GET,

@@ -1,4 +1,4 @@
-package annotation;
+package was.scanner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

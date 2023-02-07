@@ -1,4 +1,4 @@
-package annotation;
+package was.domain.response;
 
 public enum StatusCode {
     OK(200, "OK"),

@@ -1,4 +1,4 @@
-package annotation;
+package was.scanner;
 
 import java.io.File;
 import java.io.IOException;

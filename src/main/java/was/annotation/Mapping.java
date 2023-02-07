@@ -1,4 +1,4 @@
-package annotation;
+package was.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequestBody {
+public @interface Mapping {
+    RequestMethod method();
+    String path() default "";
 }

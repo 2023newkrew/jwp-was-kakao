@@ -4,7 +4,7 @@ import db.DataBase;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.UserRequest;
-import utils.ParamsParser;
+import was.utils.ParamsParser;
 
 import java.util.Map;
 

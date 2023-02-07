@@ -1,7 +1,9 @@
-package annotation;
+package was.domain.request;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import was.annotation.RequestMethod;
+import was.domain.PathPattern;
 
 import java.util.Map;
 
