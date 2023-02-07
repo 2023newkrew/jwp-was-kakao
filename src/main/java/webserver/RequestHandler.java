@@ -1,10 +1,7 @@
 package webserver;
 
-import db.DataBase;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.MultiValueMap;
 import webserver.handler.HttpRequestHandler;
 import webserver.handler.resolver.HandlerResolver;
 import webserver.request.HttpRequest;
@@ -37,19 +34,5 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private void addUser(MultiValueMap<String, String> requestParams) {
-        String userId = requestParams.getFirst("userId");
-        String password = requestParams.getFirst("password");
-        String name = requestParams.getFirst("name");
-        String email = requestParams.getFirst("email");
-        User user = User.builder()
-                .userId(userId)
-                .password(password)
-                .name(name)
-                .email(email)
-                .build();
-        DataBase.addUser(user);
     }
 }

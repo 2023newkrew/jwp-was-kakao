@@ -1,14 +1,13 @@
 package webserver.handler.posthandler.impl;
 
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
+import db.DataBase;
+import model.User;
 import webserver.constant.HttpStatus;
 import webserver.handler.posthandler.PostRequestHandler;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class UserCreateRequestHandler extends PostRequestHandler {
 
@@ -33,22 +32,26 @@ public class UserCreateRequestHandler extends PostRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        String requestBody = request.getBody();
-        String requestPath = request.getTarget()
-                .getPath();
-        requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-        MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(requestPath)
-                .query(requestBody)
-                .build()
+        Map<String, String> queryParams = request.getTarget()
                 .getQueryParams();
+        addUser(queryParams);
+        return new HttpResponse.Builder()
+                .setStatus(HttpStatus.FOUND)
+                .addHeader("Location", "http://localhost:8080/index.html")
+                .build();
+    }
 
-        if (requestPath.equals("/user/create")) {
-//            addUser(requestParams);
-            return new HttpResponse.Builder()
-                    .setStatus(HttpStatus.OK)
-                    .addHeader("Location", "http://localhost:8080/index.html")
-                    .build();
-        }
-        return null;
+    private void addUser(Map<String, String> queryParams) {
+        String userId = queryParams.get("userId");
+        String password = queryParams.get("password");
+        String name = queryParams.get("name");
+        String email = queryParams.get("email");
+        User user = User.builder()
+                .userId(userId)
+                .password(password)
+                .name(name)
+                .email(email)
+                .build();
+        DataBase.addUser(user);
     }
 }
