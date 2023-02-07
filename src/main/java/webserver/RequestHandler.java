@@ -25,9 +25,11 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
+    private UserService userService;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.userService = new UserService();
     }
 
     public void run() {
@@ -70,9 +72,9 @@ public class RequestHandler implements Runnable {
                 .getQueryParams();
 
         if (path.equals("/user/create")) {
-            addUser(requestParams);
             response302Header(dos, "http://localhost:8080/index.html");
             dos.flush();
+            userService.addUser(requestParams);
         }
     }
 
@@ -92,20 +94,6 @@ public class RequestHandler implements Runnable {
 
         response200Header(dos, body.length, contentType);
         responseBody(dos, body);
-    }
-
-    private void addUser(MultiValueMap<String, String> requestParams) {
-        String userId = requestParams.getFirst("userId");
-        String password = requestParams.getFirst("password");
-        String name = requestParams.getFirst("name");
-        String email = requestParams.getFirst("email");
-        User user = User.builder()
-                .userId(userId)
-                .password(password)
-                .name(name)
-                .email(email)
-                .build();
-        DataBase.addUser(user);
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
