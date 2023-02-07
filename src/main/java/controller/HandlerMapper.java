@@ -1,9 +1,7 @@
 package controller;
 
-import request.RequestParams;
 import model.User;
-import utils.FileIoUtils;
-import utils.IOUtils;
+import request.RequestParams;
 import utils.StringParser;
 
 import java.io.BufferedReader;
@@ -13,6 +11,7 @@ import java.net.URISyntaxException;
 
 import static response.ResponseBody.responseBody;
 import static response.ResponseHeader.response200Header;
+import static utils.FileIoUtils.*;
 
 public class HandlerMapper {
     private final BufferedReader br;
@@ -28,13 +27,13 @@ public class HandlerMapper {
     public void methodMapping(RequestParams request, String requestInfo) throws IOException, URISyntaxException {
         byte[] body;
         if (request.getMethod().equals("GET")){
-            String requestUrl = requestGetUrl(request, requestInfo);
+            String requestUrl = requestGetUrl(request, requestInfo, br);
             body = readFile(requestUrl);
             getControllerMapping(request, body);
         }
         if (request.getMethod().equals("POST")){
-            String responseUrl = redirectUrl(br);
-            String requestBody = requestPostBody(requestInfo);
+            String responseUrl = getHomeUrl();
+            String requestBody = requestPostBody(requestInfo, stringParser, br);
             postControllerMapping(request, requestBody, responseUrl);
         }
     }
@@ -47,48 +46,9 @@ public class HandlerMapper {
         }
     }
 
+
     private void getControllerMapping(RequestParams request, byte[] body){
-        // always
         response200Header(dos, body.length, request.getContentType());
         responseBody(dos, body);
-    }
-
-
-    private String requestGetUrl(RequestParams request, String s) throws IOException {
-        if (request.getUrl().startsWith("/css") || request.getUrl().startsWith("/js")){
-            return "./static" + request.getUrl();
-        }
-        if (request.getUrl().equals("/")){
-            return null;
-        }
-        if (request.getUrl().startsWith("/") || request.getUrl().endsWith("html")){
-            return "./templates" + request.getUrl();
-        }
-        while (!"".equals(s)) {
-            s = br.readLine();
-        }
-        return request.getUrl();
-    }
-
-    private byte[] readFile(String requestUrl) throws IOException, URISyntaxException {
-        try {
-            return FileIoUtils.loadFileFromClasspath(requestUrl);
-        } catch (NullPointerException e) {
-            return "Hello world".getBytes();
-        }
-    }
-
-    private String redirectUrl(BufferedReader br) {
-        return "/index.html";
-    }
-
-    private String requestPostBody(String requestInfo) throws IOException {
-        while (stringParser.getContentLength(requestInfo) == -1) {
-            requestInfo = br.readLine();
-        }
-        if (requestInfo.length() == 0) {
-            return null;
-        }
-        return IOUtils.readData(br, stringParser.getContentLength(requestInfo));
     }
 }

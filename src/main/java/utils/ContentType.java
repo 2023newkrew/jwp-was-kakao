@@ -5,6 +5,8 @@ public enum ContentType {
     CSS("text/css;charset=utf-8 "),
     JS("application/javascript;charset=utf-8 "),
     ICO("image/x-icon "),
+    WOFF("application/x-font-woff "),
+    TTF("application/x-font-ttf "),
     ;
 
     private final String type;
@@ -20,6 +22,9 @@ public enum ContentType {
         if (s.startsWith("/css")) return CSS;
         if (s.startsWith("/js")) return JS;
         if (s.endsWith("ico")) return ICO;
-        return HTML;
+        if (s.endsWith("html")) return HTML;
+        if (s.endsWith("ttf")) return TTF;
+        if (s.endsWith("woff")) return WOFF;
+        return null;
     }
 }
