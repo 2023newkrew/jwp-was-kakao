@@ -1,4 +1,4 @@
-package webserver;
+package common;
 
 public enum HttpMethod {
     GET("GET"),

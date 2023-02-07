@@ -1,4 +1,6 @@
-package webserver;
+package common;
+
+import common.HttpMethod;
 
 import java.util.Map;
 
