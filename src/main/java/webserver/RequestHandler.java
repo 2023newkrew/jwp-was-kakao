@@ -1,21 +1,26 @@
 package webserver;
 
+import controller.ResourceController;
+import controller.UserController;
+import http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
+    private final ResourceController resourceController;
+    private final UserController userController;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, ResourceController resourceController, UserController userController) {
         this.connection = connectionSocket;
+        this.resourceController = resourceController;
+        this.userController = userController;
     }
 
     public void run() {
@@ -23,30 +28,58 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            HttpRequest request = HttpRequestParser.parse(in);
             DataOutputStream dos = new DataOutputStream(out);
+
+            if(request.getMethod().equals("GET")) {
+                doGet(request, dos);
+            }
+
+            if(request.getMethod().equals("POST")) {
+                doPost(request, dos);
+            }
+
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void doPost(HttpRequest request, DataOutputStream dos) throws IOException {
+
+        if(request.getPath().equals("/user/create")) {
+            response(dos, userController.createUserPost(request).getBytes());
+        }
+    }
+
+    private void doGet(HttpRequest request, DataOutputStream dos) throws IOException, URISyntaxException {
+        if(request.getPath().equals("/")) {
             byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
-            responseBody(dos, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            HttpResponse response = new HttpResponse.Builder()
+                    .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
+                    .body(body)
+                    .build();
+            response(dos, response.getBytes());
         }
+
+        if (request.checkStaticResource()) {
+            response(dos, resourceController.staticResource(request).getBytes());
+        }
+
+        if(request.checkHtmlResource()) {
+            response(dos, resourceController.templateResource(request).getBytes());
+        }
+
+        if(request.getPath().equals("/user/create")) {
+            response(dos, userController.createUserGet(request).getBytes());
+        }
+
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response(DataOutputStream dos, byte[] data) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
+            dos.write(data, 0, data.length);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
