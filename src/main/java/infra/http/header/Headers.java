@@ -1,4 +1,6 @@
-package infra.http;
+package infra.http.header;
+
+import infra.http.HttpMessageBase;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

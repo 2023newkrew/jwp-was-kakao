@@ -1,7 +1,7 @@
 package infra.http.request;
 
-import infra.http.Body;
-import infra.http.Headers;
+import infra.http.body.Body;
+import infra.http.header.Headers;
 import infra.http.HttpMessageBase;
 
 public class HttpRequest extends HttpMessageBase {

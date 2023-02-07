@@ -1,4 +1,4 @@
-package infra.http;
+package infra.http.body;
 
 public class ByteBody implements Body {
     private byte[] value;

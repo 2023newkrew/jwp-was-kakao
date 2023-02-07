@@ -1,4 +1,4 @@
-package infra.http;
+package infra.http.body;
 
 public interface Body {
     public int length();

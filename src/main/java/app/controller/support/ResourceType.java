@@ -1,12 +1,12 @@
 package app.controller.support;
 
-public enum ResouceType {
+public enum ResourceType {
     HTML(".html"),
     CSS(".css");
 
     private final String value;
 
-    ResouceType(String value) {
+    ResourceType(String value) {
         this.value = value;
     }
 

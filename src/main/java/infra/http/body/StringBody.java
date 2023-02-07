@@ -1,4 +1,4 @@
-package infra.http;
+package infra.http.body;
 
 public class StringBody implements Body {
     private String value;

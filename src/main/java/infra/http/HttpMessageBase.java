@@ -1,5 +1,8 @@
 package infra.http;
 
+import infra.http.body.Body;
+import infra.http.header.Headers;
+
 public class HttpMessageBase {
     public static String LINE_DELIMITER = " \r\n";
     public static String BODY_DELIMITER = "\r\n";

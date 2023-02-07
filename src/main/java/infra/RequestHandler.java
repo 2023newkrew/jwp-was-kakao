@@ -33,9 +33,7 @@ public class RequestHandler implements Runnable {
                 return;
             }
             Controller controller = this.router.controller(request.getUri());
-            if (controller != null) {
-                this.sendResponse(dos, controller.response(request));
-            }
+            this.sendResponse(dos, controller.response(request));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

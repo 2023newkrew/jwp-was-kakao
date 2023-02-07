@@ -3,14 +3,14 @@ package app.controller;
 import app.controller.support.RequestParameters;
 import app.service.UserService;
 import infra.Controller;
-import infra.http.Headers;
+import infra.http.header.ContentType;
+import infra.http.header.Headers;
 import infra.http.request.HttpRequest;
 import infra.http.response.HttpResponse;
 import infra.http.response.ResponseStatus;
 
 public class UserController implements Controller {
     public static String PATH_CREATE = "/user/create";
-    private static String TYPE_QUERY = "application/x-www-form-urlencoded";
     public static String REDIRECT_PATH = "/index.html";
 
     private UserService userService = new UserService();
@@ -26,7 +26,7 @@ public class UserController implements Controller {
     }
 
     private HttpResponse createUser(HttpRequest request) {
-        if (!request.getHeader(Headers.CONTENT_TYPE).equals(TYPE_QUERY)) {
+        if (!request.getHeader(Headers.CONTENT_TYPE).equals(ContentType.X_WWW_FROM_URLENCODED.value())) {
             return new HttpResponse(ResponseStatus.BAD_REQUEST);
         }
         RequestParameters params = new RequestParameters(request.getBody().toString());

@@ -1,8 +1,10 @@
 package app.controller;
 
+import app.controller.support.ResourceType;
 import infra.Controller;
-import infra.http.ByteBody;
-import infra.http.Headers;
+import infra.http.body.ByteBody;
+import infra.http.header.ContentType;
+import infra.http.header.Headers;
 import infra.http.request.HttpRequest;
 import infra.http.response.HttpResponse;
 import infra.http.response.ResponseStatus;
@@ -14,8 +16,6 @@ import java.net.URISyntaxException;
 public class ViewController implements Controller {
     private static String PATH_TEMPLATES = "./templates";
     private static String PATH_STATIC = "./static";
-    private static String TYPE_HTML = "text/html;charset=utf-8";
-    private static String TYPE_CSS = "text/css;charset=utf-8";
 
     public HttpResponse response(HttpRequest request) {
         if (!request.isGET()) {
@@ -23,10 +23,10 @@ public class ViewController implements Controller {
         }
         try {
             String uri = request.getUri();
-            if (uri.endsWith(".html")) {
+            if (uri.endsWith(ResourceType.HTML.value())) {
                 return this.getHtml(uri);
             }
-            if (uri.endsWith(".css")) {
+            if (uri.endsWith(ResourceType.CSS.value())) {
                 return this.getCss(uri);
             }
             return new HttpResponse(ResponseStatus.NOT_FOUND);
@@ -38,17 +38,17 @@ public class ViewController implements Controller {
     }
 
     private HttpResponse getHtml(String path) throws IOException, URISyntaxException {
-        return this.getResource(PATH_TEMPLATES + path, TYPE_HTML);
+        return this.getResource(PATH_TEMPLATES + path, ContentType.UTF8_HTML);
     }
 
     private HttpResponse getCss(String path) throws IOException, URISyntaxException {
-        return this.getResource(PATH_STATIC + path, TYPE_CSS);
+        return this.getResource(PATH_STATIC + path, ContentType.UTF8_CSS);
     }
 
-    private HttpResponse getResource(String path, String ContentType) throws IOException, URISyntaxException {
+    private HttpResponse getResource(String path, ContentType contentType) throws IOException, URISyntaxException {
         ByteBody body = new ByteBody(FileIoUtils.loadFileFromClasspath(path));
         HttpResponse response = new HttpResponse(ResponseStatus.OK, body);
-        response.setHeader(Headers.CONTENT_TYPE, ContentType);
+        response.setHeader(Headers.CONTENT_TYPE, contentType.value());
         response.setHeader(Headers.CONTENT_LENGTH, String.valueOf(body.length()));
         return response;
     }

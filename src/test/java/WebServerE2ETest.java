@@ -67,7 +67,7 @@ class WebServerE2ETest {
     }
 
     @Test
-    void user() throws IOException, URISyntaxException {
+    void createUser() {
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -85,6 +85,45 @@ class WebServerE2ETest {
 
         var expected = "HTTP/1.1 302 Found \r\n" +
                 "Location: /index.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void wrongPath() {
+        final String httpRequest = String.join("\r\n",
+                "GET /a HTTP/1.1 ",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, router);
+        handler.run();
+
+        var expected = "HTTP/1.1 404 Not Found \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void wrongMethod() {
+        final String httpRequest = String.join("\r\n",
+                "GET /user/create HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 59 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=testId&password=testPw&name=testName&email=test@test.com",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, router);
+        handler.run();
+
+        var expected = "HTTP/1.1 400 Bad Request \r\n" +
                 "\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);

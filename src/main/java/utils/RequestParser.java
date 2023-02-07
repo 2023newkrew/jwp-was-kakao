@@ -1,7 +1,7 @@
 package utils;
 
-import infra.http.Headers;
-import infra.http.StringBody;
+import infra.http.header.Headers;
+import infra.http.body.StringBody;
 import infra.http.request.HttpRequest;
 import infra.http.request.RequestLine;
 import infra.http.request.RequestMethod;
