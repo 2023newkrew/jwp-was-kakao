@@ -15,7 +15,7 @@ public class HttpRequestLine {
         this.method = method;
         this.uri = uri;
         this.httpVersion = httpVersion;
-        this.params = QueryParser.parse(uri.getQuery());
+        this.params = UriQueryParser.parse(uri.getQuery());
     }
 
     public String getMethod() {

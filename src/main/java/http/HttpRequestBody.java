@@ -13,7 +13,7 @@ class HttpRequestBody {
 
     protected HttpRequestBody(String content) {
         this.content = URLDecoder.decode(content, StandardCharsets.UTF_8);
-        this.params = QueryParser.parse(this.content);
+        this.params = UriQueryParser.parse(this.content);
     }
 
     public String getContent() {

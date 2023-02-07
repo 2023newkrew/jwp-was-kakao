@@ -3,7 +3,7 @@ package http;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryParser {
+public class UriQueryParser {
     public static Map<String, String> parse(String queryString) {
         Map<String, String> map = new HashMap<>();
         if(queryString==null || queryString.isEmpty())
