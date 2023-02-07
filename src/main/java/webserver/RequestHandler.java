@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class RequestHandler implements Runnable {
@@ -24,9 +27,8 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-             OutputStream out = connection.getOutputStream()) {
+             DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
             CustomHttpRequest request = HttpUtils.createHttpRequest(br);
-            DataOutputStream dos = new DataOutputStream(out);
             CustomHttpResponse response = FrontController.getInstance().getHttpResponse(request);
             HttpUtils.respond(dos, response);
         } catch (IOException e) {
