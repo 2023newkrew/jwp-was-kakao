@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import support.IllegalMethodException;
 import support.UnsupportedContentTypeException;
-import utils.FileIoUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,39 +20,6 @@ public class Parser {
     private static final String DELIM_QUERY_PARAMETER = "=";
     private static final String DELIM_REQUEST_START_LINE = " ";
 
-    private static final String HTML_FILE_PATH = "./templates";
-    private static final String CSS_FILE_PATH = "./static";
-
-    public static Map<String, String> getUriParameters(String uri) {
-        if (!uri.contains(DELIM_QUERY_STRING)) {
-            return new HashMap<>();
-        }
-        return getParameters(uri.split("\\?")[1]);
-    }
-
-    private static Map<String, String> getParameters(final String queryString) {
-        List<String> queryParams = List.of(queryString.split(DELIM_QUERY_PARAMETERS));
-        return queryParams
-                .stream()
-                .collect(Collectors.toMap(
-                    (param)-> param.split(DELIM_QUERY_PARAMETER)[0],
-                    (param) -> param.split(DELIM_QUERY_PARAMETER)[1]
-                ));
-    }
-
-    public static byte[] getFileContent(final String uri) {
-        try {
-            if (uri.endsWith(".html")) {
-                return FileIoUtils.loadFileFromClasspath(HTML_FILE_PATH + uri.replaceFirst("^\\.+", ""));
-            } else if (uri.endsWith(".css")) {
-                return FileIoUtils.loadFileFromClasspath(CSS_FILE_PATH + uri.replaceFirst("^\\.+", ""));
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        return "".getBytes();
-    }
-
     public static HttpRequest parseRequest(final BufferedReader reader) {
         String startLine = readRequestStartLine(reader);
         String uri = getURI(startLine);
@@ -63,9 +29,8 @@ public class Parser {
         if (method.equals(HttpMethod.GET)) {
             parameters = getUriParameters(uri);
         }
-        if (method.equals(HttpMethod.POST)) {
-            List<String> body = readRequestLines(reader);
-            parameters = getBody(body);
+        else if (method.equals(HttpMethod.POST)) {
+            parameters = getBodyParameters(reader);
         }
         return new HttpRequest(uri, method, parameters);
     }
@@ -102,14 +67,31 @@ public class Parser {
         return startLine.split(DELIM_REQUEST_START_LINE)[1];
     }
 
-    public static Map<String, String> getBody(final List<String> body) {
-        if (body.isEmpty()) {
+    public static Map<String, String> getUriParameters(String uri) {
+        if (!uri.contains(DELIM_QUERY_STRING)) {
             return new HashMap<>();
         }
-        else if (body.size() > 1) {
+        return getParametersFromLine(uri.split("\\?")[1]);
+    }
+
+    public static Map<String, String> getBodyParameters(BufferedReader reader) {
+        List<String> lines = readRequestLines(reader);
+        if (lines.isEmpty()) {
+            return new HashMap<>();
+        }
+        else if (lines.size() > 1)  {
             throw new UnsupportedContentTypeException();
         }
-        // TODO : JSON 형태 body 예외처리
-        return getParameters(body.get(0));
+        return getParametersFromLine(lines.get(0));
+    }
+
+    private static Map<String, String> getParametersFromLine(final String line) {
+        List<String> params = List.of(line.split(DELIM_QUERY_PARAMETERS));
+        return params
+                .stream()
+                .collect(Collectors.toMap(
+                    (param)-> param.split(DELIM_QUERY_PARAMETER)[0],
+                    (param) -> param.split(DELIM_QUERY_PARAMETER)[1]
+                ));
     }
 }
