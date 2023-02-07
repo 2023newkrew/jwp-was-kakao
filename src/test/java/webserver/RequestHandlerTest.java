@@ -50,8 +50,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 6902 " + CRLF,
@@ -77,8 +75,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-        var expected = "HTTP/1.1 404 Not Found " + CRLF +CRLF;
+        var expected = "HTTP/1.1 404 Not Found " + CRLF + CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -102,8 +99,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 7065 " + CRLF,
@@ -131,8 +126,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 109518 " + CRLF,
@@ -160,8 +153,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 404 Not Found " + CRLF + CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
@@ -184,8 +175,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 5168 " + CRLF,

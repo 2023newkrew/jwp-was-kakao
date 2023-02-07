@@ -5,7 +5,7 @@ import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
 
-public class UserHandler extends AbstractHandler{
+public class UserHandler extends AbstractHandler {
     @Override
     protected void doGet(final HttpRequest request, final HttpResponse response) {
         addUser(request, response);

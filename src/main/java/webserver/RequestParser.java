@@ -20,8 +20,7 @@ public class RequestParser {
             String[] queryParamSplit = queryParam.split("=");
             if (queryParamSplit.length == 2) {
                 parameters.put(queryParam.split("=")[0], queryParam.split("=")[1]);
-            }
-            else {
+            } else {
                 logger.error("Parameter가 base64 url-safe encoding이 아니거나 올바른 Query String이 아닙니다.");
                 response.setStatus(HttpStatus.BAD_REQUEST);
             }
@@ -59,16 +58,14 @@ public class RequestParser {
             if (pathAndParameters.length == 2) {
                 parameters = getParameters(pathAndParameters[1], response);
             }
-        }
-        else if (method.equals(HttpMethod.POST)) {
+        } else if (method.equals(HttpMethod.POST)) {
             try {
                 String data = IOUtils.readData(reader, Integer.parseInt(headers.getHeaders().get("Content-Length")));
                 parameters.putAll(getParameters(data, response));
             } catch (IOException e) {
-               logger.error(e.getMessage());
+                logger.error(e.getMessage());
             }
-        }
-        else {
+        } else {
             response.setStatus(HttpStatus.BAD_REQUEST);
         }
         return new HttpRequest(path, method, headers, parameters);
@@ -90,8 +87,7 @@ public class RequestParser {
             String[] headerKeyAndValue = line.split(": ");
             if (headerKeyAndValue.length == 2) {
                 headers.put(headerKeyAndValue[0], headerKeyAndValue[1]);
-            }
-            else {
+            } else {
                 response.setStatus(HttpStatus.BAD_REQUEST);
             }
         });
@@ -107,8 +103,7 @@ public class RequestParser {
                 if (line.isEmpty()) break;
                 lines.add(line);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
         return lines;

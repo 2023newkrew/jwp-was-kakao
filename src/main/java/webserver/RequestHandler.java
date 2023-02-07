@@ -41,21 +41,17 @@ public class RequestHandler implements Runnable {
 
             HandlerMapping handlerMapping = new HandlerMapping();
             Handler handler = handlerMapping.getHandler(path);
-            /* 매치되는 Handler가 없을 경우 */
-            if (Objects.isNull(handler)) {
+
+            if (Objects.isNull(handler)) { /* 매치되는 Handler가 없을 경우 */
                 if (path.equals("/")) {
                     response.setBody("Hello world".getBytes());
-                }
-                /* file 요청 처리 */
-                else {
+                } else { /* file 요청 처리 */
                     response.setBody(RequestParser.getFileContent(request.getPath(), response));
                 }
                 if (Objects.isNull(response.getStatus())) {
                     response.setStatus(HttpStatus.OK);
                 }
-            }
-            /* 매치되는 Handler가 있을 경우 */
-            else {
+            } else { /* 매치되는 Handler가 있을 경우 */
                 handler.service(request, response);
             }
             sendResponse(response, dos);
@@ -100,7 +96,7 @@ public class RequestHandler implements Runnable {
     private void response302Header(DataOutputStream dos, String location) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: "+location+" \r\n");
+            dos.writeBytes("Location: " + location + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
