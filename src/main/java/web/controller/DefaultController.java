@@ -20,10 +20,11 @@ public class DefaultController implements Controller {
     public HttpResponse run(HttpRequest httpRequest) {
         return HttpResponse.ok(
                 () -> new Body("Hello world"),
-                (body) -> {
+                body -> {
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.put(CONTENT_TYPE, TEXT_PLAIN.toString());
                     httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
+
                     return httpHeaders;
                 });
     }

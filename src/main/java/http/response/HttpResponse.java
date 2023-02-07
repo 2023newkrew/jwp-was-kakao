@@ -35,13 +35,10 @@ public class HttpResponse {
         return new HttpResponse(responseInfo, httpHeaders, body);
     }
 
-    public static HttpResponse redirect(String resourcePath) {
+    public static HttpResponse redirect(Supplier<HttpHeaders> headersSupplier) {
         ResponseInfo responseInfo = new ResponseInfo(Protocol.HTTP1_1, HttpStatus.FOUND);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put(LOCATION, resourcePath);
-
-        return new HttpResponse(responseInfo, httpHeaders);
+        return new HttpResponse(responseInfo, headersSupplier.get());
     }
 
     public byte[] toByte() {

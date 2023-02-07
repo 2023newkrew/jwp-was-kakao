@@ -16,10 +16,12 @@ import static http.HttpHeaders.CONTENT_LENGTH;
 
 public class HttpRequestUtils {
 
+    private static final String ZERO = "0";
+
     public static HttpRequest createHttpRequest(BufferedReader br) throws IOException {
         RequestInfo requestInfo = createRequestInfo(br.readLine());
         HttpHeaders httpHeaders = createHeader(br);
-        Body body = new Body(IOUtils.readData(br, Integer.parseInt(httpHeaders.getOrDefault(CONTENT_LENGTH, "0"))));
+        Body body = new Body(IOUtils.readData(br, Integer.parseInt(httpHeaders.getOrDefault(CONTENT_LENGTH, ZERO))));
 
         return new HttpRequest(requestInfo, httpHeaders, body);
     }

@@ -15,12 +15,16 @@ import static http.HttpHeaders.CONTENT_TYPE;
 
 public class GetResourceController implements Controller {
 
+    private static final String HTML_SUFFIX = ".html";
+    private static final String TEMPLATE_PATH = "templates";
+    private static final String STATIC_PATH = "static";
+
     @Override
     public HttpResponse run(HttpRequest httpRequest) {
         String resourcePath = getSuffix(httpRequest) + httpRequest.getPath();
         return HttpResponse.ok(
                 () -> new Body(IOUtils.readFileFromClasspath(resourcePath)),
-                (body) -> {
+                body -> {
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.put(CONTENT_TYPE, ContentType.from(resourcePath).toString());
                     httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
@@ -37,11 +41,11 @@ public class GetResourceController implements Controller {
     private String getSuffix(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
 
-        if (path.contains(".html")) {
-            return "templates";
+        if (path.contains(HTML_SUFFIX)) {
+            return TEMPLATE_PATH;
         }
 
-        return "static";
+        return STATIC_PATH;
     }
 
 }

@@ -1,5 +1,6 @@
 package web.controller;
 
+import http.HttpHeaders;
 import utils.ParameterUtils;
 import web.domain.MemoryUserRepository;
 import http.request.HttpMethod;
@@ -11,6 +12,8 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Objects;
+
+import static http.HttpHeaders.LOCATION;
 
 public class PostSignInController implements Controller {
 
@@ -27,7 +30,12 @@ public class PostSignInController implements Controller {
                 decodeParam(params.get("email"))
         ));
 
-        return HttpResponse.redirect(INDEX_PAGE_PATH);
+        return HttpResponse.redirect(() -> {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.put(LOCATION, INDEX_PAGE_PATH);
+
+            return httpHeaders;
+        });
     }
 
     private String decodeParam(String param) {
