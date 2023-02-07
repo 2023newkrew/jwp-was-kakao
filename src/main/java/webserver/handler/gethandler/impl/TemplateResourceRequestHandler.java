@@ -1,6 +1,10 @@
-package webserver;
+package webserver.handler.gethandler.impl;
 
 import utils.FileIoUtils;
+import webserver.constant.HttpStatus;
+import webserver.handler.gethandler.GetRequestHandler;
+import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 public class TemplateResourceRequestHandler extends GetRequestHandler {
 

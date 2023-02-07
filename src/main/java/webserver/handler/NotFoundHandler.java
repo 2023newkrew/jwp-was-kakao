@@ -1,4 +1,8 @@
-package webserver;
+package webserver.handler;
+
+import webserver.constant.HttpStatus;
+import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 public class NotFoundHandler implements HttpRequestHandler {
 

@@ -1,4 +1,6 @@
-package webserver;
+package webserver.response;
+
+import webserver.constant.HttpStatus;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

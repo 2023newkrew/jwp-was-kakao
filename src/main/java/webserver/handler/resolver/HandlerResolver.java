@@ -1,4 +1,11 @@
-package webserver;
+package webserver.handler.resolver;
+
+import webserver.handler.HttpRequestHandler;
+import webserver.handler.NotFoundHandler;
+import webserver.handler.gethandler.impl.StaticResourceRequestHandler;
+import webserver.handler.gethandler.impl.TemplateResourceRequestHandler;
+import webserver.handler.posthandler.impl.UserCreateRequestHandler;
+import webserver.request.HttpRequest;
 
 import java.util.List;
 

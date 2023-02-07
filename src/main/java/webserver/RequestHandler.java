@@ -5,6 +5,9 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
+import webserver.handler.HttpRequestHandler;
+import webserver.handler.resolver.HandlerResolver;
+import webserver.request.HttpRequest;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,7 +15,7 @@ import java.net.Socket;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;

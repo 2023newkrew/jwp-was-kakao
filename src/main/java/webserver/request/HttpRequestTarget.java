@@ -1,6 +1,7 @@
-package webserver;
+package webserver.request;
 
 import lombok.Getter;
+import webserver.constant.HttpMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
