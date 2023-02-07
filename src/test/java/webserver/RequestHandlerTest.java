@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
     @Test
-    void socket_out() {
+    void socketOutTest() {
         // given
         final var socket = new StubSocket();
         final var handler = new RequestHandler(socket);
@@ -35,7 +35,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void index() throws IOException, URISyntaxException {
+    void indexTest() throws IOException, URISyntaxException {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
@@ -62,7 +62,7 @@ class RequestHandlerTest {
 
     @Test
     @DisplayName("header로부터 요청 경로를 얻는다.")
-    void extractPathTest(){
+    void extractPathTest() {
         HttpRequestHeader header = new HttpRequestHeader(List.of("\"GET /index.html HTTP/1.1 \""));
         String expected = "/index.html";
         assertThat(header.getRequestPath()).isEqualTo(expected);
@@ -70,7 +70,7 @@ class RequestHandlerTest {
 
     @Test
     @DisplayName("GET 방식으로 form으로 부터 user 생성 테스트")
-    void createUserTestGet(){
+    void createUserByGetMethodTest() {
         final String httpRequest = String.join("\r\n",
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -92,32 +92,8 @@ class RequestHandlerTest {
     }
 
     @Test
-    @DisplayName("잘못된 queryParams가 들어오면 InvalidQueryParameterException 발생")
-    void InvalidQueryParameterExceptionTest(){
-        final String httpRequest = String.join("\r\n",
-                "GET /user/createuserId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "Accept: */*",
-                "",
-                "");
-        final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
-
-        handler.run();
-
-        var expected = "HTTP/1.1 400 BAD_REQUEST \r\n" +
-                "Content-Type: application/json;charset=utf-8 \r\n" +
-                "Content-Length: 23 \r\n" +
-                "\r\n" +
-                "Invalid Query Parameter";
-
-        assertThat(socket.output()).isEqualTo(expected);
-    }
-
-    @Test
     @DisplayName("POST 방식으로 form으로 부터 user 생성 테스트")
-    void createUserTestPost(){
+    void createUserByPostMethodTest() {
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -139,6 +115,30 @@ class RequestHandlerTest {
                 "\r\n";
 
         assertThat(DataBase.findAll()).hasSize(1);
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("잘못된 queryParams가 들어오면 InvalidQueryParameterException 발생")
+    void InvalidQueryParameterExceptionTest() {
+        final String httpRequest = String.join("\r\n",
+                "GET /user/createuserId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Accept: */*",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        handler.run();
+
+        var expected = "HTTP/1.1 400 BAD_REQUEST \r\n" +
+                "Content-Type: application/json;charset=utf-8 \r\n" +
+                "Content-Length: 23 \r\n" +
+                "\r\n" +
+                "Invalid Query Parameter";
+
         assertThat(socket.output()).isEqualTo(expected);
     }
 }
