@@ -44,6 +44,6 @@ public class LoginController extends ApiController{
             return;
         }
         response.setAttribute(SET_COOKIE, "JSESSIONID=" + loginUUID.get() + "; Path=/");
-        response200Header(dos, request, response);
+        response200Header(dos, response);
     }
 }

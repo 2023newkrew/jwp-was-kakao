@@ -1,6 +1,5 @@
 package model.request;
 
-import constant.DefaultConstant;
 import model.annotation.Api;
 import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
@@ -20,8 +19,12 @@ public class HttpRequest {
     private RequestHeader header;
     private RequestBody body;
 
-    public String getBodyValue(String key) {
-        return body.getRequestBody().get(key).toString();
+    public String findBodyValue(String key, String defaultValue) {
+        return body.getRequestBody().getOrDefault(key, defaultValue);
+    }
+
+    public String findHeaderValue(String key, String defaultValue) {
+        return header.getHeaders().getOrDefault(key, defaultValue);
     }
     public boolean methodAndURLEquals(Api annotation) {
         return method.equals(annotation.method()) && URL.equals(annotation.url());

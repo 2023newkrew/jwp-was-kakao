@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import static constant.DefaultConstant.DEFAULT_BODY;
-import static constant.DefaultConstant.DEFAULT_URL;
+import static constant.DefaultConstant.*;
 import static constant.HeaderConstant.*;
 import static constant.PathConstant.STATIC;
 import static constant.PathConstant.TEMPLATES;
@@ -29,8 +28,9 @@ public class ViewResolver {
             body = getBody(request, request.getURL(), dos);
         }
 
+        response.setAttribute(CONTENT_TYPE, request.findHeaderValue(ACCEPT, DEFAULT_CONTENT_TYPE).split(",")[0]);
         response.setAttribute(CONTENT_LENGTH, String.valueOf(body.length));
-        response200Header(dos, request, response);
+        response200Header(dos, response);
         responseBody(dos, body);
     }
 

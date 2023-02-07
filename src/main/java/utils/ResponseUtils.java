@@ -19,14 +19,9 @@ import static constant.HeaderConstant.CONTENT_LENGTH;
 public class ResponseUtils {
     private static final Logger logger = LoggerFactory.getLogger(ResponseUtils.class);
 
-    public void response200Header(DataOutputStream dos, HttpRequest request, HttpResponse response) {
+    public void response200Header(DataOutputStream dos, HttpResponse response) {
         try {
-            String contentType = request.getHeader().getHeaders()
-                    .getOrDefault(ACCEPT, DEFAULT_CONTENT_TYPE)
-                    .split(",")[0];
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + " \r\n");
-            dos.writeBytes("Content-Length: " + response.getBodyValue(CONTENT_LENGTH) + " \r\n");
 
             for (Map.Entry<String, String> entry : response.getHeader().getHeaders().entrySet()) {
                 dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");

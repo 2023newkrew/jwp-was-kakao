@@ -12,6 +12,7 @@ import webserver.controller.ViewController;
 import java.io.DataOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static webserver.infra.ControllerHandlerAdapter.*;
@@ -28,7 +29,7 @@ public class FrontController {
     public void handleRequest(HttpRequest request, DataOutputStream dos) {
         try {
             ApiController apiController = handleControllerMap.getOrDefault(request.getURL(), ViewController.getInstance());
-            HttpResponse response = new HttpResponse(ResponseHeader.of(new HashMap()));
+            HttpResponse response = new HttpResponse(ResponseHeader.of(new LinkedHashMap()));
             if (isViewController(apiController)) {
                 ViewResolver.resolve(request, response, dos);
                 return;

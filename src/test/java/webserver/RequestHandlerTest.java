@@ -84,6 +84,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        assertThat(DataBase.findUserById("cu").getEmail()).isEqualTo("brainbackdoor%40gmail.com");
+        assertThat(DataBase.findUserById("cu").get().getEmail()).isEqualTo("brainbackdoor%40gmail.com");
     }
 }

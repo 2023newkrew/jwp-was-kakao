@@ -15,16 +15,16 @@ public class LoginService {
     }
 
     public Optional<UUID> login(HttpRequest request) {
-        Optional<User> user = userDao.findUserByUserId(request.getBodyValue("userId"));
-        
-        if (isInvalidLogin(request, user)) {
+        Optional<User> user = userDao.findUserByUserId(request.findBodyValue("userId", null));
+
+        if (user.isEmpty() || isInvalidLogin(request, user.get())) {
             return Optional.empty();
         }
 
         return Optional.of(UUID.randomUUID());
     }
 
-    private boolean isInvalidLogin(HttpRequest request, Optional<User> user) { // todo: question
-        return user.isEmpty() || !user.get().passwordEquals(request.getBodyValue("password"));
+    private boolean isInvalidLogin(HttpRequest request, User user) {
+        return !user.passwordEquals(request.findBodyValue("password", null));
     }
 }
