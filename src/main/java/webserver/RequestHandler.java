@@ -48,13 +48,13 @@ public class RequestHandler implements Runnable {
 
     private void doPost(HttpRequest request, DataOutputStream dos) throws IOException {
 
-        if(request.getUri().getPath().equals("/user/create")) {
+        if(request.getPath().equals("/user/create")) {
             response(dos, userController.createUserPost(request).getBytes());
         }
     }
 
     private void doGet(HttpRequest request, DataOutputStream dos) throws IOException, URISyntaxException {
-        if(request.getUri().getPath().equals("/")) {
+        if(request.getPath().equals("/")) {
             byte[] body = "Hello world".getBytes();
             HttpResponse response = new HttpResponse.Builder()
                     .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
@@ -71,7 +71,7 @@ public class RequestHandler implements Runnable {
             response(dos, resourceController.templateResource(request).getBytes());
         }
 
-        if(request.getUri().getPath().equals("/user/create")) {
+        if(request.getPath().equals("/user/create")) {
             response(dos, userController.createUserGet(request).getBytes());
         }
 
