@@ -30,12 +30,19 @@ public class RequestController {
         responseBody(dos, body);
     }
 
+    private void setCookie(DataOutputStream dos, String name, String value) {
+        try {
+            dos.writeBytes("Set-Cookie: " + name + "=" + value + " \r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + type + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -45,7 +52,6 @@ public class RequestController {
         try {
             dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
             dos.writeBytes("Location: " + uri + " \r\n");
-            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -53,6 +59,7 @@ public class RequestController {
 
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
+            dos.writeBytes("\r\n");
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
