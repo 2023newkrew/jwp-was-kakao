@@ -1,7 +1,10 @@
 package webserver;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Arrays;
 
+@RequiredArgsConstructor
 public enum FileType {
     HTML("text/html", "html"),
     CSS("text/css", "css"),
@@ -17,10 +20,6 @@ public enum FileType {
     private final String contentType;
     private final String fileExtension;
 
-    FileType(String contentType, String fileExtension) {
-        this.contentType = contentType;
-        this.fileExtension = fileExtension;
-    }
 
     public static FileType findType(String extension) {
         return Arrays.stream(values())

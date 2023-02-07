@@ -1,5 +1,6 @@
 package webserver.handler;
 
+import lombok.RequiredArgsConstructor;
 import webserver.request.Method;
 import webserver.request.Request;
 import webserver.response.Response;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import static webserver.request.Method.GET;
 import static webserver.request.Method.POST;
 
+@RequiredArgsConstructor
 public enum HandlerMapping {
 
     BASE_URL(GET, "/", new BaseHandler()),
@@ -18,12 +20,6 @@ public enum HandlerMapping {
     private final Method method;
     private final String path;
     private final Handler handler;
-
-    HandlerMapping(Method method, String path, Handler handler) {
-        this.method = method;
-        this.path = path;
-        this.handler = handler;
-    }
 
     private static HandlerMapping findHandler(Request request) {
         Method method = request.getMethod();

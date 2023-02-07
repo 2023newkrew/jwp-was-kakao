@@ -1,16 +1,14 @@
 package webserver.response;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum StatusCode {
     OK(200, "OK"),
     FOUND(302, "FOUND");
 
     private final int code;
     private final String message;
-
-    StatusCode(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
 
     public int getCode() {
         return code;

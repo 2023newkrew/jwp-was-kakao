@@ -1,23 +1,19 @@
 package webserver.response;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import webserver.FileType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Response {
     private final StatusCode statusCode;
     private final Map<String, String> responseHeader;
     private final byte[] body;
-
-    private Response(StatusCode statusCode, Map<String, String> responseHeader, byte[] body) {
-        this.statusCode = statusCode;
-        this.responseHeader = responseHeader;
-        this.body = body;
-    }
 
     public static Response ok(byte[] body, FileType fileType) {
         Map<String, String> responseHeader = generateResponseHeader(body, fileType);

@@ -1,5 +1,7 @@
 package webserver.request;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import utils.IOUtils;
 import webserver.FileType;
 
@@ -11,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Request {
 
     private final Method method;
@@ -18,14 +21,6 @@ public class Request {
     private final String protocol;
     private final Map<String, String> requestHeader;
     private final String requestBody;
-
-    private Request(Method method, String url, String protocol, Map<String, String> requestHeader, String requestBody) {
-        this.method = method;
-        this.url = url;
-        this.protocol = protocol;
-        this.requestHeader = requestHeader;
-        this.requestBody = requestBody;
-    }
 
     public static Request parse(BufferedReader reader) throws IOException {
         String firstLine = reader.readLine();
