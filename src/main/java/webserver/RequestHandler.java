@@ -1,5 +1,6 @@
 package webserver;
 
+import controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.Request;
@@ -34,13 +35,13 @@ public class RequestHandler implements Runnable {
             Request request = RequestParser.getRequestFrom(bufferedReader);
             String uri = request.getUri();
 
-            if (HandlerMapper.getInstance().isHandleAvailable(uri)) {
-                Response response = HandlerMapper.getInstance().handle(request);
-                writeResponse(dataOutputStream, response.toString());
-                return;
+            Controller handler;
+            Response response;
+            if ((handler = HandlerMapper.getInstance().findHandler(uri)) != null) {
+                response = HandlerMapper.getInstance().handle(request, handler);
+            } else {
+                response = ResourceMapper.getInstance().handle(uri);
             }
-
-            Response response = ResourceMapper.getInstance().handle(uri);
             writeResponse(dataOutputStream, response.toString());
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
