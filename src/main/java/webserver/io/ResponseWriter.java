@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 public class ResponseWriter implements Closeable {
     private final DataOutputStream dos;
@@ -17,7 +18,9 @@ public class ResponseWriter implements Closeable {
     public void write(Response response) throws IOException {
         ResponseHeader header = new ResponseHeader(response);
         dos.write(header.getBytes());
-        dos.write(response.getBytes());
+        if (Objects.nonNull(response.getBody())) {
+            dos.write(response.getBytes());
+        }
     }
 
     @Override

@@ -30,15 +30,15 @@ public class MethodHandlers {
         handlerMap.put(uri, handler);
     }
 
-    public boolean contains(HttpMethod httpMethod, String uri) {
+    public boolean contains(HttpMethod httpMethod, String path) {
         Map<String, Function<Request, Response>> handlerMap = methodHandlers.get(httpMethod);
 
-        return handlerMap.containsKey(uri);
+        return handlerMap.containsKey(path);
     }
 
-    public Function<Request, Response> get(HttpMethod httpMethod, String uri) {
+    public Function<Request, Response> get(HttpMethod httpMethod, String path) {
         Map<String, Function<Request, Response>> handlerMap = methodHandlers.get(httpMethod);
 
-        return handlerMap.get(uri);
+        return handlerMap.get(path);
     }
 }

@@ -1,6 +1,7 @@
 package webserver.request;
 
 import org.springframework.http.HttpMethod;
+import webserver.request.path.PathVariables;
 import webserver.request.path.URL;
 
 public class Request {
@@ -9,9 +10,12 @@ public class Request {
 
     private final URL URL;
 
-    public Request(HttpMethod httpMethod, URL URL) {
+    private final String body;
+
+    public Request(HttpMethod httpMethod, URL URL, String body) {
         this.httpMethod = httpMethod;
         this.URL = URL;
+        this.body = body;
     }
 
     public HttpMethod getHttpMethod() {
@@ -22,7 +26,7 @@ public class Request {
         return URL.getPath();
     }
 
-    public String getPathVariable(String key) {
-        return URL.getPathVariable(key);
+    public PathVariables getBodyAsPathVariables() {
+        return new PathVariables(body);
     }
 }

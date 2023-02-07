@@ -1,6 +1,7 @@
 package webserver.io;
 
 import org.springframework.http.HttpMethod;
+import webserver.request.Headers;
 import webserver.request.Request;
 import webserver.request.path.URL;
 
@@ -21,20 +22,33 @@ public class RequestReader implements Closeable {
     }
 
     public Request read() throws IOException {
-        String line = getDecodedLine();
+        String line = readDecodedLine();
         String[] headLines = line.split(DELIMITER);
-        do {
-            line = readLine();
+        Headers headers = getHeaders();
+
+        String requestBody = null;
+        if (headers.getContentLength() > 0) {
+            requestBody = readDecodedLine();
         }
-        while (isNotNullOrEmpty(line));
 
         HttpMethod httpMethod = HttpMethod.resolve(headLines[0]);
         URL URL = new URL(headLines[1]);
 
-        return new Request(httpMethod, URL);
+        return new Request(httpMethod, URL, requestBody);
     }
 
-    private String getDecodedLine() throws IOException {
+    private Headers getHeaders() throws IOException {
+        Headers headers = new Headers();
+        String line = readDecodedLine();
+        while (isNotNullOrBlank(line)) {
+            headers.add(line);
+            line = readLine();
+        }
+
+        return headers;
+    }
+
+    private String readDecodedLine() throws IOException {
         return URLDecoder.decode(readLine(), StandardCharsets.UTF_8);
     }
 
@@ -45,8 +59,8 @@ public class RequestReader implements Closeable {
         return line;
     }
 
-    private boolean isNotNullOrEmpty(String line) {
-        return Objects.nonNull(line) && !line.equals("");
+    private boolean isNotNullOrBlank(String line) {
+        return Objects.nonNull(line) && !line.isBlank();
     }
 
     @Override

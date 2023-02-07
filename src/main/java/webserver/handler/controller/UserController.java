@@ -5,25 +5,25 @@ import model.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.request.Request;
+import webserver.request.path.PathVariables;
 import webserver.response.Response;
 
 public class UserController extends Controller {
 
     public UserController() {
-        super("/user");
-
-        methodHandlers.put(HttpMethod.POST, "/create", this::createUser);
+        methodHandlers.put(HttpMethod.POST, "/user/create", this::createUser);
     }
 
     private Response createUser(Request request) {
+        PathVariables pathVariables = request.getBodyAsPathVariables();
         var user = new User(
-                request.getPathVariable("userId"),
-                request.getPathVariable("password"),
-                request.getPathVariable("name"),
-                request.getPathVariable("email")
+                pathVariables.get("userId"),
+                pathVariables.get("password"),
+                pathVariables.get("name"),
+                pathVariables.get("email")
         );
         DataBase.addUser(user);
 
-        return new Response(HttpStatus.OK);
+        return new Response(HttpStatus.FOUND);
     }
 }

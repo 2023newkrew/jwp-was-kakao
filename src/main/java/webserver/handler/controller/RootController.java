@@ -11,8 +11,6 @@ import webserver.response.Response;
 public class RootController extends Controller {
 
     public RootController() {
-        super("");
-
         methodHandlers.put(HttpMethod.GET, "/", this::helloWorld);
     }
 

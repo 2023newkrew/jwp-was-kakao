@@ -1,5 +1,7 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -87,10 +89,10 @@ class RequestHandlerTest {
         // given
         final String httpRequest = String.join(
                 "\r\n",
-                "GET /css/styles.css HTTP/1.1" +
-                        "Host: localhost:8080" +
-                        "Accept: text/css,*/*;q=0.1" +
-                        "Connection: keep-alive"
+                "GET /css/styles.css HTTP/1.1",
+                "Host: localhost:8080",
+                "Accept: text/css,*/*;q=0.1",
+                "Connection: keep-alive"
         );
 
         final var socket = new StubSocket(httpRequest);
@@ -109,5 +111,31 @@ class RequestHandlerTest {
                 new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("회원가입")
+    @Test
+    void createUser() throws IOException, URISyntaxException {
+        // given
+        final String httpRequest = String.join(
+                "\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 59",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "\r\nuserId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final var handler = new RequestHandler(socket, handlers);
+
+        // when
+        handler.run();
+
+        assertThat(DataBase.findUserById("cu"))
+                .extracting(User::getName)
+                .isEqualTo("이동규");
     }
 }
