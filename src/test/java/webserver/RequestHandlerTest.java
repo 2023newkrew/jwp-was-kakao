@@ -106,7 +106,7 @@ class RequestHandlerTest {
 
         // then
         var expected = String.join("\r\n",
-                "HTTP/1.1 302 Redirect ",
+                "HTTP/1.1 302 Found ",
                 "Location: /index.html ",
                 "Content-Length: 0 ");
 
