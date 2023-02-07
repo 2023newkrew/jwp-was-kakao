@@ -15,9 +15,15 @@ import java.util.Map;
 
 public final class MainController implements Controller {
 
-    public static final MainController INSTANCE = new MainController();
-
     private final Map<String, Method> map = new HashMap<>();
+
+    private static class LazyHolder {
+        public static final MainController INSTANCE = new MainController();
+    }
+
+    public static MainController getInstance() {
+        return LazyHolder.INSTANCE;
+    }
 
     private MainController() {
         List<Method> methodList = List.of(this.getClass().getMethods());
@@ -32,7 +38,7 @@ public final class MainController implements Controller {
     @Override
     public Response handleRequest(Request request) {
         try {
-            return (Response) map.get(request.getUri()).invoke(MainController.INSTANCE, request);
+            return (Response) map.get(request.getUri()).invoke(MainController.getInstance(), request);
         } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
             return null;
         }

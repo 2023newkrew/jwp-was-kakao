@@ -11,11 +11,17 @@ import java.util.List;
 
 public class ResourceMapper {
 
-    public static final ResourceMapper INSTANCE = new ResourceMapper();
-
     private static final List<String> roots = List.of("templates", "static");
 
+    private static class LazyHolder {
+        static final ResourceMapper INSTANCE = new ResourceMapper();
+    }
+
     private ResourceMapper() {
+    }
+
+    public static ResourceMapper getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     public Response handle(String uri) throws IOException, URISyntaxException {

@@ -10,13 +10,19 @@ import java.util.Map;
 
 public final class HandlerMapper {
 
-    public static final HandlerMapper INSTANCE = new HandlerMapper();
-
     private final Map<String, Controller> map = new HashMap<>();
 
+    private static class LazyHolder {
+        static final HandlerMapper INSTANCE = new HandlerMapper();
+    }
+
     private HandlerMapper() {
-        map.put("/", MainController.INSTANCE);
-        map.put("/user/create", MainController.INSTANCE);
+        map.put("/", MainController.getInstance());
+        map.put("/user/create", MainController.getInstance());
+    }
+
+    public static HandlerMapper getInstance() {
+        return HandlerMapper.LazyHolder.INSTANCE;
     }
 
     public boolean isHandleAvailable(String uri) {

@@ -34,13 +34,13 @@ public class RequestHandler implements Runnable {
             Request request = RequestParser.getRequestFrom(bufferedReader);
             String uri = request.getUri();
 
-            if (HandlerMapper.INSTANCE.isHandleAvailable(uri)) {
-                Response response = HandlerMapper.INSTANCE.handle(request);
+            if (HandlerMapper.getInstance().isHandleAvailable(uri)) {
+                Response response = HandlerMapper.getInstance().handle(request);
                 writeResponse(dataOutputStream, response.toString());
                 return;
             }
 
-            Response response = ResourceMapper.INSTANCE.handle(uri);
+            Response response = ResourceMapper.getInstance().handle(uri);
             writeResponse(dataOutputStream, response.toString());
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
