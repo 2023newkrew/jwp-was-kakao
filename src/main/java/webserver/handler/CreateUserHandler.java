@@ -5,7 +5,6 @@ import static webserver.request.HttpRequestLine.parseQueryParams;
 import db.DataBase;
 import java.util.Map;
 import model.User;
-import webserver.FilenameExtension;
 import webserver.request.HttpRequest;
 import webserver.HttpResponse;
 
@@ -23,6 +22,6 @@ public class CreateUserHandler implements Handler {
                         queryParams.get("name"),
                         queryParams.get("email"))
         );
-        return HttpResponse.found(new byte[0], FilenameExtension.from(""), "/index.html");
+        return HttpResponse.found(new byte[0], request.getFilenameExtension(), "/index.html");
     }
 }

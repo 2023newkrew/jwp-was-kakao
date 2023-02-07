@@ -2,6 +2,7 @@ package webserver.request;
 
 import java.util.Map;
 import org.springframework.http.HttpMethod;
+import webserver.FilenameExtension;
 
 public class HttpRequest {
     private final HttpRequestLine httpRequestLine;
@@ -44,5 +45,12 @@ public class HttpRequest {
 
     public String getHttpVersion() {
         return httpRequestLine.getHttpVersion();
+    }
+
+    public FilenameExtension getFilenameExtension() {
+        String path = getPath();
+        String[] splitPath = path.split("\\.");
+        String extension = splitPath[splitPath.length - 1];
+        return FilenameExtension.from(extension);
     }
 }

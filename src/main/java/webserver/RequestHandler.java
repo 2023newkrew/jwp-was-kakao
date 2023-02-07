@@ -1,6 +1,6 @@
 package webserver;
 
-import static utils.FileIoUtils.loadFileFromRequestTarget;
+import static utils.FileIoUtils.loadFileFromClasspath;
 import static utils.IOUtils.parseHttpRequest;
 
 import java.io.BufferedReader;
@@ -48,23 +48,15 @@ public class RequestHandler implements Runnable {
 
 
     private HttpResponse execute(HttpRequest request) throws IOException, URISyntaxException{
-        String requestTarget = request.getPath();
-
-        if (isFileRequestTarget(requestTarget)) {
-            byte[] body = loadFileFromRequestTarget(requestTarget);
-            String[] splitTarget = requestTarget.split("\\.");
-            FilenameExtension extension = FilenameExtension.from(splitTarget[splitTarget.length - 1]);
-            return HttpResponse.ok(body, extension);
+        String requestPath = request.getPath();
+        FilenameExtension extension = request.getFilenameExtension();
+        if (extension.isExistStaticFolder()) {
+            return HttpResponse.ok(loadFileFromClasspath("./static" + requestPath), extension);
+        }
+        if (extension.isExistTemplateFolder()) {
+            return HttpResponse.ok(loadFileFromClasspath("./templates" + requestPath), extension);
         }
         return HandlerMapping.handle(request);
-    }
-
-    private static boolean isFileRequestTarget(String requestTarget) {
-        return requestTarget.contains(".");
-    }
-
-    private static boolean isNullOrEmpty(String line) {
-        return line == null || "".equals(line);
     }
 
 }
