@@ -14,8 +14,8 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
-    final ResourceController resourceController = new ResourceController();
-    final UserController userController = new UserController();
+    final ResourceController resourceController = ResourceController.getInstance();
+    final UserController userController = UserController.getInstance();
 
     @Test
     void socket_out() {

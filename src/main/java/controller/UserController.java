@@ -8,6 +8,16 @@ import http.HttpStatus;
 import model.User;
 
 public class UserController {
+
+    private static UserController INSTANCE;
+
+    private UserController() { }
+    public static UserController getInstance() {
+        if(INSTANCE == null)
+            INSTANCE = new UserController();
+        return INSTANCE;
+    }
+
     public HttpResponse createUserGet(HttpRequest request) {
         String query = request.getUri().getQuery();
         User user = User.fromQueryString(query);

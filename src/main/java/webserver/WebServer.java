@@ -30,8 +30,8 @@ public class WebServer {
                 Thread thread = new Thread(
                         new RequestHandler(
                                 connection,
-                                new ResourceController(),
-                                new UserController()
+                                ResourceController.getInstance(),
+                                UserController.getInstance()
                         )
                 );
                 thread.start();
