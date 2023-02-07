@@ -1,10 +1,10 @@
 package webserver;
 
+import controller.BreakException;
 import controller.FrontController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -24,13 +24,27 @@ public class RequestHandler implements Runnable {
                 connection.getInetAddress(),
                 connection.getPort());
 
+        HttpRequest httpRequest = null;
+        HttpResponse httpResponse = null;
+
         try (InputStream inputStream = connection.getInputStream();
              OutputStream outputStream = connection.getOutputStream()) {
 
+            httpRequest = new HttpRequest(inputStream);
+            httpResponse = new HttpResponse(outputStream);
+
             FrontController frontController = new FrontController();
-            frontController.service(inputStream, outputStream);
-        } catch (IOException | URISyntaxException e) {
+            frontController.service(httpRequest, httpResponse);
+
+            httpResponse.sendResponse();
+        } catch (URISyntaxException e) {
             logger.error(e.getMessage());
+            httpResponse.sendNotFound();
+        } catch (BreakException e) {
+            logger.debug("redirect");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            httpResponse.sendError(e);
         }
     }
 }

@@ -3,11 +3,9 @@ package controller;
 import org.springframework.util.AntPathMatcher;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
+import webserver.HttpResponse;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Map;
@@ -23,25 +21,21 @@ public class FrontController {
     private static final String STATIC = "./static";
     private static final String TEMPLATES = "./templates";
 
-    public void service(InputStream inputStream, OutputStream outputStream) throws IOException, URISyntaxException {
-        try (DataOutputStream dos = new DataOutputStream(outputStream)) {
-            HttpRequest httpRequest = new HttpRequest(inputStream);
-
-            if (httpRequest.getMethod().equals("POST")) {
-                PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
-                String location = postMethodController.process(httpRequest);
-                response302(dos, location);
-                return;
-            }
-
-            String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
-                    .map(str -> str.split(",")[0])
-                    .orElse("text/html;charset=utf-8");
-
-            byte[] body = loadBody(httpRequest.getUrl());
-
-            response200(dos, contentType, body);
+    public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException, URISyntaxException {
+        if (httpRequest.getMethod().equals("POST")) {
+            PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
+            postMethodController.process(httpRequest, httpResponse);
+            return;
         }
+
+        String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
+                .map(str -> str.split(",")[0])
+                .orElse("text/html;charset=utf-8");
+
+        byte[] body = loadBody(httpRequest.getUrl());
+
+        httpResponse.setContentType(contentType);
+        httpResponse.setBody(body);
     }
 
     private byte[] loadBody(String requestUrl) throws IOException, URISyntaxException {
@@ -57,21 +51,5 @@ public class FrontController {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         return Arrays.stream(STATIC_PATH_PATTERNS)
                 .anyMatch(pattern -> antPathMatcher.match(pattern, path));
-    }
-
-    private void response200(DataOutputStream dos, String contentType, byte[] body) throws IOException {
-        dos.writeBytes("HTTP/1.1 200 OK \r\n");
-        dos.writeBytes("Content-Type: " + contentType + " \r\n");
-        dos.writeBytes("Content-Length: " + body.length + " \r\n");
-        dos.writeBytes("\r\n");
-        dos.write(body);
-        dos.flush();
-    }
-
-    private void response302(DataOutputStream dos, String location) throws IOException {
-        dos.writeBytes("HTTP/1.1 302 Found \r\n");
-        dos.writeBytes("Location: " + location + " \r\n");
-        dos.writeBytes("\r\n");
-        dos.flush();
     }
 }
