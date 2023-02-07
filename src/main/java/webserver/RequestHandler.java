@@ -1,7 +1,7 @@
 package webserver;
 
-import servlet.ServletContainer;
 import http.HttpMethod;
+import http.HttpStartLine;
 import http.Uri;
 import http.request.Request;
 import http.request.RequestBody;
@@ -9,6 +9,7 @@ import http.request.RequestHeaders;
 import http.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import servlet.ServletContainer;
 import utils.IOUtils;
 import utils.ParsingUtils;
 
@@ -34,7 +35,7 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             Request request = createRequest(in);
-            Response response = servletContainer.dispatch(request);
+            Response response = servletContainer.serve(request);
             DataOutputStream dos = new DataOutputStream(out);
             sendResponse(response, dos);
         } catch (IOException e) {
@@ -45,10 +46,10 @@ public class RequestHandler implements Runnable {
     private Request createRequest(InputStream in) throws IOException {
         BufferedReader bufferReader = new BufferedReader(new InputStreamReader(in));
 
-        Map<String, String> startLine = ParsingUtils.parseStartLine(IOUtils.readStartLine(bufferReader));
-        HttpMethod method = HttpMethod.valueOf(startLine.get("method").toUpperCase());
-        Uri uri = new Uri(startLine.get("uri"));
-        String version = startLine.get("version");
+        Map<HttpStartLine, String> startLine = ParsingUtils.parseStartLine(IOUtils.readStartLine(bufferReader));
+        HttpMethod method = HttpMethod.valueOf(startLine.get(HttpStartLine.METHOD));
+        Uri uri = new Uri(startLine.get(HttpStartLine.URI));
+        String version = startLine.get(HttpStartLine.VERSION);
 
         Map<String, String> headers = ParsingUtils.parseHeader(IOUtils.readRequestHeader(bufferReader));
         RequestHeaders requestHeaders = new RequestHeaders(headers);

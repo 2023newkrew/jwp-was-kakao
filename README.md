@@ -51,4 +51,4 @@
   - [x] Servlet 형태로 변경 - doPost, doGet 을 갖는 interface 와 구현체
   - [x] ServletContainer - Servlet 들을 등록하고 매핑시키는 객체. Servlet 에서 발생하는 예외에 대한 try catch.
   - [x] Container 초기화
-- [ ] 메소드당 10 라인 내로 고치기
+- [x] 메소드당 10 라인 내로 고치기

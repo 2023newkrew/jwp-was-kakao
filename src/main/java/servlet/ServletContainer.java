@@ -7,12 +7,15 @@ import http.HttpMethod;
 import http.HttpStatus;
 import http.request.Request;
 import http.response.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 public class ServletContainer {
+    private static final Logger logger = LoggerFactory.getLogger(ServletContainer.class);
     private static ServletContainer instance;
     private final Map<String, Servlet> servlets;
 
@@ -29,16 +32,16 @@ public class ServletContainer {
 
     private Map<String, Servlet> initiateContainer() {
         return Map.of(
-                "/", HomeServlet.getInstance(),
-                "/user/create", UserCreateServlet.getInstance()
+                HomeServlet.REQUEST_PATH, HomeServlet.getInstance(),
+                UserCreateServlet.REQUEST_PATH, UserCreateServlet.getInstance()
         );
     }
 
-    public Response dispatch(Request request) {
+    public Response serve(Request request) {
         try {
             return mapRequest(request);
         } catch (RuntimeException e) {
-            return handleException(e);
+            return handleException(request, e);
         }
     }
 
@@ -61,14 +64,14 @@ public class ServletContainer {
         return extension.isPresent() && ContentType.isFileExtension(extension.get());
     }
 
-    private Response handleException(RuntimeException e) {
+    private Response handleException(Request request, RuntimeException e) {
         if (e instanceof BadRequestException) {
-            return Response.builder().httpStatus(HttpStatus.BAD_REQUEST).build();
+            return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.BAD_REQUEST).build();
         }
         if (e instanceof NotFoundException) {
-            return Response.builder().httpStatus(HttpStatus.NOT_FOUND).build();
+            return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.NOT_FOUND).build();
         }
-        e.printStackTrace();
-        throw e;
+        logger.error("InternalServerError : {}", e.getMessage());
+        return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

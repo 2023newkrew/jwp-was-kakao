@@ -32,6 +32,7 @@ public class ResourceServlet implements Servlet {
         try {
             byte[] body = getResource(request.getUri(), contentType);
             return Response.builder()
+                    .httpVersion(request.getVersion())
                     .httpStatus(HttpStatus.OK)
                     .contentType(contentType)
                     .contentLength(body.length)

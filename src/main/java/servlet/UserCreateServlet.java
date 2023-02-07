@@ -14,6 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class UserCreateServlet implements Servlet {
+    public static final String REQUEST_PATH = "/user/create";
     private static UserCreateServlet instance;
 
     private UserCreateServlet() {
@@ -31,7 +32,11 @@ public class UserCreateServlet implements Servlet {
         RequestParams params = request.getUri().getParams().orElseThrow(BadRequestException::new);
         User newUser = createNewUser(params);
         DataBase.addUser(newUser);
-        return Response.builder().httpStatus(HttpStatus.FOUND).location("/index.html").build();
+        return Response.builder()
+                .httpVersion(request.getVersion())
+                .httpStatus(HttpStatus.FOUND)
+                .location("/index.html")
+                .build();
     }
 
     @Override
@@ -39,7 +44,11 @@ public class UserCreateServlet implements Servlet {
         RequestBody body = request.getBody();
         User newUser = createNewUser(body);
         DataBase.addUser(newUser);
-        return Response.builder().httpStatus(HttpStatus.FOUND).location("/index.html").build();
+        return Response.builder()
+                .httpVersion(request.getVersion())
+                .httpStatus(HttpStatus.FOUND)
+                .location("/index.html")
+                .build();
     }
 
     private User createNewUser(RequestData data) {

@@ -21,26 +21,16 @@ public class Uri {
         return uri;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    private String extractPath() {
-        if (extension.isEmpty() && params.isEmpty()) {
-            return uri;
-        }
-        if (extension.isPresent()) {
-            return uri.substring(0, uri.lastIndexOf("/"));
-        }
-        return uri.substring(0, uri.lastIndexOf("?"));
-    }
-
     public Optional<String> getExtension() {
         return extension;
     }
 
     public Optional<RequestParams> getParams() {
         return params;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     private Optional<String> extractExtension() {
@@ -54,7 +44,7 @@ public class Uri {
         }
         return Optional.of(extention);
     }
-    
+
     private Optional<RequestParams> extractParams() {
         String[] splittedUri = uri.split("\\?", 2);
         if (!isSplitted(splittedUri)) {
@@ -66,5 +56,15 @@ public class Uri {
 
     private boolean isSplitted(String[] splittedUri) {
         return splittedUri.length > 1;
+    }
+
+    private String extractPath() {
+        if (extension.isEmpty() && params.isEmpty()) {
+            return uri;
+        }
+        if (extension.isPresent()) {
+            return uri.substring(0, uri.lastIndexOf("/"));
+        }
+        return uri.substring(0, uri.lastIndexOf("?"));
     }
 }

@@ -3,17 +3,12 @@ package http.request;
 import http.HttpMethod;
 import http.Uri;
 
-import java.util.List;
-import java.util.Map;
-
-import static utils.ParsingUtils.*;
-
 public class Request {
-    private HttpMethod method;
-    private Uri uri;
-    private String version;
-    private RequestHeaders headers;
-    private RequestBody body;
+    private final HttpMethod method;
+    private final Uri uri;
+    private final String version;
+    private final RequestHeaders headers;
+    private final RequestBody body;
 
     public Request(HttpMethod method, Uri uri, String version, RequestHeaders headers, RequestBody body) {
         this.method = method;

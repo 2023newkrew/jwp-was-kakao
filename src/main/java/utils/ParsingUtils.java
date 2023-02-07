@@ -1,17 +1,19 @@
 package utils;
 
+import http.HttpStartLine;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ParsingUtils {
-    public static Map<String, String> parseStartLine(String rawStartLine) {
+    public static Map<HttpStartLine, String> parseStartLine(String rawStartLine) {
         String[] splittedLine = rawStartLine.split(" ");
         return new HashMap<>() {{
-            put("method", splittedLine[0]);
-            put("uri", splittedLine[1]);
-            put("version", splittedLine[2]);
+            put(HttpStartLine.METHOD, splittedLine[0]);
+            put(HttpStartLine.URI, splittedLine[1]);
+            put(HttpStartLine.VERSION, splittedLine[2]);
         }};
     }
 
