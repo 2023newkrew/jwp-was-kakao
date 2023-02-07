@@ -15,6 +15,15 @@
 - [x] 존재하지 않는 페이지에 대해 404 응답을 내려주도록 구현
 - [x] Service, Dao 레이어 분리
 
+### 1차 피드백 개선
+- [x] Map에 key, value 타입 지정하기
+- [x] Delimiter들 상수 처리하기
+- [x] token substring 관련 가독성 높히기
+- [x] requestBody 생성 시 content-type 활용하기
+- [] ResponseUtils 개선하기 (응답 처리 개선)
+- [] handlerController map에 컨트롤러 매핑시 UserController에 정의되어 있는 값들을 읽어와서 세팅 시도
+- [] 동일한 method, url에 대해서 content-type이 다른 경우 어떻게 처리해야 할지 고민
+
 ### 2단계 구현 목록
 - [x] 응답 객체를 조작할 수 있도록 변경
 - [x] 로그인 기능 구현

@@ -1,5 +1,6 @@
 package model.annotation;
 
+import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 
 import java.lang.annotation.ElementType;
@@ -11,6 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Api {
     HttpMethod method() default HttpMethod.GET;
-
     String url() default "/";
+
+    ContentType consumes() default ContentType.APPLICATION_JSON;
 }

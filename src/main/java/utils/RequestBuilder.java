@@ -2,13 +2,11 @@ package utils;
 
 import lombok.experimental.UtilityClass;
 import model.request.*;
-import model.request.HttpRequest.HttpRequestBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @UtilityClass
 public class RequestBuilder {

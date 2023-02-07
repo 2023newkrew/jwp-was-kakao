@@ -16,6 +16,10 @@ public class ResponseHeader {
         this.headers = (LinkedHashMap<String, String>) headers;
     }
 
+    public ResponseHeader() {
+        this.headers = new LinkedHashMap<>();
+    }
+
     public static ResponseHeader of(Map<String, String> map) {
         return new ResponseHeader(map);
     }

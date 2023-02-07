@@ -71,6 +71,7 @@ class RequestHandlerTest {
                 "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
+                "Content-Type: " + "application/x-www-form-urlencoded",
                 "Content-Length: " + contentLength + " ",
                 "",
                 "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com",

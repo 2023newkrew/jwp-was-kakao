@@ -1,6 +1,5 @@
 package webserver.controller;
 
-import db.Session;
 import db.SessionManager;
 import model.annotation.Api;
 import model.enumeration.HttpMethod;
@@ -12,7 +11,7 @@ import webserver.infra.ViewResolver;
 import webserver.service.LoginService;
 
 import java.io.DataOutputStream;
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.Optional;
 
 import static constant.HeaderConstant.*;
@@ -38,8 +37,8 @@ public class LoginController extends ApiController {
     }
 
     @Api(method = HttpMethod.GET, url = "/user/login.html")
-    public void showLoginPage(HttpRequest request, HttpResponse response, DataOutputStream dos) {
-        ViewResolver.resolve(request, response, dos);
+    public void showLoginPage(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
+        ViewResolver.resolve(request, dos);
     }
 
     @Api(method = HttpMethod.POST, url = "/user/login")
@@ -47,19 +46,19 @@ public class LoginController extends ApiController {
         Optional<User> loginUser = loginService.login(request);
 
         if (loginUser.isEmpty()) {
-            response.setAttribute(LOCATION, "/user/login_failed.html");
-            response302Header(dos, response);
+            response.setHeaderAttribute(LOCATION, "/user/login_failed.html");
+//            response302Header(dos, response);
             return;
         }
 
         String UUID = randomUUID().toString();
-        response.setAttribute(LOCATION, "/index.html");
-        response.setAttribute(SET_COOKIE, "JSESSIONID=" + UUID + "; Path=/");
+        response.setHeaderAttribute(LOCATION, "/index.html");
+        response.setHeaderAttribute(SET_COOKIE, "JSESSIONID=" + UUID + "; Path=/");
         SessionManager
                 .findSession(USER_SESSION_UUID)
                 .setAttribute(UUID, loginUser.get());
 
-        response302Header(dos, response);
+//        response302Header(dos, response);
     }
 
 }

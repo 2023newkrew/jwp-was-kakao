@@ -1,17 +1,15 @@
 package webserver.controller;
 
-import constant.HeaderConstant;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.annotation.Api;
 import model.response.HttpResponse;
-import utils.ResponseUtils;
-import utils.TemplateUtils;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.UserService;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import static constant.HeaderConstant.*;
 import static utils.ResponseUtils.*;
@@ -38,19 +36,19 @@ public class UserController extends ApiController {
     public void register(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         userService.addUser(request);
 
-        response.setAttribute(LOCATION, "/index.html");
+        response.setHeaderAttribute(LOCATION, "/index.html");
 
-        response302Header(dos, response);
+//        response302Header(dos, response);
     }
 
     @Api(method = HttpMethod.GET, url = "/user/list.html")
-    public void showUserList(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public void showUserList(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
         if (request.findHeaderValue(COOKIE,  null) == null) {
-            response.setAttribute(LOCATION, "/index.html");
-            response302Header(dos, response);
+            response.setHeaderAttribute(LOCATION, "/index.html");
+//            response302Header(dos, response);
             return;
         }
 
-        ViewResolver.resolve(handleUserListTemplate(), response, dos);
+        ViewResolver.resolve(handleUserListTemplate(), dos);
     }
 }
