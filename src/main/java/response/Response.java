@@ -73,8 +73,8 @@ public class Response {
         return new ResponseBuilder("HTTP/1.1 404 Not Found");
     }
 
-    public static ResponseBuilder redirect() {
-        return new ResponseBuilder("HTTP/1.1 302 Redirect");
+    public static ResponseBuilder found() {
+        return new ResponseBuilder("HTTP/1.1 302 Found");
     }
 
     @Override

@@ -48,6 +48,6 @@ public final class MainController implements Controller {
         User user = User.from(request.getRequestParams());
         DataBase.addUser(user);
 
-        return Response.redirect().location("/index.html").build();
+        return Response.found().location("/index.html").build();
     }
 }
