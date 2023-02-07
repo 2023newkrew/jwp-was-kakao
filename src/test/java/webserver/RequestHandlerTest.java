@@ -90,10 +90,12 @@ class RequestHandlerTest {
     @Test
     void createUser(){
         final String httpRequest = String.join("\r\n",
-                "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
+                "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Accept: */* ",
-                "Connection: keep-alive ");
+                "Connection: keep-alive ",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
 
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);

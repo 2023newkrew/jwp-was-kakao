@@ -1,6 +1,8 @@
 package controller;
 
 import annotation.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.UserService;
@@ -8,10 +10,10 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -72,10 +74,10 @@ public class MainController {
                 .body("Hello world".getBytes()).build());
     }
 
-    @QueryString
-    @Mapping(method = RequestMethod.GET, path="/user/create")
-    public static Optional<Response> createUser(Map<String,String> params){
-        Long id = UserService.createUser(params);
+    @RequestBody
+    @Mapping(method = RequestMethod.POST, path="/user/create")
+    public static Optional<Response> createUser(String body){
+        Long id = UserService.createUser(body);
         return Optional.of(Response.builder()
                 .version(Version.HTTP_1_1)
                 .statusCode(StatusCode.CREATED)

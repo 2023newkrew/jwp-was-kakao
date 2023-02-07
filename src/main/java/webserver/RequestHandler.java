@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,10 +51,14 @@ public class RequestHandler implements Runnable {
 
     private Optional<Response> body(Request request) {
         try {
+            List<Object> args = new ArrayList<>();
             if(map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)){
-                return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, request.getParams());
+                args.add(request.getParams());
             }
-            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null);
+            if(map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class)){
+                args.add(request.getBody());
+            }
+            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, args.toArray());
         } catch (Exception e) {
             return Optional.ofNullable(null);
         }
