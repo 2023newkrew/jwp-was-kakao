@@ -1,6 +1,7 @@
-package webserver;
+package model;
 
 import utils.IOUtils;
+import webserver.constants.method.HttpMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,10 +10,43 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequestParser {
-    private static final String HEADER_SEPARATOR = ": ";
+public class HttpRequest {
+    private final HttpMethod httpMethod;
+    private final String uri;
+    private final String httpVersion;
+    private final Map<String, String> headers;
+    private final String body;
+
+    private HttpRequest(HttpMethod httpMethod, String uri, String httpVersion, Map<String, String> headers, String body) {
+        this.httpMethod = httpMethod;
+        this.uri = uri;
+        this.httpVersion = httpVersion;
+        this.headers = headers;
+        this.body = body;
+    }
+
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public String getHttpVersion() {
+        return httpVersion;
+    }
+
+    public String getHeader(String header) {
+        return headers.get(header);
+    }
+
+    public String getBody() {
+        return body;
+    }
 
     public static HttpRequest parse(InputStream in) throws IOException {
+        final String HEADER_SEPARATOR = ": ";
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
         String line = br.readLine();
