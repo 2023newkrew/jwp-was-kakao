@@ -7,7 +7,7 @@ public class Headers {
     public static String DELIMITER = ": ";
     public static String CONTENT_TYPE = "Content-Type";
     public static String CONTENT_LENGTH = "Content-Length";
-    private static String LOCATION = "Location";
+    public static String LOCATION = "Location";
 
     private Map<String, String> headers;
 

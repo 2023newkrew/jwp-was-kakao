@@ -5,10 +5,10 @@ import infra.http.HttpMessageBase;
 public class StatusLine {
     public static String DELIMITER = " ";
 
-    private HttpResponseStatus status;
+    private ResponseStatus status;
     private String version;
 
-    public StatusLine(HttpResponseStatus status) {
+    public StatusLine(ResponseStatus status) {
         this.status = status;
         this.version = HttpMessageBase.DEFAULT_VERSION;
     }

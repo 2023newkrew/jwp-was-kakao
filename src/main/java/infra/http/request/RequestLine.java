@@ -3,11 +3,11 @@ package infra.http.request;
 public class RequestLine {
     public static String DELIMITER = " ";
 
-    private HttpRequestMethod method;
+    private RequestMethod method;
     private String uri;
     private String version;
 
-    public RequestLine(HttpRequestMethod method, String uri, String version) {
+    public RequestLine(RequestMethod method, String uri, String version) {
         this.version = version;
         this.method = method;
         this.uri = uri;
@@ -21,11 +21,15 @@ public class RequestLine {
         return this.uri;
     }
 
+    public RequestMethod getMethod() {
+        return method;
+    }
+
     public boolean isGET() {
-        return this.method.equals(HttpRequestMethod.GET);
+        return this.method.equals(RequestMethod.GET);
     }
 
     public boolean isPOST() {
-        return this.method.equals(HttpRequestMethod.POST);
+        return this.method.equals(RequestMethod.POST);
     }
 }

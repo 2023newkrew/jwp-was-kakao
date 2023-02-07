@@ -1,16 +1,15 @@
 package infra.http.request;
 
+import infra.http.Body;
 import infra.http.Headers;
 import infra.http.HttpMessageBase;
 
 public class HttpRequest extends HttpMessageBase {
     private RequestLine requestLine;
-    private String requestBody;
 
-    public HttpRequest(RequestLine requestLine, Headers headers, String requestBody) {
-        super(headers);
+    public HttpRequest(RequestLine requestLine, Headers headers, Body body) {
+        super(headers, body);
         this.requestLine = requestLine;
-        this.requestBody = requestBody;
     }
 
     public String getUri() {
@@ -21,8 +20,8 @@ public class HttpRequest extends HttpMessageBase {
         return this.requestLine.getVersion();
     }
 
-    public String getRequestBody() {
-        return this.requestBody;
+    public String getMethod() {
+        return this.requestLine.getMethod().value();
     }
 
     public boolean isGET() {

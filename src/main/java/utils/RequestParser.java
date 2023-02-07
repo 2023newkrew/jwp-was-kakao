@@ -1,10 +1,10 @@
 package utils;
 
 import infra.http.Headers;
-import infra.http.HttpMessageBase;
+import infra.http.StringBody;
 import infra.http.request.HttpRequest;
-import infra.http.request.HttpRequestMethod;
 import infra.http.request.RequestLine;
+import infra.http.request.RequestMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,10 @@ public class RequestParser {
         try {
             RequestLine requestLine = RequestParser.getRequestLine(br);
             Headers headers = RequestParser.getHeaders(br);
-            String body = RequestParser.getBody(br);
+            StringBody body = null;
+            if (headers.get(Headers.CONTENT_LENGTH) != null) {
+                body = RequestParser.getStringBody(br, Integer.parseInt(headers.get(Headers.CONTENT_LENGTH)));
+            }
             return new HttpRequest(requestLine, headers, body);
         } catch (IOException | ArrayIndexOutOfBoundsException e) {
             return null;
@@ -22,8 +25,12 @@ public class RequestParser {
     }
 
     private static RequestLine getRequestLine(BufferedReader br) throws IOException, ArrayIndexOutOfBoundsException {
-        String[] split = br.readLine().split(RequestLine.DELIMITER);
-        return new RequestLine(HttpRequestMethod.valueOf(split[0]), split[1], split[2]);
+        String line = br.readLine();
+        if (line == null) {
+            throw new IOException();
+        }
+        String[] split = line.split(RequestLine.DELIMITER);
+        return new RequestLine(RequestMethod.valueOf(split[0]), split[1], split[2]);
     }
 
     private static Headers getHeaders(BufferedReader br) throws IOException, ArrayIndexOutOfBoundsException {
@@ -31,19 +38,14 @@ public class RequestParser {
         String line = br.readLine();
         while (line != null && !line.isEmpty()) {
             String[] split = line.split(Headers.DELIMITER);
-            headers.put(split[0], split[1]);
+            headers.put(split[0], split[1].trim());
             line = br.readLine();
         }
         return headers;
     }
 
-    private static String getBody(BufferedReader br) throws IOException {
-        StringBuilder body = new StringBuilder();
-        String line = br.readLine();
-        while (line != null) {
-            body.append(line);
-            body.append(HttpMessageBase.LINE_DELIMITER);
-        }
-        return body.toString();
+    private static StringBody getStringBody(BufferedReader br, int contentLength) throws IOException {
+        String body = IOUtils.readData(br, contentLength);
+        return new StringBody(body);
     }
 }

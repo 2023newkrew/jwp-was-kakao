@@ -1,18 +1,17 @@
 package app.controller;
 
 import infra.Controller;
-import utils.FileIoUtils;
+import infra.http.ByteBody;
 import infra.http.Headers;
 import infra.http.request.HttpRequest;
 import infra.http.response.HttpResponse;
-import infra.http.response.HttpResponseStatus;
+import infra.http.response.ResponseStatus;
+import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class ViewController implements Controller {
-    public static String URI_ROOT = "/index.html";
-    public static String URI_CSS = "./css";
     private static String PATH_TEMPLATES = "./templates";
     private static String PATH_STATIC = "./static";
     private static String TYPE_HTML = "text/html;charset=utf-8";
@@ -20,38 +19,37 @@ public class ViewController implements Controller {
 
     public HttpResponse response(HttpRequest request) {
         if (!request.isGET()) {
-            return new HttpResponse(HttpResponseStatus.BAD_REQUEST);
+            return new HttpResponse(ResponseStatus.BAD_REQUEST);
         }
-
         try {
             String uri = request.getUri();
-            if (uri.equals(URI_ROOT)) {
-                return this.getRoot();
+            if (uri.endsWith(".html")) {
+                return this.getHtml(uri);
             }
-            if (uri.startsWith(URI_CSS)) {
-                return this.getCss(uri.substring(1));
+            if (uri.endsWith(".css")) {
+                return this.getCss(uri);
             }
-            return new HttpResponse(HttpResponseStatus.NOT_FOUND);
+            return new HttpResponse(ResponseStatus.NOT_FOUND);
         } catch (URISyntaxException e) {
-            return new HttpResponse(HttpResponseStatus.BAD_REQUEST);
+            return new HttpResponse(ResponseStatus.BAD_REQUEST);
         } catch (IOException e) {
-            return new HttpResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+            return new HttpResponse(ResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private HttpResponse getRoot() throws IOException, URISyntaxException {
-        byte[] body = FileIoUtils.loadFileFromClasspath(PATH_TEMPLATES + URI_ROOT);
-        HttpResponse response = new HttpResponse(HttpResponseStatus.OK, body);
-        response.setHeader(Headers.CONTENT_TYPE, TYPE_HTML);
-        response.setHeader(Headers.CONTENT_LENGTH, String.valueOf(body.length));
-        return response;
+    private HttpResponse getHtml(String path) throws IOException, URISyntaxException {
+        return this.getResource(PATH_TEMPLATES + path, TYPE_HTML);
     }
 
     private HttpResponse getCss(String path) throws IOException, URISyntaxException {
-        byte[] body = FileIoUtils.loadFileFromClasspath(PATH_STATIC + path);
-        HttpResponse response = new HttpResponse(HttpResponseStatus.OK, body);
-        response.setHeader(Headers.CONTENT_TYPE, TYPE_CSS);
-        response.setHeader(Headers.CONTENT_LENGTH, String.valueOf(body.length));
+        return this.getResource(PATH_STATIC + path, TYPE_CSS);
+    }
+
+    private HttpResponse getResource(String path, String ContentType) throws IOException, URISyntaxException {
+        ByteBody body = new ByteBody(FileIoUtils.loadFileFromClasspath(path));
+        HttpResponse response = new HttpResponse(ResponseStatus.OK, body);
+        response.setHeader(Headers.CONTENT_TYPE, ContentType);
+        response.setHeader(Headers.CONTENT_LENGTH, String.valueOf(body.length()));
         return response;
     }
 }

@@ -1,19 +1,18 @@
 package infra.http.response;
 
+import infra.http.Body;
 import infra.http.Headers;
 import infra.http.HttpMessageBase;
 
 public class HttpResponse extends HttpMessageBase {
     private StatusLine statusLine;
-    private byte[] body;
 
-    public HttpResponse(HttpResponseStatus status, byte[] body) {
-        super(new Headers());
+    public HttpResponse(ResponseStatus status, Body body) {
+        super(new Headers(), body);
         this.statusLine = new StatusLine(status);
-        this.body = body;
     }
 
-    public HttpResponse(HttpResponseStatus status) {
+    public HttpResponse(ResponseStatus status) {
         this(status, null);
     }
 
@@ -27,10 +26,11 @@ public class HttpResponse extends HttpMessageBase {
         sb.append(HttpMessageBase.BODY_DELIMITER);
 
         byte[] upper = sb.toString().getBytes();
-        if (body == null) {
+        if (this.getBody() == null) {
             return upper;
         }
 
+        byte[] body = this.getBody().flat();
         byte[] result = new byte[upper.length + body.length];
         System.arraycopy(upper, 0, result, 0, upper.length);
         System.arraycopy(body, 0, result, upper.length, body.length);
