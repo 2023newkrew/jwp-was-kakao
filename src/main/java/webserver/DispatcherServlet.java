@@ -27,6 +27,7 @@ public class DispatcherServlet {
         Controller controller = chooseHandler(request.getUri());
         controller.process(request, response);
 
+        // 해당 경로 존재하나 HTTP Method 맞지 않아 처리되지 않았을 경우
         if (Objects.isNull(response.getHttpStatus())) {
             throw new MethodNotAllowedException();
         }

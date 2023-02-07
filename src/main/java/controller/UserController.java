@@ -18,6 +18,7 @@ public class UserController implements Controller {
     public UserController(UserService userService) {
         this.userService = userService;
 
+        // 요청 url -> method 매핑
         mapping.put("/user/create", this::createUser);
     }
 
