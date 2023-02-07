@@ -1,7 +1,5 @@
 package utils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,7 +9,8 @@ public class FileIoUtils {
         try {
             Path path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
             return Files.readAllBytes(path);
-        } catch (IOException | OutOfMemoryError | URISyntaxException e) {
+        } catch (Throwable e) {
+            System.out.println("filePath = " + filePath);
             e.printStackTrace();
             throw new RuntimeException(e);
         }

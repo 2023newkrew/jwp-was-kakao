@@ -9,8 +9,9 @@ import java.io.IOException;
 
 public class HttpResponse {
     private final static Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    public static final String TEMPLATE_PATH = "./templates/";
-    public static final String STATIC_PATH = "./static/";
+    private static final String TEMPLATE_PATH = "./templates";
+    private static final String STATIC_PATH = "./static";
+    public static final String LINE_SEPARATOR = "\r\n";
 
     private final DataOutputStream dos;
 
@@ -22,9 +23,15 @@ public class HttpResponse {
 
     public void forward(String path) {
         byte[] body = FileIoUtils.loadFileFromClasspath(getResourcePath(path));
-        logger.info("Forward to file : {}", path);
-        response200Header(body.length, ContentType.of(path));
+        logger.info("Forward to file : {}", getResourcePath(path));
+        writeHeader(ResponseStatus.OK, body.length, path);
         responseBody(body);
+        flush();
+    }
+
+    public void sendRedirect(String path) {
+        writeHeader(ResponseStatus.FOUND, 0, path);
+        flush();
     }
 
     private String getResourcePath(String path) {
@@ -34,12 +41,17 @@ public class HttpResponse {
         return STATIC_PATH + path;
     }
 
-    private void response200Header(int lengthOfBodyContent, ContentType contentType) {
+    private void writeHeader(ResponseStatus responseStatus, int lengthOfBodyContent, String path) {
+        writeLine("HTTP/1.1 " + responseStatus.toString());
+        writeLine("Location: " + path);
+        writeLine("Content-Type: "+ ContentType.of(path).getValue() + ";charset=utf-8");
+        writeLine("Content-Length: " + lengthOfBodyContent);
+        writeLine("");
+    }
+
+    private void writeLine(String line) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: "+ contentType.getValue() + ";charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes(line + LINE_SEPARATOR);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -48,17 +60,13 @@ public class HttpResponse {
     private void responseBody(byte[] body) {
         try {
             dos.write(body, 0, body.length);
-            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void sendRedirect(String path) {
+    private void flush() {
         try {
-            dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
-            dos.writeBytes(String.format("Location: %s \r\n", path));
-            dos.writeBytes("Content-Length: 0");
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
