@@ -2,54 +2,68 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.domain.*;
+import webserver.utils.FileIoUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
+    private final WebServerContext.RoutingHandler routingHandler;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, WebServerContext.RoutingHandler routingHandler) {
         this.connection = connectionSocket;
+        this.routingHandler = routingHandler;
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            DataOutputStream dos = new DataOutputStream(out);
+            HttpRequest httpRequest = HttpRequest.from(in);
+            HttpRequestReader requestReader = new HttpRequestReader(httpRequest);
+
             byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
-            responseBody(dos, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
+            DataOutputStream dos = new DataOutputStream(out);
+            HttpResponse response = HttpResponse.builder(HttpStatus.OK)
+                    .contentLength(body.length)
+                    .body(body)
+                    .build();
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
+            if (requestReader.isFile()) {
+                FileExtensions requestedFileExtension = FileExtensions.of(requestReader.getExtension());
+                try {
+                    body = FileIoUtils.loadFileFromClasspath(requestedFileExtension.getDirectory() + requestReader.getPath());
+                    response = HttpResponse.builder(HttpStatus.OK)
+                            .contentType(requestedFileExtension.getContentType())
+                            .contentLength(body.length)
+                            .body(body)
+                            .build();
+                } catch (IOException | URISyntaxException e) {
+                    logger.error(e.getMessage());
+                    logger.error(Arrays.toString(e.getStackTrace()));
+                }
+            } else if (routingHandler.canHandle(httpRequest.getMethod(), httpRequest.getPath())) {
+                Context context = new Context(requestReader);
+                routingHandler.getHandler(httpRequest.getMethod(), httpRequest.getPath()).accept(context);
+                response = context.getHttpResponse();
+            }
+
+            HttpResponseWriter writer = new HttpResponseWriter(response);
+            dos.write(writer.writeAsByte());
+
+        } catch (IOException | NullPointerException e) {
             logger.error(e.getMessage());
+            logger.error(Arrays.toString(e.getStackTrace()));
         }
     }
 }
