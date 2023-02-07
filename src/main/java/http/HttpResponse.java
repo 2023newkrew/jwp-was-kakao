@@ -2,12 +2,14 @@ package http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpResponse {
     private HttpStatus status;
     private String version;
-    private Map<String, String> headers;
+    private Map<String, List<String>> headers;
     private byte[] body;
 
     public HttpStatus getStatus() {
@@ -18,7 +20,7 @@ public class HttpResponse {
         return version;
     }
 
-    public Map<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
@@ -29,7 +31,7 @@ public class HttpResponse {
     public static final class HttpResponseBuilder {
         private HttpStatus status;
         private String version;
-        private Map<String, String> headers;
+        private Map<String, List<String>> headers;
         private byte[] body;
 
         private HttpResponseBuilder() {
@@ -49,7 +51,7 @@ public class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder withHeaders(Map<String, String> headers) {
+        public HttpResponseBuilder withHeaders(Map<String, List<String>> headers) {
             this.headers = headers;
             return this;
         }
@@ -75,7 +77,8 @@ public class HttpResponse {
         sb.append(version).append(" ").append(status.getCode()).append(" ").append(status.name()).append(" \r\n");
         if (headers!=null && !headers.isEmpty()) {
             for (String key : headers.keySet()) {
-                sb.append(key).append(": ").append(headers.get(key)).append(" \r\n");
+                String values = String.join(",", headers.get(key));
+                sb.append(key).append(": ").append(values).append(" \r\n");
             }
         }
         sb.append("\r\n");
@@ -88,7 +91,8 @@ public class HttpResponse {
         sb.append(version).append(" ").append(status.getCode()).append(" ").append(status.name()).append(" \r\n");
         if (headers!=null && !headers.isEmpty()) {
             for (String key : headers.keySet()) {
-                sb.append(key).append(": ").append(headers.get(key)).append(" \r\n");
+                String values = String.join(",", headers.get(key));
+                sb.append(key).append(": ").append(values).append(" \r\n");
             }
         }
         sb.append("\r\n");
@@ -97,7 +101,6 @@ public class HttpResponse {
         if(body != null) {
             outputStream.write(body);
         }
-        byte[] response = outputStream.toByteArray();
-        return response;
+        return outputStream.toByteArray();
     }
 }

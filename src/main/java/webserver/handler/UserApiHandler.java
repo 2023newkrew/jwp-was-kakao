@@ -8,6 +8,7 @@ import http.HttpResponse;
 import http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserApiHandler implements Handler {
@@ -24,7 +25,7 @@ public class UserApiHandler implements Handler {
         return HttpResponse.HttpResponseBuilder.aHttpResponse()
                 .withStatus(HttpStatus.FOUND)
                 .withVersion("HTTP/1.1")
-                .withHeaders(Map.of("Location", "/index.html"))
+                .withHeaders(Map.of("Location", List.of("/index.html")))
                 .build();
     }
 

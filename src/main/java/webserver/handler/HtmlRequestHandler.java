@@ -6,6 +6,7 @@ import http.HttpResponse;
 import http.HttpStatus;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HtmlRequestHandler implements Handler {
@@ -25,11 +26,11 @@ public class HtmlRequestHandler implements Handler {
                 .build();
     }
 
-    private Map<String, String> generateHeaders(HttpRequest httpRequest, byte[] body) {
-        Map<String, String> headers = new LinkedHashMap<>();
+    private Map<String, List<String>> generateHeaders(HttpRequest httpRequest, byte[] body) {
+        Map<String, List<String>> headers = new LinkedHashMap<>();
 
-        headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(body.length));
+        headers.put("Content-Type", List.of("text/html;charset=utf-8"));
+        headers.put("Content-Length", List.of(String.valueOf(body.length)));
 
         return headers;
     }
