@@ -4,13 +4,8 @@ import common.HttpHeader;
 import common.HttpRequest;
 import common.HttpResponse;
 import common.HttpStatus;
-import controller.Controller;
-import controller.FileController;
-import controller.RootController;
-import controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.UserService;
 import support.IllegalMethodException;
 import support.MethodNotAllowedException;
 import support.PathNotFoundException;
@@ -61,27 +56,9 @@ public class RequestHandler implements Runnable {
 
     private void handle(BufferedReader reader, DataOutputStream dos) throws IOException {
         HttpRequest request = Parser.parseRequest(reader);
-        Controller controller = chooseHandler(request);
-
         HttpResponse response = new HttpResponse();
-        controller.handleRequest(request, response);
+        DispatcherServlet.dispatch(request, response);
         sendResponse(dos, response);
-    }
-
-    private Controller chooseHandler(HttpRequest request) {
-        String uri = request.getUri();
-        if (uri.endsWith(".html") || uri.endsWith(".css")) {
-            return new FileController();
-        }
-        else if (uri.startsWith("/user")) {
-            return new UserController(new UserService());
-        }
-        else if (uri.equals("/")) {
-            return new RootController();
-        }
-        else {
-            throw new PathNotFoundException();
-        }
     }
 
     private void sendResponse(DataOutputStream dos, final HttpResponse response) {

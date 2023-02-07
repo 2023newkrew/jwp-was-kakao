@@ -5,7 +5,7 @@ import service.UserService;
 
 import java.util.Map;
 
-public class UserController extends Controller {
+public class UserController implements Controller {
     private static final String REDIRECT_PATH = "/index.html";
     private UserService userService;
 
@@ -13,8 +13,7 @@ public class UserController extends Controller {
         this.userService = userService;
     }
 
-    @Override
-    void handleRequestByMethod(HttpRequest request, HttpResponse response) {
+    public void process(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.GET) || request.getMethod().equals(HttpMethod.POST)) {
             Map<String, String> map = request.getParameter();
             userService.addUser(
