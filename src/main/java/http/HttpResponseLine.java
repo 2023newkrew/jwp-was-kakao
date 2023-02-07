@@ -10,7 +10,7 @@ public class HttpResponseLine {
     }
 
     protected byte[] getBytes() {
-        String line = "HTTP/" + version + " " + status.getCode() + " " + status.getMessage() + " \r\n";
+        String line = version + " " + status.getCode() + " " + status.getMessage() + " \r\n";
         return line.getBytes();
     }
 }

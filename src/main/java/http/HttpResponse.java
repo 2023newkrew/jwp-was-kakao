@@ -17,7 +17,7 @@ public class HttpResponse {
     }
 
     public static class Builder {
-        private String httpVersion = "1.1";
+        private String httpVersion = "HTTP/1.1";
         private HttpStatus status = HttpStatus.OK;
         private byte[] body = {};
         private final Map<HttpHeaders, String> headers;
