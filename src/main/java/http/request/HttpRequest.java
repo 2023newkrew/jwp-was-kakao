@@ -35,11 +35,14 @@ public class HttpRequest {
     }
 
     public RequestParam getRequestParam() {
-        return requestLine.getRequestUri().getRequestParam();
-    }
-
-    public RequestParam getRequestBodyParam() {
-        return requestBody.getRequestParam();
+        HttpMethod method = getMethod();
+        if (method == HttpMethod.GET) {
+            return requestLine.getRequestURI().getRequestParam();
+        }
+        if (method == HttpMethod.POST) {
+            return requestBody.getRequestParam();
+        }
+        return RequestParam.empty();
     }
 
     public HttpHeader getRequestHeader() {
@@ -48,5 +51,9 @@ public class HttpRequest {
 
     public RequestBody getRequestBody() {
         return requestBody;
+    }
+
+    public String getPath() {
+        return getRequestLine().getRequestURI().getPath();
     }
 }

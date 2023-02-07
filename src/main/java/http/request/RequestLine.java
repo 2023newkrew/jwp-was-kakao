@@ -35,7 +35,7 @@ public class RequestLine {
         return httpMethod;
     }
 
-    public RequestUri getRequestUri() {
+    public RequestUri getRequestURI() {
         return requestUri;
     }
 
