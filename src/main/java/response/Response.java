@@ -24,6 +24,7 @@ public class Response {
         private String contentLength;
         private String contentType;
         private String location;
+        private String accessControlCrossOrigin;
         private String body;
 
         public ResponseBuilder(String status) {
@@ -36,6 +37,9 @@ public class Response {
 
         public ResponseBuilder contentType(ContentType contentType) {
             this.contentType = "Content-Type: " + contentType.getString();
+            if (contentType == ContentType.CSS) {
+                accessControlCrossOrigin("*");
+            }
             return this;
         }
 
@@ -50,11 +54,16 @@ public class Response {
             return this;
         }
 
+        public ResponseBuilder accessControlCrossOrigin(String value) {
+            this.accessControlCrossOrigin = "Access-Control-Allow-Origin: " +value;
+            return this;
+        }
+
         public Response build() {
             if (body == null) {
                 contentLength(0);
             }
-            String header = Stream.of(status, contentType, location, contentLength)
+            String header = Stream.of(status, contentType, location, accessControlCrossOrigin, contentLength)
                     .filter(s -> s != null && !s.isEmpty())
                     .collect(Collectors.joining(" \r\n")) + " ";
             if (body == null) {
