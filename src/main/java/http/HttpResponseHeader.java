@@ -7,7 +7,7 @@ class HttpResponseHeader {
 
     private final String version;
     private final HttpStatus status;
-    private final Map<HttpHeaders, String> attributes;
+    private final Map<HttpHeaders, String> headers;
 
     public HttpResponseHeader() {
         this("1.1", HttpStatus.OK);
@@ -21,16 +21,16 @@ class HttpResponseHeader {
         this(version, status, new HashMap<>());
     }
 
-    public HttpResponseHeader(String version, HttpStatus status, Map<HttpHeaders, String> attributes) {
+    public HttpResponseHeader(String version, HttpStatus status, Map<HttpHeaders, String> headers) {
         this.version = version;
         this.status = status;
-        this.attributes = attributes;
+        this.headers = headers;
     }
 
     protected byte[] getResponseHeader() {
         StringBuilder sb = new StringBuilder();
         sb.append("HTTP/" + version + " " + status.getCode() + " " + status.getMessage() + " \r\n");
-        attributes.forEach((key, value) -> {
+        headers.forEach((key, value) -> {
             sb.append(key.getHeader() + ": " + value + " \r\n");
         });
         sb.append("\r\n");

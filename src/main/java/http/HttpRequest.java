@@ -12,7 +12,7 @@ public class HttpRequest {
         this.httpRequestBody = httpRequestBody;
     }
 
-    public Optional<String> getAttribute(HttpHeaders key) {
+    public Optional<String> getHeader(HttpHeaders key) {
         return httpRequestHeader.getAttribute(key);
     }
 
@@ -24,6 +24,10 @@ public class HttpRequest {
         return httpRequestHeader.getUri();
     }
 
+    public String getPath() {
+        return httpRequestHeader.getUri().getPath();
+    }
+
     public String getHttpVersion() {
         return httpRequestHeader.getHttpVersion();
     }
@@ -33,15 +37,15 @@ public class HttpRequest {
     }
 
     public boolean checkStaticResource() {
-        if(getUri().getPath().contains("/css")) return true;
-        if(getUri().getPath().contains("/js")) return true;
-        if(getUri().getPath().contains("/fonts")) return true;
-        if(getUri().getPath().contains("/images")) return true;
+        if(getPath().contains("/css")) return true;
+        if(getPath().contains("/js")) return true;
+        if(getPath().contains("/fonts")) return true;
+        if(getPath().contains("/images")) return true;
         return false;
     }
 
     public boolean checkHtmlResource() {
-        return getUri().getPath().endsWith(".html");
+        return getPath().endsWith(".html");
     }
 
     public boolean checkDynamic() {
