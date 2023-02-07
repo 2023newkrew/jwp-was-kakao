@@ -21,7 +21,7 @@ public class RequestHandler implements Runnable {
             .statusCode(StatusCode.NOT_FOUND).build();
 
     private Socket connection;
-    private Map<Request, Method> map;
+    private Map<PathPattern, Method> map;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -30,7 +30,7 @@ public class RequestHandler implements Runnable {
 
     private void initMap() {
         map = MethodAnnotationScanner.getInstance().getMethods(Controller.class, Mapping.class).stream()
-                .collect(Collectors.toMap(it -> Request.from(it.getAnnotation(Mapping.class)), it -> it));
+                .collect(Collectors.toMap(it -> PathPattern.from(it.getAnnotation(Mapping.class)), it -> it));
     }
 
     public void run() {
@@ -49,7 +49,10 @@ public class RequestHandler implements Runnable {
 
     private Optional<Response> body(Request request) {
         try {
-            return (Optional<Response>) map.get(request).invoke(null);
+            if(map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)){
+                return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, request.getParams());
+            }
+            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null);
         } catch (Exception e) {
             return Optional.ofNullable(null);
         }

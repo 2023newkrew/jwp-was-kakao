@@ -1,17 +1,18 @@
 package annotation;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
-@EqualsAndHashCode
 @Getter
 public class Request {
     private final RequestMethod method;
     private final String path;
+    private final Map<String, String> params;
 
-    public static Request from(Mapping mapping) {
-        return new Request(mapping.method(), mapping.path());
+    public PathPattern toPathPattern() {
+        return PathPattern.of(method, path);
     }
 }

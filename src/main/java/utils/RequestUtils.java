@@ -15,9 +15,9 @@ public class RequestUtils {
         try{
             String requestLine = reader.readLine();
             String method = requestLine.split(" ")[0];
-            String path = requestLine.split(" ")[1];
+            PathParamsParser pathParamsParser = new PathParamsParser(requestLine.split(" ")[1]);
 
-            return new Request(RequestMethod.valueOf(method), path);
+            return new Request(RequestMethod.valueOf(method), pathParamsParser.getPath(), pathParamsParser.getParams());
         }catch(IOException e){
 
         }

@@ -3,10 +3,12 @@ package controller;
 import annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.UserService;
 import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -68,5 +70,16 @@ public class MainController {
                 .statusCode(StatusCode.OK)
                 .contentType("text/html;charset=utf-8")
                 .body("Hello world".getBytes()).build());
+    }
+
+    @QueryString
+    @Mapping(method = RequestMethod.GET, path="/user/create")
+    public static Optional<Response> createUser(Map<String,String> params){
+        Long id = UserService.createUser(params);
+        return Optional.of(Response.builder()
+                .version(Version.HTTP_1_1)
+                .statusCode(StatusCode.CREATED)
+                .location("/user/"+id)
+                .build());
     }
 }

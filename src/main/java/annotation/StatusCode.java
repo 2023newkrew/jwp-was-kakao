@@ -2,6 +2,7 @@ package annotation;
 
 public enum StatusCode {
     OK(200, "OK"),
+    CREATED(201, "CREATED"),
     NOT_FOUND(404, "NOT_FOUND");
 
     private int code;
@@ -12,6 +13,7 @@ public enum StatusCode {
         this.description = description;
     }
 
+    @Override
     public String toString() {
         return String.format("%d %s", code, description);
     }
