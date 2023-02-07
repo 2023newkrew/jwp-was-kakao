@@ -1,7 +1,8 @@
 package webserver.handler;
 
-import db.DataBase;
 import model.User;
+import repository.MemoryUserRepository;
+import repository.UserRepository;
 import webserver.request.Request;
 import webserver.response.Response;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 public class CreateUserHandler implements Handler {
 
     private final String REDIRECT_LOCATION = "/index.html";
+    private final UserRepository userRepository = new MemoryUserRepository();
 
     @Override
     public Response apply(Request request) {
@@ -20,7 +22,7 @@ public class CreateUserHandler implements Handler {
                 .name(queryStringMap.get("name"))
                 .email(queryStringMap.get("email"))
                 .build();
-        DataBase.addUser(user);
+        userRepository.save(user);
         return Response.found(new byte[0], request.getRequestFileType(), REDIRECT_LOCATION);
     }
 }
