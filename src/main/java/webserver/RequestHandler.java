@@ -41,11 +41,11 @@ public class RequestHandler implements Runnable {
         String path = request.getPath();
         FileType fileType = request.findRequestedFileType();
 
-        if (fileType == FileType.HTML || fileType == FileType.ICO) {
+        if (fileType.isTemplatePath()) {
             return Response.ok(FileIoUtils.loadFileFromClasspath("./templates" + path), fileType);
         }
 
-        if (fileType == FileType.CSS || fileType == FileType.JS || fileType.isFont()) {
+        if (fileType.isStaticPath()) {
             return Response.ok(FileIoUtils.loadFileFromClasspath("./static" + path), fileType);
         }
 

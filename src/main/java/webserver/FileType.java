@@ -33,6 +33,14 @@ public enum FileType {
         return contentType;
     }
 
+    public boolean isTemplatePath() {
+        return this.equals(HTML) || this.equals(ICO);
+    }
+
+    public boolean isStaticPath() {
+        return this.equals(CSS) || this.equals(JS) || isFont();
+    }
+
     public boolean isFont() {
         return this.equals(EOT) || this.equals(SVG) || this.equals(TTF) || this.equals(WOFF) || this.equals(WOFF2);
     }
