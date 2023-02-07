@@ -7,4 +7,5 @@ public interface Controller {
 
     Response handleRequest(Request request);
 
+    boolean canHandle(String uri);
 }

@@ -1,6 +1,6 @@
 package controller;
 
-import annotation.RequestMap;
+import annotation.MyRequestMapping;
 import db.DataBase;
 import model.User;
 import request.Request;
@@ -20,19 +20,22 @@ public final class UserController implements Controller {
     private static class LazyHolder {
         public static final UserController INSTANCE = new UserController();
     }
+    private UserController() {
+        List<Method> methodList = List.of(this.getClass().getMethods());
+        for (Method method: methodList) {
+            MyRequestMapping myRequestMapping = method.getAnnotation(MyRequestMapping.class);
+            if (myRequestMapping != null) {
+                map.put(myRequestMapping.uri(), method);
+            }
+        }
+    }
 
     public static UserController getInstance() {
         return LazyHolder.INSTANCE;
     }
 
-    private UserController() {
-        List<Method> methodList = List.of(this.getClass().getMethods());
-        for (Method method: methodList) {
-            RequestMap requestMap = method.getAnnotation(RequestMap.class);
-            if (requestMap != null) {
-                map.put(requestMap.uri(), method);
-            }
-        }
+    public boolean canHandle(String uri) {
+        return map.containsKey(uri);
     }
 
     @Override
@@ -44,12 +47,12 @@ public final class UserController implements Controller {
         }
     }
 
-    @RequestMap(uri = "/")
+    @MyRequestMapping(uri = "/")
     public Response handleRootPage(Request request) {
         return Response.ok().contentType(ContentType.HTML).body("Hello world").build();
     }
 
-    @RequestMap(uri = "/user/create")
+    @MyRequestMapping(uri = "/user/create")
     public Response handleUserCreate(Request request) {
         User user = User.from(request.getRequestParams());
         DataBase.addUser(user);
