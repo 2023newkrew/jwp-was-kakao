@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import org.springframework.http.HttpStatus;
 import webserver.handler.HandlerMapping;
 import webserver.request.HttpRequest;
 
@@ -55,10 +54,7 @@ public class RequestHandler implements Runnable {
             byte[] body = loadFileFromRequestTarget(requestTarget);
             String[] splitTarget = requestTarget.split("\\.");
             FilenameExtension extension = FilenameExtension.from(splitTarget[splitTarget.length - 1]);
-            HttpResponse response = new HttpResponse(HttpStatus.OK, body);
-            response.setContentType(extension.getContentType());
-            response.setContentLength(body.length);
-            return response;
+            return HttpResponse.ok(body, extension);
         }
         return HandlerMapping.handle(request);
     }

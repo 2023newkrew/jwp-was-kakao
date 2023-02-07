@@ -5,7 +5,7 @@ import static webserver.request.HttpRequestLine.parseQueryParameters;
 import db.DataBase;
 import java.util.Map;
 import model.User;
-import org.springframework.http.HttpStatus;
+import webserver.FilenameExtension;
 import webserver.request.HttpRequest;
 import webserver.HttpResponse;
 
@@ -23,10 +23,6 @@ public class CreateUserHandler implements Handler {
                         queryParameters.get("name"),
                         queryParameters.get("email"))
         );
-
-        HttpResponse response = new HttpResponse(HttpStatus.FOUND);
-        response.addHeader("Location", "/index.html");
-        return response;
-
+        return HttpResponse.found(new byte[0], FilenameExtension.from(""), "/index.html");
     }
 }

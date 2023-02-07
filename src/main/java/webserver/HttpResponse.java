@@ -9,38 +9,39 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 public class HttpResponse {
-
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-
     private final HttpStatus status;
-    private final Map<String, String> headers = new LinkedHashMap<>();
+    private final Map<String, String> header;
     private final byte[] body;
 
-    public HttpResponse(HttpStatus status) {
-        this(status, new byte[0]);
-    }
-
-    public HttpResponse(HttpStatus status, byte[] body) {
+    public HttpResponse(HttpStatus status, Map<String, String> header, byte[] body) {
         this.status = status;
+        this.header = header;
         this.body = body;
     }
 
-    public void setContentType(String typeOfBodyContent) {
-        headers.put("Content-Type", typeOfBodyContent + ";charset=utf-8");
+    public static HttpResponse ok(byte[] body, FilenameExtension extension) {
+        return new HttpResponse(HttpStatus.OK, createHeader(body, extension), body);
+    }
+    public static HttpResponse found(byte[] body, FilenameExtension extension, String location) {
+        Map<String, String> header = createHeader(body, extension);
+        header.put("Location", location);
+        return new HttpResponse(HttpStatus.FOUND, header, body);
     }
 
-    public void setContentLength(int lengthOfBodyContent) {
-        headers.put("Content-Length", String.valueOf(lengthOfBodyContent));
+    private static Map<String, String> createHeader(byte[] body, FilenameExtension extension) {
+        Map<String, String> header = new LinkedHashMap<>();
+        header.put("Content-Type", extension.getContentType() + ";charset=utf-8");
+        if (body.length > 0) {
+            header.put("Content-Length", String.valueOf(body.length));
+        }
+        return header;
     }
-
-    public void addHeader(String key, String value) {
-        headers.put(key, value);
-    }
-
+    
     public void writeResponse(DataOutputStream dos) throws IOException{
         try {
             dos.writeBytes(getResponseLine());
-            headers.forEach((key, value) -> writeLine(dos, key + ": " + value + " \r\n"));
+            header.forEach((key, value) -> writeLine(dos, key + ": " + value + " \r\n"));
             dos.writeBytes("\r\n");
 
             dos.write(body, 0, body.length);
