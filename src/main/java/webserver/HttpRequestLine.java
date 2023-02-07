@@ -29,7 +29,7 @@ public class HttpRequestLine {
         String[] tokens = stringStartLine.split(" ");
         httpMethod = HttpMethod.resolve(tokens[0]);
         if (httpMethod == null) {
-            throw new RuntimeException("올바른 HTTP Method Type이 아닙니다."); // Todo
+            throw new RuntimeException("올바른 HTTP Method Type이 아닙니다.");
         }
         String requestUri = tokens[1].trim();
         requestPath = requestUri.split("\\?")[0];

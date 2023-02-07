@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import webserver.enums.FilenameExtension;
 
 public class RequestHandler implements Runnable {
 
