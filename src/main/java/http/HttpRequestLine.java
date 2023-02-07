@@ -2,6 +2,7 @@ package http;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class HttpRequestLine {
@@ -10,7 +11,7 @@ public class HttpRequestLine {
     private final String httpVersion;
     private final Map<String, String> params;
 
-    private HttpRequestLine(String method, URI uri, String httpVersion) {
+    protected HttpRequestLine(String method, URI uri, String httpVersion) {
         this.method = method;
         this.uri = uri;
         this.httpVersion = httpVersion;
@@ -38,5 +39,28 @@ public class HttpRequestLine {
         return new HttpRequestLine(
                 lines[0], URI.create(lines[1]), lines[2]
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HttpRequestLine that = (HttpRequestLine) o;
+        return Objects.equals(method, that.method) && Objects.equals(uri, that.uri) && Objects.equals(httpVersion, that.httpVersion) && Objects.equals(params, that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(method, uri, httpVersion, params);
+    }
+
+    @Override
+    public String toString() {
+        return "HttpRequestLine{" +
+                "method='" + method + '\'' +
+                ", uri=" + uri +
+                ", httpVersion='" + httpVersion + '\'' +
+                ", params=" + params +
+                '}';
     }
 }

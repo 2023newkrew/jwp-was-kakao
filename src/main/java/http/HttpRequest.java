@@ -1,6 +1,7 @@
 package http;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
 public class HttpRequest {
@@ -60,5 +61,27 @@ public class HttpRequest {
 
     public boolean checkDynamic() {
         return !checkHtmlResource() && !checkStaticResource();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HttpRequest request = (HttpRequest) o;
+        return Objects.equals(httpRequestLine, request.httpRequestLine) && Objects.equals(httpRequestHeader, request.httpRequestHeader) && Objects.equals(httpRequestBody, request.httpRequestBody);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(httpRequestLine, httpRequestHeader, httpRequestBody);
+    }
+
+    @Override
+    public String toString() {
+        return "HttpRequest{" +
+                "httpRequestLine=" + httpRequestLine +
+                ", httpRequestHeader=" + httpRequestHeader +
+                ", httpRequestBody=" + httpRequestBody +
+                '}';
     }
 }
