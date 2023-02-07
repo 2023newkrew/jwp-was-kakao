@@ -4,9 +4,10 @@ import org.springframework.util.AntPathMatcher;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Map;
@@ -22,23 +23,25 @@ public class FrontController {
     private static final String STATIC = "./static";
     private static final String TEMPLATES = "./templates";
 
-    public void service(BufferedReader bufferedReader, DataOutputStream dos) throws IOException, URISyntaxException {
-        HttpRequest httpRequest = new HttpRequest(bufferedReader);
+    public void service(InputStream inputStream, OutputStream outputStream) throws IOException, URISyntaxException {
+        try (DataOutputStream dos = new DataOutputStream(outputStream)) {
+            HttpRequest httpRequest = new HttpRequest(inputStream);
 
-        if (httpRequest.getMethod().equals("POST")) {
-            PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
-            String location = postMethodController.process(httpRequest);
-            response302(dos, location);
-            return;
+            if (httpRequest.getMethod().equals("POST")) {
+                PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
+                String location = postMethodController.process(httpRequest);
+                response302(dos, location);
+                return;
+            }
+
+            String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
+                    .map(str -> str.split(",")[0])
+                    .orElse("text/html;charset=utf-8");
+
+            byte[] body = loadBody(httpRequest.getUrl());
+
+            response200(dos, contentType, body);
         }
-
-        String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
-                .map(str -> str.split(",")[0])
-                .orElse("text/html;charset=utf-8");
-
-        byte[] body = loadBody(httpRequest.getUrl());
-
-        response200(dos, contentType, body);
     }
 
     private byte[] loadBody(String requestUrl) throws IOException, URISyntaxException {

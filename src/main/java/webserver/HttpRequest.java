@@ -4,14 +4,16 @@ import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class HttpRequest {
-    private BufferedReader bufferedReader;
-    private final RequestParser requestParser = new RequestParser();
+    private final InputStream inputStream;
+    private final RequestParser requestParser;
 
     private String method;
     private String url;
@@ -23,8 +25,9 @@ public class HttpRequest {
     private String contentType;
     private Map<String, String> parameterMap = new HashMap<>();
 
-    public HttpRequest(BufferedReader bufferedReader) {
-        this.bufferedReader = bufferedReader;
+    public HttpRequest(InputStream inputStream) {
+        this.inputStream = inputStream;
+        this.requestParser = new RequestParser();
         requestParser.parse();
     }
 
@@ -45,6 +48,8 @@ public class HttpRequest {
     }
 
     private class RequestParser {
+        private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
         private void parse() {
             try {
                 parseStartLine();
