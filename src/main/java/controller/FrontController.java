@@ -30,13 +30,13 @@ public class FrontController {
         return frontController;
     }
 
-    public CustomHttpResponse getHttpResponse(CustomHttpRequest request) {
+    public CustomHttpResponse getHttpResponse(CustomHttpRequest request) throws NoSuchMethodException {
         BaseController controller = controllerMapping.getOrDefault(request.getUrl(), new ViewController());
         Method foundMethod = Arrays.stream(controller.getClass().getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
                         && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getUrl())
                         && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpMethod())
-                ).findFirst().orElseThrow(RuntimeException::new);
+                ).findFirst().orElseThrow(NoSuchMethodException::new);
 
         CustomHttpResponse response;
         try {
@@ -48,7 +48,7 @@ public class FrontController {
                 response = (CustomHttpResponse) foundMethod.invoke(controller);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("HttpResponse 생성에 실패했습니다.");
+            throw new UnsupportedResponseException("HttpResponse 생성에 실패했습니다.");
         }
         return response;
     }

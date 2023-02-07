@@ -1,8 +1,8 @@
 package webserver;
 
 import controller.FrontController;
-import model.CustomHttpRequest;
-import model.CustomHttpResponse;
+import model.http.CustomHttpRequest;
+import model.http.CustomHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpUtils;
@@ -32,6 +32,8 @@ public class RequestHandler implements Runnable {
             CustomHttpResponse response = FrontController.getInstance().getHttpResponse(request);
             HttpUtils.respond(dos, response);
         } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (NoSuchMethodException e) {
             logger.error(e.getMessage());
         }
     }
