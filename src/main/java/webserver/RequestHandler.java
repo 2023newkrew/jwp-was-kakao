@@ -54,15 +54,15 @@ public class RequestHandler implements Runnable {
         try {
             return doHandleHttpRequest(request);
         } catch (ResourceNotFoundException e) {
-            return HttpResponse.of(HttpStatus.NOT_FOUND, ContentType.JSON, "Resource Not Found".getBytes());
+            return HttpResponse.of(HttpStatus.NOT_FOUND, ContentType.JSON, "Resource Not Found");
         } catch (IOException e) {
-            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Connection Error".getBytes());
+            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Connection Error");
         } catch (URISyntaxException e) {
-            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
+            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format");
         } catch (InvalidQueryParameterException e) {
-            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
+            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter");
         } catch (Exception e) {
-            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
+            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error");
         }
 
     }

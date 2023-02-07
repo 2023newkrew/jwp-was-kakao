@@ -10,27 +10,27 @@ public class HttpResponse {
 
     private HttpStatus status;
     private HttpResponseHeader headers;
-    private byte[] body;
+    private String body;
 
-    private HttpResponse(HttpStatus status, HttpResponseHeader headers, byte[] body) {
+    private HttpResponse(HttpStatus status, HttpResponseHeader headers, String body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
     }
 
-    public static HttpResponse of(HttpStatus status, ContentType contentType, byte[] body) {
-        return new HttpResponse(status, HttpResponseHeader.of(status, contentType, body.length), body);
+    public static HttpResponse of(HttpStatus status, ContentType contentType, String body) {
+        return new HttpResponse(status, HttpResponseHeader.of(status, contentType, body.getBytes().length), body);
     }
 
     public static HttpResponse create302FoundResponse(String redirectURI) {
-        return new HttpResponse(HttpStatus.FOUND, HttpResponseHeader.create302FoundHeader(redirectURI), new byte[0]);
+        return new HttpResponse(HttpStatus.FOUND, HttpResponseHeader.create302FoundHeader(redirectURI), null);
     }
 
     public HttpResponseHeader getHeaders() {
         return headers;
     }
 
-    public byte[] getBody() {
+    public String getBody() {
         return body;
     }
 
@@ -47,7 +47,7 @@ public class HttpResponse {
     }
 
     private void writeBodyToOutputStream(DataOutputStream dos) throws IOException {
-        dos.write(body, 0, body.length);
+        dos.write(body.getBytes(), 0, body.getBytes().length);
         dos.flush();
     }
 }

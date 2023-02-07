@@ -20,6 +20,6 @@ public class HomeController {
     }
 
     public HttpResponse rootPathGet(HttpRequest request) {
-        return HttpResponse.of(HttpStatus.OK, ContentType.HTML, "Hello world".getBytes());
+        return HttpResponse.of(HttpStatus.OK, ContentType.HTML, "Hello world");
     }
 }
