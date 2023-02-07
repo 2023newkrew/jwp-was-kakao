@@ -13,11 +13,19 @@ public class HttpRequestHeader {
 
     public HttpRequestHeader(Map<String, String> headers) {
         this.headers = headers;
-        this.cookie = HttpCookie.from(headers.getOrDefault(COOKIE, ""));
+        this.cookie = parseCookieFromHeader();
     }
 
     public Optional<Integer> getContentLength() {
         return Optional.ofNullable(headers.get(CONTENT_LENGTH))
                 .map(Integer::parseInt);
+    }
+
+    private HttpCookie parseCookieFromHeader() {
+        String cookieHeader = headers.get(COOKIE);
+        if (cookieHeader == null) {
+            return null;
+        }
+        return HttpCookie.from(cookieHeader);
     }
 }
