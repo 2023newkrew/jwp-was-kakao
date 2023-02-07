@@ -21,9 +21,9 @@ public class RequestHandler implements Runnable {
     private final Socket connection;
     private final HandlerMapping handlerMapping;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, HandlerMapping handlerMapping) {
         this.connection = connectionSocket;
-        this.handlerMapping = new HandlerMapping();
+        this.handlerMapping = handlerMapping;
     }
 
     public void run() {

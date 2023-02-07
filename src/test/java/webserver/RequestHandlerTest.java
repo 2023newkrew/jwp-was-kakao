@@ -1,6 +1,7 @@
 package webserver;
 
 import org.junit.jupiter.api.Test;
+import support.StubRequestHandler;
 import support.StubSocket;
 import utils.IOUtils;
 import web.RequestHandler;
@@ -13,7 +14,7 @@ class RequestHandlerTest {
     void 기본_경로_접근_시_평문_응답이_반환된다() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket);
+        final var handler = new StubRequestHandler(socket);
 
         // when
         handler.run();
@@ -40,7 +41,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new StubRequestHandler(socket);
 
         // when
         handler.run();
@@ -66,7 +67,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new StubRequestHandler(socket);
 
         // when
         handler.run();
@@ -92,10 +93,10 @@ class RequestHandlerTest {
                 "Content-Type: application/x-www-form-urlencoded ",
                 "Accept: */* ",
                 "",
-                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+                "userId=eddie&password=1234&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new StubRequestHandler(socket);
 
         // when
         handler.run();
@@ -107,5 +108,36 @@ class RequestHandlerTest {
         );
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void 로그인_시_헤더의_쿠키_필드에_세션_아이디가_추가된다() {
+        // given
+        회원가입_시_인덱스_페이지로_리다이렉트된다();
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 26 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=eddie&password=1234");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new StubRequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Set-Cookie: JSESSIONID=UUID; Path=/ ",
+                "Location: /index.html "
+        );
+
+        assertThat(socket.output()).isEqualTo(expected);
+
     }
 }
