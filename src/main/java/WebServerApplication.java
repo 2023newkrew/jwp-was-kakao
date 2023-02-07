@@ -1,7 +1,9 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.ForkJoinPoolUtil;
+import utils.ForkJoinPoolUtils;
+import utils.UUIDGenerator;
 import web.RequestHandler;
+import web.controller.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,12 +18,22 @@ public class WebServerApplication {
 
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
+            HandlerMapping handlerMapping = createHandlerMapping();
 
             Socket connection;
             while ((connection = listenSocket.accept()).isConnected()) {
-                ForkJoinPoolUtil.execute(new RequestHandler(connection));
+                ForkJoinPoolUtils.execute(new RequestHandler(connection, handlerMapping));
             }
         }
+    }
+
+    private static HandlerMapping createHandlerMapping() {
+        return HandlerMapping.of(
+                new DefaultController(),
+                new GetResourceController(),
+                new PostSignInController(),
+                new PostLoginController(new UUIDGenerator())
+        );
     }
 
     private static int getPort(String[] args) {
