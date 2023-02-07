@@ -1,30 +1,41 @@
 package controller;
 
+import controller.annotation.CustomRequestBody;
 import controller.annotation.CustomRequestMapping;
+import controller.annotation.CustomRequestParams;
 import db.DataBase;
-import model.CustomHttpMethod;
-import model.CustomHttpRequest;
-import model.CustomHttpResponse;
-import model.User;
-
-import java.util.HashMap;
-import java.util.Map;
+import model.*;
+import model.http.CustomHttpHeader;
+import model.http.CustomHttpMethod;
+import model.http.CustomHttpResponse;
+import model.http.CustomHttpStatus;
 
 public class UserController extends BaseController {
 
     @CustomRequestMapping(url = "/user/create", httpMethod = CustomHttpMethod.POST)
-    public CustomHttpResponse create(CustomHttpRequest request) {
-        User user = new User(
-                request.getQuery().get("userId"),
-                request.getQuery().get("password"),
-                request.getQuery().get("name"),
-                request.getQuery().get("email")
-        );
+    public CustomHttpResponse createPOST(@CustomRequestBody User user) {
         DataBase.addUser(user);
-        Map<String, String> headers = new HashMap<>();
+        CustomHttpHeader headers = new CustomHttpHeader();
         headers.put("Content-Type", "text/html;charset=utf-8");
         headers.put("Location", "/index.html");
-        return new CustomHttpResponse("HTTP/1.1 302 FOUND", headers, "");
+        return new CustomHttpResponse.Builder()
+                .httpStatus(CustomHttpStatus.FOUND)
+                .headers(headers)
+                .body("")
+                .build();
+    }
+
+    @CustomRequestMapping(url = "/user/create", httpMethod = CustomHttpMethod.GET)
+    public CustomHttpResponse createGET(@CustomRequestParams User user) {
+        DataBase.addUser(user);
+        CustomHttpHeader headers = new CustomHttpHeader();
+        headers.put("Content-Type", "text/html;charset=utf-8");
+        headers.put("Location", "/index.html");
+        return new CustomHttpResponse.Builder()
+                .httpStatus(CustomHttpStatus.FOUND)
+                .headers(headers)
+                .body("")
+                .build();
     }
 
 }
