@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ResponseUtil {
+public class ResponseUtils {
 
     public static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {

@@ -1,9 +1,9 @@
 package webserver;
 
 import supports.HttpParser;
-import supports.UserDao;
+import supports.UserService;
 import utils.FileIoUtils;
-import utils.ResponseUtil;
+import utils.ResponseUtils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -22,10 +22,10 @@ public class PathBinder {
     private static final String USER_CREATE_URL = "/user/create";
     private static final String INDEX_PATH = "/index.html";
 
-    private final UserDao userDao;
+    private final UserService userService;
 
     public PathBinder() {
-        userDao = new UserDao();
+        userService = new UserService();
     }
 
     public void bind(String path, OutputStream out, BufferedReader br, HttpParser httpParser) throws IOException, URISyntaxException {
@@ -37,13 +37,13 @@ public class PathBinder {
         body = bindTemplates(path, body, dos);
         bindCreateUser(path, br, httpParser, dos);
 
-        ResponseUtil.responseBody(dos, body);
+        ResponseUtils.responseBody(dos, body);
     }
 
     private byte[] bindTemplates(String path, byte[] body, DataOutputStream dos) throws IOException, URISyntaxException {
         if (path.endsWith(HTML)) {
             body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-            ResponseUtil.response200Header(dos, body.length, path);
+            ResponseUtils.response200Header(dos, body.length, path);
         }
         return body;
     }
@@ -54,15 +54,15 @@ public class PathBinder {
                 path.startsWith(IMAGES) ||
                 path.startsWith(JS)) {
             body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + path);
-            ResponseUtil.response200Header(dos, body.length, path);
+            ResponseUtils.response200Header(dos, body.length, path);
         }
         return body;
     }
 
     private void bindCreateUser(String path, BufferedReader br, HttpParser httpParser, DataOutputStream dos) throws IOException {
         if (path.startsWith(USER_CREATE_URL)) {
-            userDao.saveUser(br, httpParser);
-            ResponseUtil.response302Header(dos, INDEX_PATH);
+            userService.saveUser(br, httpParser);
+            ResponseUtils.response302Header(dos, INDEX_PATH);
         }
     }
 }

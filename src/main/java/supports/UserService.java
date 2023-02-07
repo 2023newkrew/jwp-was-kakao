@@ -2,23 +2,23 @@ package supports;
 
 import db.DataBase;
 import model.User;
-import utils.IOUtils;
+import utils.IoUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class UserDao {
+public class UserService {
 
     private static final String AND = "&";
     private static final String EQUAL = "=";
 
-    public UserDao() {
+    public UserService() {
     }
 
     public void saveUser(BufferedReader br, HttpParser httpParser) throws IOException {
         Integer contentLength = httpParser.getContentLength();
-        String userBody = IOUtils.readData(br, contentLength);
+        String userBody = IoUtils.readData(br, contentLength);
         HashMap<String, String> queryParam = parseQueryParameter(userBody);
 
         User user = new User(
