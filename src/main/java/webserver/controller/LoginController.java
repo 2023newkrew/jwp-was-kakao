@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static constant.HeaderConstant.*;
-import static constant.SessionUUID.USER_SESSION_UUID;
+import static constant.SessionUUID.*;
 import static java.util.UUID.randomUUID;
 import static utils.ResponseUtils.*;
 

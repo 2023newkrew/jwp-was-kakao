@@ -14,10 +14,8 @@ import java.util.HashMap;
 
 import static constant.DefaultConstant.*;
 import static constant.HeaderConstant.*;
-import static constant.PathConstant.STATIC;
-import static constant.PathConstant.TEMPLATES;
-import static utils.FileIoUtils.getStaticFolderNames;
-import static utils.FileIoUtils.loadFileFromClasspath;
+import static constant.PathConstant.*;
+import static utils.FileIoUtils.*;
 import static utils.ResponseUtils.*;
 
 @UtilityClass

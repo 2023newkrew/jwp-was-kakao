@@ -4,17 +4,17 @@ import java.util.Collections;
 import java.util.Map;
 
 public class QueryParams {
-    private final Map queryParams;
+    private final Map<String, String> queryParams;
 
-    public Map getQueryParams() {
+    public Map<String, String> getQueryParams() {
         return Collections.unmodifiableMap(queryParams);
     }
 
-    private QueryParams(Map queryString) {
+    private QueryParams(Map<String, String> queryString) {
         this.queryParams = queryString;
     }
 
-    public static QueryParams of(Map queryString) {
+    public static QueryParams of(Map<String, String> queryString) {
         return new QueryParams(queryString);
     }
 }

@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static constant.DefaultConstant.DEFAULT_VIEW_FILE_TYPE;
-import static constant.PathConstant.TEMPLATES;
+import static constant.DefaultConstant.*;
+import static constant.PathConstant.*;
 
 @UtilityClass
 public class TemplateUtils {

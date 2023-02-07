@@ -1,8 +1,9 @@
 package model.response;
 
-import model.request.RequestHeader;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ResponseHeader {
     private final LinkedHashMap<String, String> headers;
@@ -15,7 +16,7 @@ public class ResponseHeader {
         this.headers = (LinkedHashMap<String, String>) headers;
     }
 
-    public static ResponseHeader of(Map map) {
+    public static ResponseHeader of(Map<String, String> map) {
         return new ResponseHeader(map);
     }
 

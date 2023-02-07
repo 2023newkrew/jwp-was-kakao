@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 import static constant.DefaultConstant.*;
 
 @Getter
@@ -16,7 +18,7 @@ public class HttpRequest {
     private String protocol;
     private String URL;
     private QueryParams queryParams;
-    private RequestHeader header;
+    private RequestHeaders headers;
     private RequestBody body;
 
     public String findBodyValue(String key, String defaultValue) {
@@ -24,7 +26,7 @@ public class HttpRequest {
     }
 
     public String findHeaderValue(String key, String defaultValue) {
-        return header.getHeaders().getOrDefault(key, defaultValue);
+        return headers.getHeaders().getOrDefault(key, defaultValue);
     }
     public boolean methodAndURLEquals(Api annotation) {
         return method.equals(annotation.method()) && URL.equals(annotation.url());
@@ -32,5 +34,16 @@ public class HttpRequest {
 
     public boolean isNotDefaultURL() {
         return !URL.equals(DEFAULT_URL);
+    }
+
+    public HttpRequest (HttpRequestFirstLineProperties firstLineProperties,
+                        RequestHeaders requestHeaders,
+                        RequestBody requestBody) {
+        this.method = firstLineProperties.getHttpMethod();
+        this.protocol = firstLineProperties.getHttpProtocol();
+        this.URL = firstLineProperties.getURL();
+        this.queryParams = firstLineProperties.getQueryParams();
+        this.headers = requestHeaders;
+        this.body = requestBody;
     }
 }

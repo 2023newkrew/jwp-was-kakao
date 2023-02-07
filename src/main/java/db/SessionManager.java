@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.util.HashMap;
 import java.util.Map;
 
-import static constant.SessionUUID.USER_SESSION_UUID;
+import static constant.SessionUUID.*;
 
 @UtilityClass
 public class SessionManager {

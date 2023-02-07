@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static constant.PathConstant.STATIC;
+import static constant.PathConstant.*;
 
 @UtilityClass
 public class FileIoUtils {
