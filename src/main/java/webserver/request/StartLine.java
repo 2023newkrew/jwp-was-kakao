@@ -1,10 +1,11 @@
-package webserver;
+package webserver.request;
 
 import java.util.Map;
 import lombok.Builder;
+import webserver.ResourceType;
 
 @Builder
-public class RequestHeader {
+public class StartLine {
 
     private HttpMethod httpMethod;
 
@@ -14,15 +15,13 @@ public class RequestHeader {
 
     private String httpVersion;
 
-    private Map<String, String> headers;
 
-    public RequestHeader(HttpMethod httpMethod, String url, Map<String, String> queryParams, String httpVersion,
-        Map<String, String> headers) {
+    public StartLine(HttpMethod httpMethod, String url, Map<String, String> queryParams, String httpVersion) {
         this.httpMethod = httpMethod;
         this.url = url;
         this.queryParams = queryParams;
         this.httpVersion = httpVersion;
-        this.headers = headers;
+
     }
 
     public HttpMethod getHttpMethod() {
@@ -41,15 +40,8 @@ public class RequestHeader {
         return httpVersion;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public String convertToAbsolutePath(ResourceType resourceType) {
+        return resourceType.getPath() + url;
     }
 
-    public void convertToAbsolutePath(ResourceType resourceType) {
-        url = resourceType.getPath() + url;
-    }
-
-    public boolean hasContentLength() {
-        return headers.containsKey("Content-Length");
-    }
 }

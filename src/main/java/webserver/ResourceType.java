@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import webserver.request.Request;
 
 @RequiredArgsConstructor
 public enum ResourceType {
@@ -20,7 +21,7 @@ public enum ResourceType {
     }
 
     public static ResourceType getResourceType(Request request) {
-        String[] splitedUrl = request.getHeader().getUrl().split("\\.");
+        String[] splitedUrl = request.getStartLine().getUrl().split("\\.");
         String requestExtension = splitedUrl[splitedUrl.length - 1];
 
         return Arrays.stream(ResourceType.values())

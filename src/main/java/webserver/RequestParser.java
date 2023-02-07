@@ -1,54 +1,49 @@
 package webserver;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import webserver.request.HttpMethod;
+import webserver.request.StartLine;
 
 public class RequestParser {
-    public static RequestHeader parseHeader(List<String> request) {
-        RequestHeader.RequestHeaderBuilder requestHeaderBuilder = RequestHeader.builder();
-        ListIterator<String> iterator = request.listIterator();
 
-        extractStartLine(requestHeaderBuilder, iterator);
-        extractHeader(requestHeaderBuilder, iterator);
-
-        return requestHeaderBuilder.build();
-    }
-
-    private static void extractStartLine(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
-        String line = iterator.next();
+    public static StartLine extractStartLine(String line) {
         String[] startLine = line.split(" ");
         String[] splitedUrl = startLine[1].split("\\?");
         String url = splitedUrl[0];
         Map<String, String> queryParams = new HashMap<>();
         if (splitedUrl.length > 1) {
-            queryParams = extractQueryParams(splitedUrl[1]);
+            queryParams = extractBodyOrQueryParam(splitedUrl[1]);
         }
 
-        requestHeaderBuilder.httpMethod(HttpMethod.valueOf(startLine[0]))
-                .url(url)
-                .queryParams(queryParams)
-                .httpVersion(startLine[2]);
+        return StartLine.builder()
+            .httpMethod(HttpMethod.valueOf(startLine[0]))
+            .url(url)
+            .queryParams(queryParams)
+            .httpVersion(startLine[2]).build();
     }
 
-    private static Map<String, String> extractQueryParams(String params) {
-        Map<String, String> queryParams = new HashMap<>();
-        Arrays.stream(params.split("&"))
-                .forEach(v -> {
-                    String[] kv = v.split("=");
-                    queryParams.put(kv[0], kv[1]);
-                });
-
-        return queryParams;
-    }
-
-    private static void extractHeader(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
+    public static Map<String, String> extractHeader(List<String> headerList) {
         Map<String, String> headers = new HashMap<>();
-        String line;
-        while (iterator.hasNext()) {
-            line = iterator.next();
-            String[] splitedHeader = line.split(": ");
+        for (String header : headerList) {
+            String[] splitedHeader = header.split(": ");
             headers.put(splitedHeader[0], splitedHeader[1]);
         }
 
-        requestHeaderBuilder.headers(headers);
+        return headers;
+    }
+
+    public static Map<String, String> extractBodyOrQueryParam(String rawBody) {
+        Map<String, String> body = new HashMap<>();
+        if (rawBody != null) {
+            Arrays.stream(rawBody.split("&"))
+                .forEach(v -> {
+                    String[] kv = v.split("=");
+                    body.put(kv[0], kv[1]);
+                });
+        }
+        return body;
     }
 }

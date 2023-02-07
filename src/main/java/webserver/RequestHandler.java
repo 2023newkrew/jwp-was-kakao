@@ -2,18 +2,27 @@ package webserver;
 
 import controller.ControllerSelector;
 import dto.BaseResponseDto;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import utils.IOUtils;
-
-import java.io.*;
-import java.net.Socket;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import webserver.request.Request;
+import webserver.request.StartLine;
+import webserver.request.StatusCode;
+import webserver.response.Response;
 
 public class RequestHandler implements Runnable {
+
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
@@ -26,30 +35,14 @@ public class RequestHandler implements Runnable {
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+            connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-            // request 파싱
-            List<String> requestStrings = new ArrayList<>();
-            String s = bufferedReader.readLine();
-            while (s != null && !"".equals(s)) {
-                requestStrings.add(s);
-                s = bufferedReader.readLine();
-            }
-            RequestHeader requestHeader = RequestParser.parseHeader(requestStrings);
-
-            String body = "";
-            if (requestHeader.hasContentLength()) {
-                body = IOUtils.readData(bufferedReader, Integer.parseInt(requestHeader.getHeaders().get("Content-Length")));
-            }
-
-            Request request = new Request(requestHeader, body);
-
-            // response 생성
-            BaseResponseDto response = getResponse(request);
+            Request request = getRequest(bufferedReader);
+            Response response = getResponse(request);
 
             DataOutputStream dos = new DataOutputStream(out);
             responseHeader(dos, response);
@@ -61,31 +54,50 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private BaseResponseDto getResponse(Request request) throws IOException, URISyntaxException {
-        // 파일 확장자
-        if (request.getHeader().getHttpMethod().equals(HttpMethod.GET)) {
-            ResourceType resourceType = ResourceType.getResourceType(request);
-            if (resourceType != ResourceType.NONE) {
-                request.getHeader().convertToAbsolutePath(resourceType);
-                return new BaseResponseDto(StatusCode.OK,
-                        new String(FileIoUtils.loadFileFromClasspath(request.getHeader().getUrl())), request.getHeader().getHeaders().get("Accept").split(",")[0]);
-            }
-        }
+    private static Request getRequest(BufferedReader bufferedReader) throws IOException {
+        // readLine 파싱
+        String line = bufferedReader.readLine();
+        StartLine startLine = RequestParser.extractStartLine(line);
 
-        // path
-        return controllerSelector.runMethod(request);
+        //  HTTP 헤더 파싱
+        List<String> headerList = IOUtils.readUntilEmpty(bufferedReader);
+        Map<String, String> headers = RequestParser.extractHeader(headerList);
+
+        // HTTP body 파싱
+        String rawBody = null;
+        if (headers.containsKey("Content-Length")) {
+            rawBody = IOUtils.readData(bufferedReader, Integer.parseInt(headers.get("Content-Length")));
+        }
+        Map<String, String> body = RequestParser.extractBodyOrQueryParam(rawBody);
+        Request request = new Request(startLine, headers, body);
+        return request;
     }
 
-    private void responseHeader(DataOutputStream dos, BaseResponseDto response) {
-        StatusCode statusCode = response.getStatusCode();
-        int bodyLength = response.getBody().getBytes().length;
+    private Response getResponse(Request request) throws IOException, URISyntaxException {
+        String httpVersion = request.getStartLine().getHttpVersion();
+        ResourceType resourceType = ResourceType.getResourceType(request);
 
+        BaseResponseDto responseDto = null;
+        // rest api
+        if (resourceType == ResourceType.NONE) {
+            responseDto = controllerSelector.runMethod(request);
+        }
+        // 파일 확장자
+        if (resourceType == ResourceType.STATIC || resourceType == ResourceType.HTML) {
+            String absolutePath = request.getStartLine().convertToAbsolutePath(resourceType);
+            responseDto = new BaseResponseDto(StatusCode.OK,
+                new String(FileIoUtils.loadFileFromClasspath(absolutePath)));
+        }
+
+        return responseDto.convertToResponse(httpVersion, request.getAcceptContentType());
+    }
+
+    private void responseHeader(DataOutputStream dos, Response response) {
+        StatusCode statusCode = response.getStatusCode();
         try {
-            dos.writeBytes("HTTP/1.1 " + statusCode.getCodeNum() + " " + statusCode.getCodeMessage() + " \r\n");
-            dos.writeBytes("Content-Type: " + response.getContentType() + ";charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + bodyLength + " \r\n");
-            if (statusCode == StatusCode.FOUND) {
-                dos.writeBytes("Location: /index.html");
+            dos.writeBytes(response.getVersion() + " " + statusCode.getCodeNum() + " " + statusCode.getCodeMessage() + " \r\n");
+            for (Map.Entry<String, String> header : response.getHeaders().entrySet()) {
+                dos.writeBytes(header.getKey() + ": " + header.getValue() + " \r\n");
             }
             dos.writeBytes("\r\n");
         } catch (IOException e) {
