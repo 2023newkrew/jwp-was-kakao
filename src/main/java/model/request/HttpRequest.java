@@ -27,7 +27,7 @@ public class HttpRequest {
 
 
     public boolean isPOSTMethod() {
-        return this.method.equals(HttpMethod.POST);
+        return HttpMethod.POST.equals(this.method);
     }
 
     public String getContentType() {
