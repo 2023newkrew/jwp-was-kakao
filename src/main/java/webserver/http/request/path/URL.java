@@ -1,4 +1,4 @@
-package webserver.request.path;
+package webserver.http.request.path;
 
 public class URL {
     public static final String VARIABLE_DELIMITER = "\\?";

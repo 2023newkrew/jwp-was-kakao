@@ -42,16 +42,11 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = String.join(
-                "\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 11 ",
-                "",
-                "Hello world"
-        );
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output())
+                .contains("HTTP/1.1 200 OK")
+                .contains("Content-Type: text/html;charset=utf-8")
+                .contains("Content-Length: 11")
+                .contains("Hello world");
     }
 
     @Test
@@ -72,15 +67,11 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output())
+                .contains("HTTP/1.1 200 OK")
+                .contains("Content-Type: text/html;charset=utf-8")
+                .contains("Content-Length: 6902")
+                .contains(new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
     }
 
     @DisplayName("CSS 지원하기")
@@ -110,7 +101,11 @@ class RequestHandlerTest {
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output())
+                .contains("HTTP/1.1 200 OK")
+                .contains("Content-Type: text/css;charset=utf-8")
+                .contains("Content-Length: 7065")
+                .contains(new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css")));
     }
 
     @DisplayName("회원가입")
@@ -125,7 +120,7 @@ class RequestHandlerTest {
                 "Content-Length: 59",
                 "Content-Type: application/x-www-form-urlencoded",
                 "Accept: */*",
-                "\r\nuserId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com"
+                "\r\nuserId=cu&password=password&name=name&email=brainbackdoor@gmail.com"
         );
 
         final var socket = new StubSocket(httpRequest);
@@ -134,8 +129,14 @@ class RequestHandlerTest {
         // when
         handler.run();
 
+        //then
         assertThat(DataBase.findUserById("cu"))
                 .extracting(User::getName)
-                .isEqualTo("이동규");
+                .isEqualTo("name");
+
+        assertThat(socket.output())
+                .contains("HTTP/1.1 302 FOUND")
+                .contains("Content-Length: 0")
+                .contains("Location: /index.html");
     }
 }

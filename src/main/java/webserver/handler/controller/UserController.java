@@ -4,9 +4,11 @@ import db.DataBase;
 import model.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import webserver.request.Request;
-import webserver.request.path.PathVariables;
-import webserver.response.Response;
+import webserver.http.Headers;
+import webserver.http.request.Request;
+import webserver.http.request.path.PathVariables;
+import webserver.http.response.Response;
+import webserver.http.response.ResponseHeader;
 
 public class UserController extends Controller {
 
@@ -24,6 +26,12 @@ public class UserController extends Controller {
         );
         DataBase.addUser(user);
 
-        return new Response(HttpStatus.FOUND);
+        return new Response(new ResponseHeader(HttpStatus.FOUND, createHeaders()));
+    }
+
+    private static Headers createHeaders() {
+        var headers = new Headers();
+        headers.put("Location: /index.html");
+        return headers;
     }
 }

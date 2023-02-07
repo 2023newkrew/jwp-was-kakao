@@ -1,6 +1,8 @@
 package webserver.io;
 
-import webserver.response.Response;
+import webserver.http.content.Content;
+import webserver.http.response.Response;
+import webserver.http.response.ResponseHeader;
 
 import java.io.Closeable;
 import java.io.DataOutputStream;
@@ -16,10 +18,12 @@ public class ResponseWriter implements Closeable {
     }
 
     public void write(Response response) throws IOException {
-        ResponseHeader header = new ResponseHeader(response);
+        ResponseHeader header = response.getHeader();
+        Content body = response.getBody();
+
         dos.write(header.getBytes());
-        if (Objects.nonNull(response.getBody())) {
-            dos.write(response.getBytes());
+        if (Objects.nonNull(body)) {
+            dos.write(body.getBytes());
         }
     }
 

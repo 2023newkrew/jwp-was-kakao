@@ -1,6 +1,6 @@
 package webserver.handler.resolver.resource;
 
-import webserver.content.ContentType;
+import webserver.http.content.ContentType;
 
 import java.util.Arrays;
 

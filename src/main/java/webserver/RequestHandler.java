@@ -1,10 +1,10 @@
 package webserver;
 
 import webserver.handler.Handlers;
+import webserver.http.request.Request;
+import webserver.http.response.Response;
 import webserver.io.RequestReader;
 import webserver.io.ResponseWriter;
-import webserver.request.Request;
-import webserver.response.Response;
 
 import java.io.IOException;
 import java.net.Socket;

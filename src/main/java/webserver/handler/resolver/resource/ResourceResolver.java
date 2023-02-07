@@ -1,7 +1,7 @@
 package webserver.handler.resolver.resource;
 
-import webserver.content.Content;
 import webserver.handler.resolver.AbstractResolver;
+import webserver.http.content.Content;
 
 public class ResourceResolver extends AbstractResolver {
 

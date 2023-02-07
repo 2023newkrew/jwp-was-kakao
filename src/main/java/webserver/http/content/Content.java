@@ -1,4 +1,4 @@
-package webserver.content;
+package webserver.http.content;
 
 public class Content {
 

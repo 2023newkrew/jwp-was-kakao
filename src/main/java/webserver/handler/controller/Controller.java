@@ -1,8 +1,8 @@
 package webserver.handler.controller;
 
 import webserver.handler.Handler;
-import webserver.request.Request;
-import webserver.response.Response;
+import webserver.http.request.Request;
+import webserver.http.response.Response;
 
 import java.util.Objects;
 import java.util.function.Function;

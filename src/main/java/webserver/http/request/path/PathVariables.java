@@ -1,4 +1,4 @@
-package webserver.request.path;
+package webserver.http.request.path;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -17,7 +17,12 @@ public class PathVariables {
     private Map<String, String> parsePathVariable(String pathVariables) {
         return Arrays.stream(pathVariables.split(PARAM_DELIMITER))
                 .map(pathVariable -> pathVariable.split(VALUE_DELIMITER))
-                .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+                .collect(Collectors.toMap(arr -> arr[0], arr -> {
+                    if (arr.length < 2) {
+                        return "";
+                    }
+                    return arr[1];
+                }));
     }
 
     public String get(String key) {
