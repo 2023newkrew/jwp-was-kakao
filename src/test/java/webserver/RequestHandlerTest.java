@@ -5,14 +5,12 @@ import support.StubSocket;
 import utils.IOUtils;
 import web.RequestHandler;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
     @Test
-    void socket_out() {
+    void 기본_경로_접근_시_평문_응답이_반환된다() {
         // given
         final var socket = new StubSocket();
         final var handler = new RequestHandler(socket);
@@ -32,7 +30,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void index() throws IOException, URISyntaxException {
+    void 인덱스_페이지_접근_시_해당_리소스가_반환된다() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
@@ -58,7 +56,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void css() throws IOException, URISyntaxException {
+    void CSS_페이지_접근_시_해당_리소스가_반환된다() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /css/styles.css HTTP/1.1 ",
@@ -84,7 +82,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void signIn() {
+    void 회원가입_시_인덱스_페이지로_리다이렉트된다() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
