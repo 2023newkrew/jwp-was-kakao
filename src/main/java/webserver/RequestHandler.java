@@ -4,7 +4,9 @@ import controller.HomeController;
 import controller.StaticFileController;
 import controller.UserController;
 import enums.ContentType;
+import enums.RequestMethod;
 import exceptions.InvalidQueryParameterException;
+import exceptions.InvalidRequestException;
 import exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,7 @@ public class RequestHandler implements Runnable {
     private final HomeController homeController;
     private final UserController userController;
     private final StaticFileController staticFileController;
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -39,7 +41,7 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            HttpRequest request = IOUtils.parseReqeust(in);
+            HttpRequest request = IOUtils.parseRequest(in);
             HttpResponse response = handleHttpRequest(request);
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -55,6 +57,8 @@ public class RequestHandler implements Runnable {
             return doHandleHttpRequest(request);
         } catch (ResourceNotFoundException e) {
             return HttpResponse.status(HttpStatus.NOT_FOUND).contentType(ContentType.JSON).body("Resource Not Found");
+        } catch (InvalidRequestException e) {
+            return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body("Invalid Request Format");
         } catch (URISyntaxException e) {
             return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body("Wrong URI Format");
         } catch (InvalidQueryParameterException e) {
@@ -68,16 +72,16 @@ public class RequestHandler implements Runnable {
     }
 
     private HttpResponse doHandleHttpRequest(HttpRequest request) throws IOException, URISyntaxException {
-        String requestPath = request.getRequestPath();
+        String requestURL = request.getRequestURL();
 
-        if (requestPath.startsWith("/user/create") && "GET".equals(request.getRequestMethod())) {
+        if (requestURL.startsWith("/user/create") && request.getRequestMethod() == RequestMethod.GET) {
             return userController.createUserGet(request);
         }
-
-        if (requestPath.startsWith("/user/create") && "POST".equals(request.getRequestMethod())) {
+        if (requestURL.startsWith("/user/create") && request.getRequestMethod() == RequestMethod.POST) {
             return userController.createUserPost(request);
         }
-        if (requestPath.equals("/")) {
+
+        if (requestURL.equals("/") && request.getRequestMethod() == RequestMethod.GET) {
             return homeController.rootPathGet(request);
         }
 

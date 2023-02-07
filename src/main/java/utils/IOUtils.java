@@ -1,6 +1,8 @@
 package utils;
 
+import enums.RequestMethod;
 import exceptions.InvalidQueryParameterException;
+import exceptions.InvalidRequestException;
 import webserver.HttpRequest;
 import webserver.HttpRequestHeader;
 
@@ -9,10 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class IOUtils {
@@ -28,32 +27,53 @@ public class IOUtils {
         return String.copyValueOf(body);
     }
 
-    // HttpReqeust
-    // header, body
-
-    public static HttpRequest parseReqeust(InputStream inputStream) throws IOException {
+    public static HttpRequest parseRequest(InputStream inputStream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
+        String[] requestFirstLine = parseRequestFirstLine(bufferedReader);
+        RequestMethod requestMethod = RequestMethod.valueOf(requestFirstLine[0]);
+        String requestURL = requestFirstLine[1];
+
         HttpRequestHeader header = extractRequestHeader(bufferedReader);
         String body = IOUtils.readData(bufferedReader, header.getContentLength().orElse(0));
-        return new HttpRequest(header, body);
+
+        return HttpRequest.of(requestMethod, requestURL, header, body);
     }
 
-    public static HttpRequestHeader extractRequestHeader(BufferedReader bufferedReader) {
-        try {
-            List<String> headers = new ArrayList<>();
-            String line;
-            while (!"".equals(line = bufferedReader.readLine())) {
-                headers.add(line);
-                if (line == null) break;
-            }
-            return new HttpRequestHeader(headers);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private static String[] parseRequestFirstLine(BufferedReader bufferedReader) throws IOException {
+        String line = bufferedReader.readLine();
+        if (line == null) {
+            throw new InvalidRequestException();
         }
+
+        String[] tokens = line.split(" ");
+        if (tokens.length != 3) {
+            throw new InvalidRequestException();
+        }
+
+        return tokens;
     }
 
+    private static HttpRequestHeader extractRequestHeader(BufferedReader bufferedReader) throws IOException{
+        Map<String, String> headers = new HashMap<>();
+        String line;
+        while (!"".equals(line = bufferedReader.readLine())) {
+            if (line == null) break;
+
+            addLineToHeaders(line, headers);
+        }
+        return new HttpRequestHeader(headers);
+    }
+
+    private static void addLineToHeaders(String line, Map<String, String> headers) {
+        int indexOfSeparator = line.indexOf(":");
+        if (indexOfSeparator == -1) {
+            throw new InvalidRequestException();
+        }
+
+        headers.put(line.substring(0, indexOfSeparator), line.substring(indexOfSeparator+1).trim());
+    }
 
     public static Map<String, String> extractUserFromPath(String path) {
         String[] token = path.split("\\?");

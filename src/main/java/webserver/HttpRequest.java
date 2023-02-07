@@ -1,20 +1,34 @@
 package webserver;
 
-public class HttpRequest {
-    private HttpRequestHeader header;
-    private String body;
+import enums.RequestMethod;
 
-    public HttpRequest(HttpRequestHeader header, String body) {
-        this.header = header;
+public class HttpRequest {
+    private final RequestMethod requestMethod;
+    private final String requestURL;
+    private final HttpRequestHeader headers;
+    private final String body;
+
+    private HttpRequest(RequestMethod requestMethod, String requestURL, HttpRequestHeader headers, String body) {
+        this.requestMethod = requestMethod;
+        this.requestURL = requestURL;
+        this.headers = headers;
         this.body = body;
     }
 
-    public String getRequestPath() {
-        return header.getRequestPath();
+    public static HttpRequest of(RequestMethod requestMethod, String requestPath, HttpRequestHeader headers, String body) {
+        return new HttpRequest(requestMethod, requestPath, headers, body);
     }
 
-    public String getRequestMethod() {
-        return header.getRequestMethod();
+    public String getRequestURL() {
+        return requestURL;
+    }
+
+    public RequestMethod getRequestMethod() {
+        return requestMethod;
+    }
+
+    public HttpRequestHeader getHeaders() {
+        return headers;
     }
 
     public String getBody() {

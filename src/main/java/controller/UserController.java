@@ -25,7 +25,7 @@ public class UserController {
     }
 
     public HttpResponse createUserGet(HttpRequest request) {
-        String requestPath = request.getRequestPath();
+        String requestPath = request.getRequestURL();
         Map<String, String> userInfo = IOUtils.extractUserFromPath(requestPath);
         userService.save(userInfo);
 

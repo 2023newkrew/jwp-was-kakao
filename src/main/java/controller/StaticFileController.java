@@ -23,7 +23,7 @@ public class StaticFileController {
     }
 
     public HttpResponse staticFileGet(HttpRequest request) throws IOException, URISyntaxException {
-        String requestPath = request.getRequestPath();
+        String requestPath = request.getRequestURL();
         ContentType contentType = ContentType.fromFilename(requestPath);
 
         String resourcePath = FileIoUtils.getResourcePath(requestPath, contentType);

@@ -1,6 +1,7 @@
 package utils;
 
 import enums.ContentType;
+import exceptions.ResourceNotFoundException;
 import webserver.HttpRequest;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class FileIoUtils {
         try {
             path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
         } catch (NullPointerException e) {
-//            throw new ResourceNotFoundException("요청하신 경로에 파일이 존재하지 않습니다.");
+            throw new ResourceNotFoundException("요청하신 경로에 파일이 존재하지 않습니다.");
         }
         return Files.readAllBytes(path);
     }
@@ -28,7 +29,7 @@ public class FileIoUtils {
     }
 
     public static boolean isStaticFile(HttpRequest request) {
-        ContentType contentType = ContentType.fromFilename(request.getRequestPath());
+        ContentType contentType = ContentType.fromFilename(request.getRequestURL());
         return contentType != ContentType.NONE;
     }
 
