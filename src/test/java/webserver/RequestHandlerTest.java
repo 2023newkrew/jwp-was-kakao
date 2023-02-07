@@ -273,7 +273,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
-    @DisplayName("이외의 예외(ex. 지원되지 않는 바디 형식 등)가 발생하는 경우 500이 반환된다")
+    @DisplayName("지원하지 않는 바디 형식의 요청은 415가 반환된다")
     @Test
     void statusCodeNoDefined() {
         // given
@@ -294,7 +294,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 500 Internal Server Error \r\n" +
+        var expected = "HTTP/1.1 415 Unsupported Media Type \r\n" +
                 "\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);

@@ -1,5 +1,7 @@
 package webserver;
 
+import common.HttpMethod;
+import common.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import support.IllegalMethodException;
@@ -52,7 +54,7 @@ public class Parser {
         return "".getBytes();
     }
 
-    public static HttpRequest parseRequestMessage(final BufferedReader reader) {
+    public static HttpRequest parseRequest(final BufferedReader reader) {
         String startLine = readRequestStartLine(reader);
         String uri = getURI(startLine);
         HttpMethod method = getMethod(startLine);
