@@ -21,20 +21,11 @@ import java.io.OutputStream;
 import java.net.Socket;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import webserver.enums.FilenameExtension;
 
 public class RequestHandler implements Runnable {
+
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
-    private static final Map<String, String> mimeType = new HashMap<>(){{
-        put("html", "text/html");
-        put("css", "text/css");
-        put("js", "text/javascript");
-        put("ico" ,"image/vnd.microsoft.icon");
-        put("png" ,"image/png");
-        put("woff", "application/x-font-woff");
-        put("woff2", "application/x-font-woff2");
-    }};
-
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
@@ -63,16 +54,14 @@ public class RequestHandler implements Runnable {
 
 
     private MyHttpResponse execute(MyHttpRequest request) throws IOException, URISyntaxException{
-//        byte[] body = "Hello world".getBytes();
-//        String typeOfBodyContent = "text/html";
         String requestTarget = request.getRequestPath();
 
         if (isFileRequestTarget(requestTarget)) {
             byte[] body = loadFileFromRequestTarget(requestTarget);
             String[] splitTarget = requestTarget.split("\\.");
-            String typeOfBodyContent = mimeType.get(splitTarget[splitTarget.length - 1]);
+            FilenameExtension extension = FilenameExtension.from(splitTarget[splitTarget.length - 1]);
             MyHttpResponse response = new MyHttpResponse(HttpStatus.OK, body);
-            response.setContentType(typeOfBodyContent);
+            response.setContentType(extension.getContentType());
             response.setContentLength(body.length);
             return response;
         }
@@ -99,7 +88,8 @@ public class RequestHandler implements Runnable {
             String body = request.getBody();
             Map<String, String> queryParameters = new HashMap<>();
 
-            Arrays.stream(body.split("&")).forEach((x) -> queryParameters.put(x.split("=")[0], x.split("=")[1]));
+            Arrays.stream(body.split("&"))
+                    .forEach((x) -> queryParameters.put(x.split("=")[0], x.split("=")[1]));
 
             DataBase.addUser(
                     new User(queryParameters.get("userId"),
