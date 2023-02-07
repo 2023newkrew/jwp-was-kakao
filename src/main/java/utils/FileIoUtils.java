@@ -1,8 +1,6 @@
 package utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import webserver.RequestHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,9 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Slf4j
 public class FileIoUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     public static boolean isFileExist(String filePath) {
         URL resource = FileIoUtils.class.getClassLoader()
@@ -28,7 +25,7 @@ public class FileIoUtils {
                     .toURI());
             return Files.readAllBytes(path);
         } catch (URISyntaxException | IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return new byte[0];
         }
     }
@@ -40,7 +37,7 @@ public class FileIoUtils {
                     .toURI());
             return Files.probeContentType(path);
         } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return "";
         }
     }

@@ -1,7 +1,6 @@
 package webserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import webserver.handler.HttpRequestHandler;
 import webserver.handler.resolver.HandlerResolver;
 import webserver.request.HttpRequest;
@@ -9,8 +8,8 @@ import webserver.request.HttpRequest;
 import java.io.*;
 import java.net.Socket;
 
+@Slf4j
 public class RequestHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
 
@@ -19,7 +18,7 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+        log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
@@ -32,7 +31,7 @@ public class RequestHandler implements Runnable {
             handler.handle(httpRequest)
                     .send(dos);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 }
