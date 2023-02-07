@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class HttpParser {
     public static final String NEW_LINE = "\n";
     public static final String SPACE = " ";
-    public static final String COLON = "\n";
+    public static final String COLON = ":";
 
     private final HashMap<String, String> httpHeaderInfo = new HashMap<>();
 
