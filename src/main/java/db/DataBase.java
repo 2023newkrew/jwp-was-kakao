@@ -4,11 +4,11 @@ package db;
 import model.User;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class DataBase {
-    private static final Map<String, User> users = new HashMap<>();
+    private static final ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
 
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
