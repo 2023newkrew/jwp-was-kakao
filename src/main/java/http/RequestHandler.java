@@ -10,30 +10,29 @@ import utils.IOUtils;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
+    private final RequestParser requestParser;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, RequestParser requestParser) {
         this.connection = connectionSocket;
+        this.requestParser = requestParser;
     }
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            DataOutputStream dos = new DataOutputStream(out);
+            BufferedReader br = requestParser.getBufferReader(in);
+            DataOutputStream dos = requestParser.getOutputStream(out);
             byte[] body;
-            String s = br.readLine();
-            String[] tokens = s.split(" "); // GET URL HTTP/1.1
 
+            String s = br.readLine();
+            String[] tokens = requestParser.splitSpare(s);
 
             String requestMethod = null;
             String requestUrl  = null;
@@ -42,56 +41,46 @@ public class RequestHandler implements Runnable {
                 requestMethod = tokens[0]; // GET, POST 등
                 requestUrl = tokens[1]; // /index.html
                 httpVersion = tokens[2]; // HTTP/1.1
-
             }
             logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", requestMethod, requestUrl, httpVersion);
             if (Objects.requireNonNull(requestMethod).equals("GET")){
                 if (requestUrl.startsWith("/css") || requestUrl.startsWith("/js")){
                     requestUrl = "./static" + requestUrl;
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
-                    String[] urlSplitByDot = requestUrl.split("\\.");
+                    String[] urlSplitByDot = requestParser.splitDot(requestUrl);
                     response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
                     responseBody(dos, body);
+                    return;
                 }
-                else if (requestUrl.startsWith("/") && requestUrl.endsWith("html")){
+                if (requestUrl.startsWith("/") && requestUrl.endsWith("html")){
                     requestUrl = "./templates" + requestUrl;
                     body = FileIoUtils.loadFileFromClasspath(requestUrl);
-                    String[] urlSplitByDot = requestUrl.split("\\.");
+                    String[] urlSplitByDot = requestParser.splitDot(requestUrl);
                     response200Header(dos, body.length, urlSplitByDot[urlSplitByDot.length-1]);
                     responseBody(dos, body);
+                    return;
                 }
-                else if (requestUrl.equals("/")){
+                if (requestUrl.equals("/")){
                     body = "Hello world".getBytes();
                     response200Header(dos, body.length, "html");
                     responseBody(dos, body);
-                }
-                else{
                     return;
                 }
-
                 while (!"".equals(s)) {
                     s = br.readLine();
                 }
             }
-            else if (requestMethod.equals("POST")){
-                int contentLength = -1;
-                while (!"".equals(s)) {
+            if (requestMethod.equals("POST")){
+                while (requestParser.getContentLength(s) != -1) {
                     s = br.readLine();
-                    if ("Content-Length".equals(s.split(":")[0])){
-                        contentLength = Integer.parseInt(s.split(":")[1].trim());
-                    }
                 }
-                if (contentLength >= 0) {
-                    String requestBody = IOUtils.readData(br, contentLength);
-                    Map<String, String> bodyMap = new HashMap<>();
-                    for (String splitted : requestBody.split("&")) {
-                        bodyMap.put(splitted.split("=")[0], splitted.split("=")[1]);
-                    }
-                    User user = new User(bodyMap.get("userId"), bodyMap.get("password"),
-                            bodyMap.get("name"), bodyMap.get("email"));
-                    DataBase.addUser(user);
-                    response302Header(dos, "/index.html");
+                if (s.length() == 0) {
+                    return;
                 }
+                String requestBody = IOUtils.readData(br, requestParser.getContentLength(s));
+                User user = requestParser.getUserInfo(requestBody);
+                DataBase.addUser(user);
+                response302Header(dos, "/index.html");
             }
         } catch (IOException | URISyntaxException | RuntimeException e) {
             e.printStackTrace();
