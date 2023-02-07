@@ -1,5 +1,6 @@
-package webserver;
-
+import app.controller.ViewController;
+import infra.RequestHandler;
+import infra.UriMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,12 @@ public class WebServer {
             port = Integer.parseInt(args[0]);
         }
 
+        ViewController viewController = new ViewController();
+
+        UriMap uriMap = new UriMap();
+        uriMap.put(ViewController.URI_ROOT, viewController);
+        uriMap.put(ViewController.URI_CSS, viewController);
+
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
@@ -25,7 +32,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection));
+                Thread thread = new Thread(new RequestHandler(connection, uriMap));
                 thread.start();
             }
         }

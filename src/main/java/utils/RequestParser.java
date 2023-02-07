@@ -1,56 +1,49 @@
 package utils;
 
-import webserver.Headers;
-import webserver.RequestParameters;
+import infra.http.Headers;
+import infra.http.HttpMessageBase;
+import infra.http.request.HttpRequest;
+import infra.http.request.HttpRequestMethod;
+import infra.http.request.RequestLine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
 public class RequestParser {
-    public static Headers parse(BufferedReader br) {
+    public static HttpRequest parse(BufferedReader br) {
+        try {
+            RequestLine requestLine = RequestParser.getRequestLine(br);
+            Headers headers = RequestParser.getHeaders(br);
+            String body = RequestParser.getBody(br);
+            return new HttpRequest(requestLine, headers, body);
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    private static RequestLine getRequestLine(BufferedReader br) throws IOException, ArrayIndexOutOfBoundsException {
+        String[] split = br.readLine().split(RequestLine.DELIMITER);
+        return new RequestLine(HttpRequestMethod.valueOf(split[0]), split[1], split[2]);
+    }
+
+    private static Headers getHeaders(BufferedReader br) throws IOException, ArrayIndexOutOfBoundsException {
         Headers headers = new Headers();
-        parseRequestLine(headers, br);
-        parseHeader(headers, br);
+        String line = br.readLine();
+        while (line != null && !line.isEmpty()) {
+            String[] split = line.split(Headers.DELIMITER);
+            headers.put(split[0], split[1]);
+            line = br.readLine();
+        }
         return headers;
     }
 
-    private static void parseRequestLine(Headers headers, BufferedReader br) {
-        try {
-            String line = br.readLine();
-            if (line == null) return;
-            String[] splitLine = line.split(" ");
-            headers.put("Method", splitLine[0]);
-            headers.put("URL", splitLine[1]);
-            headers.put("Protocol", splitLine[2]);
-        } catch (IOException e) {
-            return;
+    private static String getBody(BufferedReader br) throws IOException {
+        StringBuilder body = new StringBuilder();
+        String line = br.readLine();
+        while (line != null) {
+            body.append(line);
+            body.append(HttpMessageBase.LINE_DELIMITER);
         }
-    }
-
-    private static void parseHeader(Headers headers, BufferedReader br) {
-        try{
-            String line = br.readLine();
-            while (!"".equals(line)) {
-                String[] splitLine = line.split(": ");
-                headers.put(splitLine[0], splitLine[1]);
-                line = br.readLine();
-                if (line == null) return;
-            }
-        } catch (IOException e) {
-            return;
-        }
-    }
-
-    public static RequestParameters parse(String query) {
-        RequestParameters requestParameters = new RequestParameters();
-        String[] params = query.split("&");
-        for (String param : params) {
-            String[] splitParam = param.split("=");
-            if (splitParam.length != 2) {
-                return null;
-            }
-            requestParameters.put(splitParam[0], splitParam[1]);
-        }
-        return requestParameters;
+        return body.toString();
     }
 }

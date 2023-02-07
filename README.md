@@ -16,7 +16,7 @@
   - header에서 리소스 주소 get
   - `FileIoUtils.loadFileFromClasspath`를 이용해서 byte[] 변환
   - response body에 담아 보내기 (`responseBody`)
-- [x] RequestHandlerTest 테스트가 모두 통과하도록 구현한다.
+- [x] WebServerE2ETest 테스트가 모두 통과하도록 구현한다.
 
 ### CSS 지원하기
 - [x] 인덱스 페이지에 접속하면, 현재 stylesheet 파일을 지원하지 못하고 있다. Stylesheet 파일을 지원하도록 구현하도록 한다.

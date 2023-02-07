@@ -1,5 +1,6 @@
-package webserver;
-
+import app.controller.ViewController;
+import infra.RequestHandler;
+import infra.UriMap;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -9,10 +10,15 @@ import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class RequestHandlerTest {
+class WebServerE2ETest {
     @Test
     void index() throws IOException, URISyntaxException {
-        // given
+        ViewController viewController = new ViewController();
+
+        UriMap uriMap = new UriMap();
+        uriMap.put(ViewController.URI_ROOT, viewController);
+        uriMap.put(ViewController.URI_CSS, viewController);
+
         final String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -21,8 +27,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
-
+        final RequestHandler handler = new RequestHandler(socket, uriMap);
         handler.run();
 
         var expected = "HTTP/1.1 200 OK \r\n" +
@@ -36,7 +41,12 @@ class RequestHandlerTest {
 
     @Test
     void css() throws IOException, URISyntaxException {
-        // given
+        ViewController viewController = new ViewController();
+
+        UriMap uriMap = new UriMap();
+        uriMap.put(ViewController.URI_ROOT, viewController);
+        uriMap.put(ViewController.URI_CSS, viewController);
+
         final String httpRequest = String.join("\r\n",
                 "GET ./css/styles.css HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -45,8 +55,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
-
+        final RequestHandler handler = new RequestHandler(socket, uriMap);
         handler.run();
 
         var expected = "HTTP/1.1 200 OK \r\n" +
