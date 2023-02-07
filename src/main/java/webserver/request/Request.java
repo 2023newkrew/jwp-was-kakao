@@ -1,20 +1,28 @@
 package webserver.request;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import org.springframework.http.HttpMethod;
+import webserver.request.path.URL;
 
 public class Request {
 
-    private final Path path;
+    private final HttpMethod httpMethod;
 
-    public Request(List<String> request) {
-        String line = URLDecoder.decode(request.get(0), StandardCharsets.UTF_8);
-        String[] headline = line.split(" ");
-        path = new Path(headline[1]);
+    private final URL URL;
+
+    public Request(HttpMethod httpMethod, URL URL) {
+        this.httpMethod = httpMethod;
+        this.URL = URL;
     }
 
-    public Path getPath() {
-        return path;
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public String getPath() {
+        return URL.getPath();
+    }
+
+    public String getPathVariable(String key) {
+        return URL.getPathVariable(key);
     }
 }

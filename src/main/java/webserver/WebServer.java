@@ -1,14 +1,30 @@
 package webserver;
 
-import webserver.resolver.ResourceResolver;
-import webserver.resolver.ViewResolver;
+import webserver.handler.Handlers;
+import webserver.handler.ResourceHandler;
+import webserver.handler.controller.RootController;
+import webserver.handler.controller.UserController;
+import webserver.handler.resolver.Resolvers;
+import webserver.handler.resolver.resource.ResourceResolver;
+import webserver.handler.resolver.view.ViewResolver;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 
 public class WebServer {
     private static final int DEFAULT_PORT = 8080;
+
+    public static final Resolvers resolvers = new Resolvers(
+            new ResourceResolver(),
+            new ViewResolver()
+    );
+
+    public static final Handlers handlers = new Handlers(
+            new RootController(),
+            new UserController(),
+            new ResourceHandler(resolvers)
+    );
+
 
     public static void main(String... args) throws Exception {
         int port = 0;
@@ -24,10 +40,8 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(
-                        connection,
-                        List.of(new ResourceResolver(), new ViewResolver())
-                ));
+                RequestHandler requestHandler = new RequestHandler(connection, handlers);
+                Thread thread = new Thread(requestHandler);
                 thread.start();
             }
         }

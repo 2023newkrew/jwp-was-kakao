@@ -19,10 +19,10 @@
     * http://localhost:8080/index.html에 접근할 수 있도록 구현한다.
     * RequestHandlerTest 테스트가 모두 통과하도록 구현한다.
 
-* [ ] CSS 지원하기
+* [*] CSS 지원하기
     * Stylesheet 파일을 지원하도록 구현하도록 한다.
 
-* [ ] Query String 파싱
+* [*] Query String 파싱
     * “회원가입” 메뉴를 클릭하면 http://localhost:8080/user/form.html 으로 이동하면서 회원가입할 수 있다.
     * 회원가입을 하면 다음과 같은 형태로 사용자가 입력한 값이 서버에 전달된다.
     * HTML과 URL을 비교해 보고 사용자가 입력한 값을 파싱해 model.User 클래스에 저장한다.
@@ -34,20 +34,19 @@
 * [ ] Redirect
     * 현재는 “회원가입”을 완료 후, URL이 /user/create 로 유지되는 상태로 읽어서 전달할 파일이 없다. redirect 방식처럼 회원가입을 완료한 후 index.html로 이동해야 한다.
 
-ReqeustHandler
-Request
-->
+## 기능 목록
 
-ViewResolver
--> path
--> View
+### step 1
 
-View
--> content
--> content_length
--> content_type
-
-Response
--> View
--> statusCode
--> toString()
+* 요청 생성
+    * http method 파싱
+    * url 파싱
+        * PathVariable 파싱
+    * request body 파싱
+* 요청 처리
+    * 리소스 접근
+        * view 접근
+        * resource 접근
+    * 로그인 요청 처리
+* 응답 생성
+    * 

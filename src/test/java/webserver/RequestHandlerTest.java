@@ -4,21 +4,37 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
-import webserver.resolver.ResourceResolver;
-import webserver.resolver.ViewResolver;
+import webserver.handler.Handlers;
+import webserver.handler.ResourceHandler;
+import webserver.handler.controller.RootController;
+import webserver.handler.controller.UserController;
+import webserver.handler.resolver.Resolvers;
+import webserver.handler.resolver.resource.ResourceResolver;
+import webserver.handler.resolver.view.ViewResolver;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+    Resolvers resolvers = new Resolvers(
+            new ResourceResolver(),
+            new ViewResolver()
+    );
+
+
+    Handlers handlers = new Handlers(
+            new RootController(),
+            new UserController(),
+            new ResourceHandler(resolvers)
+    );
+
     @Test
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, List.of(new ResourceResolver(), new ViewResolver()));
+        final var handler = new RequestHandler(socket, handlers);
 
         // when
         handler.run();
@@ -49,8 +65,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, List.of(new ResourceResolver(), new ViewResolver()));
-
+        final var handler = new RequestHandler(socket, handlers);
         // when
         handler.run();
 
@@ -79,7 +94,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, List.of(new ResourceResolver(), new ViewResolver()));
+        final var handler = new RequestHandler(socket, handlers);
 
         // when
         handler.run();

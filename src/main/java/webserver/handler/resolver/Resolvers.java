@@ -1,24 +1,27 @@
-package webserver.resolver;
+package webserver.handler.resolver;
 
 import webserver.content.Content;
-import webserver.request.Path;
 
 import java.util.List;
 
-public class ContentResolvers {
-    private final List<ContentResolver> resolvers;
+public class Resolvers {
+    private final List<Resolver> resolvers;
 
-    public ContentResolvers(List<ContentResolver> resolvers) {
+    public Resolvers(Resolver... resolvers) {
+        this(List.of(resolvers));
+    }
+
+    public Resolvers(List<Resolver> resolvers) {
         this.resolvers = resolvers;
     }
 
-    public boolean isResolvable(Path path) {
+    public boolean isResolvable(String path) {
         return resolvers.stream()
                 .filter(resolver -> resolver.isResolvable(path))
                 .count() == 1L;
     }
 
-    public Content resolve(Path path) {
+    public Content resolve(String path) {
         return resolvers.stream()
                 .filter(resolver -> resolver.isResolvable(path))
                 .findAny()

@@ -1,15 +1,14 @@
-package webserver.resolver;
+package webserver.handler.resolver.resource;
 
 import webserver.content.ContentType;
-import webserver.request.Path;
 
 import java.util.Arrays;
 
 public enum ResourceType {
     CSS("/css", ContentType.TEXT_CSS),
-    FONT("/fonts", ContentType.TEXT_CSS),
-    IMAGE("/images", ContentType.TEXT_CSS),
-    JAVA_SCRIPT("/js", ContentType.TEXT_CSS);
+    FONT("/fonts", ContentType.FONT_TTF),
+    IMAGE("/images", ContentType.IMAGE_PNG),
+    JAVA_SCRIPT("/js", ContentType.TEXT_JAVASCRIPT);
 
     private final String path;
 
@@ -29,9 +28,9 @@ public enum ResourceType {
         return contentType;
     }
 
-    public static ResourceType from(Path path) {
+    public static ResourceType from(String uri) {
         return Arrays.stream(values())
-                .filter(type -> path.startWith(type.getPath()))
+                .filter(type -> uri.startsWith(type.getPath()))
                 .findAny()
                 .orElse(null);
     }

@@ -1,25 +1,32 @@
 package webserver.response;
 
+import org.springframework.http.HttpStatus;
 import webserver.content.Content;
 
 public class Response {
-    private final ResponseHeader header;
+
+    private final HttpStatus httpStatus;
 
     private final Content body;
 
-    public Response(ResponseHeader header) {
-        this(header, null);
+    public Response(HttpStatus httpStatus) {
+        this(httpStatus, null);
     }
 
-    public Response(ResponseHeader header, Content body) {
-        if (body == null) {
-            body = new Content(new byte[0]);
-        }
+    public Response(HttpStatus httpStatus, Content body) {
+        this.httpStatus = httpStatus;
         this.body = body;
-        this.header = header;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public Content getBody() {
+        return body;
     }
 
     public byte[] getBytes() {
-        return (header.toString() + body.toString()).getBytes();
+        return body.getBytes();
     }
 }
