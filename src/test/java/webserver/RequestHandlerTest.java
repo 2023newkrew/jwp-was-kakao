@@ -80,6 +80,29 @@ class RequestHandlerTest {
     }
 
     @Test
+    void addUserWithGetMethod() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1" +
+                        "Host: localhost:8080" +
+                        "Connection: keep-alive" +
+                        "Accept: */*");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Content-Type: text/html;charset=utf-8 \r\n" +
+                "Location: /index.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
     void addUserWithPostMethod() {
         // given
         final String httpRequest = String.join("\r\n",
