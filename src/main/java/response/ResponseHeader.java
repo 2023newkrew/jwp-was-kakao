@@ -1,5 +1,7 @@
 package response;
 
+import utils.ContentType;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -19,10 +21,10 @@ public class ResponseHeader {
         }
     }
 
-    public static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
+    public static void response200Header(DataOutputStream dos, int lengthOfBodyContent, ContentType type) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/" + type + ";charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: " + type.getType() + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-package supports;
+package utils;
 
 import model.User;
 import request.RequestParams;
@@ -20,7 +20,7 @@ public class StringParser {
     public RequestParams getRequestParams(String s){
         String[] splitString = s.split(" ");
         if (splitString.length == 3) {
-            return new RequestParams(splitString[0], splitString[1], splitString[2]);
+            return new RequestParams(splitString[0], splitString[1], splitString[2], ContentType.setContentType(splitString[1]));
         }
         return null;
     }

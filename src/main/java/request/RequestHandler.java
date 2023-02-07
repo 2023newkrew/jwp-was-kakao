@@ -3,7 +3,7 @@ package request;
 import controller.HandlerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import supports.StringParser;
+import utils.StringParser;
 
 import java.io.*;
 import java.net.Socket;
@@ -29,7 +29,7 @@ public class RequestHandler implements Runnable {
 
             String requestInfo = br.readLine();
             RequestParams request = stringParser.getRequestParams(requestInfo);
-            logger.debug("request method : {}, requestUrl : {}, httpVersion : {}", request.getMethod(), request.getUrl(), request.getHttpVersion());
+            logger.debug("request method : {}, requestUrl : {}, httpVersion : {}, contentType: {}", request.getMethod(), request.getUrl(), request.getHttpVersion(), request.getContentType());
             HandlerMapper handlerMapper = new HandlerMapper(br, dos, stringParser);
             handlerMapper.methodMapping(request, requestInfo);
 
