@@ -9,11 +9,11 @@ import java.io.*;
 import java.net.Socket;
 
 @Slf4j
-public class RequestHandler implements Runnable {
+public class RequestDispatcher implements Runnable {
 
     private final Socket connection;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestDispatcher(Socket connectionSocket) {
         this.connection = connectionSocket;
     }
 
