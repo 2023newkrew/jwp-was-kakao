@@ -2,15 +2,10 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import webserver.handler.Handler;
-import webserver.handler.HtmlRequestHandler;
-import webserver.handler.StaticResourceRequestHandler;
-import webserver.handler.UserApiHandler;
+import webserver.handler.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +22,7 @@ public class WebServer {
             port = Integer.parseInt(args[0]);
         }
 
-        List<Handler> defaultHandlerMapping = initDefaultHandlerMapping();
-        Map<String, Handler> urlHandlerMapping = initUrlHandlerMapping();
+        Map<String, UrlMappingHandler> urlMappingHandlerMappings = initUrlMappingHandlerMappings();
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
@@ -37,22 +31,23 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection, urlHandlerMapping, defaultHandlerMapping));
+                Thread thread = new Thread(new RequestHandler(connection, urlMappingHandlerMappings));
                 thread.start();
             }
         }
     }
 
-    private static Map<String, Handler> initUrlHandlerMapping() {
-        HashMap<String, Handler> urlHandlerMapping = new HashMap<>();
-        urlHandlerMapping.put("/user/create", new UserApiHandler());
-        return urlHandlerMapping;
-    }
+    private static Map<String, UrlMappingHandler> initUrlMappingHandlerMappings() {
+        HashMap<String, UrlMappingHandler> urlHandlerMappings = new HashMap<>();
 
-    private static List<Handler> initDefaultHandlerMapping() {
-        List<Handler> handlerMapping = new ArrayList<>();
-        handlerMapping.add(new HtmlRequestHandler());
-        handlerMapping.add(new StaticResourceRequestHandler());
-        return handlerMapping;
+        List<UrlMappingHandler> handlers = List.of(
+                new HomeRequestHandler(),
+                new QnaRequestHandler(),
+                new UserCreateRequestHandler(),
+                new UserRequestHandler());
+
+        handlers.forEach(handler -> urlHandlerMappings.put(handler.getUrlMappingRegex(), handler));
+
+        return urlHandlerMappings;
     }
 }

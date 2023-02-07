@@ -3,10 +3,7 @@ package webserver;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
-import webserver.handler.Handler;
-import webserver.handler.HtmlRequestHandler;
-import webserver.handler.StaticResourceRequestHandler;
-import webserver.handler.UserApiHandler;
+import webserver.handler.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,7 +27,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, initUrlHandlerMapping(), initHandlerMapping());
+        final RequestHandler handler = new RequestHandler(socket, initUrlMappingHandlerMappings());
 
         // when
         handler.run();
@@ -47,16 +44,17 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
-    private static List<Handler> initHandlerMapping() {
-        List<Handler> handlerMapping = new ArrayList<>();
-        handlerMapping.add(new HtmlRequestHandler());
-        handlerMapping.add(new StaticResourceRequestHandler());
-        return handlerMapping;
-    }
+    private static Map<String, UrlMappingHandler> initUrlMappingHandlerMappings() {
+        HashMap<String, UrlMappingHandler> urlHandlerMappings = new HashMap<>();
 
-    private static Map<String, Handler> initUrlHandlerMapping() {
-        HashMap<String, Handler> urlHandlerMapping = new HashMap<>();
-        urlHandlerMapping.put("/user/create", new UserApiHandler());
-        return urlHandlerMapping;
+        List<UrlMappingHandler> handlers = List.of(
+                new HomeRequestHandler(),
+                new QnaRequestHandler(),
+                new UserCreateRequestHandler(),
+                new UserRequestHandler());
+
+        handlers.forEach(handler -> urlHandlerMappings.put(handler.getUrlMappingRegex(), handler));
+
+        return urlHandlerMappings;
     }
 }
