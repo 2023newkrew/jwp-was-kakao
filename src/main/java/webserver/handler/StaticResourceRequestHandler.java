@@ -3,8 +3,6 @@ package webserver.handler;
 import http.*;
 import utils.FileIoUtils;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +12,7 @@ public class StaticResourceRequestHandler implements Handler {
     public static final String STATIC_FILEPATH = "./static";
     public static final String CHARSET_UTF_8 = "charset=utf-8";
 
+    @Override
     public HttpResponse handle(HttpRequest httpRequest) {
         byte[] bytes;
         try {
@@ -28,6 +27,11 @@ public class StaticResourceRequestHandler implements Handler {
                 .withHeaders(generateHeaders(httpRequest, bytes))
                 .withBody(bytes)
                 .build();
+    }
+
+    @Override
+    public boolean support(HttpRequest httpRequest) {
+        return httpRequest.getMethod() == HttpMethod.GET;
     }
 
     private Map<String, List<String>> generateHeaders(HttpRequest httpRequest, byte[] body) {

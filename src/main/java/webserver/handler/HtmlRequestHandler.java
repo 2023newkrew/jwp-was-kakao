@@ -26,6 +26,11 @@ public class HtmlRequestHandler implements Handler {
                 .build();
     }
 
+    @Override
+    public boolean support(HttpRequest httpRequest) {
+        return true;
+    }
+
     private Map<String, List<String>> generateHeaders(HttpRequest httpRequest, byte[] body) {
         Map<String, List<String>> headers = new LinkedHashMap<>();
 

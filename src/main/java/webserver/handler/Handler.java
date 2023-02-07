@@ -4,5 +4,7 @@ import http.HttpRequest;
 import http.HttpResponse;
 
 public interface Handler {
-    public HttpResponse handle(HttpRequest httpRequest);
+    HttpResponse handle(HttpRequest httpRequest);
+
+    boolean support(HttpRequest httpRequest);
 }

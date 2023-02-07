@@ -29,6 +29,11 @@ public class UserApiHandler implements Handler {
                 .build();
     }
 
+    @Override
+    public boolean support(HttpRequest httpRequest) {
+        return true;
+    }
+
     private User parseUserGet(HttpRequest httpRequest) {
         Map<String, String> parameters = httpRequest.getParameters();
         String userId = parameters.get("userId");
