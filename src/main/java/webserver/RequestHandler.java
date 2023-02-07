@@ -36,7 +36,7 @@ public class RequestHandler implements Runnable {
             String uriWithOutParams = uri.split("\\?")[0];
             Controller controller = controllerMap.get(uriWithOutParams);
 
-            // 특정한 컨트롤러를 찾을 수 없음
+            // URI와 매핑된 컨트롤러를 찾을 수 없음
             if (controller == null) {
                 controller = new MainController();
             }
