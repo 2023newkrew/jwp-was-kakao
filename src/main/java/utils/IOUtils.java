@@ -2,6 +2,8 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IOUtils {
     /**
@@ -16,5 +18,15 @@ public class IOUtils {
         char[] body = new char[contentLength];
         br.read(body, 0, contentLength);
         return String.copyValueOf(body);
+    }
+
+    public static List<String> readUntilEmpty(BufferedReader br) throws IOException {
+        List<String> data = new ArrayList<>();
+        String line = br.readLine();
+        while (line != null && !line.equals("")) {
+            data.add(line);
+            line = br.readLine();
+        }
+        return data;
     }
 }
