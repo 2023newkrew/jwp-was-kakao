@@ -1,2 +1,113 @@
-package webserver.http;public class HttpRequestReader {
+package webserver.http;
+
+import utils.IOUtils;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class HttpRequestReader implements Closeable {
+
+    private final BufferedReader br;
+    private final HttpRequestLineParser httpRequestLineParser;
+    private final HttpRequestHeaderParser httpRequestHeaderParser;
+
+    private HttpMethod httpMethod;
+    private String url;
+    private Map<String, String> parameters;
+    private String httpVersion;
+    private Map<String, List<String>> headers;
+
+    public HttpRequestReader(InputStream in) {
+        this.br = new BufferedReader(new InputStreamReader(in));
+        this.httpRequestLineParser = new HttpRequestLineParser();
+        this.httpRequestHeaderParser = new HttpRequestHeaderParser();
+    }
+
+    public HttpRequest readHttpRequest() {
+        String requestLine = readRequestLine();
+        if (requestLine == null || requestLine.isBlank()) {
+            return null;
+        }
+        parseRequestLine(requestLine);
+
+        List<String> headerLines = readHeaderLines();
+        parseHeader(headerLines);
+
+        String body = readBody();
+
+        return HttpRequest.HttpRequestBuilder.aHttpRequest()
+                .withMethod(httpMethod)
+                .withURL(url)
+                .withParameters(parameters)
+                .withVersion(httpVersion)
+                .withHeaders(headers)
+                .withBody(body)
+                .build();
+    }
+
+    private String readBody() {
+        Integer contentLength = getContentLength();
+        if (contentLength == null) {
+            return "";
+        }
+
+        try {
+            return IOUtils.readData(br, contentLength);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Integer getContentLength() {
+        String headerName = headers.keySet().stream()
+                .filter(header -> header.equalsIgnoreCase("content-length"))
+                .findFirst()
+                .orElse(null);
+
+        if (headerName == null) {
+            return null;
+        }
+
+        return Integer.parseInt(headers.get(headerName).get(0));
+    }
+
+    private void parseHeader(List<String> headerLines) {
+        headers = httpRequestHeaderParser.parse(headerLines);
+    }
+
+    private List<String> readHeaderLines() {
+        List<String> headerLines = new ArrayList<>();
+
+        String line;
+        try {
+            while ((line = br.readLine()) != null && !line.isEmpty()) {
+                headerLines.add(line);
+            }
+            return headerLines;
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void parseRequestLine(String requestLine) {
+        httpMethod = HttpMethod.valueOf(httpRequestLineParser.extractHttpMethod(requestLine));
+        url = httpRequestLineParser.extractUrl(requestLine);
+        parameters = httpRequestLineParser.extractParams(requestLine);
+        httpVersion = httpRequestLineParser.extractHttpVersion(requestLine);
+    }
+
+    private String readRequestLine() {
+        try {
+            return br.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        br.close();
+    }
 }
