@@ -1,6 +1,7 @@
 package webserver;
 
 import db.DataBase;
+import java.util.Objects;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,14 +73,15 @@ public class RequestHandler implements Runnable {
                 .getQueryParams();
 
         if (path.equals("/user/create")) {
-            response302Header(dos, "http://localhost:8080/index.html");
-            dos.flush();
             userService.addUser(requestParams);
+            HttpResponse httpResponse = new HttpResponse(HttpStatusCode.FOUND, null);
+            httpResponse.addHeader("Location", "http://localhost:8080/index.html");
+            httpResponse.response(dos);
         }
     }
 
     private void handleGetMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos)
-            throws URISyntaxException {
+            throws IOException {
         String path = httpRequest.getPath();
         byte[] body;
         String contentType;
@@ -87,42 +89,14 @@ public class RequestHandler implements Runnable {
         try {
             body = FileIoUtils.getBodyFromPath(path);
             contentType = Files.probeContentType(new File(path).toPath());
-        } catch (IOException e) {
+        } catch (Exception e) {
             body = "Hello world".getBytes();
             contentType = "text/html;charset=utf-8";
         }
 
-        response200Header(dos, body.length, contentType);
-        responseBody(dos, body);
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + " \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response302Header(DataOutputStream dos, String location) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + location + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        HttpResponse httpResponse = new HttpResponse(HttpStatusCode.OK, body);
+        httpResponse.addHeader("Content-Type", contentType);
+        httpResponse.addHeader("Content-Length", String.valueOf(body.length));
+        httpResponse.response(dos);
     }
 }
