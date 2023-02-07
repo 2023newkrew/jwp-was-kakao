@@ -1,7 +1,7 @@
 package requestmapper;
 
 import controller.Controller;
-import controller.MainController;
+import controller.UserController;
 import request.Request;
 import response.Response;
 
@@ -17,8 +17,8 @@ public final class HandlerMapper {
     }
 
     private HandlerMapper() {
-        map.put("/", MainController.getInstance());
-        map.put("/user/create", MainController.getInstance());
+        map.put("/", UserController.getInstance());
+        map.put("/user/create", UserController.getInstance());
     }
 
     public static HandlerMapper getInstance() {

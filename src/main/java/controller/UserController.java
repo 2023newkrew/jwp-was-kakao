@@ -13,19 +13,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class MainController implements Controller {
+public final class UserController implements Controller {
 
     private final Map<String, Method> map = new HashMap<>();
 
     private static class LazyHolder {
-        public static final MainController INSTANCE = new MainController();
+        public static final UserController INSTANCE = new UserController();
     }
 
-    public static MainController getInstance() {
+    public static UserController getInstance() {
         return LazyHolder.INSTANCE;
     }
 
-    private MainController() {
+    private UserController() {
         List<Method> methodList = List.of(this.getClass().getMethods());
         for (Method method: methodList) {
             RequestMap requestMap = method.getAnnotation(RequestMap.class);
@@ -38,7 +38,7 @@ public final class MainController implements Controller {
     @Override
     public Response handleRequest(Request request) {
         try {
-            return (Response) map.get(request.getUri()).invoke(MainController.getInstance(), request);
+            return (Response) map.get(request.getUri()).invoke(UserController.getInstance(), request);
         } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
             return null;
         }
