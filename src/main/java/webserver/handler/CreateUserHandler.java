@@ -8,16 +8,19 @@ import webserver.response.Response;
 import java.util.Map;
 
 public class CreateUserHandler implements Handler {
+
+    private final String REDIRECT_LOCATION = "/index.html";
+
     @Override
     public Response apply(Request request) {
-        Map<String, String> queryString = request.getRequestBody();
-        User user = new User(
-                queryString.get("userId"),
-                queryString.get("password"),
-                queryString.get("name"),
-                queryString.get("email")
-        );
+        Map<String, String> queryStringMap = request.getRequestBodyAsQueryString();
+        User user = User.builder()
+                .userId(queryStringMap.get("userId"))
+                .password(queryStringMap.get("password"))
+                .name(queryStringMap.get("name"))
+                .email(queryStringMap.get("email"))
+                .build();
         DataBase.addUser(user);
-        return Response.found(new byte[0], request.findRequestedFileType(), "/index.html");
+        return Response.found(new byte[0], request.getRequestFileType(), REDIRECT_LOCATION);
     }
 }

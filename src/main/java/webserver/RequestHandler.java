@@ -37,7 +37,7 @@ public class RequestHandler implements Runnable {
 
     private Response findResponseByPath(Request request) throws IOException, URISyntaxException {
         String path = request.getPath();
-        FileType fileType = request.findRequestedFileType();
+        FileType fileType = request.getRequestFileType();
 
         if (fileType == FileType.HTML || fileType == FileType.ICO) {
             return Response.ok(FileIoUtils.loadFileFromClasspath("./templates" + path), fileType);
