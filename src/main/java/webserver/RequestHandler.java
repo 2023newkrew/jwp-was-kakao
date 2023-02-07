@@ -1,8 +1,8 @@
 package webserver;
 
 import controller.FrontController;
-import model.CustomHttpRequest;
-import model.CustomHttpResponse;
+import http.CustomHttpRequest;
+import http.CustomHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpUtils;
@@ -25,10 +25,10 @@ public class RequestHandler implements Runnable {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              OutputStream out = connection.getOutputStream()) {
-            CustomHttpRequest request = HttpUtils.createHttpRequest(br);
+            CustomHttpRequest request = HttpUtils.readHttpRequest(br);
             DataOutputStream dos = new DataOutputStream(out);
             CustomHttpResponse response = FrontController.getInstance().getHttpResponse(request);
-            HttpUtils.respond(dos, response);
+            HttpUtils.respondHttpResponse(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

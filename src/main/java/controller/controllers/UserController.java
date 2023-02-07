@@ -1,10 +1,10 @@
-package controller;
+package controller.controllers;
 
 import controller.annotation.CustomRequestMapping;
 import db.DataBase;
-import model.CustomHttpMethod;
-import model.CustomHttpRequest;
-import model.CustomHttpResponse;
+import http.CustomHttpMethod;
+import http.CustomHttpRequest;
+import http.CustomHttpResponse;
 import model.User;
 
 import java.util.HashMap;

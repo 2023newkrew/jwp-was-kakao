@@ -1,8 +1,8 @@
 package utils;
 
-import model.CustomHttpMethod;
-import model.CustomHttpRequest;
-import model.CustomHttpResponse;
+import http.CustomHttpMethod;
+import http.CustomHttpRequest;
+import http.CustomHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.RequestHandler;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class HttpUtils {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    public static CustomHttpRequest createHttpRequest(BufferedReader br) throws IOException {
+    public static CustomHttpRequest readHttpRequest(BufferedReader br) throws IOException {
         String line = br.readLine();
         if (line == null || "".equals(line)) {
             throw new RuntimeException("잘못된 요청 형식입니다.");
@@ -58,16 +58,14 @@ public class HttpUtils {
         return new CustomHttpRequest(customHttpMethod, url, query, protocol, headers, body);
     }
 
-    public static void respond(DataOutputStream dos, CustomHttpResponse response){
+    public static void respondHttpResponse(DataOutputStream dos, CustomHttpResponse response){
         try {
             dos.writeBytes(response.getHttpStatus() + " \r\n");
-            response.getHeaders().forEach((k, v) -> {
-                try {
-                    dos.writeBytes(k + ": " + v + " \r\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            for (Map.Entry<String, String> entry : response.getHeaders().entrySet()) {
+                String k = entry.getKey();
+                String v = entry.getValue();
+                dos.writeBytes(k + ": " + v + " \r\n");
+            }
             dos.writeBytes("\r\n");
             dos.write(response.getBody().getBytes(), 0, response.getBody().getBytes().length);
             dos.flush();
