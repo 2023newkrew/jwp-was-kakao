@@ -9,17 +9,17 @@ public class RequestUri {
     private final RequestParam requestParam;
 
     public RequestUri(String uri) {
-        this.path = uri.split(Pattern.quote("?"), 2)[0];
-        this.requestParam = parseParam(uri);
+        String[] splitUri = uri.split(Pattern.quote("?"), 2);
+        this.path = splitUri[0];
+        this.requestParam = parseParam(splitUri);
     }
 
-    private RequestParam parseParam(String uri) {
-        if (uri.contains("?")) {
-            String query = uri.split(Pattern.quote("?"), 2)[1];
-            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+    private RequestParam parseParam(String[] splitUri) {
+        if (splitUri.length >= 2) {
+            String query = URLDecoder.decode(splitUri[1], StandardCharsets.UTF_8);
             return new RequestParam(query);
         }
-        return new RequestParam();
+        return RequestParam.empty();
     }
 
     public String getPath() {

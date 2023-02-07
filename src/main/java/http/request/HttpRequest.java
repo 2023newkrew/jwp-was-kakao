@@ -17,7 +17,7 @@ public class HttpRequest {
 
     public HttpRequest(BufferedReader reader) {
         try {
-            requestLine = new RequestLine(reader.readLine());
+            requestLine = new RequestLine(reader);
             httpHeader = new HttpHeader(reader);
             requestBody = new RequestBody(IOUtils.readData(reader, httpHeader.getContentLength()));
         } catch (Exception e) {

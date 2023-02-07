@@ -1,7 +1,5 @@
 package http;
 
-import java.util.Arrays;
-
 public enum HttpMethod {
     GET("GET"),
     POST("POST"),

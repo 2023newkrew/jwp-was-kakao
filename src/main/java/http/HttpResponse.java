@@ -1,6 +1,5 @@
 package http;
 
-import http.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -9,13 +8,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class HttpResponse {
-    private final static Logger logger = LoggerFactory.getLogger(HttpRequest.class);
+    private final static Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     public static final String TEMPLATE_PATH = "./templates/";
     public static final String STATIC_PATH = "./static/";
 
     private final DataOutputStream dos;
 
-    private HttpHeader httpHeader = new HttpHeader();
+    private final HttpHeader httpHeader = new HttpHeader();
 
     public HttpResponse(DataOutputStream dos) {
         this.dos = dos;
@@ -24,12 +23,12 @@ public class HttpResponse {
     public void forward(String path) {
         byte[] body = FileIoUtils.loadFileFromClasspath(getResourcePath(path));
         logger.info("Forward to file : {}", path);
-        response200Header(body.length, ContentType.from(path));
+        response200Header(body.length, ContentType.of(path));
         responseBody(body);
     }
 
     private String getResourcePath(String path) {
-        if (path.endsWith(".html")) {
+        if (path.endsWith(ContentType.TEXT_HTML.getExtension())) {
             return TEMPLATE_PATH + path;
         }
         return STATIC_PATH + path;

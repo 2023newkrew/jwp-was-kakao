@@ -2,6 +2,9 @@ package http.request;
 
 import http.HttpMethod;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 public class RequestLine {
     private static final String DELIMITER = " ";
     private static final int VALID_REQUEST_PARAMS_LENGTH = 3;
@@ -13,8 +16,9 @@ public class RequestLine {
     private final RequestUri requestUri;
     private final String httpVersion;
 
-    public RequestLine(String requestLine) {
-        String[] params = requestLine.split(DELIMITER);
+    public RequestLine(BufferedReader reader) throws IOException {
+        String line = reader.readLine();
+        String[] params = line.split(DELIMITER);
         validate(params);
         httpMethod = HttpMethod.valueOf(params[INDEX_OF_METHOD]);
         requestUri = new RequestUri(params[INDEX_OF_PATH]);

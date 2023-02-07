@@ -19,8 +19,8 @@ public class HttpHeader {
         String line;
         try {
             while (!(line = reader.readLine()).isBlank()) {
-                String[] keyValue = line.split(DELIMITER, SPLIT_LIMIT);
-                headers.put(keyValue[INDEX_OF_KEY], keyValue[INDEX_OF_VALUE]);
+                String[] keyValuePair = line.split(DELIMITER, SPLIT_LIMIT);
+                headers.put(keyValuePair[INDEX_OF_KEY], keyValuePair[INDEX_OF_VALUE]);
             }
         } catch (Exception e) {
             e.printStackTrace();

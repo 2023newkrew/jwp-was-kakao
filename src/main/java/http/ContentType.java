@@ -3,7 +3,7 @@ package http;
 import java.util.Arrays;
 
 public enum ContentType {
-    TEXT_HTML(".html", "text/html;charset=utf-8"),
+    TEXT_HTML(".html", "text/html"),
     TEXT_CSS(".css", "text/css"),
     TEXT_JAVASCRIPT(".js", "text/javascript"),
     IMAGE_PNG(".png", "image/png"),
@@ -23,7 +23,7 @@ public enum ContentType {
         this.value = value;
     }
 
-    public static ContentType from(String path) {
+    public static ContentType of(String path) {
         return Arrays.stream(values())
                 .filter(type -> path.endsWith(type.extension))
                 .findFirst()

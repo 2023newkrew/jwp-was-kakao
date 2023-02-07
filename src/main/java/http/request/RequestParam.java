@@ -6,20 +6,21 @@ import java.util.Map;
 public class RequestParam {
     private static final String DELIMITER = "&";
     private static final String KEY_VALUE = "=";
+    private static final RequestParam EMPTY_REQUEST_PARAM = new RequestParam("");
 
     private final Map<String, String> params = new HashMap<>();
-
-    public RequestParam() {}
 
     public RequestParam(String query) {
         if (query == null || query.isEmpty()) {
             return;
         }
         for (String param : query.split(DELIMITER)) {
-            String[] keyValue = param.split(KEY_VALUE, 2);
-            params.put(keyValue[0], keyValue[1]);
+            String[] keyValuePair = param.split(KEY_VALUE, 2);
+            params.put(keyValuePair[0], keyValuePair[1]);
         }
     }
+
+    public static RequestParam empty() { return EMPTY_REQUEST_PARAM; }
 
     public String get(String key) {
         String value = params.get(key);
