@@ -1,8 +1,5 @@
 package model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class User {
     private String userId;
     private String password;
@@ -35,23 +32,5 @@ public class User {
     @Override
     public String toString() {
         return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
-    }
-
-    public static User fromQueryString(String query) {
-        String[] queryParameters  = query.split("&");
-        Map<String, String> attributes = new HashMap<>();
-
-        for (String queryParameter : queryParameters) {
-            String key = queryParameter.split("=")[0];
-            String value = queryParameter.split("=")[1];
-            attributes.put(key, value);
-        }
-
-        return new User(
-                attributes.get("userId"),
-                attributes.get("password"),
-                attributes.get("name"),
-                attributes.get("email")
-        );
     }
 }

@@ -19,29 +19,33 @@ public class UserController {
     }
 
     public HttpResponse createUserGet(HttpRequest request) {
-        String query = request.getUri().getQuery();
-        User user = User.fromQueryString(query);
+        User user = new User(
+                request.getParam("userId").orElseThrow(),
+                request.getParam("password").orElseThrow(),
+                request.getParam("name").orElseThrow(),
+                request.getParam("email").orElseThrow()
+        );
 
         DataBase.addUser(user);
 
-        HttpResponse response = new HttpResponse.Builder()
+        return new HttpResponse.Builder()
                 .addAttribute(HttpHeaders.CONTENT_TYPE, "text/html;charset=utf-8")
                 .build();
-
-        return response;
     }
 
     public HttpResponse createUserPost(HttpRequest request) {
-        String query = request.getBody();
-        User user = User.fromQueryString(query);
+        User user = new User(
+                request.getParam("userId").orElseThrow(),
+                request.getParam("password").orElseThrow(),
+                request.getParam("name").orElseThrow(),
+                request.getParam("email").orElseThrow()
+        );
 
         DataBase.addUser(user);
 
-        HttpResponse response = new HttpResponse.Builder()
+        return new HttpResponse.Builder()
                 .status(HttpStatus.FOUND)
                 .addAttribute(HttpHeaders.LOCATION, "/index.html")
                 .build();
-
-        return response;
     }
 }
