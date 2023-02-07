@@ -10,6 +10,9 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    private static final String CRLF = "\r\n";
+
     @Test
     void socketOut() {
         // given
@@ -20,7 +23,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = String.join("\r\n",
+        var expected = String.join(CRLF,
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 11 ",
@@ -33,7 +36,7 @@ class RequestHandlerTest {
     @Test
     void index() throws IOException, URISyntaxException {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET /index.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
@@ -49,11 +52,10 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
+        var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 6902 " + CRLF,
+                new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -61,7 +63,7 @@ class RequestHandlerTest {
     @Test
     void wrongHtmlPath() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET /indexx.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
@@ -76,9 +78,7 @@ class RequestHandlerTest {
 
         // then
 
-
-        var expected = "HTTP/1.1 404 Not Found \r\n" +
-                "\r\n";
+        var expected = "HTTP/1.1 404 Not Found " + CRLF +CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -86,7 +86,7 @@ class RequestHandlerTest {
     @Test
     void css() throws IOException, URISyntaxException {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET ./css/styles.css HTTP/1.1",
                 "Host: localhost:8080",
                 "Accept: text/css,*/*;q=0.1",
@@ -104,11 +104,10 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 7065 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
+        var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 7065 " + CRLF,
+                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css")));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -116,7 +115,7 @@ class RequestHandlerTest {
     @Test
     void anotherCss() throws IOException, URISyntaxException {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET ./css/bootstrap.min.css HTTP/1.1",
                 "Host: localhost:8080",
                 "Accept: text/css,*/*;q=0.1",
@@ -134,11 +133,10 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 109518 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("static/css/bootstrap.min.css"));
+        var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 109518 " + CRLF,
+                new String(FileIoUtils.loadFileFromClasspath("static/css/bootstrap.min.css")));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -146,7 +144,7 @@ class RequestHandlerTest {
     @Test
     void wrongCssPath() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET ./css/bootstrap..min.css HTTP/1.1",
                 "Host: localhost:8080",
                 "Accept: text/css,*/*;q=0.1",
@@ -164,8 +162,7 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 404 Not Found \r\n" +
-                "\r\n";
+        var expected = "HTTP/1.1 404 Not Found " + CRLF + CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -173,7 +170,7 @@ class RequestHandlerTest {
     @Test
     void form() throws IOException, URISyntaxException {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET /user/form.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
@@ -189,11 +186,10 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 5168 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html"));
+        var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 5168 " + CRLF,
+                new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html")));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -201,7 +197,7 @@ class RequestHandlerTest {
     @Test
     void createUserByGet() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
@@ -216,9 +212,8 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 302 Found \r\n" +
-                "Location: /index.html \r\n" +
-                "\r\n";
+        var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Location: /index.html " + CRLF + CRLF);
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -226,7 +221,7 @@ class RequestHandlerTest {
     @Test
     void cannotCreateUserByGetWithWrongParameter() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GET /user/create?userId=cu&password=password&name=%EC=9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
@@ -241,8 +236,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 400 Bad Request \r\n" +
-                "\r\n";
+        var expected = "HTTP/1.1 400 Bad Request " + CRLF + CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -250,7 +244,7 @@ class RequestHandlerTest {
     @Test
     void cannotCreateUserByGetWithWrongMethod() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "GETT /user/create?userId=cu&password=password&name=%EC9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
@@ -265,8 +259,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 400 Bad Request \r\n" +
-                "\r\n";
+        var expected = "HTTP/1.1 400 Bad Request " + CRLF + CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -275,7 +268,7 @@ class RequestHandlerTest {
     @Test
     void createUserByPost() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "POST /user/create HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
@@ -292,9 +285,8 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 302 Found \r\n" +
-                "Location: /index.html \r\n" +
-                "\r\n";
+        var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Location: /index.html " + CRLF + CRLF);
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -302,7 +294,7 @@ class RequestHandlerTest {
     @Test
     void cannotCreateUserByPostWithWrongBodyQueryString() {
         // given
-        final String httpRequest = String.join("\r\n",
+        final String httpRequest = String.join(CRLF,
                 "POST /user/create HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
@@ -319,8 +311,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 400 Bad Request \r\n" +
-                "\r\n";
+        var expected = "HTTP/1.1 400 Bad Request " + CRLF + CRLF;
 
         assertThat(socket.output()).isEqualTo(expected);
     }
