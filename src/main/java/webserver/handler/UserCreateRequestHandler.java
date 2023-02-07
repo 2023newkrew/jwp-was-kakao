@@ -57,12 +57,12 @@ public class UserCreateRequestHandler implements UrlMappingHandler {
     public String getUrlMappingRegex() {
         return URL_MAPPING_REGEX;
     }
-    
-    private Map<String, String> parseBody(String body){
+
+    private Map<String, String> parseBody(String body) {
         Map<String, String> params = new HashMap<>();
-        
+
         String[] splitParams = body.split("&");
-        
+
         Arrays.stream(splitParams)
                 .filter(param -> !param.isBlank())
                 .map(param -> param.split("=", 2))

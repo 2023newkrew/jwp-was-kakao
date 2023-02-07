@@ -1,7 +1,6 @@
 package webserver.handler;
 
 import http.*;
-import http.exception.HttpRequestFormatException;
 import utils.FileIoUtils;
 
 import java.io.IOException;

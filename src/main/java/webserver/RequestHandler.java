@@ -1,13 +1,13 @@
 package webserver;
 
+import http.HttpRequest;
+import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.handler.Handler;
-import http.HttpRequest;
 import webserver.handler.StaticResourceRequestHandler;
 import webserver.handler.UrlMappingHandler;
 import webserver.http.HttpRequestReader;
-import http.HttpResponse;
 import webserver.support.GlobalExceptionHandler;
 
 import java.io.DataOutputStream;

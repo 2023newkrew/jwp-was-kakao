@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HttpRequestHeaderParserTest {
 
@@ -16,8 +16,8 @@ class HttpRequestHeaderParserTest {
     void parseHeaderString() {
         String headerString =
                 "Header1: value1\r\n" +
-                "Header2: value2,value3\r\n" +
-                "Header-3: ";
+                        "Header2: value2,value3\r\n" +
+                        "Header-3: ";
 
         HttpRequestHeaderParser httpRequestHeaderParser = new HttpRequestHeaderParser();
         Map<String, List<String>> headers = httpRequestHeaderParser.parse(headerString);

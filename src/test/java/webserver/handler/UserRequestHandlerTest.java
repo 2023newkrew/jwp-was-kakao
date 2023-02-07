@@ -1,18 +1,15 @@
 package webserver.handler;
 
 import http.*;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UserRequestHandlerTest {
 

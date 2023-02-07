@@ -75,6 +75,7 @@ public class HttpResponse {
                 ", body=" + new String(body) +
                 '}';
     }
+
     public static final class HttpResponseBuilder {
         private HttpStatus status;
         private String version;

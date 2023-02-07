@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     }
 
     private void responseBadRequest() {
-        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())){
+        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())) {
             HttpResponse httpResponse =
                     HttpResponse.HttpResponseBuilder.aHttpResponse()
                             .withVersion("HTTP/1.1")
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     }
 
     private void responseInternalServerError() {
-        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())){
+        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())) {
             HttpResponse httpResponse =
                     HttpResponse.HttpResponseBuilder.aHttpResponse()
                             .withVersion("HTTP/1.1")

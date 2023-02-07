@@ -12,7 +12,8 @@ public class HttpRequest {
     private Map<String, List<String>> headers;
     private String body;
 
-    private HttpRequest() {}
+    private HttpRequest() {
+    }
 
     public HttpMethod getMethod() {
         return method;
