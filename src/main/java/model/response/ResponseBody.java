@@ -1,10 +1,11 @@
 package model.response;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class ResponseBody {
     byte[] body;
+
+    public ResponseBody() {
+        this.body = "".getBytes();
+    }
 
     public ResponseBody(byte[] body) {
         this.body = body;

@@ -4,6 +4,7 @@ import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.annotation.Api;
 import model.response.HttpResponse;
+import utils.ResponseBuilder;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.UserService;
@@ -33,22 +34,18 @@ public class UserController extends ApiController {
     }
 
     @Api(method = HttpMethod.POST, url = "/user/create")
-    public void register(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public HttpResponse register(HttpRequest request) {
         userService.addUser(request);
 
-        response.setHeaderAttribute(LOCATION, "/index.html");
-
-//        response302Header(dos, response);
+        return ResponseBuilder.found("/index.html");
     }
 
     @Api(method = HttpMethod.GET, url = "/user/list.html")
-    public void showUserList(HttpRequest request){
+    public HttpResponse showUserList(HttpRequest request){
         if (request.findHeaderValue(COOKIE,  null) == null) {
-//            response.setHeaderAttribute(LOCATION, "/index.html");
-//            response302Header(dos, response);
-            return;
+            return ResponseBuilder.found("/index.html");
         }
 
-        ViewResolver.resolve(handleUserListTemplate());
+        return ViewResolver.resolve(handleUserListTemplate());
     }
 }

@@ -38,27 +38,19 @@ public class LoginController extends ApiController {
     }
 
     @Api(method = HttpMethod.GET, url = "/user/login.html")
-    public void showLoginPage(HttpRequest request) {
-        ViewResolver.resolve(request);
+    public HttpResponse showLoginPage(HttpRequest request) {
+        return ViewResolver.resolve(request);
     }
 
     @Api(method = HttpMethod.POST, url = "/user/login")
-    public void login(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
+    public HttpResponse login(HttpRequest request) throws IOException {
         Optional<User> loginUser = loginService.login(request);
 
         if (loginUser.isEmpty()) {
-            doResponse(dos, ResponseBuilder.found("/user/login_failed.html"));
-            return;
+            return ResponseBuilder.found("/user/login_failed.html");
         }
-//        String UUID = randomUUID().toString();
-//        response.setHeaderAttribute(LOCATION, "/index.html");
-//        response.setHeaderAttribute(SET_COOKIE, "JSESSIONID=" + UUID + "; Path=/");
-//        SessionManager
-//                .findSession(USER_SESSION_UUID)
-//                .setAttribute(UUID, loginUser.get());
 
-        doResponse(dos, ResponseBuilder.found("/user/login_failed.html"));
-
+        return ResponseBuilder.found("/user/index.html");
     }
 
 }
