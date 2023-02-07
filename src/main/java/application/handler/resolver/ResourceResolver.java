@@ -1,4 +1,4 @@
-package webserver.handler.resolver.resource;
+package application.handler.resolver;
 
 import webserver.handler.resolver.AbstractResolver;
 import webserver.http.content.Content;

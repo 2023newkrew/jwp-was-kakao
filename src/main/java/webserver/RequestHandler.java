@@ -34,17 +34,4 @@ public class RequestHandler implements Runnable {
             e.printStackTrace();
         }
     }
-    //
-    //    private Response handle(Request request) {
-    //        if (controllers.isControllable(request)) {
-    //            return controllers.control(request);
-    //        }
-    //
-    //        if (resolvers.isResolvable(request)) {
-    //            var content = resolvers.resolve(request);
-    //            return new Response(HttpStatus.OK, content);
-    //        }
-    //
-    //        throw new RuntimeException();
-    //    }
 }

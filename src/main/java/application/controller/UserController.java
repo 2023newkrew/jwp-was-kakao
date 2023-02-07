@@ -1,9 +1,10 @@
-package webserver.handler.controller;
+package application.controller;
 
-import db.DataBase;
-import model.User;
+import application.db.DataBase;
+import application.model.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import webserver.handler.controller.Controller;
 import webserver.http.Headers;
 import webserver.http.request.Request;
 import webserver.http.request.path.PathVariables;

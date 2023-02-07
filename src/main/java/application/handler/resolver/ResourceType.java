@@ -1,4 +1,4 @@
-package webserver.handler.resolver.resource;
+package application.handler.resolver;
 
 import webserver.http.content.ContentType;
 

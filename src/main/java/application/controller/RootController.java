@@ -1,7 +1,8 @@
-package webserver.handler.controller;
+package application.controller;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import webserver.handler.controller.Controller;
 import webserver.http.content.Content;
 import webserver.http.content.ContentData;
 import webserver.http.content.ContentType;

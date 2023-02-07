@@ -1,10 +1,10 @@
 package webserver.io;
 
 import org.springframework.http.HttpMethod;
-import utils.IOUtils;
 import webserver.http.Headers;
 import webserver.http.request.Request;
 import webserver.http.request.path.URL;
+import webserver.utils.IOUtils;
 
 import java.io.*;
 import java.net.URLDecoder;

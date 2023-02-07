@@ -1,6 +1,7 @@
-package webserver.handler;
+package application.handler;
 
 import org.springframework.http.HttpStatus;
+import webserver.handler.Handler;
 import webserver.handler.resolver.Resolvers;
 import webserver.http.content.Content;
 import webserver.http.request.Request;

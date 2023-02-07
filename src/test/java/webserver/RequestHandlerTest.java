@@ -1,18 +1,18 @@
 package webserver;
 
-import db.DataBase;
-import model.User;
+import application.controller.RootController;
+import application.controller.UserController;
+import application.db.DataBase;
+import application.handler.ResourceHandler;
+import application.handler.resolver.ResourceResolver;
+import application.handler.resolver.ViewResolver;
+import application.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import utils.FileIoUtils;
 import webserver.handler.Handlers;
-import webserver.handler.ResourceHandler;
-import webserver.handler.controller.RootController;
-import webserver.handler.controller.UserController;
 import webserver.handler.resolver.Resolvers;
-import webserver.handler.resolver.resource.ResourceResolver;
-import webserver.handler.resolver.view.ViewResolver;
+import webserver.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
