@@ -7,22 +7,27 @@ import utils.response.HttpResponseVersion1;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
  * GetController makes appropriate response when getting "GET request"
  */
 public class GetController extends Controller {
+    private final HttpResponse defaultHttpResponse = new HttpResponseVersion1()
+            .setResponseCode(200)
+            .setHeader("Content-Type", "text/html;charset=utf-8")
+            .setBody("Hello world".getBytes(StandardCharsets.UTF_8));
+            //Content-Type: text/html;charset=utf-8
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         try {
             String modifiedURL = urlConverter(httpRequest.getURI().getPath());
             return new HttpResponseVersion1().setResponseCode(200)
                     .setHeader("Content-Type", getAppropriateContentType(httpRequest))
                     .setBody(FileIoUtils.loadFileFromClasspath(modifiedURL));
-        } catch(URISyntaxException | NullPointerException e){ // URI가 valid하지 않거나, URI가 null이라면
-            return new HttpResponseVersion1().setResponseCode(404);
-        } catch (IOException e){ // 파일 읽기/쓰기 관련 에러가 나는경우
-            return new HttpResponseVersion1().setResponseCode(500);
+        } catch(URISyntaxException | IOException | NullPointerException e){ // URI가 valid하지 않거나, URI가 null이거나 한다면
+            e.printStackTrace();
+            return defaultHttpResponse;
         }
     }
 
@@ -52,9 +57,11 @@ public class GetController extends Controller {
 
     private String extractFileFormat(String path){
         String[] splitPath = path.split("/");
+        if (splitPath.length == 0){
+            return null;
+        }
         String filename = splitPath[splitPath.length-1];
         String[] splitFilename = filename.split("\\.");
-
         if (splitFilename.length <= 1){
             return null;
         }

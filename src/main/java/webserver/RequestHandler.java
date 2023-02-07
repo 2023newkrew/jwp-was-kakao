@@ -41,6 +41,7 @@ public class RequestHandler implements Runnable {
             Controller rootController = new RootController();
             rootController.makeResponse(httpRequest).respond(dos);
         } catch(RuntimeException e){ // If RuntimeException Occurs,
+            e.printStackTrace();
             new HttpResponseVersion1().setResponseCode(400).respond(dos); // Respond 400(Bad Request)
         }
     }
