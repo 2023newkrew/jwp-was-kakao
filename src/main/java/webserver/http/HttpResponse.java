@@ -19,7 +19,7 @@ public class HttpResponse {
         return body;
     }
 
-    public HttpStatus getHttpStatus() {
+    public HttpStatus getStatus() {
         return httpStatus;
     }
 
