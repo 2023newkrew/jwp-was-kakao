@@ -3,7 +3,8 @@ package annotation;
 public enum StatusCode {
     OK(200, "OK"),
     CREATED(201, "CREATED"),
-    NOT_FOUND(404, "NOT_FOUND");
+    NOT_FOUND(404, "NOT_FOUND"),
+    FOUND(302, "FOUND");
 
     private int code;
     private String description;

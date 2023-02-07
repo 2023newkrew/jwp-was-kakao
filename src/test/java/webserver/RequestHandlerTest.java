@@ -103,8 +103,8 @@ class RequestHandlerTest {
         // when
         handler.run();
 
-        var expected = "HTTP/1.1 201 CREATED \r\n" +
-                "Location: /user/1\r\n";
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: /index.html\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);
     }

@@ -77,11 +77,11 @@ public class MainController {
     @RequestBody
     @Mapping(method = RequestMethod.POST, path="/user/create")
     public static Optional<Response> createUser(String body){
-        Long id = UserService.createUser(body);
+        UserService.createUser(body);
         return Optional.of(Response.builder()
                 .version(Version.HTTP_1_1)
-                .statusCode(StatusCode.CREATED)
-                .location("/user/"+id)
+                .statusCode(StatusCode.FOUND)
+                .location("/index.html")
                 .build());
     }
 }
