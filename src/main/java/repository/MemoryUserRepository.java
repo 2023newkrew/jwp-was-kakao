@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import model.User;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -19,8 +20,12 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User findUserById(String userId) {
-        return users.get(userId);
+    public Optional<User> findUserById(String userId) {
+        if (users.containsKey(userId)) {
+            return Optional.of(users.get(userId));
+        }
+        return Optional.empty();
+
     }
 
     @Override

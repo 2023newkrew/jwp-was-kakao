@@ -17,7 +17,8 @@ public class RequestMappingHandler {
 
         java.lang.reflect.Method[] methods = controller.getClass().getMethods();
         Method invokeMethod = Arrays.stream(methods).filter(method ->
-                        method.getAnnotation(CustomRequestMapping.class).method() == request.getMethod() &&
+                        method.isAnnotationPresent(CustomRequestMapping.class) &&
+                                method.getAnnotation(CustomRequestMapping.class).method() == request.getMethod() &&
                                 method.getAnnotation(CustomRequestMapping.class).path().equals(BASE_URL + request.getPath()))
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);

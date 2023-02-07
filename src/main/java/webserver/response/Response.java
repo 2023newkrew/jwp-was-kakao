@@ -24,6 +24,9 @@ public class Response {
     private static final String HTTP_VERSION = "HTTP/1.1";
     private static final String HEADER_SEPARATOR = ":";
     private static final String NEW_LINE = "\r\n";
+    private static final String SET_COOKIE = "Set-Cookie";
+    private static final String JSESSIONID = "JSESSIONID";
+    private static final String PATH = "path";
 
     // Method
     public static Response ok(byte[] body, FileType fileType) {
@@ -43,6 +46,10 @@ public class Response {
                 responseHeader,
                 body
         );
+    }
+
+    public void setCookie(String name, String path) {
+        responseHeader.put(SET_COOKIE, JSESSIONID + "=" + name + "; " + PATH + "=" + path);
     }
 
     private static Map<String, String> generateResponseHeader(byte[] body, FileType fileType) {
