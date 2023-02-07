@@ -4,10 +4,12 @@ import java.net.URI;
 import java.util.Optional;
 
 public class HttpRequest {
+    private final HttpRequestLine httpRequestLine;
     private final HttpRequestHeader httpRequestHeader;
     private final HttpRequestBody httpRequestBody;
 
-    public HttpRequest(HttpRequestHeader httpRequestHeader, HttpRequestBody httpRequestBody) {
+    public HttpRequest(HttpRequestLine httpRequestLine, HttpRequestHeader httpRequestHeader, HttpRequestBody httpRequestBody) {
+        this.httpRequestLine = httpRequestLine;
         this.httpRequestHeader = httpRequestHeader;
         this.httpRequestBody = httpRequestBody;
     }
@@ -17,19 +19,19 @@ public class HttpRequest {
     }
 
     public String getMethod() {
-        return httpRequestHeader.getMethod();
+        return httpRequestLine.getMethod();
     }
 
     public URI getUri() {
-        return httpRequestHeader.getUri();
+        return httpRequestLine.getUri();
     }
 
     public String getPath() {
-        return httpRequestHeader.getUri().getPath();
+        return httpRequestLine.getUri().getPath();
     }
 
     public String getHttpVersion() {
-        return httpRequestHeader.getHttpVersion();
+        return httpRequestLine.getHttpVersion();
     }
 
     public String  getBody() {

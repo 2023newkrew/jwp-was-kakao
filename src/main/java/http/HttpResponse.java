@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
-    private final HttpResponseHeader header;
-    private final HttpResponseBody body;
+    private final HttpResponseLine responseLine;
+    private final HttpResponseHeader responseHeader;
+    private final HttpResponseBody responseBody;
 
-    public HttpResponse(HttpResponseHeader header, HttpResponseBody body) {
-        this.header = header;
-        this.body = body;
+    public HttpResponse(HttpResponseLine responseLine, HttpResponseHeader responseHeader, HttpResponseBody responseBody) {
+        this.responseLine = responseLine;
+        this.responseHeader = responseHeader;
+        this.responseBody = responseBody;
     }
 
     public static class Builder {
@@ -47,7 +49,8 @@ public class HttpResponse {
 
         public HttpResponse build() {
             return new HttpResponse(
-                    new HttpResponseHeader(this.httpVersion, this.status, this.headers),
+                    new HttpResponseLine(this.httpVersion, this.status),
+                    new HttpResponseHeader(this.headers),
                     new HttpResponseBody(this.body)
             );
         }
@@ -55,9 +58,9 @@ public class HttpResponse {
 
     public byte[] getBytes() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        bos.write(header.getResponseHeader());
-        bos.write(body.getBody());
+        bos.write(responseLine.getBytes());
+        bos.write(responseHeader.getBytes());
+        bos.write(responseBody.getBytes());
 
         return bos.toByteArray();
     }

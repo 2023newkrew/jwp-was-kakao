@@ -11,7 +11,7 @@ class HttpResponseBody {
         return new HttpResponseBody(body.getBytes());
     }
 
-    public byte[] getBody() {
+    public byte[] getBytes() {
         return body;
     }
 }

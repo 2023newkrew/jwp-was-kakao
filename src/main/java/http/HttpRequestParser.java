@@ -13,18 +13,13 @@ public class HttpRequestParser {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestHeader.class);
 
     public static HttpRequest parse(InputStream in) throws IOException {
-
-
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String line = br.readLine();
-        String[] startLine = line.split(" ");
+        String startLine = br.readLine();
 
-        HttpRequestHeader httpRequestHeader = new HttpRequestHeader(
-                startLine[0],
-                startLine[1],
-                startLine[2]
-        );
+        HttpRequestLine httpRequestLine = HttpRequestLine.from(startLine);
+        HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
 
+        String line = "";
         while(!(line = br.readLine()).equals("")) {
             String[] header = line.split(": ");
             HttpHeaders key = HttpHeaders.valueOf(header[0].toUpperCase().replace("-", "_"));
@@ -33,14 +28,15 @@ public class HttpRequestParser {
             httpRequestHeader.addAttribute(key, value);
         }
 
+        String bodyData = IOUtils.readData(
+                br,
+                Integer.parseInt(httpRequestHeader.getAttribute(HttpHeaders.CONTENT_LENGTH).orElse("0"))
+        );
+
         return new HttpRequest(
+                httpRequestLine,
                 httpRequestHeader,
-                new HttpRequestBody(
-                        IOUtils.readData(
-                                br,
-                                Integer.parseInt(httpRequestHeader.getAttribute(HttpHeaders.CONTENT_LENGTH).orElse("0"))
-                        )
-                )
+                new HttpRequestBody(bodyData)
         );
     }
 }
