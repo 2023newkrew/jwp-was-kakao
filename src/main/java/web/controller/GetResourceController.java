@@ -16,6 +16,7 @@ import static http.HttpHeaders.CONTENT_TYPE;
 public class GetResourceController implements Controller {
 
     private static final String HTML_SUFFIX = ".html";
+    private static final String ICON_SUFFIX = ".ico";
     private static final String TEMPLATE_PATH = "templates";
     private static final String STATIC_PATH = "static";
 
@@ -41,7 +42,7 @@ public class GetResourceController implements Controller {
     private String getSuffix(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
 
-        if (path.contains(HTML_SUFFIX)) {
+        if (path.contains(HTML_SUFFIX) || path.contains(ICON_SUFFIX)) {
             return TEMPLATE_PATH;
         }
 

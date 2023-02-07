@@ -9,24 +9,28 @@ import static error.ErrorType.UNSUPPORTED_CONTENT_TYPE;
 
 public enum ContentType {
 
-    TEXT_HTML("text/html", "utf-8", "html", "htm"),
-    TEXT_CSS("text/css", "utf-8", "css"),
-    TEXT_PLAIN("text/plain", "utf-8"),
-    APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded", "utf-8")
+    TEXT_HTML("text/html", "html", "htm"),
+    TEXT_CSS("text/css", "css"),
+    TEXT_JAVASCRIPT("text/javascript", "js"),
+    TEXT_PLAIN("text/plain"),
+    IMAGE_X_ICON("image/x-icon", "ico"),
+    APPLICATION_X_FONT_TTF("application/x-font-ttf", "ttf"),
+    APPLICATION_X_FONT_WOFF("application/x-font-woff", "woff"),
+    APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
     ;
 
     private final String contentType;
     private final String charset;
     private final List<String> suffix;
 
-    ContentType(String contentType, String charset, String... suffix) {
+    ContentType(String contentType, String... suffix) {
         this.contentType = contentType;
-        this.charset = charset;
+        this.charset = "utf-8";
         this.suffix = List.of(suffix);
     }
 
     public static ContentType from(String resourcePath) {
-        String suffix = resourcePath.substring(resourcePath.indexOf(".") + 1);
+        String suffix = resourcePath.substring(resourcePath.lastIndexOf(".") + 1);
 
         return Arrays.stream(ContentType.values())
                 .filter(contentType -> contentType.suffix.contains(suffix))
