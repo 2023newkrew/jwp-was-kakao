@@ -39,7 +39,7 @@
 
 ## 리팩터링 중점 사안
 - [x] FileType이 static 경로에 있는지를 FileType에 메시지 던져서 해결
-- [ ] Request를 RequestLine, Headers, RequestBody의 wrapper 클래스로 감싸기
+- [x] Request를 RequestLine, Headers, RequestBody의 wrapper 클래스로 감싸기
 - [ ] 매직 넘버 상수화
-- [ ] HTTP Header를 enum으로 관리
+- [x] HTTP Header를 enum으로 관리
 - [ ] 단위테스트 작성
