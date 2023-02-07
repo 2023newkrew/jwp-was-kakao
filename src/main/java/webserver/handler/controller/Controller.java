@@ -7,7 +7,7 @@ import webserver.http.response.Response;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class Controller implements Handler {
+public abstract class Controller implements Handler {
 
     protected final MethodHandlers methodHandlers = new MethodHandlers();
 

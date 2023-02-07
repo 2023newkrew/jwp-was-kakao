@@ -7,7 +7,6 @@ import webserver.http.content.ContentData;
 import webserver.http.content.ContentType;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
-import webserver.http.response.ResponseHeader;
 
 public class RootController extends Controller {
 
@@ -20,6 +19,6 @@ public class RootController extends Controller {
         ContentData contentData = new ContentData(data);
         Content content = new Content(ContentType.TEXT_HTML, contentData);
 
-        return new Response(new ResponseHeader(HttpStatus.OK, content), content);
+        return new Response(HttpStatus.OK, content);
     }
 }

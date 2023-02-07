@@ -8,7 +8,6 @@ import webserver.http.Headers;
 import webserver.http.request.Request;
 import webserver.http.request.path.PathVariables;
 import webserver.http.response.Response;
-import webserver.http.response.ResponseHeader;
 
 public class UserController extends Controller {
 
@@ -26,7 +25,7 @@ public class UserController extends Controller {
         );
         DataBase.addUser(user);
 
-        return new Response(new ResponseHeader(HttpStatus.FOUND, createHeaders()));
+        return new Response(HttpStatus.FOUND, null, createHeaders());
     }
 
     private static Headers createHeaders() {

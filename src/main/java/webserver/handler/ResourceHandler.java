@@ -5,7 +5,6 @@ import webserver.handler.resolver.Resolvers;
 import webserver.http.content.Content;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
-import webserver.http.response.ResponseHeader;
 
 public class ResourceHandler implements Handler {
 
@@ -24,6 +23,6 @@ public class ResourceHandler implements Handler {
     public Response handle(Request request) {
         Content content = resolvers.resolve(request.getPath());
 
-        return new Response(new ResponseHeader(HttpStatus.OK, content), content);
+        return new Response(HttpStatus.OK, content);
     }
 }

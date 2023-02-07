@@ -1,8 +1,9 @@
-package webserver.http.response;
+package webserver.io;
 
 import org.springframework.http.HttpStatus;
 import webserver.http.Headers;
 import webserver.http.content.Content;
+import webserver.http.response.Response;
 
 import java.util.Objects;
 
@@ -12,19 +13,11 @@ public class ResponseHeader {
 
     private final Headers headers;
 
-    public ResponseHeader(HttpStatus httpStatus) {
-        this(httpStatus, (Content) null);
+    public ResponseHeader(Response response) {
+        this(response.getHttpStatus(), response.getBody(), response.getHeaders());
     }
 
-    public ResponseHeader(HttpStatus httpStatus, Content body) {
-        this(httpStatus, new Headers(), body);
-    }
-
-    public ResponseHeader(HttpStatus httpStatus, Headers headers) {
-        this(httpStatus, headers, null);
-    }
-
-    public ResponseHeader(HttpStatus httpStatus, Headers headers, Content body) {
+    public ResponseHeader(HttpStatus httpStatus, Content body, Headers headers) {
         this.header = "HTTP/1.1 " + httpStatus + " \r\n";
         this.headers = headers;
         putHeader(body);
