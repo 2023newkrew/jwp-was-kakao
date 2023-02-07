@@ -1,10 +1,7 @@
 package http;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpResponse {
     private HttpStatus status;
@@ -28,13 +25,66 @@ public class HttpResponse {
         return body;
     }
 
+    public byte[] toBytes() {
+        StringBuilder sb = new StringBuilder();
+
+        byte[] statusLineAndHeaders = sb.append(generateStatusLine())
+                .append(generateHeaderLines())
+                .append("\r\n")
+                .toString()
+                .getBytes();
+
+        if (body == null || body.length == 0) {
+            return statusLineAndHeaders;
+        }
+
+        byte[] response = new byte[statusLineAndHeaders.length + body.length];
+        System.arraycopy(statusLineAndHeaders, 0, response, 0, statusLineAndHeaders.length);
+        System.arraycopy(body, 0, response, statusLineAndHeaders.length, body.length);
+
+        return response;
+    }
+
+    private String generateHeaderLines() {
+        if (headers == null || headers.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        headers.keySet()
+                .forEach(headerName -> {
+                    String values = String.join(",", headers.get(headerName));
+                    sb.append(headerName).append(": ").append(values).append("\r\n");
+                });
+
+        return sb.toString();
+    }
+
+    private String generateStatusLine() {
+        return version + " " +
+                status.getCode() + " " +
+                status.getMessage() + "\r\n";
+    }
+
+    @Override
+    public String toString() {
+        return "HttpResponse{" +
+                "status=" + status +
+                ", version='" + version + '\'' +
+                ", headers=" + headers +
+                ", body=" + new String(body) +
+                '}';
+    }
     public static final class HttpResponseBuilder {
         private HttpStatus status;
         private String version;
         private Map<String, List<String>> headers;
+
         private byte[] body;
 
         private HttpResponseBuilder() {
+            headers = Map.of();
+            body = new byte[0];
         }
 
         public static HttpResponseBuilder aHttpResponse() {
@@ -69,38 +119,5 @@ public class HttpResponse {
             httpResponse.status = this.status;
             return httpResponse;
         }
-    }
-
-    @Override
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(version).append(" ").append(status.getCode()).append(" ").append(status.name()).append(" \r\n");
-        if (headers!=null && !headers.isEmpty()) {
-            for (String key : headers.keySet()) {
-                String values = String.join(",", headers.get(key));
-                sb.append(key).append(": ").append(values).append(" \r\n");
-            }
-        }
-        sb.append("\r\n");
-
-        return sb.toString();
-    }
-
-    public byte[] toBytes() throws IOException{
-        StringBuilder sb = new StringBuilder();
-        sb.append(version).append(" ").append(status.getCode()).append(" ").append(status.name()).append(" \r\n");
-        if (headers!=null && !headers.isEmpty()) {
-            for (String key : headers.keySet()) {
-                String values = String.join(",", headers.get(key));
-                sb.append(key).append(": ").append(values).append(" \r\n");
-            }
-        }
-        sb.append("\r\n");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(sb.toString().getBytes());
-        if(body != null) {
-            outputStream.write(body);
-        }
-        return outputStream.toByteArray();
     }
 }

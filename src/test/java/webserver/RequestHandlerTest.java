@@ -20,9 +20,9 @@ class RequestHandlerTest {
     void index() throws IOException, URISyntaxException {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET /index.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
+                "GET /index.html HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
                 "",
                 "");
 
@@ -35,9 +35,9 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
+        var expected = "HTTP/1.1 200 OK\r\n" +
+                "Content-Type: text/html;charset=utf-8\r\n" +
+                "Content-Length: 6902\r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
