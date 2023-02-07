@@ -4,12 +4,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map.Entry;
 import org.springframework.http.HttpStatus;
 
 public class HttpResponse {
-    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     private final HttpStatus status;
     private final Map<String, String> header;
     private final byte[] body;
@@ -39,24 +37,13 @@ public class HttpResponse {
     }
 
     public void writeResponse(DataOutputStream dos) throws IOException{
-        try {
-            dos.writeBytes(getResponseLine());
-            header.forEach((key, value) -> writeLine(dos, key + ": " + value + " \r\n"));
-            dos.writeBytes("\r\n");
-
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        dos.writeBytes(getResponseLine());
+        for (Entry<String, String> entry : header.entrySet()) {
+            dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");
         }
-    }
-    
-    private void writeLine(DataOutputStream dos, String line) {
-        try {
-            dos.writeBytes(line);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        dos.writeBytes("\r\n");
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 
     private String getResponseLine() {
