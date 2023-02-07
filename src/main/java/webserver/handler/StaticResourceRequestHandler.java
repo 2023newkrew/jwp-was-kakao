@@ -1,10 +1,10 @@
 package webserver.handler;
 
+import http.*;
 import utils.FileIoUtils;
-import http.HttpRequest;
-import http.HttpResponse;
-import http.HttpStatus;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,7 @@ import java.util.Map;
 public class StaticResourceRequestHandler implements Handler {
 
     public static final String STATIC_FILEPATH = "./static";
+    public static final String CHARSET_UTF_8 = "charset=utf-8";
 
     public HttpResponse handle(HttpRequest httpRequest) {
         byte[] bytes;
@@ -33,15 +34,13 @@ public class StaticResourceRequestHandler implements Handler {
         Map<String, List<String>> headers = new LinkedHashMap<>();
 
         String url = httpRequest.getURL();
-        if (url.endsWith(".js")) {
-            headers.put("Content-Type", List.of("text/javascript;charset=utf-8"));
-        } else if (url.endsWith(".css")) {
-            headers.put("Content-Type", List.of("text/css;charset=utf-8"));
-        } else {
-            headers.put("Content-Type", List.of("text/html;charset=utf-8"));
-        }
+        int extensionIndex = url.lastIndexOf(".") + 1;
+        String extension = url.substring(extensionIndex);
 
-        headers.put("Content-Length", List.of(String.valueOf(body.length)));
+        headers.put(HttpHeader.CONTENT_TYPE,
+                List.of(HttpContentType.extensionToContentType(extension) + ";" + CHARSET_UTF_8));
+
+        headers.put(HttpHeader.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
 
         return headers;
     }
