@@ -31,7 +31,11 @@ public class HttpRequest {
     }
 
     public Optional<String> getParam(String key) {
-        return httpRequestLine.getParam(key).or(()->httpRequestBody.getParam(key));
+        if(httpRequestLine.getMethod().equals("GET"))
+            return httpRequestLine.getParam(key);
+        if(httpRequestLine.getMethod().equals("POST"))
+            return httpRequestBody.getParam(key);
+        return Optional.empty();
     }
 
     public String getHttpVersion() {
