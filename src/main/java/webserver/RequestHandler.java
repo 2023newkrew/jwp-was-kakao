@@ -48,8 +48,11 @@ public class RequestHandler implements Runnable {
 
                 if (requestPath.equals("/user/create")) {
                     addUser(requestParams);
-                    response302Header(dos, "http://localhost:8080/index.html");
-                    dos.flush();
+                    HttpResponse response = new HttpResponse.Builder()
+                            .setStatus(HttpStatus.OK)
+                            .addHeader("Location", "http://localhost:8080/index.html")
+                            .build();
+                    response.send(dos);
                     return;
                 }
             }
@@ -60,18 +63,20 @@ public class RequestHandler implements Runnable {
                     body = FileIoUtils.loadFileFromClasspath("./templates" + requestPath);
                 } catch (NullPointerException e) {
                     body = FileIoUtils.loadFileFromClasspath("./static" + requestPath);
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
                 }
 
                 String contentType = Files.probeContentType(new File(requestPath).toPath());
-                response200Header(dos, body.length, contentType);
-                responseBody(dos, body);
+                HttpResponse response = new HttpResponse.Builder()
+                        .setStatus(HttpStatus.OK)
+                        .addHeader("Content-Type", contentType)
+                        .setBody(body)
+                        .build();
+                response.send(dos);
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (NullPointerException e) {
-            logger.error("No File");
         }
     }
 
@@ -87,35 +92,5 @@ public class RequestHandler implements Runnable {
                 .email(email)
                 .build();
         DataBase.addUser(user);
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + " \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response302Header(DataOutputStream dos, String location) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + location);
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
     }
 }
