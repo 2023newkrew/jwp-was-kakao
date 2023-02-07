@@ -1,6 +1,6 @@
 package webserver;
 
-import controller.ServletContainer;
+import servlet.ServletContainer;
 import http.HttpMethod;
 import http.Uri;
 import http.request.Request;

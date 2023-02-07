@@ -1,4 +1,4 @@
-package controller;
+package servlet;
 
 import http.ContentType;
 import http.HttpStatus;

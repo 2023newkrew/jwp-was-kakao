@@ -19,9 +19,9 @@ public class ParsingUtils {
         Map<String, String> headers = new HashMap<>();
 
         rawHeader.forEach(item -> {
-                    String[] kv = item.split(":", 2);
-                    headers.put(kv[0].trim(), kv[1].trim());
-                });
+            String[] kv = item.split(":", 2);
+            headers.put(kv[0].trim(), kv[1].trim());
+        });
         return headers;
     }
 
@@ -30,7 +30,9 @@ public class ParsingUtils {
         Arrays.stream(queryString.split("&"))
                 .forEach(item -> {
                     String[] tuple = item.split("=");
-                    newParams.put(tuple[0], tuple[1]);
+                    if (tuple.length == 2) {
+                        newParams.put(tuple[0], tuple[1]);
+                    }
                 });
 
         return newParams;

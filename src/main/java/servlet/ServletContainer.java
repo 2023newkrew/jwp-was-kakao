@@ -1,4 +1,4 @@
-package controller;
+package servlet;
 
 import exception.BadRequestException;
 import exception.NotFoundException;

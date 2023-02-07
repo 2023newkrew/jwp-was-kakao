@@ -1,4 +1,4 @@
-package controller;
+package servlet;
 
 import exception.BadRequestException;
 import http.ContentType;
@@ -37,7 +37,7 @@ public class ResourceServlet implements Servlet {
                     .contentLength(body.length)
                     .body(body)
                     .build();
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | NullPointerException e) {
             throw new BadRequestException();
         }
     }

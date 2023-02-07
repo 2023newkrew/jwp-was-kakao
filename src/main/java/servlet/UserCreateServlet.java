@@ -1,4 +1,4 @@
-package controller;
+package servlet;
 
 import db.DataBase;
 import exception.BadRequestException;
