@@ -10,15 +10,15 @@ public class RequestHeader {
 
     public RequestHeader(String data) {
         String[] arr = data.split("\n");
-        String[] firstLine = arr[0].split(" ");
+        String[] requestLine = arr[0].split(" ");
 
-        header.put("method", firstLine[0]);
-        header.put("URI", firstLine[1]);
-        header.put("version", firstLine[2]);
+        header.put("method", requestLine[0]);
+        header.put("URI", requestLine[1]);
+        header.put("version", requestLine[2]);
 
         for (int i = 1; i < arr.length; i++) {
-            String[] temp = arr[i].split(":", 2);
-            header.put(temp[0], temp[1].trim());
+            String[] line = arr[i].split(":", 2);
+            header.put(line[0], line[1].trim());
         }
     }
 
