@@ -2,10 +2,7 @@ package model.response;
 
 import model.request.RequestHeader;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ResponseHeader {
     private final LinkedHashMap<String, String> headers;
@@ -24,5 +21,9 @@ public class ResponseHeader {
 
     public void put(String key, String value) {
         headers.put(key, value);
+    }
+
+    public Set<Map.Entry<String, String>> getEntrySet() {
+        return headers.entrySet();
     }
 }

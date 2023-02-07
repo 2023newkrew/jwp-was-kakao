@@ -23,7 +23,9 @@ public class FrontController {
 
     static {
         handleControllerMap.put("/user/create", UserController.getInstance());
+        handleControllerMap.put("/user/list.html", UserController.getInstance());
         handleControllerMap.put("/user/login", LoginController.getInstance());
+        handleControllerMap.put("/user/login/success", LoginController.getInstance());
     }
 
     public void handleRequest(HttpRequest request, DataOutputStream dos) {

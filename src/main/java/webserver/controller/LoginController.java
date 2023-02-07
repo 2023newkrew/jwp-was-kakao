@@ -40,10 +40,15 @@ public class LoginController extends ApiController{
         Optional<UUID> loginUUID = loginService.login(request);
 
         if (loginUUID.isEmpty()) {
-            response302Header(dos, "/user/login_failed.html");
+            response.setAttribute(LOCATION, "/user/login_failed.html");
+            response302Header(dos, response);
             return;
         }
+
+        response.setAttribute(LOCATION, "/index.html");
         response.setAttribute(SET_COOKIE, "JSESSIONID=" + loginUUID.get() + "; Path=/");
-        response200Header(dos, response);
+
+        response302Header(dos, response);
     }
+
 }

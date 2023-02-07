@@ -3,6 +3,9 @@ package model.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Map;
+import java.util.Set;
+
 @AllArgsConstructor
 @Getter
 public class HttpResponse {
@@ -14,5 +17,9 @@ public class HttpResponse {
 
     public void setAttribute(String key, String value) {
         header.put(key, value);
+    }
+
+    public Set<Map.Entry<String, String>> getHeaderEntrySet() {
+        return header.getEntrySet();
     }
 }
