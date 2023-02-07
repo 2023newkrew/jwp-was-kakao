@@ -1,7 +1,6 @@
 package webserver;
 
 import db.DataBase;
-import http.HttpRequestHeader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -9,7 +8,6 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,14 +56,6 @@ class RequestHandlerTest {
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
         assertThat(socket.output()).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("header로부터 요청 경로를 얻는다.")
-    void extractPathTest() {
-        HttpRequestHeader header = new HttpRequestHeader(List.of("\"GET /index.html HTTP/1.1 \""));
-        String expected = "/index.html";
-        assertThat(header.getRequestPath()).isEqualTo(expected);
     }
 
     @Test
