@@ -1,18 +1,22 @@
 package controller;
 
-import db.DataBase;
-import model.User;
-
 import java.util.Map;
+import service.UserService;
 
 public class UserController {
-    public String createUser(Map<String, String> params) {
 
-        User user = new User(params.get("userId"),
-                params.get("password"),
-                params.get("name"),
-                params.get("email"));
-        DataBase.addUser(user);
+    private static final UserController instance = new UserController();
+    private static final UserService userService = UserService.getInstance();
+
+    private UserController() {
+    }
+
+    public static UserController getInstance() {
+        return instance;
+    }
+
+    public String createUser(Map<String, String> params) {
+        userService.createUser(params);
         return "";
     }
 }

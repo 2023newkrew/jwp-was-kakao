@@ -1,7 +1,17 @@
 package controller;
 
 public class BaseController {
-    public String hello(){
+
+    private static BaseController instance = new BaseController();
+
+    private BaseController() {
+    }
+
+    public static BaseController getInstance() {
+        return instance;
+    }
+
+    public String hello() {
         return "Hello world";
     }
 }

@@ -14,8 +14,8 @@ import static webserver.HttpMethod.POST;
 
 public class ControllerSelector {
 
-    public final BaseController baseController = new BaseController();
-    private final UserController userController = new UserController();
+    public final BaseController baseController = BaseController.getInstance();
+    private final UserController userController = UserController.getInstance();
 
     public BaseResponseDto runMethod(Request request) {
         String contentType = request.getHeader().getHeaders().get("Accept").split(",")[0];
