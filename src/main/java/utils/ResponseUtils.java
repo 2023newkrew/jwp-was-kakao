@@ -5,7 +5,6 @@ import model.response.HttpResponse;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 
 @UtilityClass
@@ -13,7 +12,7 @@ public class ResponseUtils {
     private static final int  DEFAULT_OFFSET = 0;
 
     public void doResponse(DataOutputStream dos, HttpResponse response) throws IOException {
-        dos.writeBytes(response.getStatus().getStatusLine());
+        dos.writeBytes(response.getStatusLine());
         writeResponseHeader(dos, response);
         dos.writeBytes("\r\n");
 

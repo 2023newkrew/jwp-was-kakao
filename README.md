@@ -20,7 +20,9 @@
 - [x] Delimiter들 상수 처리하기
 - [x] token substring 관련 가독성 높히기
 - [x] requestBody 생성 시 content-type 활용하기
-- [] ResponseUtils 개선하기 (응답 처리 개선)
+- [x] ResponseUtils 개선하기 (응답 처리 개선)
+  - [] throws IOException에 대한 대책 생각
+  - [] in-line 코딩에 대한 의견 제시
 - [] handlerController map에 컨트롤러 매핑시 UserController에 정의되어 있는 값들을 읽어와서 세팅 시도
 - [] 동일한 method, url에 대해서 content-type이 다른 경우 어떻게 처리해야 할지 고민
 

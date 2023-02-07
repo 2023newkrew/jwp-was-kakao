@@ -1,8 +1,12 @@
 package utils;
 
+import constant.HeaderConstant;
 import model.enumeration.HttpStatus;
 import model.response.HttpResponse;
 import model.response.HttpResponse.HttpResponseBuilder;
+import model.response.ResponseHeader;
+
+import static constant.HeaderConstant.*;
 
 public class ResponseBuilder {
     public static HttpResponseBuilder ok() {
@@ -10,13 +14,19 @@ public class ResponseBuilder {
                 .status(HttpStatus.OK);
     }
 
-    public static HttpResponseBuilder found() {
+    public static HttpResponse found(String location) {
+        ResponseHeader header = new ResponseHeader();
+        header.put(LOCATION, location);
+
         return HttpResponse.builder()
-                .status(HttpStatus.FOUND);
+                .status(HttpStatus.FOUND)
+                .header(header)
+                .build();
     }
 
-    public static HttpResponseBuilder notFound() {
+    public static HttpResponse notFound() {
         return HttpResponse.builder()
-                .status(HttpStatus.NOT_FOUND);
+                .status(HttpStatus.NOT_FOUND)
+                .build();
     }
 }

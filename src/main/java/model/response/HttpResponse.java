@@ -42,4 +42,8 @@ public class HttpResponse {
     public Set<Map.Entry<String, String>> getHeaderEntrySet() {
         return header.getEntrySet();
     }
+
+    public String getStatusLine() {
+        return status.getStatusLine();
+    }
 }

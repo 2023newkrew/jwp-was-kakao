@@ -6,6 +6,7 @@ import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
 import model.user.User;
+import utils.ResponseBuilder;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.LoginService;
@@ -37,28 +38,27 @@ public class LoginController extends ApiController {
     }
 
     @Api(method = HttpMethod.GET, url = "/user/login.html")
-    public void showLoginPage(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
-        ViewResolver.resolve(request, dos);
+    public void showLoginPage(HttpRequest request) {
+        ViewResolver.resolve(request);
     }
 
     @Api(method = HttpMethod.POST, url = "/user/login")
-    public void login(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public void login(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
         Optional<User> loginUser = loginService.login(request);
 
         if (loginUser.isEmpty()) {
-            response.setHeaderAttribute(LOCATION, "/user/login_failed.html");
-//            response302Header(dos, response);
+            doResponse(dos, ResponseBuilder.found("/user/login_failed.html"));
             return;
         }
+//        String UUID = randomUUID().toString();
+//        response.setHeaderAttribute(LOCATION, "/index.html");
+//        response.setHeaderAttribute(SET_COOKIE, "JSESSIONID=" + UUID + "; Path=/");
+//        SessionManager
+//                .findSession(USER_SESSION_UUID)
+//                .setAttribute(UUID, loginUser.get());
 
-        String UUID = randomUUID().toString();
-        response.setHeaderAttribute(LOCATION, "/index.html");
-        response.setHeaderAttribute(SET_COOKIE, "JSESSIONID=" + UUID + "; Path=/");
-        SessionManager
-                .findSession(USER_SESSION_UUID)
-                .setAttribute(UUID, loginUser.get());
+        doResponse(dos, ResponseBuilder.found("/user/login_failed.html"));
 
-//        response302Header(dos, response);
     }
 
 }

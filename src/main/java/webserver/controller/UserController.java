@@ -42,13 +42,13 @@ public class UserController extends ApiController {
     }
 
     @Api(method = HttpMethod.GET, url = "/user/list.html")
-    public void showUserList(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
+    public void showUserList(HttpRequest request){
         if (request.findHeaderValue(COOKIE,  null) == null) {
-            response.setHeaderAttribute(LOCATION, "/index.html");
+//            response.setHeaderAttribute(LOCATION, "/index.html");
 //            response302Header(dos, response);
             return;
         }
 
-        ViewResolver.resolve(handleUserListTemplate(), dos);
+        ViewResolver.resolve(handleUserListTemplate());
     }
 }
