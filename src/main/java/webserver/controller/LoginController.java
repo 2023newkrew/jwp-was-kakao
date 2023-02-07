@@ -1,24 +1,26 @@
 package webserver.controller;
 
-import constant.HeaderConstant;
+import db.Session;
+import db.SessionManager;
 import model.annotation.Api;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
-import utils.ResponseUtils;
+import model.user.User;
 import webserver.dao.UserDao;
+import webserver.infra.ViewResolver;
 import webserver.service.LoginService;
-import webserver.service.UserService;
 
-import javax.xml.crypto.Data;
 import java.io.DataOutputStream;
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.UUID;
 
 import static constant.HeaderConstant.*;
+import static constant.SessionUUID.USER_SESSION_UUID;
+import static java.util.UUID.randomUUID;
 import static utils.ResponseUtils.*;
 
-public class LoginController extends ApiController{
+public class LoginController extends ApiController {
     private static final LoginController instance;
 
     private final LoginService loginService;
@@ -35,18 +37,27 @@ public class LoginController extends ApiController{
         return instance;
     }
 
+    @Api(method = HttpMethod.GET, url = "/user/login.html")
+    public void showLoginPage(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+        ViewResolver.resolve(request, response, dos);
+    }
+
     @Api(method = HttpMethod.POST, url = "/user/login")
     public void login(HttpRequest request, HttpResponse response, DataOutputStream dos) {
-        Optional<UUID> loginUUID = loginService.login(request);
+        Optional<User> loginUser = loginService.login(request);
 
-        if (loginUUID.isEmpty()) {
+        if (loginUser.isEmpty()) {
             response.setAttribute(LOCATION, "/user/login_failed.html");
             response302Header(dos, response);
             return;
         }
 
+        String UUID = randomUUID().toString();
         response.setAttribute(LOCATION, "/index.html");
-        response.setAttribute(SET_COOKIE, "JSESSIONID=" + loginUUID.get() + "; Path=/");
+        response.setAttribute(SET_COOKIE, "JSESSIONID=" + UUID + "; Path=/");
+        SessionManager
+                .findSession(USER_SESSION_UUID)
+                .setAttribute(UUID, loginUser.get());
 
         response302Header(dos, response);
     }

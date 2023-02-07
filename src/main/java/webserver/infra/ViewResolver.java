@@ -36,7 +36,6 @@ public class ViewResolver {
     }
 
     public void resolve(TemplateLoadResult templateLoadResult, HttpResponse response, DataOutputStream dos) {
-        System.out.println("templateLoadResult.getContent() = " + templateLoadResult.getContent());
         byte[] body = templateLoadResult.getContent().getBytes();
 
         response.setAttribute(CONTENT_TYPE, DEFAULT_CONTENT_TYPE.split(",")[0]);

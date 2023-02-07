@@ -14,14 +14,14 @@ public class LoginService {
         this.userDao = userDao;
     }
 
-    public Optional<UUID> login(HttpRequest request) {
+    public Optional<User> login(HttpRequest request) {
         Optional<User> user = userDao.findUserByUserId(request.findBodyValue("userId", null));
 
         if (user.isEmpty() || isInvalidLogin(request, user.get())) {
             return Optional.empty();
         }
 
-        return Optional.of(UUID.randomUUID());
+        return user;
     }
 
     private boolean isInvalidLogin(HttpRequest request, User user) {

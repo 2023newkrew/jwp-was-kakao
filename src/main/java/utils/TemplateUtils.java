@@ -25,7 +25,7 @@ public class TemplateUtils {
             Handlebars handlebars = getTemplateHandlerBars();
             Template template = handlebars.compile("user/list");
             List<UserListViewDto> userListViewDtos = mappingAllUserToUserViewDto(new AtomicInteger());
-            System.out.println("userListViewDtos.toString() = " + userListViewDtos.toString());
+
             return TemplateLoadResult.from(
                     template.apply(mappingAllUserToUserViewDto(new AtomicInteger(INITIAL_INDEX)))
             );

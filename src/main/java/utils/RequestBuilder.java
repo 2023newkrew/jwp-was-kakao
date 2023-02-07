@@ -59,7 +59,7 @@ public class RequestBuilder {
             ));
         }
 
-        return RequestBody.of(QueryStringParser.parseQueryString(requestBody));
+        return RequestBody.of(parseQueryString(requestBody));
     }
 
     private boolean isJson(String body) {
