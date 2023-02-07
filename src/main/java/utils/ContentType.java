@@ -19,8 +19,8 @@ public enum ContentType {
     }
 
     public static ContentType setContentType(String s){
-        if (s.startsWith("/css")) return CSS;
-        if (s.startsWith("/js")) return JS;
+        if (s.endsWith("css")) return CSS;
+        if (s.endsWith("js")) return JS;
         if (s.endsWith("ico")) return ICO;
         if (s.endsWith("html")) return HTML;
         if (s.endsWith("ttf")) return TTF;

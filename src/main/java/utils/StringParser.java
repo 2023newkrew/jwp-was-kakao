@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StringParser {
-
     public BufferedReader getBufferReader(InputStream in) {
         return new BufferedReader(new InputStreamReader(in));
     }
@@ -25,17 +24,6 @@ public class StringParser {
         return null;
     }
 
-    public boolean isContentLength(String s){
-        return "Content-Length".equals(s.split(":")[0]);
-    }
-
-    public int getContentLength(String s){
-        if (isContentLength(s)){
-            return Integer.parseInt(s.split(":")[1].trim());
-        }
-        return -1;
-    }
-
     public User getUserInfo(String requestBody) {
         Map<String, String> bodyMap = new HashMap<>();
         for (String splitted : requestBody.split("&")) {
@@ -45,12 +33,15 @@ public class StringParser {
                 bodyMap.get("name"), bodyMap.get("email"));
     }
 
-    public String getUrlType(String requestUrl) {
-        try {
-            String[] urlSplitByDot = requestUrl.split("\\.");
-            return urlSplitByDot[urlSplitByDot.length - 1];
-        } catch (NullPointerException e){
-            return "html";
+    public int getContentLength(String s){
+        if (isContentLength(s)){
+            return Integer.parseInt(s.split(":")[1].trim());
         }
+        return -1;
     }
+
+    private boolean isContentLength(String s){
+        return "Content-Length".equals(s.split(":")[0]);
+    }
+
 }

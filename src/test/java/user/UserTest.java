@@ -3,7 +3,6 @@ package user;
 import db.DataBase;
 import model.User;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import request.RequestHandler;
 import support.StubSocket;
@@ -13,7 +12,6 @@ import java.util.Collection;
 
 public class UserTest {
 
-    @DisplayName("유저의 정보로 회원가입 할 수 있다")
     @Test
     void createUser(){
         // given
