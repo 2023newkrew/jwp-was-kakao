@@ -1,4 +1,4 @@
-package webserver.request;
+package webserver;
 
 import java.util.Arrays;
 
@@ -77,5 +77,9 @@ public enum HttpHeader {
                 .filter(header -> header.headerValue.equalsIgnoreCase(input.trim()))
                 .findFirst()
                 .orElse(OTHER);
+    }
+
+    public String getHeaderValue() {
+        return headerValue;
     }
 }
