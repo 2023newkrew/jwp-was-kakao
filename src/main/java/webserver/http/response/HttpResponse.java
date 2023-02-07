@@ -1,6 +1,6 @@
-package webserver;
+package webserver.http.response;
 
-import enums.ContentType;
+import webserver.enums.ContentType;
 import org.springframework.http.HttpStatus;
 
 import java.io.DataOutputStream;

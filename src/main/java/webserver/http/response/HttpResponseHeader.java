@@ -1,6 +1,6 @@
-package webserver;
+package webserver.http.response;
 
-import enums.ContentType;
+import webserver.enums.ContentType;
 
 import java.util.HashMap;
 import java.util.Map;

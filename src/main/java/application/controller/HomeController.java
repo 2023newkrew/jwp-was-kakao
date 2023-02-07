@@ -1,7 +1,7 @@
-package controller;
+package application.controller;
 
-import webserver.HttpRequest;
-import webserver.HttpResponse;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
 
 public class HomeController {
 

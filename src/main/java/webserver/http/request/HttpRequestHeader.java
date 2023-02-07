@@ -1,4 +1,6 @@
-package webserver;
+package webserver.http.request;
+
+import webserver.http.cookie.HttpCookie;
 
 import java.util.Map;
 import java.util.Optional;

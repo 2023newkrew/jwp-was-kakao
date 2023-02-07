@@ -1,8 +1,8 @@
-package utils;
+package webserver.utils;
 
-import enums.ContentType;
-import exceptions.ResourceNotFoundException;
-import webserver.HttpRequest;
+import webserver.enums.ContentType;
+import webserver.exceptions.ResourceNotFoundException;
+import webserver.http.request.HttpRequest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

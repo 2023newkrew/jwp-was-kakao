@@ -1,4 +1,4 @@
-package model.user;
+package application.domain;
 
 public class User {
     private String userId;

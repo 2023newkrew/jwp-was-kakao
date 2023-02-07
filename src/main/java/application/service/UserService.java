@@ -1,6 +1,7 @@
-package model.user;
+package application.service;
 
-import db.DataBase;
+import application.db.DataBase;
+import application.domain.User;
 
 import java.util.Map;
 

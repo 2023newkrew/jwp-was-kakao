@@ -1,10 +1,10 @@
-package controller;
+package application.controller;
 
-import model.user.UserService;
+import application.service.UserService;
 import org.springframework.http.HttpStatus;
-import utils.IOUtils;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
+import webserver.utils.IOUtils;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
 
 import java.util.Map;
 

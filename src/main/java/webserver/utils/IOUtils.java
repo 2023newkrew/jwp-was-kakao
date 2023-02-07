@@ -1,10 +1,10 @@
-package utils;
+package webserver.utils;
 
-import enums.RequestMethod;
-import exceptions.InvalidQueryParameterException;
-import exceptions.InvalidRequestException;
-import webserver.HttpRequest;
-import webserver.HttpRequestHeader;
+import webserver.enums.RequestMethod;
+import webserver.exceptions.InvalidQueryParameterException;
+import webserver.exceptions.InvalidRequestException;
+import webserver.http.request.HttpRequest;
+import webserver.http.request.HttpRequestHeader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

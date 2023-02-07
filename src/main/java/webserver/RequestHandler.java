@@ -1,18 +1,20 @@
 package webserver;
 
-import controller.HomeController;
-import controller.StaticFileController;
-import controller.UserController;
-import enums.ContentType;
-import enums.RequestMethod;
-import exceptions.InvalidQueryParameterException;
-import exceptions.InvalidRequestException;
-import exceptions.ResourceNotFoundException;
+import application.controller.HomeController;
+import application.controller.StaticFileController;
+import application.controller.UserController;
+import webserver.enums.ContentType;
+import webserver.enums.RequestMethod;
+import webserver.exceptions.InvalidQueryParameterException;
+import webserver.exceptions.InvalidRequestException;
+import webserver.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import utils.FileIoUtils;
-import utils.IOUtils;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
+import webserver.utils.FileIoUtils;
+import webserver.utils.IOUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -1,6 +1,6 @@
-package webserver;
+package webserver.http.request;
 
-import enums.RequestMethod;
+import webserver.enums.RequestMethod;
 
 public class HttpRequest {
     private final RequestMethod requestMethod;

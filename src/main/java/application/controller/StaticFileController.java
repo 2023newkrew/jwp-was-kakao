@@ -1,10 +1,10 @@
-package controller;
+package application.controller;
 
-import enums.ContentType;
+import webserver.enums.ContentType;
 import org.springframework.http.HttpStatus;
-import utils.FileIoUtils;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
+import webserver.utils.FileIoUtils;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

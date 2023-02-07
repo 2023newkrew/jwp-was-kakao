@@ -1,4 +1,4 @@
-package webserver;
+package webserver.http.cookie;
 
 import java.util.Arrays;
 import java.util.Map;

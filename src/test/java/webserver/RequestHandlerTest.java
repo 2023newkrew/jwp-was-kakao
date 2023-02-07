@@ -1,10 +1,10 @@
 package webserver;
 
-import db.DataBase;
+import application.db.DataBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import utils.FileIoUtils;
+import webserver.utils.FileIoUtils;
 
 import java.io.*;
 import java.net.URISyntaxException;
