@@ -30,6 +30,10 @@ public class HttpRequest {
         return httpRequestLine.getUri().getPath();
     }
 
+    public Optional<String> getParam(String key) {
+        return httpRequestLine.getParam(key).or(()->httpRequestBody.getParam(key));
+    }
+
     public String getHttpVersion() {
         return httpRequestLine.getHttpVersion();
     }
