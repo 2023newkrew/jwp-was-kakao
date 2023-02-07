@@ -43,13 +43,13 @@ public class ResponseHeader {
     public String getValue() {
         String result = writeRequestLine(httpStatusCode);
         if (contentType != null) {
-            result += "Content-Type: " + contentType.getToResponseText() + "\r\n";
+            result += "Content-Type: " + contentType.getToResponseText() + " \r\n";
         }
         if (contentLength != null) {
-            result += "Content-Length: " + contentLength + "\r\n";
+            result += "Content-Length: " + contentLength + " \r\n";
         }
         if (location != null) {
-            result += "Location: " + location + "\r\n";
+            result += "Location: " + location + " \r\n";
         }
         result += "\r\n"; // header의 끝은 줄바꿈으로 표시한다
 
@@ -59,7 +59,7 @@ public class ResponseHeader {
     private String writeRequestLine(HttpStatusCode httpStatusCode) {
         return PROTOCOL + "/" + VERSION + " "
                 + httpStatusCode.getCode() + " "
-                + httpStatusCode.getDescription() + "\r\n";
+                + httpStatusCode.getDescription() + " \r\n";
     }
 
 }
