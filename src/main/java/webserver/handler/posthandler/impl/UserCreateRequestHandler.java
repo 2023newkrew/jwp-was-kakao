@@ -6,9 +6,8 @@ import webserver.constant.HttpHeaderProperties;
 import webserver.constant.HttpStatus;
 import webserver.handler.posthandler.PostRequestHandler;
 import webserver.request.HttpRequest;
+import webserver.request.QueryParams;
 import webserver.response.HttpResponse;
-
-import java.util.Map;
 
 public class UserCreateRequestHandler extends PostRequestHandler {
 
@@ -33,8 +32,7 @@ public class UserCreateRequestHandler extends PostRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        Map<String, String> queryParams = request.getTarget()
-                .getQueryParams();
+        QueryParams queryParams = new QueryParams(request.getBody());
         addUser(queryParams);
         return new HttpResponse.Builder()
                 .setStatus(HttpStatus.FOUND)
@@ -42,7 +40,7 @@ public class UserCreateRequestHandler extends PostRequestHandler {
                 .build();
     }
 
-    private void addUser(Map<String, String> queryParams) {
+    private void addUser(QueryParams queryParams) {
         String userId = queryParams.get("userId");
         String password = queryParams.get("password");
         String name = queryParams.get("name");

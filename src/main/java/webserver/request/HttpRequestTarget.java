@@ -5,17 +5,11 @@ import webserver.constant.HttpMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 public class HttpRequestTarget {
 
     private static final String QUERY_START_DELIMITER = "?";
-
-    private static final String QUERY_SPLIT_DELIMITER = "&";
-
-    private static final String PARAM_SPLIT_DELIMITER = "=";
 
     public static final String FIRST_LINE_SPLIT_DELIMITER = " ";
 
@@ -23,7 +17,7 @@ public class HttpRequestTarget {
 
     private String path;
 
-    private Map<String, String> queryParams = new HashMap<>();
+    private QueryParams queryParams;
 
     public HttpRequestTarget(BufferedReader reader) throws IOException {
         String firstLine = reader.readLine();
@@ -39,14 +33,8 @@ public class HttpRequestTarget {
             return;
         }
         this.path = targetUrl.substring(0, queryStartIndex);
-        parseQueryParams(targetUrl.substring(queryStartIndex + 1));
+        this.queryParams = new QueryParams(targetUrl.substring(queryStartIndex + 1));
     }
 
-    private void parseQueryParams(String query) {
-        String[] elements = query.split(QUERY_SPLIT_DELIMITER);
-        for (String param : elements) {
-            String[] kv = param.split(PARAM_SPLIT_DELIMITER);
-            queryParams.put(kv[0], kv[1]);
-        }
-    }
+
 }
