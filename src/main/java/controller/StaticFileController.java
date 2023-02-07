@@ -1,12 +1,12 @@
 package controller;
 
 import enums.ContentType;
+import http.HttpRequest;
+import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
-import http.HttpRequest;
-import http.HttpResponse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

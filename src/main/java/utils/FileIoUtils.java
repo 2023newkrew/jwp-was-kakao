@@ -14,7 +14,9 @@ public class FileIoUtils {
     public static byte[] loadFileFromClasspath(String filePath) throws IOException, URISyntaxException {
         Path path;
         try {
-            path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
+            path = Paths.get(FileIoUtils.class.getClassLoader()
+                    .getResource(filePath)
+                    .toURI());
         } catch (NullPointerException e) {
             throw new ResourceNotFoundException();
         }

@@ -63,8 +63,7 @@ public class RequestHandler implements Runnable {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
         } catch (InvalidQueryParameterException e) {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
     }
@@ -81,7 +80,7 @@ public class RequestHandler implements Runnable {
         if (requestPath.equals("/")) {
             return homeController.rootPathGet();
         }
-        if (FileIoUtils.isStaticFile(request)) {
+        if (Boolean.TRUE.equals(FileIoUtils.isStaticFile(request))) {
             return staticFileController.staticFileGet(request);
         }
         throw new ResourceNotFoundException();

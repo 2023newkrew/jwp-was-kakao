@@ -1,21 +1,23 @@
 package http;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class HttpRequestHeader {
-    private List<String> headers;
-    public HttpRequestHeader(List<String> headers) {
-        this.headers = headers;
-    }
+    private final List<String> headers;
 
     public String getRequestMethod() {
-        String[] token = headers.get(0).split(" ");
+        String[] token = headers.get(0)
+                .split(" ");
         return token[0];
     }
 
     public String getRequestPath() {
-        String[] token = headers.get(0).split(" ");
+        String[] token = headers.get(0)
+                .split(" ");
         return token[1];
     }
 
