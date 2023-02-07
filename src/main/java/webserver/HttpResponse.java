@@ -2,7 +2,6 @@ package webserver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +27,7 @@ public class HttpResponse {
             return this;
         }
 
-        public Builder setBody(byte[] body) throws UnsupportedEncodingException {
+        public Builder setBody(byte[] body) {
             this.body = body;
             headers.put("Content-Length", Integer.toString(body.length));
             return this;
@@ -50,7 +49,9 @@ public class HttpResponse {
             out.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
         }
         out.writeBytes("\r\n");
-        out.write(body);
+        if (body != null) {
+            out.write(body);
+        }
         out.flush();
     }
 }
