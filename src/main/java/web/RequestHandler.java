@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpRequestUtils;
 import web.controller.Controller;
-import web.controller.Controllers;
+import web.controller.HandlerMapping;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,11 +19,11 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final Controllers controllers;
+    private final HandlerMapping handlerMapping;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        this.controllers = new Controllers();
+        this.handlerMapping = new HandlerMapping();
     }
 
     public void run() {
@@ -52,7 +52,7 @@ public class RequestHandler implements Runnable {
     }
 
     private HttpResponse handleRequest(HttpRequest httpRequest) {
-        Controller controller = controllers.getController(httpRequest);
+        Controller controller = handlerMapping.getHandler(httpRequest);
         return controller.run(httpRequest);
     }
 }

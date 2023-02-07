@@ -7,7 +7,7 @@ import java.util.List;
 
 import static error.ErrorType.CONTROLLER_NOT_FOUND;
 
-public class Controllers {
+public class HandlerMapping {
 
     private static List<Controller> controllers;
 
@@ -19,7 +19,7 @@ public class Controllers {
         );
     }
 
-    public Controller getController(HttpRequest httpRequest) {
+    public Controller getHandler(HttpRequest httpRequest) {
         return controllers.stream()
                 .filter(controller -> controller.isMatch(httpRequest))
                 .findAny()
