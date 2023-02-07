@@ -1,6 +1,6 @@
 package webserver.handler;
 
-import static webserver.request.HttpRequestLine.parseQueryParameters;
+import static webserver.request.HttpRequestLine.parseQueryParams;
 
 import db.DataBase;
 import java.util.Map;
@@ -13,15 +13,15 @@ public class CreateUserHandler implements Handler {
 
     @Override
     public HttpResponse applyRequest(HttpRequest request) {
-        Map<String, String> queryParameters = request.getQueryParameters();
-        if (queryParameters.isEmpty()) {
-            queryParameters = parseQueryParameters(request.getBody());
+        Map<String, String> queryParams = request.getQueryParams();
+        if (queryParams.isEmpty()) {
+            queryParams = parseQueryParams(request.getBody());
         }
         DataBase.addUser(
-                new User(queryParameters.get("userId"),
-                        queryParameters.get("password"),
-                        queryParameters.get("name"),
-                        queryParameters.get("email"))
+                new User(queryParams.get("userId"),
+                        queryParams.get("password"),
+                        queryParams.get("name"),
+                        queryParams.get("email"))
         );
         return HttpResponse.found(new byte[0], FilenameExtension.from(""), "/index.html");
     }

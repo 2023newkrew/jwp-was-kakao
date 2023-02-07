@@ -9,15 +9,15 @@ import org.springframework.http.HttpMethod;
 public class HttpRequestLine {
 
     private final HttpMethod httpMethod;
-    private final String requestPath;
+    private final String path;
 
-    private final Map<String, String> queryParameters;
+    private final Map<String, String> queryParams;
     private final String httpVersion;
 
-    public HttpRequestLine(HttpMethod httpMethod, String requestPath, Map<String, String> queryParameters, String httpVersion) {
+    public HttpRequestLine(HttpMethod httpMethod, String path, Map<String, String> queryParams, String httpVersion) {
         this.httpMethod = httpMethod;
-        this.requestPath = requestPath;
-        this.queryParameters = queryParameters;
+        this.path = path;
+        this.queryParams = queryParams;
         this.httpVersion = httpVersion;
     }
 
@@ -31,19 +31,19 @@ public class HttpRequestLine {
             throw new RuntimeException("올바른 HTTP Method Type이 아닙니다.");
         }
         String requestUri = tokens[1].trim();
-        requestPath = requestUri.split("\\?")[0];
-        queryParameters = parseQueryParameters(requestUri);
+        path = requestUri.split("\\?")[0];
+        queryParams = parseQueryParams(requestUri);
         httpVersion = tokens[2].trim();
     }
 
-    public static Map<String, String> parseQueryParameters(String requestTarget) {
-        Map<String, String> queryParameters = new HashMap<>();
+    public static Map<String, String> parseQueryParams(String requestTarget) {
+        Map<String, String> queryParams = new HashMap<>();
         if (requestTarget.contains("?")) {
             String parameters = requestTarget.split("\\?")[1];
             Arrays.stream(parameters.split("&"))
-                    .forEach((x) -> queryParameters.put(x.split("=")[0], x.split("=")[1]));
+                    .forEach((x) -> queryParams.put(x.split("=")[0], x.split("=")[1]));
         }
-        return queryParameters;
+        return queryParams;
     }
 
 
@@ -52,14 +52,14 @@ public class HttpRequestLine {
     }
 
     public String getPath() {
-        return requestPath;
+        return path;
     }
 
     public String getHttpVersion() {
         return httpVersion;
     }
 
-    public Map<String, String> getQueryParameters() {
-        return queryParameters;
+    public Map<String, String> getQueryParams() {
+        return queryParams;
     }
 }

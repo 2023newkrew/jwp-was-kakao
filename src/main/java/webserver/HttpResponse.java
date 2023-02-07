@@ -37,7 +37,7 @@ public class HttpResponse {
         }
         return header;
     }
-    
+
     public void writeResponse(DataOutputStream dos) throws IOException{
         try {
             dos.writeBytes(getResponseLine());

@@ -26,8 +26,8 @@ public class HttpRequest {
         return headers;
     }
 
-    public Map<String, String> getQueryParameters() {
-        return httpRequestLine.getQueryParameters();
+    public Map<String, String> getQueryParams() {
+        return httpRequestLine.getQueryParams();
     }
 
     public String getBody() {
