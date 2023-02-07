@@ -98,11 +98,12 @@ public class RequestParser {
         List<String> lines = new ArrayList<>();
         String line;
         try {
-            while (Objects.nonNull(line = reader.readLine())) {
+            do {
+                line = reader.readLine();
                 System.out.println(line);
-                if (line.isEmpty()) break;
+                if (Objects.isNull(line) || line.isEmpty()) break;
                 lines.add(line);
-            }
+            } while (true);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
