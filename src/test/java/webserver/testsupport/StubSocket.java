@@ -1,4 +1,4 @@
-package support;
+package webserver.testsupport;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,10 +17,6 @@ public class StubSocket extends Socket {
     public StubSocket(final String request) {
         this.request = request;
         this.outputStream = new ByteArrayOutputStream();
-    }
-
-    public StubSocket() {
-        this("GET / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n");
     }
 
     public InetAddress getInetAddress() {
