@@ -23,16 +23,19 @@ class RequestHandlerTest {
 
         // when
         handler.run();
+        String output = socket.output();
 
         // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 11 ",
-                "",
-                "Hello world");
+        String expectedFirstLine = "HTTP/1.1 200 OK";
+        String expectedContentTypeHeader = "Content-Type: application/json;charset=utf-8";
+        String expectedContentLengthHeader = "Content-Length: 11";
+        String expectedBody = "Hello world";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(output)
+                .startsWith(expectedFirstLine)
+                .contains(expectedContentTypeHeader)
+                .contains(expectedContentLengthHeader)
+                .endsWith(expectedBody);
     }
 
     @Test
@@ -50,17 +53,19 @@ class RequestHandlerTest {
 
         // when
         handler.run();
+        String output = socket.output();
 
         // then
+        String expectedFirstLine = "HTTP/1.1 200 OK";
+        String expectedContentTypeHeader = "Content-Type: text/html;charset=utf-8";
+        String expectedContentLengthHeader = "Content-Length: 7153";
+        String expectedBody = new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
-
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 7153 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(output)
+                .startsWith(expectedFirstLine)
+                .contains(expectedContentTypeHeader)
+                .contains(expectedContentLengthHeader)
+                .endsWith(expectedBody);
     }
 
     @Test
@@ -74,6 +79,7 @@ class RequestHandlerTest {
     @Test
     @DisplayName("GET 방식으로 form으로 부터 user 생성 테스트")
     void createUserTestGet(){
+        //given
         final String httpRequest = String.join("\r\n",
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -84,19 +90,24 @@ class RequestHandlerTest {
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
+        //when
         handler.run();
+        String output = socket.output();
 
-        var expected = "HTTP/1.1 302 FOUND \r\n" +
-                "Location: http://localhost:8080/index.html \r\n" +
-                "\r\n";
+        //then
+        String expectedFirstLine = "HTTP/1.1 302 FOUND";
+        String expectedLocationHeader = "Location: http://localhost:8080/index.html";
 
         assertThat(DataBase.findAll()).hasSize(1);
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(output)
+                .startsWith(expectedFirstLine)
+                .contains(expectedLocationHeader);
     }
 
     @Test
     @DisplayName("잘못된 queryParams가 들어오면 InvalidQueryParameterException 발생")
     void InvalidQueryParameterExceptionTest(){
+        //given
         final String httpRequest = String.join("\r\n",
                 "GET /user/createuserId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -107,20 +118,28 @@ class RequestHandlerTest {
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
+        //when
         handler.run();
 
-        var expected = "HTTP/1.1 400 BAD_REQUEST \r\n" +
-                "Content-Type: application/json;charset=utf-8 \r\n" +
-                "Content-Length: 23 \r\n" +
-                "\r\n" +
-                "Invalid Query Parameter";
+        String output = socket.output();
 
-        assertThat(socket.output()).isEqualTo(expected);
+        //then
+        String expectedFirstLine = "HTTP/1.1 400 BAD_REQUEST";
+        String expectedContentTypeHeader = "Content-Type: application/json;charset=utf-8";
+        String expectedContentLengthHeader = "Content-Length: 23";
+        String expectedBody = "Invalid Query Parameter";
+
+        assertThat(output)
+                .startsWith(expectedFirstLine)
+                .contains(expectedContentTypeHeader)
+                .contains(expectedContentLengthHeader)
+                .endsWith(expectedBody);
     }
 
     @Test
     @DisplayName("POST 방식으로 form으로 부터 user 생성 테스트")
     void createUserTestPost(){
+        //given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -136,13 +155,17 @@ class RequestHandlerTest {
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
+        //when
         handler.run();
+        String output = socket.output();
 
-        var expected = "HTTP/1.1 302 FOUND \r\n" +
-                "Location: http://localhost:8080/index.html \r\n" +
-                "\r\n";
+        //then
+        String expectedFirstLine = "HTTP/1.1 302 FOUND";
+        String expectedLocationHeader = "Location: http://localhost:8080/index.html";
 
         assertThat(DataBase.findAll()).hasSize(1);
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(output)
+                .startsWith(expectedFirstLine)
+                .contains(expectedLocationHeader);
     }
 }

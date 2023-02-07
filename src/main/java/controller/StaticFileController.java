@@ -29,7 +29,9 @@ public class StaticFileController {
         String resourcePath = FileIoUtils.getResourcePath(requestPath, contentType);
         byte[] body = FileIoUtils.loadFileFromClasspath(resourcePath);
 
-        return HttpResponse.of(HttpStatus.OK, contentType, new String(body));
-
+        return HttpResponse
+                .status(HttpStatus.OK)
+                .contentType(contentType)
+                .body(new String(body));
     }
 }

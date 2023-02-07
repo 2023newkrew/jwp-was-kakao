@@ -1,7 +1,5 @@
 package controller;
 
-import enums.ContentType;
-import org.springframework.http.HttpStatus;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 
@@ -20,6 +18,6 @@ public class HomeController {
     }
 
     public HttpResponse rootPathGet(HttpRequest request) {
-        return HttpResponse.of(HttpStatus.OK, ContentType.HTML, "Hello world");
+        return HttpResponse.body("Hello world");
     }
 }

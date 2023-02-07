@@ -1,38 +1,38 @@
 package webserver;
 
 import enums.ContentType;
-import org.springframework.http.HttpStatus;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponseHeader {
 
-    private List<String> headers;
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String LOCATION = "Location";
+    private final Map<String, String> headers;
 
-    private HttpResponseHeader(List<String> headers) {
+    private HttpResponseHeader(Map<String, String> headers) {
         this.headers = headers;
     }
 
-    public static HttpResponseHeader of(HttpStatus status, ContentType contentType, int contentLength) {
-        List<String> headers = new LinkedList<>();
-
-        headers.add(String.format("HTTP/1.1 %d %s", status.value(), status.name()));
-        headers.add(String.format("Content-Type: %s;charset=utf-8", contentType.getValue()));
-        if (contentLength > 0) {
-            headers.add(String.format("Content-Length: %s", contentLength));
-        }
-        return new HttpResponseHeader(headers);
+    public static HttpResponseHeader emptyHeader() {
+        return new HttpResponseHeader(new HashMap<>());
     }
 
-    public static HttpResponseHeader create302FoundHeader(String redirectURI) {
-        return new HttpResponseHeader(List.of(
-                String.format("HTTP/1.1 302 FOUND"),
-                String.format("Location: %s", redirectURI)
-        ));
+    public void setContentType(ContentType contentType) {
+        headers.put(CONTENT_TYPE, contentType.getValue() + ";charset=utf-8");
     }
 
-    public List<String> getHeaders() {
+    public void setContentLength(int contentLength) {
+        headers.put(CONTENT_LENGTH, String.valueOf(contentLength));
+    }
+
+    public void setLocation(String location) {
+        headers.put(LOCATION, location);
+    }
+
+    public Map<String, String> getHeaders() {
         return headers;
     }
 }
