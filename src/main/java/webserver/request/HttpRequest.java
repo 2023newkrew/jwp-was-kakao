@@ -1,8 +1,8 @@
 package webserver.request;
 
 import lombok.Getter;
-import org.springframework.http.HttpHeaders;
 import utils.IOUtils;
+import webserver.constant.HttpHeaderProperties;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,8 +23,8 @@ public class HttpRequest {
     }
 
     private void parseBody(BufferedReader reader) throws IOException {
-        if (headers.containsKey(HttpHeaders.CONTENT_LENGTH)) {
-            int contentLength = Integer.parseInt(headers.get(HttpHeaders.CONTENT_LENGTH));
+        if (headers.containsKey(HttpHeaderProperties.CONTENT_LENGTH.getKey())) {
+            int contentLength = Integer.parseInt(headers.get(HttpHeaderProperties.CONTENT_LENGTH.getKey()));
             this.body = IOUtils.readData(reader, contentLength);
         }
     }

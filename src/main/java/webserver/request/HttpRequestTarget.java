@@ -17,6 +17,8 @@ public class HttpRequestTarget {
 
     private static final String PARAM_SPLIT_DELIMITER = "=";
 
+    public static final String FIRST_LINE_SPLIT_DELIMITER = " ";
+
     private HttpMethod method;
 
     private String path;
@@ -25,7 +27,7 @@ public class HttpRequestTarget {
 
     public HttpRequestTarget(BufferedReader reader) throws IOException {
         String firstLine = reader.readLine();
-        String[] elements = firstLine.split(" ");
+        String[] elements = firstLine.split(FIRST_LINE_SPLIT_DELIMITER);
         this.method = HttpMethod.valueOf(elements[0]);
         parseTargetUrl(elements[1]);
     }

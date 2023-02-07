@@ -2,6 +2,7 @@ package webserver.handler.posthandler.impl;
 
 import db.DataBase;
 import model.User;
+import webserver.constant.HttpHeaderProperties;
 import webserver.constant.HttpStatus;
 import webserver.handler.posthandler.PostRequestHandler;
 import webserver.request.HttpRequest;
@@ -37,7 +38,7 @@ public class UserCreateRequestHandler extends PostRequestHandler {
         addUser(queryParams);
         return new HttpResponse.Builder()
                 .setStatus(HttpStatus.FOUND)
-                .addHeader("Location", "http://localhost:8080/index.html")
+                .addHeader(HttpHeaderProperties.LOCATION.getKey(), "http://localhost:8080/index.html")
                 .build();
     }
 
