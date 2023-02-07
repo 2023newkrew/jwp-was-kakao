@@ -9,16 +9,21 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class HelloController extends Controller {
-
     @Override
     public void process(HttpRequest request, DataOutputStream dos) throws IOException {
-        String data = "Hello world";
-        Integer contentLength = data.length();
+        String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
 
-        dos.writeBytes(ResponseHeader.of(HttpStatusCode.OK, ContentType.HTML, contentLength).getValue());
-        byte[] body = data.getBytes();
-        dos.write(body);
+        if (reqMethod.equals("GET")) {
+            String data = "Hello world";
+            Integer contentLength = data.length();
 
-        dos.flush();
+            dos.writeBytes(ResponseHeader.of(HttpStatusCode.OK, ContentType.HTML, contentLength).getValue());
+            byte[] body = data.getBytes();
+            dos.write(body);
+
+            dos.flush();
+            return;
+        }
+
     }
 }

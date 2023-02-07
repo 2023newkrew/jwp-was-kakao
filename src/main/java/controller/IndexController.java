@@ -16,26 +16,31 @@ import java.net.URISyntaxException;
 public class IndexController extends Controller {
     @Override
     public void process(HttpRequest request, DataOutputStream dos) throws IOException {
-        try {
-            byte[] returnBody = FileIoUtils.loadFileFromClasspath("templates/index.html");
+        String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
 
-            if (returnBody == null) {
-                dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
-                dos.flush();
-                return;
+        if (reqMethod.equals("GET")) {
+            try {
+                byte[] returnBody = FileIoUtils.loadFileFromClasspath("templates/index.html");
+
+                if (returnBody == null) {
+                    dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
+                    dos.flush();
+                    return;
+                }
+
+                dos.writeBytes(
+                        ResponseHeader.of(HttpStatusCode.OK,
+                                        ContentType.HTML,
+                                        returnBody.length)
+                                .getValue()
+                );
+
+                responseBody(dos, returnBody);
+            } catch (URISyntaxException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
             }
-
-            dos.writeBytes(
-                    ResponseHeader.of(HttpStatusCode.OK,
-                                    ContentType.HTML,
-                                    returnBody.length)
-                            .getValue()
-            );
-
-            responseBody(dos, returnBody);
-        } catch (URISyntaxException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
         }
+
     }
 }
