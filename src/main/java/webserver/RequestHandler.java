@@ -49,16 +49,20 @@ public class RequestHandler implements Runnable {
             Request request = new Request(requestHeader, body);
 
             // response 생성
-            BaseResponseDto response = getResponse(request);
-
-            DataOutputStream dos = new DataOutputStream(out);
-            responseHeader(dos, response);
-            responseBody(dos, response.getBody().getBytes());
+            sendResponse(out, request);
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {        // custom 처리
             throw new RuntimeException(e);
         }
+    }
+
+    private void sendResponse(OutputStream out, Request request) throws IOException, URISyntaxException {
+        DataOutputStream dos = new DataOutputStream(out);
+
+        BaseResponseDto response = getResponse(request);
+        responseHeader(dos, response);
+        responseBody(dos, response.getBody().getBytes());
     }
 
     private BaseResponseDto getResponse(Request request) throws IOException, URISyntaxException {

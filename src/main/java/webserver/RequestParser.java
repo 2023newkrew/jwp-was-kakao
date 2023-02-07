@@ -14,8 +14,8 @@ public class RequestParser {
     }
 
     private static void extractStartLine(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
-        String line = iterator.next();
-        String[] startLine = line.split(" ");
+        String[] startLine = iterator.next().split(" ");
+
         String[] splitedUrl = startLine[1].split("\\?");
         String url = splitedUrl[0];
         Map<String, String> queryParams = new HashMap<>();
@@ -42,10 +42,8 @@ public class RequestParser {
 
     private static void extractHeader(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
         Map<String, String> headers = new HashMap<>();
-        String line;
         while (iterator.hasNext()) {
-            line = iterator.next();
-            String[] splitedHeader = line.split(": ");
+            String[] splitedHeader = iterator.next().split(": ");
             headers.put(splitedHeader[0], splitedHeader[1]);
         }
 
