@@ -17,7 +17,7 @@ import java.util.Map;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
     private final Map<String, Handler> urlHandlerMapping;
     private final List<Handler> defaultHandlerMapping;
 
@@ -31,6 +31,7 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}",
                 connection.getInetAddress(),
                 connection.getPort());
+
         try (HttpRequestReader httpRequestReader = new HttpRequestReader(connection.getInputStream());
              DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
 
@@ -69,8 +70,13 @@ public class RequestHandler implements Runnable {
             dos.write(httpResponse.toBytes());
             dos.flush();
 
+            connection.close();
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } finally {
+            try {
+                connection.close();
+            } catch (IOException ignored) {}
         }
     }
 }
