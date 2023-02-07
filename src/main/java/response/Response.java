@@ -1,7 +1,5 @@
 package response;
 
-import constant.ContentType;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

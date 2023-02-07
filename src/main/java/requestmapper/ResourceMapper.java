@@ -1,7 +1,7 @@
 package requestmapper;
 
 import response.Response;
-import constant.ContentType;
+import response.ContentType;
 import utils.FileIoUtils;
 
 import java.io.IOException;

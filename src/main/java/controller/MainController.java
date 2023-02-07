@@ -1,36 +1,51 @@
 package controller;
 
+import annotation.RequestMap;
 import db.DataBase;
 import model.User;
+import request.Request;
+import response.ContentType;
 import response.Response;
-import constant.ContentType;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class MainController implements Controller {
 
     public static final MainController INSTANCE = new MainController();
 
+    private final Map<String, Method> map = new HashMap<>();
+
     private MainController() {
+        List<Method> methodList = List.of(this.getClass().getMethods());
+        for (Method method: methodList) {
+            RequestMap requestMap = method.getAnnotation(RequestMap.class);
+            if (requestMap != null) {
+                map.put(requestMap.uri(), method);
+            }
+        }
     }
 
     @Override
-    public Response handleRequest(String uri, Map<String, String> params) {
-        if (uri.equals("/")) {
-            return handleRootPage();
+    public Response handleRequest(Request request) {
+        try {
+            return (Response) map.get(request.getUri()).invoke(MainController.INSTANCE, request);
+        } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
+            return null;
         }
-        if (uri.equals("/user/create")) {
-            return handleUserCreate(params);
-        }
-        return null;
     }
 
-    private Response handleRootPage() {
+    @RequestMap(uri = "/")
+    public Response handleRootPage(Request request) {
         return Response.ok().contentType(ContentType.HTML).body("Hello world").build();
     }
 
-    private Response handleUserCreate(Map<String, String> params) {
-        User user = User.from(params);
+    @RequestMap(uri = "/user/create")
+    public Response handleUserCreate(Request request) {
+        User user = User.from(request.getRequestParams());
         DataBase.addUser(user);
 
         return Response.redirect().location("/index.html").build();

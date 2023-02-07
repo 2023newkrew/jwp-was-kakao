@@ -4,14 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.Request;
 import request.RequestParser;
-import response.Response;
 import requestmapper.HandlerMapper;
 import requestmapper.ResourceMapper;
+import response.Response;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import static utils.IOUtils.writeResponse;
 
@@ -33,11 +32,10 @@ public class RequestHandler implements Runnable {
             DataOutputStream dataOutputStream = new DataOutputStream(out);
 
             Request request = RequestParser.getRequestFrom(bufferedReader);
-            Map<String, String> requestParameter = request.getRequestParams();
             String uri = request.getUri();
 
             if (HandlerMapper.INSTANCE.isHandleAvailable(uri)) {
-                Response response = HandlerMapper.INSTANCE.handle(uri, requestParameter);
+                Response response = HandlerMapper.INSTANCE.handle(request);
                 writeResponse(dataOutputStream, response.toString());
                 return;
             }

@@ -2,6 +2,7 @@ package requestmapper;
 
 import controller.Controller;
 import controller.MainController;
+import request.Request;
 import response.Response;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public final class HandlerMapper {
         return map.containsKey(uri);
     }
 
-    public Response handle(String uri, Map<String, String> params) {
-        return map.get(uri).handleRequest(uri, params);
+    public Response handle(Request request) {
+        return map.get(request.getUri()).handleRequest(request);
     }
 }

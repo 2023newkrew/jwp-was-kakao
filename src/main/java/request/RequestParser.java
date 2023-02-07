@@ -14,7 +14,7 @@ public class RequestParser {
 
     public static Request getRequestFrom(BufferedReader bufferedReader) throws IOException {
         RequestHeader requestHeader = parseHeader(bufferedReader);
-        Map<String, String> requestParams = parseParams(parseBody(bufferedReader, requestHeader));
+        Map<String, String> requestParams = parseParams(getParamsFromRequest(bufferedReader, requestHeader));
 
         return new Request(requestHeader, requestParams);
     }
@@ -33,7 +33,7 @@ public class RequestParser {
         return new RequestHeader(stringBuilder.toString());
     }
 
-    private static String parseBody(BufferedReader bufferedReader, RequestHeader requestHeader) throws IOException {
+    private static String getParamsFromRequest(BufferedReader bufferedReader, RequestHeader requestHeader) throws IOException {
         int contentLength = Integer.parseInt(requestHeader.get("Content-Length").orElse("0"));
         String requestBody = IOUtils.readData(bufferedReader, contentLength);
         if (requestHeader.getMethod().equals("GET")) {
