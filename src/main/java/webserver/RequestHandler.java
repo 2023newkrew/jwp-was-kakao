@@ -77,13 +77,13 @@ public class RequestHandler implements Runnable {
     }
 
     private void handleGetMethodHttpRequest(HttpRequest httpRequest, DataOutputStream dos)
-            throws IOException, URISyntaxException {
+            throws URISyntaxException {
         String path = httpRequest.getPath();
         byte[] body;
         String contentType;
 
         try {
-            body = getBodyFromPath(path);
+            body = FileIoUtils.getBodyFromPath(path);
             contentType = Files.probeContentType(new File(path).toPath());
         } catch (IOException e) {
             body = "Hello world".getBytes();
@@ -92,16 +92,6 @@ public class RequestHandler implements Runnable {
 
         response200Header(dos, body.length, contentType);
         responseBody(dos, body);
-    }
-
-    private byte[] getBodyFromPath(String path) throws IOException, URISyntaxException, NullPointerException {
-        byte[] body;
-        try {
-            body = FileIoUtils.loadFileFromClasspath("./templates" + path);
-        } catch (NullPointerException e) {
-            body = FileIoUtils.loadFileFromClasspath("./static" + path);
-        }
-        return body;
     }
 
     private void addUser(MultiValueMap<String, String> requestParams) {
@@ -132,7 +122,7 @@ public class RequestHandler implements Runnable {
     private void response302Header(DataOutputStream dos, String location) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + location);
+            dos.writeBytes("Location: " + location + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
