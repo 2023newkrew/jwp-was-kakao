@@ -1,18 +1,18 @@
-package webserver;
+package webserver.request;
 
 import java.util.Map;
 import org.springframework.http.HttpMethod;
 
-public class MyHttpRequest {
+public class HttpRequest {
     private final HttpRequestLine httpRequestLine;
     private final Map<String, String> headers;
     private final String body;
 
-    public MyHttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers) {
+    public HttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers) {
         this(httpRequestLine, headers, null);
     }
 
-    public MyHttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers, String body) {
+    public HttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers, String body) {
         this.httpRequestLine = httpRequestLine;
         this.headers = headers;
         this.body = body;
@@ -38,8 +38,8 @@ public class MyHttpRequest {
         return httpRequestLine.getHttpMethod();
     }
 
-    public String getRequestPath() {
-        return httpRequestLine.getRequestPath();
+    public String getPath() {
+        return httpRequestLine.getPath();
     }
 
     public String getHttpVersion() {

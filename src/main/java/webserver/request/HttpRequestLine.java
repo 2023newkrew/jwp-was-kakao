@@ -1,11 +1,10 @@
-package webserver;
+package webserver.request;
 
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public class HttpRequestLine {
 
@@ -37,13 +36,13 @@ public class HttpRequestLine {
         httpVersion = tokens[2].trim();
     }
 
-    private static Map<String, String> parseQueryParameters(String requestTarget) {
+    public static Map<String, String> parseQueryParameters(String requestTarget) {
         Map<String, String> queryParameters = new HashMap<>();
         if (requestTarget.contains("?")) {
             String parameters = requestTarget.split("\\?")[1];
             Arrays.stream(parameters.split("&"))
                     .forEach((x) -> queryParameters.put(x.split("=")[0], x.split("=")[1]));
-        };
+        }
         return queryParameters;
     }
 
@@ -52,7 +51,7 @@ public class HttpRequestLine {
         return httpMethod;
     }
 
-    public String getRequestPath() {
+    public String getPath() {
         return requestPath;
     }
 

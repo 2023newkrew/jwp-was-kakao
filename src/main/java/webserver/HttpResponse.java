@@ -8,19 +8,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-public class MyHttpResponse {
+public class HttpResponse {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyHttpResponse.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
 
     private final HttpStatus status;
     private final Map<String, String> headers = new LinkedHashMap<>();
     private final byte[] body;
 
-    public MyHttpResponse(HttpStatus status) {
+    public HttpResponse(HttpStatus status) {
         this(status, new byte[0]);
     }
 
-    public MyHttpResponse(HttpStatus status, byte[] body) {
+    public HttpResponse(HttpStatus status, byte[] body) {
         this.status = status;
         this.body = body;
     }
