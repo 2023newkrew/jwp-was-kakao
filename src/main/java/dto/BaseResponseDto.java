@@ -1,28 +1,34 @@
 package dto;
 
-import webserver.StatusCode;
+import java.util.HashMap;
+import java.util.Map;
+import webserver.request.StatusCode;
+import webserver.response.Response;
 
 public class BaseResponseDto {
+
     private final StatusCode statusCode;
     private final String body;
-    private final String contentType;
 
-    public BaseResponseDto(StatusCode statusCode, String body, String contentType) {
+    public BaseResponseDto(StatusCode statusCode, String body) {
         this.statusCode = statusCode;
         this.body = body;
-        this.contentType = contentType;
-    }
-
-    public StatusCode getStatusCode() {
-        return statusCode;
     }
 
     public String getBody() {
         return body;
     }
 
-    public String getContentType() {
-        return contentType;
+    public Response convertToResponse(String version, String contentType) {
+        Map<String, String> headers = new HashMap<>() {{
+            put("Content-Type", contentType);
+            put("Content-Length", String.valueOf(body.getBytes().length));
+        }};
+
+        if (this.statusCode == StatusCode.FOUND) {
+            headers.put("Location", "/index.html");
+        }
+        return new Response(statusCode, body, headers, version);
     }
 }
 
