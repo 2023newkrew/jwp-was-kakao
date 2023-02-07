@@ -1,17 +1,21 @@
-package model;
-
-import java.util.Map;
+package model.http;
 
 public class CustomHttpRequest {
 
     private final CustomHttpMethod customHttpMethod;
     private final String url;
-    private final Map<String, String> query;
+    private final CustomHttpRequestQuery query;
     private final String protocol;
-    private final Map<String, String> headers;
-    private final String body;
+    private final CustomHttpHeader headers;
+    private final CustomHttpRequestBody body;
 
-    public CustomHttpRequest(CustomHttpMethod customHttpMethod, String url, Map<String, String> query, String protocol, Map<String, String> headers, String body) {
+    public CustomHttpRequest(
+            CustomHttpMethod customHttpMethod,
+            String url,
+            CustomHttpRequestQuery query,
+            String protocol,
+            CustomHttpHeader headers,
+            CustomHttpRequestBody body) {
         this.customHttpMethod = customHttpMethod;
         this.url = url;
         this.query = query;
@@ -28,7 +32,7 @@ public class CustomHttpRequest {
         return url;
     }
 
-    public Map<String, String> getQuery() {
+    public CustomHttpRequestQuery getQuery() {
         return query;
     }
 
@@ -36,11 +40,11 @@ public class CustomHttpRequest {
         return protocol;
     }
 
-    public Map<String, String> getHeaders() {
+    public CustomHttpHeader getHeaders() {
         return headers;
     }
 
-    public String getBody() {
+    public CustomHttpRequestBody getBody() {
         return body;
     }
 }
