@@ -14,7 +14,6 @@ import static utils.ContentType.*;
 
 public class FileIoUtils {
     public static byte[] loadFileFromClasspath(String filePath) throws IOException, URISyntaxException {
-        System.out.println(filePath);
         Path path = Paths.get(Objects.requireNonNull(FileIoUtils.class.getClassLoader().getResource(filePath)).toURI());
         return Files.readAllBytes(path);
     }
@@ -37,7 +36,7 @@ public class FileIoUtils {
         if (requestUrl == null) {
             throw new NullPointerException("Not Exists Url");
         }
-        if (requestUrl.equals(getHomeUrl())){
+        if (requestUrl.equals("./templates/")){
             return "Hello world".getBytes();
         }
         return loadFileFromClasspath(requestUrl);

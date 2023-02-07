@@ -25,6 +25,7 @@ public enum ContentType {
         if (s.endsWith("html")) return HTML;
         if (s.endsWith("ttf")) return TTF;
         if (s.endsWith("woff")) return WOFF;
+        if (s.equals("/")) return HTML;
         return null;
     }
 }
