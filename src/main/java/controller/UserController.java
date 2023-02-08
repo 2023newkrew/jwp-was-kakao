@@ -6,8 +6,8 @@ import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.user.User;
+import model.user.UserUtils;
 import session.SessionManager;
-import utils.IOUtils;
 
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public class UserController {
 
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestPath();
-        Map<String, String> userInfo = IOUtils.extractUserFromPath(requestPath);
+        Map<String, String> userInfo = UserUtils.extractUserFromPath(requestPath);
         User user = User.from(userInfo);
         DataBase.addUser(user);
 
@@ -35,7 +35,7 @@ public class UserController {
 
     public HttpResponse createUserPost(HttpRequest request) {
         String requestBody = request.getBody();
-        Map<String, String> userInfo = IOUtils.extractUser(requestBody);
+        Map<String, String> userInfo = UserUtils.extractUser(requestBody);
         User user = User.from(userInfo);
         DataBase.addUser(user);
 

@@ -8,11 +8,11 @@ import exceptions.InvalidQueryParameterException;
 import exceptions.ResourceNotFoundException;
 import http.HttpRequest;
 import http.HttpResponse;
+import http.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
-import utils.IOUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            HttpRequest request = IOUtils.parseReqeust(in);
+            HttpRequest request = HttpUtils.parseRequest(in);
             HttpResponse response = handleHttpRequest(request);
 
             DataOutputStream dos = new DataOutputStream(out);
