@@ -9,10 +9,7 @@ import webserver.FileType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -120,5 +117,12 @@ public class Request {
         String[] split = path.split(PERIOD_REGEX);
         String fileExtension = split[split.length - 1];
         return FileType.findType(fileExtension);
+    }
+
+    public Optional<String> getCookie() {
+        if (requestHeader.containsKey("Cookie")) {
+            return Optional.of(requestHeader.get("Cookie").replace("JSESSIONID=", ""));
+        }
+        return Optional.empty();
     }
 }

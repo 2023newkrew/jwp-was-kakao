@@ -6,6 +6,7 @@ import model.User;
 import model.UserRequest;
 import repository.UserRepository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -20,5 +21,9 @@ public class UserService {
     public Optional<User> login(LoginRequest loginRequest) {
         return userRepository.findUserById(loginRequest.getUserId())
                 .filter(user -> user.isPasswordMatch(loginRequest.getPassword()));
+    }
+
+    public Collection<User> findAll() {
+        return userRepository.findAll();
     }
 }

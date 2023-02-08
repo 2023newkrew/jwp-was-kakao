@@ -1,7 +1,11 @@
 package repository;
 
-public interface SessionRepository {
-    void put(String key, String value);
+import model.User;
 
-    String get(String key);
+public interface SessionRepository {
+    void put(String key, User user);
+
+    User get(String key);
+
+    boolean containsKey(String uuid);
 }

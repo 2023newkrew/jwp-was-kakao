@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import model.LoginRequest;
 import model.User;
 import model.UserRequest;
+import utils.DynamicTemplateLoader;
 import webserver.FileType;
 import webserver.request.Method;
 import webserver.request.Request;
@@ -11,6 +12,8 @@ import webserver.response.Response;
 import webserver.service.SessionService;
 import webserver.service.UserService;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -40,7 +43,7 @@ public class GlobalController {
     public Response login(Request request) {
         Optional<User> user = userService.login(LoginRequest.of(request.getRequestBodyAsQueryString()));
         if (user.isPresent()) {
-            String cookie = sessionService.register(user.get().getUserId());
+            String cookie = sessionService.register(user.get());
 
             Response response = Response.found(new byte[0], FileType.HTML, "/index.html");
             response.setCookie(cookie, "/");
@@ -49,5 +52,15 @@ public class GlobalController {
         return Response.found(new byte[0], FileType.HTML, "/user/login_failed.html");
     }
 
+    @CustomRequestMapping(method = Method.GET, path = "/user/list")
+    public Response list(Request request) throws IOException {
+        Optional<String> cookie = request.getCookie();
+        if (cookie.isEmpty() || sessionService.find(cookie.get()).isEmpty()) {
+            return Response.found(new byte[0], FileType.HTML, "/user/login.html");
+        }
 
+        Collection<User> users = userService.findAll();
+        String htmlPage = DynamicTemplateLoader.loadHtml(users, "user/list");
+        return Response.ok(htmlPage.getBytes(), FileType.HTML);
+    }
 }

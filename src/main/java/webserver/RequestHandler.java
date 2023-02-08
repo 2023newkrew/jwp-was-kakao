@@ -17,6 +17,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 public class RequestHandler implements Runnable {
@@ -31,7 +32,7 @@ public class RequestHandler implements Runnable {
         try (
                 InputStream in = connection.getInputStream();
                 OutputStream out = connection.getOutputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in))
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
         ) {
             Request request = Request.parse(reader);
             Response response = getResponseByPath(request);
