@@ -18,7 +18,7 @@ import utils.FileIoUtils;
 import utils.IOUtils;
 import webserver.request.Request;
 import webserver.request.StartLine;
-import webserver.request.StatusCode;
+import webserver.response.StatusCode;
 import webserver.response.Response;
 
 public class RequestHandler implements Runnable {

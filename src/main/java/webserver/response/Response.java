@@ -1,7 +1,6 @@
 package webserver.response;
 
 import java.util.Map;
-import webserver.request.StatusCode;
 
 public class Response {
 

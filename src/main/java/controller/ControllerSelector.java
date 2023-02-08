@@ -6,7 +6,7 @@ import static webserver.request.HttpMethod.POST;
 import dto.BaseResponseDto;
 import java.util.Objects;
 import webserver.request.Request;
-import webserver.request.StatusCode;
+import webserver.response.StatusCode;
 
 public class ControllerSelector {
 

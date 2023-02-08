@@ -2,7 +2,7 @@ package dto;
 
 import java.util.HashMap;
 import java.util.Map;
-import webserver.request.StatusCode;
+import webserver.response.StatusCode;
 import webserver.response.Response;
 
 public class BaseResponseDto {
