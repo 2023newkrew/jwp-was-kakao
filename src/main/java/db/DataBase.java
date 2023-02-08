@@ -4,9 +4,10 @@ import model.User;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.HashMap;
 
 public class DataBase {
-    private static Map<String, User> users = Map.of();
+    private static Map<String, User> users = new HashMap<>();
 
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
