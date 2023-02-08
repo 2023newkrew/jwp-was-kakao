@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-public class FakeBufferedReader extends BufferedReader {
+public final class FakeBufferedReader extends BufferedReader {
     final String[] httpRequest = {
             "GET /index.html HTTP/1.1 ",
             "Host: localhost:8080 ",

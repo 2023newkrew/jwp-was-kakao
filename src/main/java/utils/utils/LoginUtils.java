@@ -1,7 +1,7 @@
 package utils.utils;
 
 import lombok.experimental.UtilityClass;
-import model.request.CookieExtractor;
+import utils.extractor.CookieExtractor;
 import model.request.HttpRequest;
 
 import static constant.DefaultConstant.*;

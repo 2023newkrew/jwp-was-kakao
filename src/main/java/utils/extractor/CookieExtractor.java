@@ -1,4 +1,4 @@
-package model.request;
+package utils.extractor;
 
 import lombok.experimental.UtilityClass;
 
