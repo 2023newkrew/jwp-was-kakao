@@ -1,8 +1,15 @@
 package webserver.handler.posthandler.impl;
 
+import db.DataBase;
+import model.User;
+import webserver.constant.HttpHeaderProperties;
+import webserver.constant.HttpStatus;
 import webserver.handler.posthandler.PostRequestHandler;
 import webserver.request.HttpRequest;
+import webserver.request.QueryParams;
 import webserver.response.HttpResponse;
+
+import java.util.UUID;
 
 public class LoginRequestHandler extends PostRequestHandler {
 
@@ -27,6 +34,22 @@ public class LoginRequestHandler extends PostRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        return null;
+        QueryParams queryParams = new QueryParams(request.getBody());
+        String userId = queryParams.get("userId");
+        String password = queryParams.get("password");
+        User user = DataBase.findUserById(userId);
+        if (user.hasSamePassword(password)) {
+            return new HttpResponse.Builder()
+                    .setStatus(HttpStatus.FOUND)
+                    .addHeader("Set-Cookie", UUID.randomUUID()
+                            .toString())
+                    .addHeader(HttpHeaderProperties.LOCATION.getKey(), "http://localhost:8080/index.html")
+                    .build();
+        } else {
+            return new HttpResponse.Builder()
+                    .setStatus(HttpStatus.FOUND)
+                    .addHeader(HttpHeaderProperties.LOCATION.getKey(), "http://localhost:8080/login_failed.html")
+                    .build();
+        }
     }
 }
