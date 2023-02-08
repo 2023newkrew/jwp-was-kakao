@@ -1,6 +1,7 @@
 package http.request;
 
 import http.Body;
+import http.HttpCookies;
 import http.HttpHeaders;
 
 public class HttpRequest {
@@ -25,6 +26,10 @@ public class HttpRequest {
 
     public HttpMethod getMethod() {
         return requestInfo.getHttpMethod();
+    }
+
+    public HttpCookies getCookies() {
+        return httpHeaders.getCookies();
     }
 
     public String getBody() {

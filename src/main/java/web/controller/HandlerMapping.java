@@ -9,14 +9,14 @@ import static error.ErrorType.CONTROLLER_NOT_FOUND;
 
 public class HandlerMapping {
 
-    private static List<Controller> controllers;
+    private final List<Controller> controllers;
 
-    static {
-        controllers = List.of(
-                new DefaultController(),
-                new GetResourceController(),
-                new PostSignInController()
-        );
+    private HandlerMapping(List<Controller> controllers) {
+        this.controllers = controllers;
+    }
+
+    public static HandlerMapping of(Controller... controllers) {
+        return new HandlerMapping(List.of(controllers));
     }
 
     public Controller getHandler(HttpRequest httpRequest) {

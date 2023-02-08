@@ -1,6 +1,9 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ForkJoinPoolUtils;
 import web.RequestHandler;
+import web.config.DependencyConfig;
+import web.controller.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,10 +18,11 @@ public class WebServerApplication {
 
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
+            HandlerMapping handlerMapping = DependencyConfig.getHandlerMapping();
 
             Socket connection;
             while ((connection = listenSocket.accept()).isConnected()) {
-                new Thread(new RequestHandler(connection)).start();
+                ForkJoinPoolUtils.execute(new RequestHandler(connection, handlerMapping));
             }
         }
     }
