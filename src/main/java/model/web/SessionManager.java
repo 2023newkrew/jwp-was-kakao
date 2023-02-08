@@ -1,15 +1,9 @@
 package model.web;
 
-import constant.HeaderConstant;
 import lombok.experimental.UtilityClass;
-import model.request.HttpRequest;
-import model.response.HttpResponse;
-import utils.builder.CookieBuilder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static constant.HeaderConstant.*;
 
 @UtilityClass
 public class SessionManager {

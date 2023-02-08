@@ -16,6 +16,7 @@ public class HttpRequestFirstLineProperties {
     private String URL;
     private String httpProtocol;
     private QueryParams queryParams;
+
     public HttpRequestFirstLineProperties(String line) {
         this.httpMethod = HttpMethod.valueOf(line.split(" ")[0]);
         this.URL = line.split(" ")[1];

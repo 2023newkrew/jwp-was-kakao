@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import static constant.HeaderConstant.*;
-import static utils.utils.IOUtils.*;
 import static utils.parser.QueryStringParser.*;
+import static utils.utils.IOUtils.*;
 
 @UtilityClass
 public class RequestBodyExtractor {
@@ -25,7 +25,8 @@ public class RequestBodyExtractor {
                                             bufferedReader,
                                             Integer.parseInt(requestHeaders.get(CONTENT_LENGTH))
                                     ),
-                                    new TypeReference<Map<String, String>>() {}
+                                    new TypeReference<Map<String, String>>() {
+                                    }
                             );
                 case APPLICATION_URL_ENCODED:
                     return parseQueryString(

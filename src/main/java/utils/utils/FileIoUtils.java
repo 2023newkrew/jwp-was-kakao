@@ -23,11 +23,11 @@ public class FileIoUtils {
 
     public Set getStaticFolderNames() {
         return Arrays.stream(
-                new File(Thread.currentThread()
-                        .getContextClassLoader()
-                        .getResource(STATIC)
-                        .getPath())
-                        .listFiles()
+                        new File(Thread.currentThread()
+                                .getContextClassLoader()
+                                .getResource(STATIC)
+                                .getPath())
+                                .listFiles()
                 )
                 .map(File::getName)
                 .collect(Collectors.toSet());

@@ -4,8 +4,8 @@ import lombok.experimental.UtilityClass;
 import model.request.CookieExtractor;
 import model.request.HttpRequest;
 
-import static constant.DefaultConstant.DEFAULT_SESSION_ID;
-import static constant.HeaderConstant.COOKIE;
+import static constant.DefaultConstant.*;
+import static constant.HeaderConstant.*;
 
 @UtilityClass
 public class LoginUtils {

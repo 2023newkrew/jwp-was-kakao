@@ -2,7 +2,6 @@ package model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import model.enumeration.HttpMethod;
 
 @Getter
 @AllArgsConstructor

@@ -1,18 +1,14 @@
 package webserver.controller;
 
-import constant.HeaderConstant;
 import model.annotation.Api;
 import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
-import model.request.CookieExtractor;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
 import model.user.User;
 import model.web.Cookie;
-import model.web.Session;
 import utils.builder.CookieBuilder;
 import utils.builder.ResponseBuilder;
-import utils.utils.LoginUtils;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.LoginService;
@@ -21,9 +17,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static constant.DefaultConstant.DEFAULT_PAGE;
-import static constant.DefaultConstant.DEFAULT_SESSION_ID;
-import static constant.HeaderConstant.*;
+import static constant.DefaultConstant.*;
 import static utils.utils.LoginUtils.*;
 
 public class LoginController extends ApiController {

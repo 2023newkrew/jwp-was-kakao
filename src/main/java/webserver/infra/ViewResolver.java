@@ -20,6 +20,7 @@ import static utils.utils.FileIoUtils.*;
 public class ViewResolver {
     private final String CONTENT_TYPE_DELIMITER = ",";
     private final String REQUEST_PATH_DELIMITER = "/";
+
     public HttpResponse resolve(HttpRequest request) {
         ResponseBody responseBody = getBody(request.getURL());
 

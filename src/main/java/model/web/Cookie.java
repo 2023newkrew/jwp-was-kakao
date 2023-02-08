@@ -1,9 +1,5 @@
 package model.web;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 public class Cookie {
     private final String key;
     private final String value;

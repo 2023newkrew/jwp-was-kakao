@@ -1,9 +1,9 @@
 package utils.builder;
 
 import lombok.experimental.UtilityClass;
-import model.request.properties.HttpRequestFirstLineProperties;
-import model.request.*;
 import model.dto.request.HttpRequestKeyValue;
+import model.request.HttpRequest;
+import model.request.properties.HttpRequestFirstLineProperties;
 import model.request.properties.RequestBody;
 import model.request.properties.RequestHeaders;
 

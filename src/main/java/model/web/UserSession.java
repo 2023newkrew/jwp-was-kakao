@@ -5,7 +5,6 @@ import model.user.User;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 public class UserSession implements Session<User> {
     private final Map<String, User> attributes = new HashMap<>();

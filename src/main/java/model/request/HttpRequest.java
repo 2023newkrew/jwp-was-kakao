@@ -1,21 +1,17 @@
 package model.request;
 
-import constant.DefaultConstant;
-import model.annotation.Api;
-import model.enumeration.ContentType;
-import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import model.annotation.Api;
+import model.enumeration.ContentType;
+import model.enumeration.HttpMethod;
 import model.request.properties.HttpRequestFirstLineProperties;
 import model.request.properties.QueryParams;
 import model.request.properties.RequestBody;
 import model.request.properties.RequestHeaders;
-import model.web.Cookie;
 import model.web.Session;
 import model.web.SessionManager;
-
-import java.util.Arrays;
 
 import static constant.DefaultConstant.*;
 import static constant.HeaderConstant.*;
@@ -38,6 +34,7 @@ public class HttpRequest {
     public String findHeaderValue(String key, String defaultValue) {
         return headers.getHeaders().getOrDefault(key, defaultValue);
     }
+
     public boolean methodAndURLAndContentEquals(Api annotation) {
         return method.equals(annotation.method()) &&
                 URL.equals(annotation.url()) &&
@@ -52,8 +49,8 @@ public class HttpRequest {
     }
 
     public HttpRequest(HttpRequestFirstLineProperties firstLineProperties,
-                        RequestHeaders requestHeaders,
-                        RequestBody requestBody) {
+                       RequestHeaders requestHeaders,
+                       RequestBody requestBody) {
         this.method = firstLineProperties.getHttpMethod();
         this.protocol = firstLineProperties.getHttpProtocol();
         this.URL = firstLineProperties.getURL();

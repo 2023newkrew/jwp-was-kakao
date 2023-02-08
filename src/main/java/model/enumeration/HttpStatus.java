@@ -4,7 +4,7 @@ public enum HttpStatus {
     OK(200, "HTTP/1.1 200 OK \r\n"),
     FOUND(302, "HTTP/1.1 302 Found \r\n"),
     NOT_FOUND(404, "HTTP/1.1 404 Not Found \r\n"),
-    
+
     ;
 
 

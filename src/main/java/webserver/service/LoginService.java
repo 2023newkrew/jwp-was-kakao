@@ -5,7 +5,6 @@ import model.user.User;
 import webserver.dao.UserDao;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class LoginService {
     private final UserDao userDao;

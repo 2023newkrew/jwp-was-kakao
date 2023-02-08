@@ -15,7 +15,7 @@ public class DataBase {
     }
 
     public static Optional<User> findUserById(String userId) {
-         return Optional.ofNullable(users.getOrDefault(userId, null));
+        return Optional.ofNullable(users.getOrDefault(userId, null));
     }
 
     public static Collection<User> findAll() {

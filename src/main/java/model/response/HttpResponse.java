@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static constant.HeaderConstant.SET_COOKIE;
+import static constant.HeaderConstant.*;
 
 @AllArgsConstructor
 @Getter
@@ -30,6 +30,7 @@ public class HttpResponse {
     public boolean isBodyExists() {
         return !body.isEmpty();
     }
+
     public String findHeaderValue(String key) {
         return header.getHeaders().get(key);
     }

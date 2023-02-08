@@ -1,9 +1,6 @@
 package model.web;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface Session<T> {
     String getId();

@@ -10,7 +10,7 @@ import webserver.infra.RequestHandler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class RequestHandlerTest {
     @Test

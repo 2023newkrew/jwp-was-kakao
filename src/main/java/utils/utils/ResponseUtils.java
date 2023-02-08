@@ -9,7 +9,7 @@ import java.util.Map;
 
 @UtilityClass
 public class ResponseUtils {
-    private static final int  DEFAULT_OFFSET = 0;
+    private static final int DEFAULT_OFFSET = 0;
 
     public void doResponse(DataOutputStream dos, HttpResponse response) throws IOException {
         dos.writeBytes(response.getStatusLine());

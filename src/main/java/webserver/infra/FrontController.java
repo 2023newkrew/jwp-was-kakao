@@ -1,7 +1,6 @@
 package webserver.infra;
 
 import lombok.experimental.UtilityClass;
-import model.annotation.Api;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
 import utils.builder.ResponseBuilder;
@@ -11,10 +10,8 @@ import webserver.controller.UserController;
 import webserver.controller.ViewController;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static webserver.infra.ControllerHandlerAdapter.*;
 

@@ -6,8 +6,8 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
 import lombok.experimental.UtilityClass;
-import model.dto.view.TemplateLoadResult;
 import model.dto.user.UserListViewDto;
+import model.dto.view.TemplateLoadResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +20,7 @@ import static constant.PathConstant.*;
 @UtilityClass
 public class TemplateUtils {
     private final int INITIAL_INDEX = 1;
+
     public TemplateLoadResult handleUserListTemplate() {
         try {
             Handlebars handlebars = getTemplateHandlerBars();

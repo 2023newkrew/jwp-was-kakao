@@ -3,9 +3,6 @@ package utils.builder;
 import lombok.experimental.UtilityClass;
 import model.web.Cookie;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 @UtilityClass
 public class CookieBuilder {
     private final String ENTIRE_PATH = "; Path=/";

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class QueryStringParser {
     private final String QUERY_STRING_EACH_PARAMETER_DELIMITER = "&";
     private final String QUERY_STRING_KEY_VALUE_DELIMITER = "=";
+
     public Map<String, String> parseQueryString(String string) {
         return Arrays.stream(string.split(QUERY_STRING_EACH_PARAMETER_DELIMITER))
                 .map(queryString -> queryString.split(QUERY_STRING_KEY_VALUE_DELIMITER))
