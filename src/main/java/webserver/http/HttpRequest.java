@@ -7,12 +7,14 @@ public class HttpRequest {
     private final HttpMethod method;
     private final HttpHeaders headers;
     private final Map<String, String> parameter;
+    private final Cookies cookies;
 
-    public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter) {
+    public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter, final Cookies cookies) {
         this.path = path;
         this.method = method;
         this.headers = headers;
         this.parameter = parameter;
+        this.cookies = cookies;
     }
 
     public String getPath() {
@@ -31,5 +33,9 @@ public class HttpRequest {
     @SuppressWarnings("unused")
     public String getHeader(String headerName) {
         return headers.getHeaders().get(headerName);
+    }
+
+    public Cookies getCookies() {
+        return cookies;
     }
 }

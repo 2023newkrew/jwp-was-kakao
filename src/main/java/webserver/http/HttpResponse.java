@@ -1,6 +1,7 @@
 package webserver.http;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponse {
     private final HttpHeaders headers;
@@ -21,6 +22,10 @@ public class HttpResponse {
 
     public HttpStatus getStatus() {
         return httpStatus;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers.getHeaders();
     }
 
     public void setHeader(String header, String value) {

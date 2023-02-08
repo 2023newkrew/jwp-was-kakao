@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class User {
     private final String userId;
     private final String password;
@@ -25,6 +27,10 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public boolean checkPassword(String password) {
+        return Objects.nonNull(password) && password.equals(this.password);
     }
 
     @Override

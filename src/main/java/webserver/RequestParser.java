@@ -9,6 +9,7 @@ import webserver.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestParser {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -49,6 +50,7 @@ public class RequestParser {
         String uri = getURI(startLine, response).orElse("/");
         HttpMethod method = getMethod(startLine, response);
         HttpHeaders headers = getHttpHeaders(Headers, response);
+        Cookies cookie = getCookies(headers, response);
         String[] pathAndParameters = uri.split("\\?");
         String path = pathAndParameters[0];
 
@@ -68,7 +70,7 @@ public class RequestParser {
         } else {
             response.setStatus(HttpStatus.BAD_REQUEST);
         }
-        return new HttpRequest(path, method, headers, parameters);
+        return new HttpRequest(path, method, headers, parameters, cookie);
     }
 
     private static String readStartLine(final BufferedReader reader) {
@@ -126,5 +128,24 @@ public class RequestParser {
             response.setStatus(HttpStatus.BAD_REQUEST);
         }
         return Optional.empty();
+    }
+
+    private static Cookies getCookies(final HttpHeaders headers, final HttpResponse response) {
+        Map<String, String> cookies = new ConcurrentHashMap<>();
+        String cookieStrings = headers.getHeaders().get("Cookie");
+        if (Objects.isNull(cookieStrings)) {
+            return new Cookies(cookies);
+        }
+        String[] cookieString = cookieStrings.split("; ");
+        for (int i = 0; i < cookieString.length; i++) {
+            String[] keyAndValue = cookieString[i].split("=");
+            if (keyAndValue.length == 2) {
+                cookies.put(keyAndValue[0], keyAndValue[1]);
+            } else {
+                logger.error("잘못된 쿠키 형식입니다.");
+                response.setStatus(HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new Cookies(cookies);
     }
 }

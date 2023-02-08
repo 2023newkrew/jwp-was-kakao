@@ -9,10 +9,12 @@ import webserver.http.HttpStatus;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 import java.util.Objects;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final String CRLF = "\r\n";
 
     private final Socket connection;
 
@@ -79,15 +81,31 @@ public class RequestHandler implements Runnable {
                 response405Header(dos);
                 break;
         }
+        responseCommonHeader(dos, response);
         responseBody(dos, response.getBody());
+    }
+
+    private void responseCommonHeader(final DataOutputStream dos, final HttpResponse response) {
+        Map<String, String> headers = response.getHeaders();
+        headers.keySet().forEach(headerName -> {
+            try {
+                dos.writeBytes(headerName + ": " + headers.get(headerName) + " " + CRLF);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        });
+        try {
+            dos.writeBytes(CRLF);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 200 OK " + CRLF);
+            dos.writeBytes("Content-Type: text/html;charset=utf-8 " + CRLF);
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " " + CRLF);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -95,9 +113,7 @@ public class RequestHandler implements Runnable {
 
     private void response302Header(DataOutputStream dos, String location) {
         try {
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + location + " \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 302 Found " + CRLF);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -105,8 +121,7 @@ public class RequestHandler implements Runnable {
 
     private void response400Header(DataOutputStream dos) {
         try {
-            dos.writeBytes("HTTP/1.1 400 Bad Request \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 400 Bad Request " + CRLF);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -114,8 +129,7 @@ public class RequestHandler implements Runnable {
 
     private void response404Header(DataOutputStream dos) {
         try {
-            dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 404 Not Found " + CRLF);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -123,8 +137,7 @@ public class RequestHandler implements Runnable {
 
     private void response405Header(DataOutputStream dos) {
         try {
-            dos.writeBytes("HTTP/1.1 405 Method Not Allowed \r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 405 Method Not Allowed " + CRLF);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
