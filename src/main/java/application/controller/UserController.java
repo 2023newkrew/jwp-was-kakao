@@ -2,6 +2,7 @@ package application.controller;
 
 import application.service.UserService;
 import org.springframework.http.HttpStatus;
+import webserver.template.TemplateEngine;
 import webserver.utils.IOUtils;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
@@ -64,5 +65,9 @@ public class UserController {
                 .status(HttpStatus.FOUND)
                 .location("http://localhost:8080/user/login_failed.html")
                 .build();
+    }
+
+    public HttpResponse userList(HttpRequest request) {
+        return TemplateEngine.getTemplateResponse("/user/list", userService.findAllUsers());
     }
 }

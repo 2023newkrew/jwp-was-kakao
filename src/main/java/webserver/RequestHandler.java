@@ -90,7 +90,7 @@ public class RequestHandler implements Runnable {
             HttpExceptionHandler handler = httpExceptionHandlerMapping.findHandler(e);
             return handler.doHandle(e);
         } catch (HandlerNotFoundException exception) {
-            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body("Internal Server Error");
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body(e.getMessage());
         }
     }
 }
