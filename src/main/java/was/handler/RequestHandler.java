@@ -44,21 +44,7 @@ public class RequestHandler implements Runnable {
                 .collect(Collectors.toMap(it -> PathPattern.from(it.getAnnotation(Mapping.class)), it -> it));
     }
 
-    public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
-
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            DataOutputStream dos = new DataOutputStream(out);
-            Response response = body(RequestUtils.getRequest(in)).orElse(RESPONSE_404);
-            responseHeader(dos, response);
-            responseBody(dos, response);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private Optional<Response> body(Request request) {
+    private Optional<Response> mapping(Request request) {
         try {
             List<Object> args = new ArrayList<>();
             if(map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)){
@@ -73,18 +59,27 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void responseHeader(DataOutputStream dos, Response response) {
+    private void response(DataOutputStream dos, Response response) {
         try {
+            dos.writeBytes(response.getResponseLine());
             dos.writeBytes(response.getHeader());
+            if(response.isValidBody()) {
+                dos.writeBytes("\r\n\r\n");
+                dos.write(response.getBody(), 0, response.getBody().length);
+            }
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void responseBody(DataOutputStream dos, Response response) {
-        try {
-            dos.write(response.getBody(), 0, response.getBody().length);
-            dos.flush();
+    public void run() {
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+                connection.getPort());
+
+        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            DataOutputStream dos = new DataOutputStream(out);
+            Response response = mapping(RequestUtils.getRequest(in)).orElse(RESPONSE_404);
+            response(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
