@@ -1,8 +1,8 @@
 package webserver;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Request {
     private final RequestHeader header;
@@ -22,13 +22,8 @@ public class Request {
     }
 
     public Map<String, String> convertBodyToMap() {
-        Map<String, String> MappedBody = new HashMap<>();
-        Arrays.stream(body.split("&"))
-                .forEach(v -> {
-                    String[] kv = v.split("=");
-                    MappedBody.put(kv[0], kv[1]);
-                });
-
-        return MappedBody;
+        return Arrays.stream(body.split("&"))
+                .map(v -> v.split("="))
+                .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
     }
 }

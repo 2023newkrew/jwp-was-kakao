@@ -1,6 +1,7 @@
 package webserver;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RequestParser {
     public static RequestHeader parseHeader(List<String> request) {
@@ -30,14 +31,9 @@ public class RequestParser {
     }
 
     private static Map<String, String> extractQueryParams(String params) {
-        Map<String, String> queryParams = new HashMap<>();
-        Arrays.stream(params.split("&"))
-                .forEach(v -> {
-                    String[] kv = v.split("=");
-                    queryParams.put(kv[0], kv[1]);
-                });
-
-        return queryParams;
+        return Arrays.stream(params.split("&"))
+                .map(v -> v.split("="))
+                .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
     }
 
     private static void extractHeader(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, Iterator<String> iterator) {
