@@ -13,8 +13,9 @@ public enum HandlerMapping {
 
     BASE_URL(GET, "/", new BaseHandler()),
     CREATE_USER(POST, "/user/create", new CreateUserHandler()),
+    USER_LIST(GET, "/user/list", new UserListHandler()),
     LOGIN_USER(POST, "/user/login", new LoginUserHandler()),
-    LOGIN_CHECK_USER(GET, "/user/login", new LoginCheckHandler());
+    LOGIN_CHECK(GET, "/user/login", new LoginCheckHandler());
 
     private final Method method;
     private final String path;

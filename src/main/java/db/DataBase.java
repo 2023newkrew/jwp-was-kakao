@@ -11,6 +11,8 @@ public class DataBase {
     private static final Map<String, User> users = new HashMap<>();
 
     public static void addUser(User user) {
+        int currentId = users.size();
+        user.setId(currentId + 1);
         users.put(user.getUserId(), user);
         System.out.println("ADD USER = " + user);
     }

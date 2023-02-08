@@ -1,6 +1,5 @@
 package webserver.handler;
 
-import model.User;
 import webserver.common.HttpSession;
 import webserver.common.HttpSessions;
 import webserver.request.Request;
@@ -12,7 +11,7 @@ public class LoginCheckHandler implements Handler {
     @Override
     public Response apply(Request request) {
         String sessionId = request.getSessionId();
-        if (Objects.isNull(sessionId) || isUserNotSaved(sessionId)) {
+        if (Objects.isNull(sessionId) || !isLoggedIn(sessionId)) {
             return Response.found(
                 new byte[0],
                 request.findRequestedFileType(),
@@ -27,13 +26,11 @@ public class LoginCheckHandler implements Handler {
         );
     }
 
-    private boolean isUserNotSaved(String sessionId) {
+    private boolean isLoggedIn(String sessionId) {
         HttpSession httpSession = HttpSessions.get(sessionId);
         if (httpSession == null) {
-            return true;
+            return false;
         }
-
-        User loginUser = (User) httpSession.getAttribute("user");
-        return loginUser == null;
+        return httpSession.getAttribute("user") != null;
     }
 }
