@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.springframework.http.HttpMethod;
 import utils.FileIoUtils;
+import webserver.HttpCookies;
 
 public class RequestInfo {
     private HttpMethod method;
@@ -17,6 +18,7 @@ public class RequestInfo {
     private final Map<String, String> mappings = new HashMap<>();
     private final Map<String, String> queryMappings = new HashMap<>();
     private final Map<String, String> bodyMappings = new HashMap<>();
+    private final HttpCookies cookies = new HttpCookies();
 
     private String accept = "text/html";
 
@@ -32,36 +34,6 @@ public class RequestInfo {
         }
         this.method = method;
         this.path = setPath(tokens[1]);
-    }
-
-    public void readNextLine(String line) {
-        String[] tokens = line.split(": ");
-        if (tokens[0].equals("Accept")) {
-            setAccept(tokens[1]);
-            return;
-        }
-        mappings.put(tokens[0], tokens[1]);
-    }
-
-    public byte[] getResponse() {
-        try {
-            System.out.println("######## : " + root + path);
-            return FileIoUtils.loadFileFromClasspath(root + path);
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException("잘못된 경로의 요청");
-        } catch (NullPointerException e) {
-            return new byte[]{};
-        }
-    }
-
-    public void setBodyParams(String params) {
-        params = URLDecoder.decode(params, StandardCharsets.UTF_8);
-        for (String parameter : params.split("&")) {
-            String[] queryTokens = parameter.split("=");
-            String key = queryTokens[0];
-            String value = queryTokens[1];
-            bodyMappings.put(key, value);
-        }
     }
 
     public HttpMethod getMethod() {
@@ -98,6 +70,55 @@ public class RequestInfo {
 
     public String getAccept() {
         return accept;
+    }
+
+    public Map<String, String> getCookies() {
+        return cookies.getCookies();
+    }
+
+    public String getCookie(String key) {
+        return cookies.getCookie(key);
+    }
+
+    public void readNextLine(String line) {
+        String[] tokens = line.split(": ");
+        if (tokens[0].equals("Accept")) {
+            setAccept(tokens[1]);
+            return;
+        }
+        if (tokens[0].equals("Cookie")) {
+            setCookies(tokens[1]);
+        }
+        mappings.put(tokens[0], tokens[1]);
+    }
+
+    public byte[] getResponse() {
+        try {
+            System.out.println("######## : " + root + path);
+            return FileIoUtils.loadFileFromClasspath(root + path);
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException("잘못된 경로의 요청");
+        } catch (NullPointerException e) {
+            return new byte[]{};
+        }
+    }
+
+    public void setBodyParams(String params) {
+        params = URLDecoder.decode(params, StandardCharsets.UTF_8);
+        for (String parameter : params.split("&")) {
+            String[] queryTokens = parameter.split("=");
+            String key = queryTokens[0];
+            String value = queryTokens[1];
+            bodyMappings.put(key, value);
+        }
+    }
+
+    private void setCookies(String cookieString) {
+        String[] cookies = cookieString.split("\t*");
+        for (String cookie : cookies) {
+            String[] cookieToken = cookie.split("=");
+            this.cookies.setCookie(cookieToken[0], Objects.nonNull(cookieToken[1]) ? cookieToken[1] : null);
+        }
     }
 
     private void setQueryParams(String params) {

@@ -24,6 +24,10 @@ public class RequestController {
         response302Header(dos, new URI("http://localhost:8080/index.html"));
     }
 
+    public void login(RequestInfo request, DataOutputStream dos) {
+
+    }
+
     public void sendPage(RequestInfo request, DataOutputStream dos) {
         byte[] body = request.getResponse();
         response200Header(dos, body.length, request.getAccept());
