@@ -30,26 +30,27 @@ public class UserController  implements MyController {
     @Override
     public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
+        String cookie = headers.get("cookie");
 
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
-            createUser(params, dataOutputStream);
+            createUser(params, cookie, dataOutputStream);
         }
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
-            form(path, dataOutputStream);
+            form(path, cookie, dataOutputStream);
         }
     }
 
-    private void createUser(MyParams params, DataOutputStream dataOutputStream){
+    private void createUser(MyParams params, String cookie, DataOutputStream dataOutputStream){
         // Memory DB에 유저 데이터 저장
         addUser(UserFactory.createUser(params));
-        response302Header(dataOutputStream, "/index.html");
+        response302Header(dataOutputStream, cookie, "/index.html");
     }
 
-    private void form(String path, DataOutputStream dataOutputStream){
+    private void form(String path, String cookie, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, body.length);
+            response200Header(dataOutputStream, cookie, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());

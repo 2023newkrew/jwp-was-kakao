@@ -12,9 +12,10 @@ public class ResponseHeaders {
 
     private ResponseHeaders(){}
 
-    public static void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    public static void response200Header(DataOutputStream dos, String cookie, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
@@ -23,24 +24,14 @@ public class ResponseHeaders {
         }
     }
 
-    public static void response302Header(DataOutputStream dos, String redirectUrl) {
+    public static void response302Header(DataOutputStream dos, String cookie, String redirectUrl) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
             dos.writeBytes(String.format("Location: %s", redirectUrl));
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
-
-//    public static void response200Header(DataOutputStream dos,String contentType, int lengthOfBodyContent) {
-//        try {
-//            dos.writeBytes("HTTP/1.1 200 \r\n");
-//            dos.writeBytes(String.format("Content-Type: %s;charset=utf-8 \r\n", contentType));
-//            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-//            dos.writeBytes("\r\n");
-//        } catch (IOException e) {
-//            logger.error(e.getMessage());
-//        }
-//    }
 }

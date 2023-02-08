@@ -1,6 +1,7 @@
 package webserver;
 
 import controller.FrontController;
+import model.dto.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import model.dto.MyHeaders;
@@ -45,14 +46,19 @@ public class RequestHandler implements Runnable {
 
             // Request Header
             while(!(Objects.isNull(line) || line.equals(""))){
+
                 isFirstLine = getFirstLineData(isFirstLine, line);
 
                 getContentType(line);
 
                 getContentLength(line);
 
+                getCookie(line);
+
                 line = br.readLine();
             }
+
+            isCookie();
 
             DataOutputStream dos = new DataOutputStream(out);
 
@@ -86,6 +92,20 @@ public class RequestHandler implements Runnable {
         catch(IOException e){
             logger.error(e.getMessage());
         }
+    }
+
+    // header에 쿠키 정보가 없다면 새로 생성
+    private void isCookie(){
+        if(!Objects.isNull(headers.get("cookie"))) return;
+        Cookie cookie = new Cookie();
+        headers.put("cookie", cookie.toString());
+    }
+
+    // Cookie 추출
+    private void getCookie(String line) {
+        if(!line.startsWith("Cookie: ")) return;
+        String cookie = String.format("%s %s", line.split(" ")[1], line.split(" ")[2]);
+        headers.put("cookie", cookie);
     }
 
     // ContentLength 추출
@@ -140,5 +160,9 @@ public class RequestHandler implements Runnable {
         String[] tokens = path.split("\\.");
         if(tokens.length == 0) return "";
         return tokens[tokens.length - 1];
+    }
+
+    public String getCookie(){
+        return headers.get("cookie");
     }
 }

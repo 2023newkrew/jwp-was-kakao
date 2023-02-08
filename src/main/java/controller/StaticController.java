@@ -25,14 +25,15 @@ public class StaticController implements MyController{
     @Override
     public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
+        String cookie = headers.get("cookie");
 
-        handleStatic(path, dataOutputStream);
+        handleStatic(path, cookie, dataOutputStream);
     }
 
-    private void handleStatic(String path, DataOutputStream dataOutputStream){
+    private void handleStatic(String path, String cookie, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("static" + path);
-            response200Header(dataOutputStream, body.length);
+            response200Header(dataOutputStream, cookie, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());

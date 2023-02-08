@@ -24,26 +24,27 @@ public class HomeController implements MyController{
     @Override
     public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
+        String cookie = headers.get("cookie");
 
         if(path.equals("/favicon.ico") && headers.get("method").equals("GET")){
-            getIco(path, dataOutputStream);
+            getIco(path, cookie, dataOutputStream);
             return;
         }
 
         if(path.equals("/")){
-            helloWorld(path, dataOutputStream);
+            helloWorld(cookie, dataOutputStream);
             return;
         }
 
         if(path.equals("/index.html")){
-            index(path, dataOutputStream);
+            index(path, cookie, dataOutputStream);
         }
     }
 
-    private void getIco(String path, DataOutputStream dataOutputStream){
+    private void getIco(String path, String cookie, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, body.length);
+            response200Header(dataOutputStream, cookie, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -51,16 +52,16 @@ public class HomeController implements MyController{
             throw new RuntimeException(e);
         }
     }
-    private void helloWorld(String path,  DataOutputStream dataOutputStream){;
+    private void helloWorld(String cookie, DataOutputStream dataOutputStream){;
         byte[] body = "Hello world".getBytes();
-        response200Header(dataOutputStream, body.length);
+        response200Header(dataOutputStream, cookie, body.length);
         responseBody(dataOutputStream, body);
     }
 
-    private void index(String path, DataOutputStream dataOutputStream){
+    private void index(String path, String cookie, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, body.length);
+            response200Header(dataOutputStream, cookie, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());

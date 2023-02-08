@@ -35,6 +35,7 @@ class RequestHandlerTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                "Set-Cookie: " + handler.getCookie(),
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 11 ",
                 "",
@@ -61,25 +62,12 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 200 OK \r\n" +
+                "Set-Cookie: " + handler.getCookie() + "\r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6902 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
-
-        var output = socket.output().split("\n");
-        var expectedOutput = expected.split("\n");
-
-        for(int i=0; i<output.length; i++){
-            if(output[i].equals(expectedOutput[i])){
-                continue;
-            }
-            System.out.println("actual: "+output[i]);
-            System.out.println("expected: "+ expectedOutput[i]);
-        }
-
 
         assertThat(socket.output()).isEqualTo(expected);
     }
