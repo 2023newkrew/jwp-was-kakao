@@ -29,12 +29,10 @@ public class CssController {
                     .statusCode(StatusCode.OK)
                     .contentType("text/css")
                     .body(FileIoUtils.loadFileFromClasspath("./static/css/styles.css")).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 
     @Mapping(method = RequestMethod.GET, path = "/css/bootstrap.min.css")
@@ -45,11 +43,9 @@ public class CssController {
                     .statusCode(StatusCode.OK)
                     .contentType("text/css")
                     .body(FileIoUtils.loadFileFromClasspath("./static/css/bootstrap.min.css")).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 }

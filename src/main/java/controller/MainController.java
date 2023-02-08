@@ -29,12 +29,10 @@ public class MainController {
                     .statusCode(StatusCode.OK)
                     .contentType("text/html;charset=utf-8")
                     .body(FileIoUtils.loadFileFromClasspath("./templates/index.html")).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 
     @Mapping(method = RequestMethod.GET, path = "/")
