@@ -6,8 +6,8 @@ import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.user.User;
-import utils.UserUtils;
 import session.SessionManager;
+import utils.IOUtils;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import java.util.Map;
 public class UserController {
     private static final String CREATE_USER_REDIRECT_URI = "http://localhost:8080/index.html";
     private static UserController instance;
-    private SessionManager sessionManager = SessionManager.getInstance();
+    private final SessionManager sessionManager = SessionManager.getInstance();
 
     public static UserController getInstance() {
         if (instance == null) {
@@ -26,7 +26,7 @@ public class UserController {
 
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestPath();
-        Map<String, String> userInfo = UserUtils.extractUserFromPath(requestPath);
+        Map<String, String> userInfo = IOUtils.extractParamMapFromPath(requestPath);
         User user = User.from(userInfo);
         DataBase.addUser(user);
 
@@ -35,7 +35,7 @@ public class UserController {
 
     public HttpResponse createUserPost(HttpRequest request) {
         String requestBody = request.getBody();
-        Map<String, String> userInfo = UserUtils.extractUser(requestBody);
+        Map<String, String> userInfo = IOUtils.extractParamsMap(requestBody);
         User user = User.from(userInfo);
         DataBase.addUser(user);
 
