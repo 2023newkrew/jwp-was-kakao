@@ -37,11 +37,11 @@ public class PostLoginController implements Controller {
         Map<String, String> params = ParameterUtils.parse(httpRequest.getBody());
         return MemoryUserRepository.findUserById(params.get("userId"))
                 .filter(user -> user.checkPassword(params.get("password")))
-                .map(this::createLoginSuccessResponse)
-                .orElseGet(this::createLoginFailedResponse);
+                .map(this::createSuccessResponse)
+                .orElseGet(this::createFailedResponse);
     }
 
-    private HttpResponse createLoginSuccessResponse(User user) {
+    private HttpResponse createSuccessResponse(User user) {
         String sessionId = sessionIdGenerator.generate();
         sessionManager.setAttribute(sessionId, user.getUserId());
 
@@ -59,7 +59,7 @@ public class PostLoginController implements Controller {
         });
     }
 
-    private HttpResponse createLoginFailedResponse() {
+    private HttpResponse createFailedResponse() {
         return HttpResponse.redirect(() -> {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.put(LOCATION, LOGIN_FAILED_PAGE_PATH);

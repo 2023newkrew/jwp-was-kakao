@@ -21,7 +21,6 @@ public class HandlebarsTemplateUtils {
 
             return template.apply(new TemplateContext(context));
         } catch (IOException e) {
-            e.printStackTrace();
             throw new ApplicationException(FILE_READ_FAILED, e.getMessage());
         }
     }
