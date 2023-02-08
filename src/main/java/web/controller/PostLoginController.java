@@ -33,12 +33,10 @@ public class PostLoginController implements Controller {
     @Override
     public HttpResponse run(HttpRequest httpRequest) {
         Map<String, String> params = ParameterUtils.parse(httpRequest.getBody());
-        User user = MemoryUserRepository.findUserById(params.get("userId"));
-        if (!user.isCorrectPassword(params.get("password"))) {
-            return createLoginFailedResponse();
-        }
-
-        return createLoginSuccessResponse();
+        return MemoryUserRepository.findUserById(params.get("userId"))
+                .filter(user -> user.checkPassword(params.get("password")))
+                .map(user -> createLoginSuccessResponse())
+                .orElseGet(this::createLoginFailedResponse);
     }
 
     private HttpResponse createLoginSuccessResponse() {

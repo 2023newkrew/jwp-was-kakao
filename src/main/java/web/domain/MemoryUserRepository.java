@@ -2,6 +2,7 @@ package web.domain;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MemoryUserRepository {
@@ -12,8 +13,8 @@ public class MemoryUserRepository {
         users.put(user.getUserId(), user);
     }
 
-    public static User findUserById(String userId) {
-        return users.get(userId);
+    public static Optional<User> findUserById(String userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     public static Collection<User> findAll() {

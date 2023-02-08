@@ -15,7 +15,7 @@ public class User {
         this.email = email;
     }
 
-    public boolean isCorrectPassword(String password) {
+    public boolean checkPassword(String password) {
         return Objects.equals(this.password, password);
     }
 

@@ -83,7 +83,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void 회원가입_시_인덱스_페이지로_리다이렉트된다() {
+    void 회원가입_시_인덱스_페이지로_이동한다() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
@@ -111,9 +111,9 @@ class RequestHandlerTest {
     }
 
     @Test
-    void 로그인_시_헤더의_쿠키_필드에_세션_아이디가_추가된다() {
+    void 로그인_시_헤더의_쿠키_필드에_세션_아이디가_추가되고_인덱스_페이지로_이동한다() {
         // given
-        회원가입_시_인덱스_페이지로_리다이렉트된다();
+        회원가입_시_인덱스_페이지로_이동한다();
         final String httpRequest = String.join("\r\n",
                 "POST /user/login HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -138,6 +138,62 @@ class RequestHandlerTest {
         );
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
 
+    @Test
+    void 회원이_로그인에_실패할_경우_로그인_실패_페이지로_이동한다() {
+        // given
+        회원가입_시_인덱스_페이지로_이동한다();
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 26 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=eddie&password=5678");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new StubRequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login_failed.html "
+        );
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void 비회원이_로그인에_실패할_경우_로그인_실패_페이지로_이동한다() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 26 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=kk&password=1234");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new StubRequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login_failed.html "
+        );
+
+        assertThat(socket.output()).isEqualTo(expected);
     }
 }
