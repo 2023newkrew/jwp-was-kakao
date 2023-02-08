@@ -3,9 +3,11 @@ package application.service;
 import application.db.DataBase;
 import application.domain.User;
 import application.dto.UserResponse;
+import application.utils.SecurityUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UserService {
@@ -21,20 +23,20 @@ public class UserService {
         return instance;
     }
 
-    public void save(Map<String, String> userInfo) {
+    public UserResponse save(Map<String, String> userInfo) {
         User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
         DataBase.addUser(user);
+        return UserResponse.from(user);
     }
 
-    public boolean login(Map<String, String> userInfo) {
+    public Optional<UserResponse> login(Map<String, String> userInfo) {
         User user = DataBase.findUserById(userInfo.get("userId"));
 
         if (user != null && user.getPassword().equals(userInfo.get("password"))) {
-            // login success;
-            return true;
+            return Optional.of(UserResponse.from(user));
         }
 
-        return false;
+        return Optional.empty();
     }
 
     public List<UserResponse> findAllUsers() {

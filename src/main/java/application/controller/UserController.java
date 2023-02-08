@@ -1,5 +1,6 @@
 package application.controller;
 
+import application.dto.UserResponse;
 import application.service.UserService;
 import application.utils.SecurityUtils;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UserController {
@@ -30,7 +32,9 @@ public class UserController {
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestURL();
         Map<String, String> userInfo = IOUtils.extractQueryParameterInfo(requestPath);
-        userService.save(userInfo);
+
+        UserResponse user = userService.save(userInfo);
+        SecurityUtils.setUserToSession(request, user);
 
         return HttpResponse
                 .status(HttpStatus.FOUND)
@@ -41,7 +45,9 @@ public class UserController {
     public HttpResponse createUserPost(HttpRequest request) {
         String requestBody = request.getBody();
         Map<String, String> userInfo = IOUtils.extract(requestBody);
-        userService.save(userInfo);
+
+        UserResponse user = userService.save(userInfo);
+        SecurityUtils.setUserToSession(request, user);
 
         return HttpResponse
                 .status(HttpStatus.FOUND)
@@ -53,11 +59,15 @@ public class UserController {
         String requestBody = request.getBody();
         Map<String, String> userInfo = IOUtils.extract(requestBody);
 
-        if (userService.login(userInfo)) {
+        Optional<UserResponse> userOpt = userService.login(userInfo);
+
+        if (userOpt.isPresent()) {
+            SecurityUtils.setUserToSession(request, userOpt.get());
+
             return HttpResponse
                     .status(HttpStatus.FOUND)
                     .location("http://localhost:8080/index.html")
-                    .setCookie("JSESSIONID", UUID.randomUUID().toString())
+                    .setCookie("JSESSIONID", request.getSession().getId())
                     .setCookie("Path", "/")
                     .build();
         }

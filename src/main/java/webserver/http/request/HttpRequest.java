@@ -1,6 +1,7 @@
 package webserver.http.request;
 
 import webserver.enums.RequestMethod;
+import webserver.http.session.HttpSession;
 
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ public class HttpRequest {
     private final String requestURL;
     private final HttpRequestHeader headers;
     private final String body;
+    private HttpSession session;
 
     private HttpRequest(RequestMethod requestMethod, String requestURL, HttpRequestHeader headers, String body) {
         this.requestMethod = requestMethod;
@@ -31,6 +33,14 @@ public class HttpRequest {
 
     public HttpRequestHeader getHeaders() {
         return headers;
+    }
+
+    public HttpSession getSession() {
+        return session;
+    }
+
+    public void setSession(HttpSession session) {
+        this.session = session;
     }
 
     public Optional<String> getCookie(String key) {

@@ -9,6 +9,8 @@ import webserver.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import webserver.filter.RequestFilter;
+import webserver.filter.SessionRequestFilter;
 import webserver.http.exceptionhandler.DefaultHttpExceptionHandlerMapping;
 import webserver.http.exceptionhandler.HttpExceptionHandler;
 import webserver.http.exceptionhandler.HttpExceptionHandlerMapping;
@@ -26,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.List;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -33,6 +36,7 @@ public class RequestHandler implements Runnable {
     private final HttpRequestHandlerMapping httpRequestHandlerMapping;
     private final HttpExceptionHandlerMapping httpExceptionHandlerMapping;
     private final StaticFileController staticFileController;
+    private final List<RequestFilter> requestFilters = List.of(new SessionRequestFilter());
 
     public RequestHandler(Socket connectionSocket, HttpRequestHandlerMapping requestMapping, HttpExceptionHandlerMapping exceptionMapping) {
         this.connection = connectionSocket;
@@ -48,31 +52,31 @@ public class RequestHandler implements Runnable {
     public void run() {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest request = IOUtils.parseRequest(in);
+            applyRequestFilters(request);
             HttpResponse response = handleHttpRequest(request);
 
             DataOutputStream dos = new DataOutputStream(out);
             response.writeToOutputStream(dos);
-
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
 
+    private void applyRequestFilters(HttpRequest request) {
+        requestFilters.forEach(filter -> filter.doFilter(request));
+    }
+
     private HttpResponse handleHttpRequest(HttpRequest request) {
         try {
-            HttpRequestHandler handler = findHandler(request);
+            if (FileIoUtils.isStaticFile(request)) {
+                return staticFileController.staticFileGet(request);
+            }
+            HttpRequestHandler handler = httpRequestHandlerMapping.findHandler(request);
+            applyRequestFilters(request);
             return handler.doHandle(request);
         } catch (Exception e) {
             return handleException(e);
         }
-    }
-
-    private HttpRequestHandler findHandler(HttpRequest request) throws Exception {
-        if (FileIoUtils.isStaticFile(request)) {
-            return staticFileController::staticFileGet;
-        }
-
-        return httpRequestHandlerMapping.findHandler(request);
     }
 
     private HttpResponse handleException(Exception e) {
