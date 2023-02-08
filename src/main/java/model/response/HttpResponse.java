@@ -6,15 +6,21 @@ import lombok.Getter;
 import model.enumeration.HttpStatus;
 import model.response.properties.ResponseBody;
 import model.response.properties.ResponseHeader;
+import model.web.Cookie;
+import model.web.SessionManager;
+import model.web.UserSession;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static constant.HeaderConstant.SET_COOKIE;
+
 @AllArgsConstructor
 @Getter
 @Builder
 public class HttpResponse {
+    private final String COOKIE_PATH_DELIMITER = ";";
     @Builder.Default
     private ResponseHeader header = ResponseHeader.of(new LinkedHashMap<>());
     private HttpStatus status;
@@ -47,5 +53,15 @@ public class HttpResponse {
 
     public String getStatusLine() {
         return status.getStatusLine();
+    }
+
+    public void addCookieAndSession(Cookie cookie, Object object) {
+        setHeaderAttribute(SET_COOKIE, cookie.toString());
+        SessionManager.add(cookie.key(), new UserSession());
+        SessionManager.findSession(cookie.key()).setAttribute(getCookieValue(cookie), object);
+    }
+
+    private String getCookieValue(Cookie cookie) {
+        return cookie.value().split(COOKIE_PATH_DELIMITER)[0];
     }
 }

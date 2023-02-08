@@ -6,4 +6,5 @@ public class DefaultConstant {
     public static final String DEFAULT_CONTENT_TYPE = "text/html;charset=utf-8";
     public static final String DEFAULT_VIEW_FILE_TYPE = ".html";
     public static final String DEFAULT_PAGE = "/index.html";
+    public static final String DEFAULT_SESSION_ID = "JSESSIONID";
 }

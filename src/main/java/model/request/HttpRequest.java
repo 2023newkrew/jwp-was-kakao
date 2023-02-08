@@ -1,5 +1,6 @@
 package model.request;
 
+import constant.DefaultConstant;
 import model.annotation.Api;
 import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
@@ -10,6 +11,11 @@ import model.request.properties.HttpRequestFirstLineProperties;
 import model.request.properties.QueryParams;
 import model.request.properties.RequestBody;
 import model.request.properties.RequestHeaders;
+import model.web.Cookie;
+import model.web.Session;
+import model.web.SessionManager;
+
+import java.util.Arrays;
 
 import static constant.DefaultConstant.*;
 import static constant.HeaderConstant.*;
@@ -45,11 +51,7 @@ public class HttpRequest {
                 annotation.consumes().equals(ContentType.ANY);
     }
 
-    public boolean isNotDefaultURL() {
-        return !URL.equals(DEFAULT_URL);
-    }
-
-    public HttpRequest (HttpRequestFirstLineProperties firstLineProperties,
+    public HttpRequest(HttpRequestFirstLineProperties firstLineProperties,
                         RequestHeaders requestHeaders,
                         RequestBody requestBody) {
         this.method = firstLineProperties.getHttpMethod();
@@ -58,5 +60,9 @@ public class HttpRequest {
         this.queryParams = firstLineProperties.getQueryParams();
         this.headers = requestHeaders;
         this.body = requestBody;
+    }
+
+    public Session getSession(String id) {
+        return SessionManager.findSession(DEFAULT_SESSION_ID);
     }
 }

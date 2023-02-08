@@ -1,4 +1,4 @@
-package db;
+package model.web;
 
 import model.user.User;
 
@@ -8,12 +8,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class UserSession implements Session<User> {
-    private final String id = UUID.randomUUID().toString();
     private final Map<String, User> attributes = new HashMap<>();
+
 
     @Override
     public String getId() {
-        return id;
+        return null;
     }
 
     @Override
