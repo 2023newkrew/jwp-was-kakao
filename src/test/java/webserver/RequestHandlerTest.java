@@ -1,20 +1,21 @@
 package webserver;
 
-import static config.AppConfig.getFrontController;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import app.config.AppConfig;
+import infra.utils.FileIoUtils;
+import infra.webserver.RequestHandler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import utils.FileIoUtils;
 
 class RequestHandlerTest {
     @Test
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, getFrontController());
+        final var handler = new RequestHandler(socket, AppConfig.getInstance().getControllerConfig().getFrontController());
 
         // when
         handler.run();
@@ -42,7 +43,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, getFrontController());
+        final var handler = new RequestHandler(socket, AppConfig.getInstance().getControllerConfig().getFrontController());
 
         // when
         handler.run();
