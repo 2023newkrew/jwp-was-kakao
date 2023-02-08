@@ -22,4 +22,12 @@ public class HttpSessions {
         SESSIONS.put(sessionId, httpSession);
         return httpSession;
     }
+
+    public static Object findValue(String sessionId, String key) {
+        if (!SESSIONS.containsKey(sessionId)) {
+            return null;
+        }
+        HttpSession httpSession = SESSIONS.get(sessionId);
+        return httpSession.getAttribute(key);
+    }
 }

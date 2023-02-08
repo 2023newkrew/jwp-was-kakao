@@ -5,9 +5,8 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
-import webserver.common.HttpSession;
 import webserver.common.HttpSessions;
-import webserver.exception.InternalServerError;
+import webserver.exception.InternalServerErrorException;
 import webserver.request.Request;
 import webserver.response.Response;
 
@@ -18,7 +17,10 @@ public class UserListHandler implements Handler {
     @Override
     public Response apply(Request request) {
         String sessionId = request.getSessionId();
-        if (Objects.isNull(sessionId) || !isLoggedIn(sessionId)) {
+        if (
+            Objects.isNull(sessionId) ||
+            Objects.isNull(HttpSessions.findValue(sessionId, "user"))
+        ) {
             return Response.found(
                 new byte[0],
                 request.findRequestedFileType(),
@@ -26,28 +28,20 @@ public class UserListHandler implements Handler {
             );
         }
 
+        return generateUserListResponse(request);
+    }
+
+    private Response generateUserListResponse(Request request) {
         try {
-            return generateUserListResponse(request);
+            TemplateLoader loader = new ClassPathTemplateLoader();
+            loader.setPrefix("/templates");
+            loader.setSuffix(".html");
+            Handlebars handlebars = new Handlebars(loader);
+            Template template = handlebars.compile("user/list");
+            String result = template.apply(DataBase.findAll());
+            return Response.ok(result.getBytes(), request.findRequestedFileType());
         } catch (IOException e) {
-            throw new InternalServerError();
+            throw new InternalServerErrorException();
         }
-    }
-
-    private Response generateUserListResponse(Request request) throws IOException {
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix("/templates");
-        loader.setSuffix(".html");
-        Handlebars handlebars = new Handlebars(loader);
-        Template template = handlebars.compile("user/list");
-        String result = template.apply(DataBase.findAll());
-        return Response.ok(result.getBytes(), request.findRequestedFileType());
-    }
-
-    private boolean isLoggedIn(String sessionId) {
-        HttpSession httpSession = HttpSessions.get(sessionId);
-        if (httpSession == null) {
-            return false;
-        }
-        return httpSession.getAttribute("user") != null;
     }
 }

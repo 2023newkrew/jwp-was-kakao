@@ -1,5 +1,7 @@
 package webserver.handler;
 
+import webserver.exception.InternalServerErrorException;
+import webserver.exception.NotFoundException;
 import webserver.request.Method;
 import webserver.request.Request;
 import webserver.response.Response;
@@ -27,17 +29,23 @@ public enum HandlerMapping {
         this.handler = handler;
     }
 
+    public static Response handle(Request request) {
+        try {
+            HandlerMapping handlerMapping = findHandler(request);
+            return handlerMapping.handler.apply(request);
+        } catch (NotFoundException e) {
+            return Response.notFound();
+        } catch (InternalServerErrorException e) {
+            return Response.internalServerError();
+        }
+    }
+
     private static HandlerMapping findHandler(Request request) {
         Method method = request.getMethod();
         String path = request.getPath();
         return Arrays.stream(values())
             .filter(handlerMapping -> handlerMapping.method == method && handlerMapping.path.equals(path))
             .findAny()
-            .orElseThrow(IllegalArgumentException::new);
-    }
-
-    public static Response handle(Request request) {
-        HandlerMapping handlerMapping = findHandler(request);
-        return handlerMapping.handler.apply(request);
+            .orElseThrow(NotFoundException::new);
     }
 }

@@ -5,6 +5,7 @@ import webserver.common.HttpHeader;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +19,10 @@ public class Response {
         this.statusCode = statusCode;
         this.responseHeader = responseHeader;
         this.body = body;
+    }
+
+    private Response(StatusCode statusCode) {
+        this(statusCode, new HashMap<>(), statusCode.getMessage().getBytes());
     }
 
     public static Response ok(byte[] body, FileType fileType) {
@@ -37,6 +42,18 @@ public class Response {
             responseHeader,
             body
         );
+    }
+
+    public static Response notFound() {
+        return new Response(StatusCode.NOT_FOUND);
+    }
+
+    public static Response badRequest() {
+        return new Response(StatusCode.BAD_REQUEST);
+    }
+
+    public static Response internalServerError() {
+        return new Response(StatusCode.INTERNAL_SERVER_ERROR);
     }
 
     private static Map<HttpHeader, String> generateResponseHeader(byte[] body, FileType fileType) {
