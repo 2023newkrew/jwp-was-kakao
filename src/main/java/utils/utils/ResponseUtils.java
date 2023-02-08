@@ -1,4 +1,4 @@
-package utils;
+package utils.utils;
 
 import lombok.experimental.UtilityClass;
 import model.response.HttpResponse;

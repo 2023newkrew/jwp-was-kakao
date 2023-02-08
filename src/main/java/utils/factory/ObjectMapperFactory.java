@@ -1,4 +1,4 @@
-package utils;
+package utils.factory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;

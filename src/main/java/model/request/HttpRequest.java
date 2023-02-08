@@ -5,8 +5,10 @@ import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Map;
+import model.request.properties.HttpRequestFirstLineProperties;
+import model.request.properties.QueryParams;
+import model.request.properties.RequestBody;
+import model.request.properties.RequestHeaders;
 
 import static constant.DefaultConstant.*;
 

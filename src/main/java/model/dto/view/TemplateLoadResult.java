@@ -1,4 +1,4 @@
-package model;
+package model.dto.view;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package model.request;
+package model.request.properties;
 
 import java.util.Collections;
 import java.util.Map;

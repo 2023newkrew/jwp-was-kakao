@@ -1,16 +1,14 @@
 package webserver.infra;
 
-import model.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.ResponseUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-import static utils.RequestBuilder.*;
-import static utils.ResponseUtils.*;
+import static utils.builder.RequestBuilder.*;
+import static utils.utils.ResponseUtils.*;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);

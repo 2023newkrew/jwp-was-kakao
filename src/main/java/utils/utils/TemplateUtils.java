@@ -1,4 +1,4 @@
-package utils;
+package utils.utils;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -6,8 +6,8 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
 import lombok.experimental.UtilityClass;
-import model.TemplateLoadResult;
-import model.dto.UserListViewDto;
+import model.dto.view.TemplateLoadResult;
+import model.dto.user.UserListViewDto;
 
 import java.io.IOException;
 import java.util.List;

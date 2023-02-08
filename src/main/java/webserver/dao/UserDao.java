@@ -3,7 +3,7 @@ package webserver.dao;
 import db.DataBase;
 import model.request.HttpRequest;
 import model.user.User;
-import utils.ObjectMapperFactory;
+import utils.factory.ObjectMapperFactory;
 
 import java.util.Optional;
 

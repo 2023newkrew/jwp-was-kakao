@@ -1,4 +1,4 @@
-package model.response;
+package model.response.properties;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ public class ResponseHeader {
         return new ResponseHeader(map);
     }
 
-    public void put(String key, String value) {
+    public void setAttribute(String key, String value) {
         headers.put(key, value);
     }
 

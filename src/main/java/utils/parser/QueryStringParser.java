@@ -1,4 +1,4 @@
-package utils;
+package utils.parser;
 
 import lombok.experimental.UtilityClass;
 

@@ -1,10 +1,9 @@
-package utils;
+package utils.builder;
 
-import constant.HeaderConstant;
 import model.enumeration.HttpStatus;
 import model.response.HttpResponse;
 import model.response.HttpResponse.HttpResponseBuilder;
-import model.response.ResponseHeader;
+import model.response.properties.ResponseHeader;
 
 import static constant.HeaderConstant.*;
 
@@ -16,7 +15,7 @@ public class ResponseBuilder {
 
     public static HttpResponse found(String location) {
         ResponseHeader header = new ResponseHeader();
-        header.put(LOCATION, location);
+        header.setAttribute(LOCATION, location);
 
         return HttpResponse.builder()
                 .status(HttpStatus.FOUND)

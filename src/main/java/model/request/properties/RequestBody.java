@@ -1,4 +1,6 @@
-package model.request;
+package model.request.properties;
+
+import utils.extractor.RequestBodyExtractor;
 
 import java.io.BufferedReader;
 import java.util.Collections;

@@ -1,11 +1,11 @@
-package model.request;
+package model.request.properties;
 
 import lombok.Getter;
 import model.enumeration.HttpMethod;
 
 import java.util.HashMap;
 
-import static utils.QueryStringParser.*;
+import static utils.parser.QueryStringParser.*;
 
 @Getter
 public class HttpRequestFirstLineProperties {

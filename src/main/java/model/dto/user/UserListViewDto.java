@@ -1,4 +1,4 @@
-package model.dto;
+package model.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

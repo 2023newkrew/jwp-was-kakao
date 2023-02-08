@@ -4,17 +4,13 @@ import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.annotation.Api;
 import model.response.HttpResponse;
-import utils.ResponseBuilder;
+import utils.builder.ResponseBuilder;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.UserService;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import static constant.HeaderConstant.*;
-import static utils.ResponseUtils.*;
-import static utils.TemplateUtils.*;
+import static utils.utils.TemplateUtils.*;
 
 public class UserController extends ApiController {
     private static final UserController instance;

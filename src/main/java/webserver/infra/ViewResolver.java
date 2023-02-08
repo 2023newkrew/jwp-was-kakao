@@ -1,46 +1,45 @@
 package webserver.infra;
 
 import lombok.experimental.UtilityClass;
-import model.TemplateLoadResult;
+import model.dto.view.TemplateLoadResult;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
-import model.response.ResponseBody;
-import model.response.ResponseHeader;
-import utils.ResponseBuilder;
-import utils.ResponseUtils;
+import model.response.properties.ResponseBody;
+import model.response.properties.ResponseHeader;
+import utils.builder.ResponseBuilder;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static constant.DefaultConstant.*;
 import static constant.HeaderConstant.*;
 import static constant.PathConstant.*;
-import static utils.FileIoUtils.*;
-import static utils.ResponseUtils.*;
+import static utils.utils.FileIoUtils.*;
 
 @UtilityClass
 public class ViewResolver {
-    public static final String CONTENT_TYPE_DELIMITER = ",";
+    private final String CONTENT_TYPE_DELIMITER = ",";
+    private final String REQUEST_PATH_DELIMITER = "/";
     public HttpResponse resolve(HttpRequest request) {
-        ResponseBody body = getBody(request.getURL());
+        ResponseBody responseBody = getBody(request.getURL());
 
         ResponseHeader header = new ResponseHeader();
-        header.put(CONTENT_TYPE, request.findHeaderValue(ACCEPT, DEFAULT_CONTENT_TYPE).split(",")[0]);
-        header.put(CONTENT_LENGTH, String.valueOf(body.length()));
+        header.setAttribute(CONTENT_TYPE, getMostPreferredAcceptContentType(request));
+        header.setAttribute(CONTENT_LENGTH, String.valueOf(responseBody.length()));
 
         return ResponseBuilder.ok()
                 .header(header)
-                .body(getBody(request.getURL()))
+                .body(responseBody)
                 .build();
     }
+
 
     public HttpResponse resolve(TemplateLoadResult templateLoadResult) {
         ResponseBody responseBody = new ResponseBody(templateLoadResult.getContent().getBytes());
 
         ResponseHeader header = new ResponseHeader();
-        header.put(CONTENT_TYPE, DEFAULT_CONTENT_TYPE.split(CONTENT_TYPE_DELIMITER)[0]);
-        header.put(CONTENT_LENGTH, String.valueOf(responseBody.length()));
+        header.setAttribute(CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
+        header.setAttribute(CONTENT_LENGTH, String.valueOf(responseBody.length()));
 
         return ResponseBuilder.ok()
                 .header(header)
@@ -65,6 +64,15 @@ public class ViewResolver {
     }
 
     private boolean isStaticPath(String requestURL) {
-        return getStaticFolderNames().contains(requestURL.split("/")[1]);
+        return getStaticFolderNames().contains(getPath(requestURL));
+    }
+
+    private String getPath(String requestURL) {
+        return requestURL.split(REQUEST_PATH_DELIMITER)[1];
+    }
+
+    private String getMostPreferredAcceptContentType(HttpRequest request) {
+        return request.findHeaderValue(ACCEPT, DEFAULT_CONTENT_TYPE)
+                .split(CONTENT_TYPE_DELIMITER)[0];
     }
 }

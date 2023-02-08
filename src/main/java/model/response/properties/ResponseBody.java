@@ -1,4 +1,4 @@
-package model.response;
+package model.response.properties;
 
 public class ResponseBody {
     byte[] body;

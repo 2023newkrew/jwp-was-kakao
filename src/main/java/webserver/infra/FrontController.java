@@ -3,13 +3,12 @@ package webserver.infra;
 import lombok.experimental.UtilityClass;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
-import utils.ResponseBuilder;
+import utils.builder.ResponseBuilder;
 import webserver.controller.ApiController;
 import webserver.controller.LoginController;
 import webserver.controller.UserController;
 import webserver.controller.ViewController;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;

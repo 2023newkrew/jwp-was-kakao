@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import model.enumeration.HttpStatus;
+import model.response.properties.ResponseBody;
+import model.response.properties.ResponseHeader;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,7 +29,7 @@ public class HttpResponse {
     }
 
     public void setHeaderAttribute(String key, String value) {
-        header.put(key, value);
+        header.setAttribute(key, value);
     }
 
 

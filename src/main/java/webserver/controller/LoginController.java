@@ -1,24 +1,17 @@
 package webserver.controller;
 
-import db.SessionManager;
 import model.annotation.Api;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
 import model.user.User;
-import utils.ResponseBuilder;
+import utils.builder.ResponseBuilder;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.LoginService;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Optional;
-
-import static constant.HeaderConstant.*;
-import static constant.SessionUUID.*;
-import static java.util.UUID.randomUUID;
-import static utils.ResponseUtils.*;
 
 public class LoginController extends ApiController {
     private static final LoginController instance;
