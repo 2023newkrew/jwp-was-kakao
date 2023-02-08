@@ -1,50 +1,116 @@
 package webserver;
 
+import common.HttpHeader;
+import common.HttpRequest;
+import common.HttpResponse;
+import common.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import support.IllegalMethodException;
+import support.MethodNotAllowedException;
+import support.PathNotFoundException;
+import support.UnsupportedContentTypeException;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Optional;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private final Socket connection;
 
-    private Socket connection;
-
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(final Socket connectionSocket) {
         this.connection = connectionSocket;
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            DispatcherServlet servlet = new DispatcherServlet();
+
+            // 요청 처리 및 응답
+            handleWithException(reader, dos, servlet);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void handleWithException(BufferedReader reader, DataOutputStream dos, DispatcherServlet servlet) throws IOException {
+       try {
+           handle(reader, dos, servlet);
+       } catch (IllegalMethodException e) {
+           sendResponse(dos, new HttpResponse(HttpStatus.BAD_REQUEST));
+       } catch (PathNotFoundException e) {
+           sendResponse(dos, new HttpResponse(HttpStatus.NOT_FOUND));
+       } catch (MethodNotAllowedException e) {
+           sendResponse(dos, new HttpResponse(HttpStatus.METHOD_NOT_ALLOWED));
+       } catch (UnsupportedContentTypeException e) {
+           sendResponse(dos, new HttpResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+       } catch (Exception e) {
+           sendResponse(dos, new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR));
+       }
+    }
+
+    private void handle(BufferedReader reader, DataOutputStream dos, DispatcherServlet servlet) throws IOException {
+        HttpRequest request = Parser.parseRequest(reader);
+        HttpResponse response = new HttpResponse();
+
+        servlet.dispatch(request, response);
+
+        sendResponse(dos, response);
+    }
+
+    private void sendResponse(DataOutputStream dos, final HttpResponse response) {
+        if (response.getHttpStatus().equals(HttpStatus.OK)) {
+            responseHeaderWithContent(dos, response);
+        }
+        else if (response.getHttpStatus().equals(HttpStatus.FOUND)) {
+            responseHeaderWithLocation(dos, response);
+        }
+        else { // 400, 404, 405, 415, 500
+            responseHeader(dos, response);
+        }
+        responseBody(dos, response.getBody());
+    }
+
+    private void responseHeaderWithContent(DataOutputStream dos, final HttpResponse response) {
+        HttpStatus httpStatus = response.getHttpStatus();
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("HTTP/1.1 " + httpStatus.code + " " + httpStatus.message + " \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes("Content-Length: " + response.getHeader(HttpHeader.CONTENT_LENGTH) + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
+    private void responseHeaderWithLocation(DataOutputStream dos, final HttpResponse response) {
+        HttpStatus httpStatus = response.getHttpStatus();
+        try {
+            dos.writeBytes("HTTP/1.1 " + httpStatus.code + " " + httpStatus.message + " \r\n");
+            dos.writeBytes("Location: " + response.getHeader(HttpHeader.LOCATION) + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void responseHeader(DataOutputStream dos, final HttpResponse response) {
+        HttpStatus httpStatus = Optional.ofNullable(response.getHttpStatus()).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            dos.writeBytes("HTTP/1.1 " + httpStatus.code + " " + httpStatus.message + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void responseBody(DataOutputStream dos, final byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();
