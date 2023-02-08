@@ -26,7 +26,7 @@ class RequestHandlerTest {
                 "Content-Length: 11 ",
                 "",
                 "Hello world");
-
+        System.out.println(socket.output());
         assertThat(socket.output()).isEqualTo(expected);
     }
 
@@ -49,12 +49,17 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 \r\n" +
+        String expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6902 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
-
+        String actual = socket.output();
+        for (int i=0;i<expected.length();i++){
+            if (expected.charAt(i) != actual.charAt(i)){
+                System.out.println(i + " - " + expected.charAt(i) + "|" + actual.charAt(i));
+            }
+        }
         assertThat(socket.output()).isEqualTo(expected);
     }
 }

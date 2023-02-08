@@ -23,6 +23,7 @@ public class WebServer {
             logger.info("Web Application Server started {} port.", port);
 
             // 클라이언트가 연결될때까지 대기한다.
+            // 강의에서 Thread Pool을 사용하는 것을 고려해보라고 하셨지만, 일단 step 1에서는 요청이 오는대로 쓰레드를 생성하는 방식으로 구현하였습니다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
                 Thread thread = new Thread(new RequestHandler(connection));
