@@ -7,3 +7,14 @@
 
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+
+
+## 요구사항 분석
+- [x] 헤더 파싱 클래스
+  - [x] 메서드, 리소스, http 버전 추출
+  - [x] 각종 헤더값들
+    - [x] 헤더를 파싱해서 저장할 Request 생성
+- [x] RequestHandler -> 메서드, uri에 따라서 분기
+  - [x] html -> templates/
+  - [x] 이 외 -> static/
+- [ ] URL 파싱 -> 파라미터 추출
