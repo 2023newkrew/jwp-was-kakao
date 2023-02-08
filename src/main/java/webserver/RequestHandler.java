@@ -1,16 +1,26 @@
 package webserver;
 
-import controller.HomeController;
-import controller.StaticFileController;
-import controller.UserController;
-import enums.ContentType;
-import exceptions.InvalidQueryParameterException;
-import exceptions.ResourceNotFoundException;
+import webserver.controller.StaticFileController;
+import webserver.enums.ContentType;
+import webserver.exceptions.HandlerNotFoundException;
+import webserver.exceptions.InvalidQueryParameterException;
+import webserver.exceptions.InvalidRequestException;
+import webserver.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import utils.FileIoUtils;
-import utils.IOUtils;
+import webserver.filter.RequestFilter;
+import webserver.filter.SessionRequestFilter;
+import webserver.http.exceptionhandler.DefaultHttpExceptionHandlerMapping;
+import webserver.http.exceptionhandler.HttpExceptionHandler;
+import webserver.http.exceptionhandler.HttpExceptionHandlerMapping;
+import webserver.http.requesthandler.DefaultHttpRequestHandlerMapping;
+import webserver.http.requesthandler.HttpRequestHandler;
+import webserver.http.requesthandler.HttpRequestHandlerMapping;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
+import webserver.utils.FileIoUtils;
+import webserver.utils.IOUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,72 +28,73 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.List;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private final HomeController homeController;
-    private final UserController userController;
+    private final Socket connection;
+    private final HttpRequestHandlerMapping httpRequestHandlerMapping;
+    private final HttpExceptionHandlerMapping httpExceptionHandlerMapping;
     private final StaticFileController staticFileController;
-    private Socket connection;
+    private final List<RequestFilter> requestFilters = List.of(new SessionRequestFilter());
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, HttpRequestHandlerMapping requestMapping, HttpExceptionHandlerMapping exceptionMapping) {
         this.connection = connectionSocket;
-        this.homeController = HomeController.getInstance();
-        this.userController = UserController.getInstance();
+        this.httpRequestHandlerMapping = requestMapping;
+        this.httpExceptionHandlerMapping = exceptionMapping;
         this.staticFileController = StaticFileController.getInstance();
     }
 
+    public RequestHandler(Socket connectionSocket) {
+        this(connectionSocket, new DefaultHttpRequestHandlerMapping(), new DefaultHttpExceptionHandlerMapping());
+    }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
-
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            HttpRequest request = IOUtils.parseReqeust(in);
+            HttpRequest request = IOUtils.parseRequest(in);
+            applyRequestFilters(request);
             HttpResponse response = handleHttpRequest(request);
 
             DataOutputStream dos = new DataOutputStream(out);
             response.writeToOutputStream(dos);
-
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
 
-    private HttpResponse handleHttpRequest(HttpRequest request) {
-        try {
-            return doHandleHttpRequest(request);
-        } catch (ResourceNotFoundException e) {
-            return HttpResponse.of(HttpStatus.NOT_FOUND, ContentType.JSON, "Resource Not Found".getBytes());
-        } catch (IOException e) {
-            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Connection Error".getBytes());
-        } catch (URISyntaxException e) {
-            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
-        } catch (InvalidQueryParameterException e) {
-            return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
-        } catch (Exception e) {
-            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
-        }
-
+    private void applyRequestFilters(HttpRequest request) {
+        requestFilters.forEach(filter -> filter.doFilter(request));
     }
 
-    private HttpResponse doHandleHttpRequest(HttpRequest request) throws IOException, URISyntaxException {
-        String requestPath = request.getRequestPath();
+    private HttpResponse handleHttpRequest(HttpRequest request) {
+        try {
+            if (FileIoUtils.isStaticFile(request)) {
+                return staticFileController.staticFileGet(request);
+            }
+            HttpRequestHandler handler = httpRequestHandlerMapping.findHandler(request);
+            applyRequestFilters(request);
+            return handler.doHandle(request);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
 
-        if (requestPath.startsWith("/user/create") && "GET".equals(request.getRequestMethod())) {
-            return userController.createUserGet(request);
+    private HttpResponse handleException(Exception e) {
+        if (e instanceof HandlerNotFoundException || e instanceof ResourceNotFoundException) {
+            return HttpResponse.status(HttpStatus.NOT_FOUND).contentType(ContentType.JSON).body(e.getMessage());
+        }
+        if (e instanceof InvalidRequestException || e instanceof URISyntaxException || e instanceof InvalidQueryParameterException) {
+            return HttpResponse.status(HttpStatus.BAD_REQUEST).contentType(ContentType.JSON).body(e.getMessage());
+        }
+        if (e instanceof IOException) {
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body(e.getMessage());
         }
 
-        if (requestPath.startsWith("/user/create") && "POST".equals(request.getRequestMethod())) {
-            return userController.createUserPost(request);
+        try {
+            HttpExceptionHandler handler = httpExceptionHandlerMapping.findHandler(e);
+            return handler.doHandle(e);
+        } catch (HandlerNotFoundException exception) {
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(ContentType.JSON).body(e.getMessage());
         }
-        if (requestPath.equals("/")) {
-            return homeController.rootPathGet(request);
-        }
-
-        if (FileIoUtils.isStaticFile(request)) {
-            return staticFileController.staticFileGet(request);
-        }
-        throw new ResourceNotFoundException();
     }
 }
