@@ -3,11 +3,13 @@ package supports;
 import db.DataBase;
 import model.User;
 import utils.IOUtils;
+import utils.LogicValidatorUtils;
 import webserver.RequestHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class UserService {
 
@@ -35,7 +37,9 @@ public class UserService {
     private HashMap<String, String> parseQueryParameter(String userBody) {
         HashMap<String, String> result = new HashMap<>();
 
+        LogicValidatorUtils.checkNull(userBody);
         for (String info : userBody.split(AND)) {
+            LogicValidatorUtils.checkNull(info);
             String key = info.split(EQUAL)[0];
             String value = info.split(EQUAL)[1];
             result.put(key, value);
