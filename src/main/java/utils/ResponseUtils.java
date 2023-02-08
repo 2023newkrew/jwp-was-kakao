@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 public class ResponseUtils {
 
-    public static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
+    public static void responseOkHeader(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
             Path path = Paths.get(filePath);
             String mimeType = Files.probeContentType(path);
@@ -24,7 +24,7 @@ public class ResponseUtils {
         }
     }
 
-    public static void response302Header(DataOutputStream dos, String redirectPath) {
+    public static void responseRedirectHeader(DataOutputStream dos, String redirectPath) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: " + redirectPath + " \r\n");

@@ -3,7 +3,7 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import supports.HttpParser;
-import utils.IoUtils;
+import utils.IOUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -24,7 +24,7 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-            String httpRequest = IoUtils.getHttpRequest(br);
+            String httpRequest = IOUtils.getHttpRequest(br);
 
             HttpParser httpParser = new HttpParser(httpRequest);
             String path = httpParser.getPath();

@@ -3,13 +3,13 @@ package utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class IoUtils {
+public class IOUtils {
 
     public static String getHttpRequest(BufferedReader br) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line = br.readLine();
 
-        while (!"".equals(line) && line != null) {
+        while (line != null && !"".equals(line)) {
             sb.append(line).append('\n');
             line = br.readLine();
         }

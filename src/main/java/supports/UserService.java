@@ -2,7 +2,7 @@ package supports;
 
 import db.DataBase;
 import model.User;
-import utils.IoUtils;
+import utils.IOUtils;
 import webserver.RequestHandler;
 
 import java.io.BufferedReader;
@@ -19,7 +19,7 @@ public class UserService {
 
     public void saveUser(BufferedReader br, HttpParser httpParser) throws IOException {
         Integer contentLength = httpParser.getContentLength();
-        String userBody = IoUtils.readData(br, contentLength);
+        String userBody = IOUtils.readData(br, contentLength);
         HashMap<String, String> queryParam = parseQueryParameter(userBody);
 
         User user = new User(

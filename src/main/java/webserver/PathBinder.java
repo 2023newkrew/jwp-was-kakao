@@ -43,7 +43,7 @@ public class PathBinder {
     private byte[] bindTemplates(String path, byte[] body, DataOutputStream dos) throws IOException, URISyntaxException {
         if (path.endsWith(HTML)) {
             body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-            ResponseUtils.response200Header(dos, body.length, path);
+            ResponseUtils.responseOkHeader(dos, body.length, path);
         }
         return body;
     }
@@ -54,7 +54,7 @@ public class PathBinder {
                 path.startsWith(IMAGES) ||
                 path.startsWith(JS)) {
             body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + path);
-            ResponseUtils.response200Header(dos, body.length, path);
+            ResponseUtils.responseOkHeader(dos, body.length, path);
         }
         return body;
     }
@@ -62,7 +62,7 @@ public class PathBinder {
     private void bindCreateUser(String path, BufferedReader br, HttpParser httpParser, DataOutputStream dos) throws IOException {
         if (path.startsWith(USER_CREATE_URL)) {
             userService.saveUser(br, httpParser);
-            ResponseUtils.response302Header(dos, INDEX_PATH);
+            ResponseUtils.responseRedirectHeader(dos, INDEX_PATH);
         }
     }
 }
