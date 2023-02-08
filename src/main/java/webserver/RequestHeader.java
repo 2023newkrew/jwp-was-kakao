@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
 @Builder
@@ -24,15 +25,28 @@ public class RequestHeader {
 
 
     public void convertToAbsolutePath(ResourceType resourceType) {
-//        if (resourceType == ResourceType.STATIC) {
-//            url = resourceType.getPath() + url;//.substring(1);
-//            return;
-//        }
         url = resourceType.getPath() + url;
-
     }
 
     public boolean hasContentLength() {
         return headers.containsKey("Content-Length");
+    }
+
+    public String getExtension() {
+        String[] splitedUrl = url.split("\\.");
+        return splitedUrl[splitedUrl.length - 1];
+    }
+
+    public Optional<String> getContentType() {
+        if (headers.containsKey("Accept")) {
+            return Optional.ofNullable(headers.get("Accept").split(",")[0]);
+        }
+
+        return Optional.empty();
+    }
+
+    public boolean checkRequest(HttpMethod httpMethod, String url) {
+        return this.httpMethod.equals(httpMethod)
+                && this.url.equals(url);
     }
 }
