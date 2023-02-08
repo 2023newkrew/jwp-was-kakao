@@ -21,9 +21,9 @@
 
 ## 2단계 기능 요구사항
 - [ ] 로그인 기능 구현
-  - [ ] "로그인" 메뉴를 클릭하면 http://localhost:8080/user/login.html으로 이동해 로그인할 수 있다.
-  - [ ] 로그인이 성공하면 index.html로 이동하고, 로그인이 실패하면 /user/login_failed.html로 이동해야 한다.
-  - [ ] 회원가입한 사용자로 로그인할 수 있어야 한다.
+  - [X] "로그인" 메뉴를 클릭하면 http://localhost:8080/user/login.html으로 이동해 로그인할 수 있다.
+  - [X] 로그인이 성공하면 index.html로 이동하고, 로그인이 실패하면 /user/login_failed.html로 이동해야 한다.
+  - [X] 회원가입한 사용자로 로그인할 수 있어야 한다.
   - [ ] 자바 진영에서 세션 아이디를 전달하는 이름으로 JSESSIONID를 사용한다.
   - [ ] 서버에서 HTTP 응답을 전달할 때 응답 헤더에 Set-Cookie를 추가하고 JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46 형태로 값을 전달하면 클라이언트 요청 헤더의 Cookie 필드에 값이 추가된다.
   - [ ] Cookie 클래스를 추가하고 Http Request Header의 Cookie에 JSESSIONID가 없으면 HTTP Response Header에 Set-Cookie를 반환해주는 기능을 구현한다.

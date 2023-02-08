@@ -7,6 +7,7 @@ import webserver.request.HttpRequest;
 public enum ControllerMapping {
     BASE(HttpMethod.GET, "/", new DefaultController()),
     CREATE_USER(HttpMethod.POST, "/user/create", new UserCreateController()),
+    USER_LOGIN(HttpMethod.POST, "/user/login", new UserLoginController()),
     FILE_LOAD(HttpMethod.GET, "", new FileLoadController());
 
     private final HttpMethod httpMethod;

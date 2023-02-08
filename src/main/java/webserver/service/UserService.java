@@ -13,14 +13,13 @@ import webserver.request.HttpRequest;
 @NoArgsConstructor
 public class UserService {
     public static void createUser(HttpRequest httpRequest) {
-        String path = httpRequest.getPath();
-        String requestBody = httpRequest.getBody();
-        requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-        MultiValueMap<String, String> requestParams = UriComponentsBuilder.fromUriString(path)
-                .query(requestBody)
-                .build()
-                .getQueryParams();
+        MultiValueMap<String,String> requestParams = getRequestParams(httpRequest);
         addUser(requestParams);
+    }
+
+    public static void login(HttpRequest httpRequest) {
+        MultiValueMap<String,String> requestParams = getRequestParams(httpRequest);
+        validateUser(requestParams);
     }
 
     private static void addUser(MultiValueMap<String, String> requestParams) {
@@ -37,7 +36,7 @@ public class UserService {
         DataBase.addUser(user);
     }
 
-    public static void login(MultiValueMap<String, String> requestParams) {
+    public static void validateUser(MultiValueMap<String, String> requestParams) {
         String userId = requestParams.getFirst("userId");
         String password = requestParams.getFirst("password");
         User user;
@@ -49,5 +48,15 @@ public class UserService {
         if (!user.comparePassword(password)) {
             throw new LoginFailException();
         }
+    }
+
+    private static MultiValueMap<String,String> getRequestParams(HttpRequest httpRequest) {
+        String path = httpRequest.getPath();
+        String requestBody = httpRequest.getBody();
+        requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
+        return UriComponentsBuilder.fromUriString(path)
+                .query(requestBody)
+                .build()
+                .getQueryParams();
     }
 }
