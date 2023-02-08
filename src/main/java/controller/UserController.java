@@ -6,14 +6,16 @@ import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.user.User;
+import session.SessionManager;
 import utils.IOUtils;
 
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserController {
-    public static final String CREATE_USER_REDIRECT_URI = "http://localhost:8080/index.html";
+    private static final String CREATE_USER_REDIRECT_URI = "http://localhost:8080/index.html";
     private static UserController instance;
+    private SessionManager sessionManager = SessionManager.getInstance();
 
     public static UserController getInstance() {
         if (instance == null) {
