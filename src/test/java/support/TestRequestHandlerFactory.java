@@ -9,9 +9,9 @@ import web.validator.LoginValidator;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
-public class RequestHandlerFactory {
+public class TestRequestHandlerFactory {
 
-    private final static SessionManager sessionManager = new MemorySessionManager();
+    public final static SessionManager sessionManager = new MemorySessionManager();
     private final static LoginValidator loginValidator = new LoginValidator(sessionManager);
     private final static HandlerMapping handlerMapping = HandlerMapping.of(
             new DefaultController(),
