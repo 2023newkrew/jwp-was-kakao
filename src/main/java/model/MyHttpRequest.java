@@ -8,7 +8,7 @@ import lombok.Getter;
 import org.springframework.http.HttpMethod;
 
 @Getter
-public class HttpRequest {
+public class MyHttpRequest {
 
     private final HttpMethod httpMethod;
     private final String url;
@@ -17,12 +17,13 @@ public class HttpRequest {
     private final Map<String, String> body;
     private final List<String> staticUrls = Arrays.asList("css", "js", "images", "fonts", "favicon");
 
-    public HttpRequest(String httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
+    public MyHttpRequest(String httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
             Map<String, String> body) {
         this(HttpMethod.resolve(httpMethod), url, queryParams, headers, body);
     }
 
-    public HttpRequest(HttpMethod httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
+    public MyHttpRequest(HttpMethod httpMethod, String url, Map<String, String> queryParams,
+            Map<String, String> headers,
             Map<String, String> body) {
         this.httpMethod = httpMethod;
         this.url = url;

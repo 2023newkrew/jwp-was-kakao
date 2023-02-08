@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import model.HttpRequest;
+import model.MyHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
                 new InputStreamReader(in))) {
             RequestParser requestParser = new RequestParser(br);
 
-            HttpRequest httpRequest = requestParser.buildHttpRequest();
+            MyHttpRequest httpRequest = requestParser.buildHttpRequest();
 
             Controller controller = handleControllerMapping(httpRequest);
             String viewName = controller.process(httpRequest);
@@ -57,7 +57,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private Controller handleControllerMapping(HttpRequest httpRequest) {
+    private Controller handleControllerMapping(MyHttpRequest httpRequest) {
         if (httpRequest.isStaticRequest()) {
             return this.staticController;
         }
@@ -76,7 +76,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void sendBody(HttpRequest httpRequest, String viewName, DataOutputStream dos)
+    private void sendBody(MyHttpRequest httpRequest, String viewName, DataOutputStream dos)
             throws IOException, URISyntaxException {
 
         byte[] body = FileIoUtils.loadFileFromClasspath(viewName);

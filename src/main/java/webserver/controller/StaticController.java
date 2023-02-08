@@ -1,12 +1,12 @@
 package webserver.controller;
 
-import model.HttpRequest;
+import model.MyHttpRequest;
 import webserver.Controller;
 
 public class StaticController implements Controller {
 
     @Override
-    public String process(HttpRequest httpRequest) {
+    public String process(MyHttpRequest httpRequest) {
         return "./static" + httpRequest.getUrl();
     }
 

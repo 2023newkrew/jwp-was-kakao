@@ -1,12 +1,12 @@
 package webserver.controller;
 
-import model.HttpRequest;
+import model.MyHttpRequest;
 import webserver.Controller;
 
 public class ViewController implements Controller {
 
     @Override
-    public String process(HttpRequest httpRequest) {
+    public String process(MyHttpRequest httpRequest) {
         return "./templates" + httpRequest.getUrl();
     }
 

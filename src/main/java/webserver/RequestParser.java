@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import model.HttpRequest;
+import model.MyHttpRequest;
 import org.springframework.util.StringUtils;
 import utils.IOUtils;
 
@@ -17,7 +17,7 @@ public class RequestParser {
         this.br = br;
     }
 
-    public HttpRequest buildHttpRequest() throws IOException {
+    public MyHttpRequest buildHttpRequest() throws IOException {
         String line = br.readLine();
         String[] tokens = line.split(" ");
         String httpMethod = tokens[0];
@@ -37,7 +37,7 @@ public class RequestParser {
 
         parseBody(headerMap, requestBody);
 
-        return new HttpRequest(httpMethod, requestUrl, queryParams, headerMap, requestBody);
+        return new MyHttpRequest(httpMethod, requestUrl, queryParams, headerMap, requestBody);
     }
 
     private void parseBody(Map<String, String> headerMap, Map<String, String> requestBody) throws IOException {
