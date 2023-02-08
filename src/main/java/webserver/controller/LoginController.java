@@ -12,6 +12,7 @@ import model.web.Cookie;
 import model.web.Session;
 import utils.builder.CookieBuilder;
 import utils.builder.ResponseBuilder;
+import utils.utils.LoginUtils;
 import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.LoginService;
@@ -23,9 +24,9 @@ import java.util.UUID;
 import static constant.DefaultConstant.DEFAULT_PAGE;
 import static constant.DefaultConstant.DEFAULT_SESSION_ID;
 import static constant.HeaderConstant.*;
+import static utils.utils.LoginUtils.*;
 
 public class LoginController extends ApiController {
-    private final String JSESSIONID = "JSESSIONID";
     private static final LoginController instance;
 
     private final LoginService loginService;
@@ -44,7 +45,7 @@ public class LoginController extends ApiController {
 
     @Api(method = HttpMethod.GET, url = "/user/login.html")
     public HttpResponse showLoginPage(HttpRequest request) {
-        if (isAlreadyLogin(request)) {
+        if (isLogin(request)) {
             return ResponseBuilder.found(DEFAULT_PAGE);
         }
         return ViewResolver.resolve(request);
@@ -66,19 +67,5 @@ public class LoginController extends ApiController {
 
     private Cookie getCookie() {
         return CookieBuilder.build(DEFAULT_SESSION_ID, UUID.randomUUID().toString());
-    }
-
-    private boolean isAlreadyLogin(HttpRequest request) {
-        try {
-            return request.getSession(DEFAULT_SESSION_ID)
-                    .getAttribute(extractDefaultSessionIdCookieValue(request))
-                    .isPresent();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private String extractDefaultSessionIdCookieValue(HttpRequest request) {
-        return CookieExtractor.extract(request.findHeaderValue(COOKIE, null), DEFAULT_SESSION_ID);
     }
 }
