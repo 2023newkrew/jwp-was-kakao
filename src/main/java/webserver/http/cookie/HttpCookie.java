@@ -2,6 +2,7 @@ package webserver.http.cookie;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class HttpCookie {
@@ -19,5 +20,9 @@ public class HttpCookie {
                         .collect(Collectors.toMap(a -> a[0], a -> a[1]));
 
         return new HttpCookie(cookies);
+    }
+
+    public Optional<String> getCookie(String key) {
+        return Optional.ofNullable(cookies.get(key));
     }
 }

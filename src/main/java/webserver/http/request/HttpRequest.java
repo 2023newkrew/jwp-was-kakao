@@ -2,6 +2,8 @@ package webserver.http.request;
 
 import webserver.enums.RequestMethod;
 
+import java.util.Optional;
+
 public class HttpRequest {
     private final RequestMethod requestMethod;
     private final String requestURL;
@@ -31,6 +33,9 @@ public class HttpRequest {
         return headers;
     }
 
+    public Optional<String> getCookie(String key) {
+        return headers.getCookie(key);
+    }
     public String getBody() {
         return body;
     }

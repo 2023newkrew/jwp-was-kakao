@@ -21,6 +21,13 @@ public class HttpRequestHeader {
                 .map(Integer::parseInt);
     }
 
+    public Optional<String> getCookie(String key) {
+        if (cookie == null) {
+            return Optional.empty();
+        }
+        return cookie.getCookie(key);
+    }
+
     private HttpCookie parseCookieFromHeader() {
         String cookieHeader = headers.get(COOKIE);
         if (cookieHeader == null) {

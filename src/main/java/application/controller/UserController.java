@@ -1,6 +1,7 @@
 package application.controller;
 
 import application.service.UserService;
+import application.utils.SecurityUtils;
 import org.springframework.http.HttpStatus;
 import webserver.template.TemplateEngine;
 import webserver.utils.IOUtils;
@@ -68,6 +69,12 @@ public class UserController {
     }
 
     public HttpResponse userList(HttpRequest request) {
-        return TemplateEngine.getTemplateResponse("/user/list", userService.findAllUsers());
+        if (SecurityUtils.isLoggedIn(request)) {
+            return TemplateEngine.getTemplateResponse("/user/list", userService.findAllUsers());
+        }
+        return HttpResponse
+                .status(HttpStatus.FOUND)
+                .location("http://localhost:8080/user/login.html")
+                .build();
     }
 }
