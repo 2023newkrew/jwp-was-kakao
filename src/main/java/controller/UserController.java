@@ -1,5 +1,11 @@
 package controller;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
+import model.User;
+import model.dto.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -10,8 +16,13 @@ import utils.UserFactory;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static db.DataBase.addUser;
+import static db.DataBase.findAll;
 import static model.dto.ResponseBodies.responseBody;
 import static model.dto.ResponseHeaders.response200Header;
 import static model.dto.ResponseHeaders.response302Header;
@@ -39,6 +50,32 @@ public class UserController  implements MyController {
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
             form(path, contentType, cookie, dataOutputStream);
+        }
+
+        if(path.equals("/user/list") && headers.get("method").equals("GET")){
+            getUserList(dataOutputStream, contentType, cookie);
+        }
+    }
+
+    private void getUserList(DataOutputStream dataOutputStream, String contentType, String cookie) {
+        try{
+            TemplateLoader loader = new ClassPathTemplateLoader();
+            loader.setPrefix("/templates");
+            loader.setSuffix(".hbs");
+            Handlebars handlebars = new Handlebars(loader);
+
+            Template template = handlebars.compile("user/list");
+
+            // handlebars 모델 전송용 dto
+            Users users = new Users(findAll().stream().collect(Collectors.toList()));
+
+            String userList = template.apply(users);
+            byte[] body = userList.getBytes();
+
+            response200Header(dataOutputStream, contentType, cookie, body.length);
+            responseBody(dataOutputStream, userList.getBytes());
+        } catch(IOException e){
+            logger.error(e.getMessage());
         }
     }
 
