@@ -2,11 +2,10 @@ package logics;
 
 import db.DataBase;
 import model.User;
+import model.UserDto;
 import utils.session.Session;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * contains business logic, which is similar to Service component in Spring Framework.
@@ -63,5 +62,29 @@ public class Service {
 
     private Session makeSession(){
         return new Session.Builder().setRandomId().build();
+    }
+
+    public String parseSessionKey(String value){
+        try {
+            String[] parsedValue = value.split(";");
+            for (String v : parsedValue){
+                if (v.trim().startsWith("JSESSIONID") && v.trim().split("=").length == 2){
+                    return v.trim().split("=")[1];
+                }
+            }
+            return null;
+        } catch(IndexOutOfBoundsException e){
+            return null;
+        }
+    }
+
+    public List<UserDto> getUserInformation(){
+        List<UserDto> result = new ArrayList<>();
+        int index = 1;
+        for (User user : DataBase.findAll()){
+            result.add(UserDto.of(user, index));
+            index++;
+        }
+        return result;
     }
 }

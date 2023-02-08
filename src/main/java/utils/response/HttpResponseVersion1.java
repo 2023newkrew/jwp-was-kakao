@@ -1,7 +1,10 @@
 package utils.response;
 
+import com.github.jknack.handlebars.Handlebars;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -33,8 +36,14 @@ public class HttpResponseVersion1 implements HttpResponse{
 
     @Override
     public HttpResponse setBody(byte[] body) {
-        header.put("Content-Length", Integer.toString(body.length));
-        this.body = body;
+        try {
+            Handlebars handlebars = new Handlebars();
+            handlebars.compileInline(new String(body, StandardCharsets.UTF_8));
+            header.put("Content-Length", Integer.toString(body.length));
+            this.body = body;
+        } catch(IOException e){
+            e.printStackTrace();
+        }
         return this;
     }
 

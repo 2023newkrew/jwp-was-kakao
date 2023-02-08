@@ -89,6 +89,7 @@ public abstract class Controller {
     protected HttpResponse defaultPathHandling(HttpRequest httpRequest){
         try {
             String modifiedURL = urlConverter(httpRequest.getURI().getPath());
+            System.out.println(modifiedURL);
             return new HttpResponseVersion1().setResponseCode(200)
                     .setHeader("Content-Type", getAppropriateContentType(httpRequest))
                     .setBody(FileIoUtils.loadFileFromClasspath(modifiedURL));
@@ -97,5 +98,4 @@ public abstract class Controller {
             return new DefaultResponseController().makeResponse(httpRequest);
         }
     }
-
 }

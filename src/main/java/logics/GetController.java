@@ -1,6 +1,7 @@
 package logics;
 
 import logics.get.LoginPageController;
+import logics.get.UserListController;
 import utils.requests.HttpRequest;
 import utils.response.HttpResponse;
 import java.util.Objects;
@@ -12,6 +13,7 @@ public class GetController extends Controller {
     private final UrlMatcher urlMatcher = new UrlMatcher();
     public GetController(){
         urlMatcher.addMatch("/user/login.html", new LoginPageController());
+        urlMatcher.addMatch("/user/list.html", new UserListController());
     }
 
             //Content-Type: text/html;charset=utf-8
