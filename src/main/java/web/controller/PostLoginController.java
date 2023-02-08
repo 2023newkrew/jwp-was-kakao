@@ -14,8 +14,7 @@ import web.infra.SessionManager;
 import java.util.Map;
 import java.util.Objects;
 
-import static http.HttpCookies.PATH;
-import static http.HttpCookies.SESSION_ID;
+import static http.HttpCookies.*;
 import static http.HttpHeaders.LOCATION;
 import static http.HttpHeaders.SET_COOKIE;
 
@@ -49,6 +48,7 @@ public class PostLoginController implements Controller {
         return HttpResponse.redirect(() -> {
             HttpCookies httpCookies = new HttpCookies();
             httpCookies.put(SESSION_ID, sessionId);
+            httpCookies.put(MAX_AGE, String.valueOf(sessionManager.getExpirationTime()));
             httpCookies.put(PATH, "/");
 
             HttpHeaders httpHeaders = new HttpHeaders();

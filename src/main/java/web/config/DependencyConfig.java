@@ -7,6 +7,8 @@ import web.infra.MemorySessionManager;
 import web.infra.SessionManager;
 import web.validator.LoginValidator;
 
+import java.util.concurrent.TimeUnit;
+
 public class DependencyConfig {
 
     private final static SessionManager sessionManager = new MemorySessionManager();
@@ -19,6 +21,10 @@ public class DependencyConfig {
             new GetUserListController(loginValidator),
             new GetResourceController(loginValidator)
     );
+
+    static {
+        sessionManager.setExpirationTime(60 * 60 * 2, TimeUnit.SECONDS);
+    }
 
     public static HandlerMapping getHandlerMapping() {
         return handlerMapping;

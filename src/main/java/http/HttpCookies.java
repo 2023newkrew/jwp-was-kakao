@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class HttpCookies {
 
     public static final String SESSION_ID = "JSESSIONID";
+    public static final String MAX_AGE = "Max-Age";
     public static final String PATH = "Path";
     private static final String COOKIE_DELIMITER = "; ";
     private static final String KEY_VALUE_DELIMITER = "=";

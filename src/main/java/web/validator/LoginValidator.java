@@ -20,8 +20,7 @@ public class LoginValidator {
         HttpCookies httpCookies = httpRequest.getCookies();
         String sessionId = httpCookies.get(SESSION_ID);
 
-        return Objects.nonNull(sessionId) && sessionManager.getAttribute(sessionId)
-                .isPresent();
+        return Objects.nonNull(sessionId) && Objects.nonNull(sessionManager.getAttribute(sessionId));
     }
 
 }

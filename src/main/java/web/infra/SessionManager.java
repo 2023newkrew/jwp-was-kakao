@@ -1,11 +1,13 @@
 package web.infra;
 
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public interface SessionManager {
 
     void setAttribute(String key, Object value);
-    Optional<Object> getAttribute(String key);
-    void remoteAttribute(String key);
+    Object getAttribute(String key);
+    void removeAttribute(String key);
+    void setExpirationTime(long expirationTime, TimeUnit unit);
+    long getExpirationTime();
 
 }

@@ -7,6 +7,7 @@ import web.infra.SessionManager;
 import web.validator.LoginValidator;
 
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 public class RequestHandlerFactory {
 
@@ -19,6 +20,11 @@ public class RequestHandlerFactory {
             new GetUserListController(loginValidator),
             new GetResourceController(loginValidator)
     );
+
+    static {
+        sessionManager.setExpirationTime(60 * 60 * 2, TimeUnit.SECONDS);
+    }
+
     public static RequestHandler create(Socket connectionSocket) {
         return new RequestHandler(connectionSocket, handlerMapping);
     }
