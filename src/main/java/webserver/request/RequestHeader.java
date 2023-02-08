@@ -1,6 +1,6 @@
 package webserver.request;
 
-import webserver.HttpHeader;
+import webserver.common.HttpHeader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,10 +12,10 @@ public class RequestHeader {
 
     private static final String REQUEST_HEADER_KEY_VALUE_DELIMITER = ":";
 
-    private final Map<HttpHeader, String> requestHeader;
+    private final Map<HttpHeader, String> requestHeaders;
 
-    private RequestHeader(Map<HttpHeader, String> requestHeader) {
-        this.requestHeader = requestHeader;
+    private RequestHeader(Map<HttpHeader, String> requestHeaders) {
+        this.requestHeaders = requestHeaders;
     }
 
     public static RequestHeader parse(BufferedReader reader) throws IOException {
@@ -30,11 +30,19 @@ public class RequestHeader {
         return new RequestHeader(requestHeader);
     }
 
+    public HttpCookie getCookie() {
+        if (requestHeaders.containsKey(HttpHeader.COOKIE)) {
+            String cookieValue = requestHeaders.get(HttpHeader.COOKIE);
+            return HttpCookie.of(cookieValue);
+        }
+        return new HttpCookie();
+    }
+
     public boolean checkRequestBodyExists() {
-        return requestHeader.containsKey(HttpHeader.CONTENT_LENGTH);
+        return requestHeaders.containsKey(HttpHeader.CONTENT_LENGTH);
     }
 
     public int findRequestBodySize() {
-        return Integer.parseInt(requestHeader.get(HttpHeader.CONTENT_LENGTH));
+        return Integer.parseInt(requestHeaders.get(HttpHeader.CONTENT_LENGTH));
     }
 }

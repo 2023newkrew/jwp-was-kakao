@@ -1,11 +1,14 @@
 package webserver.request;
 
-import webserver.FileType;
+import webserver.common.FileType;
+import webserver.common.HttpSession;
+import webserver.common.HttpSessions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Request {
 
@@ -47,5 +50,14 @@ public class Request {
 
     public Method getMethod() {
         return requestLine.getMethod();
+    }
+
+    public HttpSession getSession() {
+        HttpCookie cookie = requestHeader.getCookie();
+        String sessionId = cookie.getSessionId();
+        if (Objects.isNull(sessionId)) {
+            return HttpSessions.create();
+        }
+        return HttpSessions.get(sessionId);
     }
 }

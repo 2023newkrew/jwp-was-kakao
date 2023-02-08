@@ -3,6 +3,7 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import webserver.common.FileType;
 import webserver.handler.HandlerMapping;
 import webserver.request.Request;
 import webserver.response.Response;

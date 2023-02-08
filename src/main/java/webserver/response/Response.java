@@ -1,7 +1,7 @@
 package webserver.response;
 
-import webserver.FileType;
-import webserver.HttpHeader;
+import webserver.common.FileType;
+import webserver.common.HttpHeader;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class Response {
         return responseHeader;
     }
 
-    public void addHeader(HttpHeader httpHeader, String value) {
+    public void setHeader(HttpHeader httpHeader, String value) {
         responseHeader.put(httpHeader, value);
     }
 

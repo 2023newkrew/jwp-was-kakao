@@ -19,6 +19,17 @@ public class DataBase {
         return users.get(userId);
     }
 
+    public static User findUserByIdAndPassword(String userId, String password) {
+        if (!users.containsKey(userId)) {
+            return null;
+        }
+        User user = users.get(userId);
+        if (user.hasSamePassword(password)) {
+            return user;
+        }
+        return null;
+    }
+
     public static Collection<User> findAll() {
         return users.values();
     }

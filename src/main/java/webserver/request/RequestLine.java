@@ -1,6 +1,6 @@
 package webserver.request;
 
-import webserver.FileType;
+import webserver.common.FileType;
 
 import java.util.Arrays;
 import java.util.Map;
