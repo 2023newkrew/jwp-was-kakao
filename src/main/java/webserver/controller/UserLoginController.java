@@ -32,14 +32,22 @@ public class UserLoginController implements Controller {
         }
 
         String uuid = UUID.randomUUID().toString();
-        Session session = new Session(uuid);
-        session.setAttribute("user", user);
-        SessionStorage.add(uuid, session);
-        MyHttpCookie cookie = new MyHttpCookie("JSESSIONID", uuid);
-        cookie.setPath("/");
-        httpResponse.setCookie(cookie);
+        createSession(user, uuid);
+        createCookie(httpResponse, uuid);
         httpResponse.setLocation("/index.html");
 
         return "";
+    }
+
+    private void createSession(User user, String uuid) {
+        Session session = new Session(uuid);
+        session.setAttribute("user", user);
+        SessionStorage.add(uuid, session);
+    }
+
+    private void createCookie(MyHttpResponse httpResponse, String uuid) {
+        MyHttpCookie cookie = new MyHttpCookie("JSESSIONID", uuid);
+        cookie.setPath("/");
+        httpResponse.setCookie(cookie);
     }
 }
