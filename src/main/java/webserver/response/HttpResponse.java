@@ -1,4 +1,4 @@
-package webserver;
+package webserver.response;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,18 +7,41 @@ import java.util.Map;
 
 public class HttpResponse {
     private static final String HTTP_VERSION = "HTTP/1.1";
-    private final HttpStatusCode httpStatusCode;
-    private final Map<String, String> header;
-    private final byte[] body;
+    private HttpStatusCode httpStatusCode;
+    private Map<String, String> header;
+    private byte[] body;
 
-    public HttpResponse(HttpStatusCode httpStatusCode, byte[] body) {
+    private HttpResponse(HttpStatusCode httpStatusCode) {
         this.httpStatusCode = httpStatusCode;
         this.header = new LinkedHashMap<>();
-        this.body = body;
     }
 
-    public void addHeader(String key, String value) {
+    public static HttpResponse ok(byte[] body, String contentType) {
+        HttpResponse httpResponse = new HttpResponse(HttpStatusCode.OK);
+        httpResponse.addHeader("Content-Type", contentType);
+        httpResponse.addHeader("Content-Length", String.valueOf(body.length));
+        httpResponse.setBody(body);
+
+        return httpResponse;
+    }
+
+    public static HttpResponse redirect(String location) {
+        HttpResponse httpResponse = new HttpResponse(HttpStatusCode.FOUND);
+        httpResponse.addHeader("Location", location);
+
+        return httpResponse;
+    }
+
+    public static HttpResponse pageNotFound() {
+        return new HttpResponse(HttpStatusCode.NOT_FOUND);
+    }
+
+    private void addHeader(String key, String value) {
         header.put(key, value);
+    }
+
+    private void setBody(byte[] body) {
+        this.body = body;
     }
 
     public void response(DataOutputStream dos) throws IOException {
