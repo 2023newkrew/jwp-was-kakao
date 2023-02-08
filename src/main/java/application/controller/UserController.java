@@ -7,6 +7,7 @@ import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class UserController {
 
@@ -26,7 +27,7 @@ public class UserController {
 
     public HttpResponse createUserGet(HttpRequest request) {
         String requestPath = request.getRequestURL();
-        Map<String, String> userInfo = IOUtils.extractUserFromPath(requestPath);
+        Map<String, String> userInfo = IOUtils.extractQueryParameterInfo(requestPath);
         userService.save(userInfo);
 
         return HttpResponse
@@ -37,12 +38,31 @@ public class UserController {
 
     public HttpResponse createUserPost(HttpRequest request) {
         String requestBody = request.getBody();
-        Map<String, String> userInfo = IOUtils.extractUser(requestBody);
+        Map<String, String> userInfo = IOUtils.extract(requestBody);
         userService.save(userInfo);
 
         return HttpResponse
                 .status(HttpStatus.FOUND)
                 .location("http://localhost:8080/index.html")
+                .build();
+    }
+
+    public HttpResponse userLogin(HttpRequest request) {
+        String requestBody = request.getBody();
+        Map<String, String> userInfo = IOUtils.extract(requestBody);
+
+        if (userService.login(userInfo)) {
+            return HttpResponse
+                    .status(HttpStatus.FOUND)
+                    .location("http://localhost:8080/index.html")
+                    .setCookie("JSESSIONID", UUID.randomUUID().toString())
+                    .setCookie("Path", "/")
+                    .build();
+        }
+
+        return HttpResponse
+                .status(HttpStatus.FOUND)
+                .location("http://localhost:8080/user/login_failed.html")
                 .build();
     }
 }

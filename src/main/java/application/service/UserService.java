@@ -22,4 +22,15 @@ public class UserService {
         User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
         DataBase.addUser(user);
     }
+
+    public boolean login(Map<String, String> userInfo) {
+        User user = DataBase.findUserById(userInfo.get("userId"));
+
+        if (user != null && user.getPassword().equals(userInfo.get("password"))) {
+            // login success;
+            return true;
+        }
+
+        return false;
+    }
 }

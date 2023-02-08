@@ -75,16 +75,16 @@ public class IOUtils {
         headers.put(line.substring(0, indexOfSeparator), line.substring(indexOfSeparator+1).trim());
     }
 
-    public static Map<String, String> extractUserFromPath(String path) {
+    public static Map<String, String> extractQueryParameterInfo(String path) {
         String[] token = path.split("\\?");
         try {
-            return extractUser(token[1]);
+            return extract(token[1]);
         } catch (IndexOutOfBoundsException e) {
             throw new InvalidQueryParameterException();
         }
     }
 
-    public static Map<String, String> extractUser(String params) throws IndexOutOfBoundsException {
+    public static Map<String, String> extract(String params) {
         String[] queryParams = params.split("&");
         return Arrays.stream(queryParams).map(s -> s.split("="))
                 .collect(Collectors.toMap(

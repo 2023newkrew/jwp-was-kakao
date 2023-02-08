@@ -67,17 +67,22 @@ public class HttpResponse {
         }
 
         public BodyBuilder contentType(ContentType contentType) {
-            this.headers.setContentType(contentType);
+            this.headers.contentType(contentType);
             return this;
         }
 
         public BodyBuilder location(String location) {
-            this.headers.setLocation(location);
+            this.headers.location(location);
+            return this;
+        }
+
+        public BodyBuilder setCookie(String key, String value) {
+            this.headers.setCookie(key, value);
             return this;
         }
 
         public HttpResponse body(String body) {
-            this.headers.setContentLength(body.getBytes().length);
+            this.headers.contentLength(body.getBytes().length);
             return new HttpResponse(status, headers, body);
         }
 
