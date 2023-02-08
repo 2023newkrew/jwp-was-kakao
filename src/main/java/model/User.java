@@ -19,8 +19,6 @@ public class User {
         return userId;
     }
 
-    /* 2단계에서 사용 예정 */
-    @SuppressWarnings("unused")
     public String getPassword() {
         return password;
     }
@@ -29,8 +27,14 @@ public class User {
         return name;
     }
 
+    /* HandleBars에서 사용 */
+    @SuppressWarnings("unused")
+    public String getEmail() {
+        return email;
+    }
+
     public boolean checkPassword(String password) {
-        return Objects.nonNull(password) && password.equals(this.password);
+        return Objects.nonNull(password) && password.equals(getPassword());
     }
 
     @Override

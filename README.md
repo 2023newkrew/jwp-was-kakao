@@ -40,9 +40,9 @@
     - [x] 서버에서 HTTP 응답을 전달할 때 응답 헤더에 Set-Cookie를 추가하고 JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46 형태로 값을 전달하면 클라이언트
       요청 헤더의 Cookie 필드에 값이 추가된다.
 2. 템플릿 엔진 활용하기
-    - [ ] 접근하고 있는 사용자가 “로그인” 상태일 경우(Cookie 값이 logined=true) 경우 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다. 만약
+    - [x] 접근하고 있는 사용자가 “로그인” 상태일 경우(Cookie 값이 logined=true) 경우 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다. 만약
       로그인하지 않은 상태라면 로그인 페이지(login.html)로 이동한다.
-    - [ ] 동적으로 html을 생성하기 위해 handlebars.java template engine을 활용한다.
+    - [x] 동적으로 html을 생성하기 위해 handlebars.java template engine을 활용한다.
 3. Session 구현하기
     - [x] 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
     - [x] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.

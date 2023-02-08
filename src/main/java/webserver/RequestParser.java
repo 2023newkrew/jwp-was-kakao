@@ -63,6 +63,7 @@ public class RequestParser {
         } else if (method.equals(HttpMethod.POST)) {
             try {
                 String data = IOUtils.readData(reader, Integer.parseInt(headers.getHeaders().get("Content-Length")));
+                System.out.println(data);
                 parameters.putAll(getParameters(data, response));
             } catch (IOException e) {
                 logger.error(e.getMessage());
@@ -77,6 +78,7 @@ public class RequestParser {
         String startLine = null;
         try {
             startLine = reader.readLine();
+            System.out.println(startLine);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -137,8 +139,8 @@ public class RequestParser {
             return new HttpCookies(cookies);
         }
         String[] cookieString = cookieStrings.split("; ");
-        for (int i = 0; i < cookieString.length; i++) {
-            String[] keyAndValue = cookieString[i].split("=");
+        for (String s : cookieString) {
+            String[] keyAndValue = s.split("=");
             if (keyAndValue.length == 2) {
                 cookies.put(keyAndValue[0], keyAndValue[1]);
             } else {

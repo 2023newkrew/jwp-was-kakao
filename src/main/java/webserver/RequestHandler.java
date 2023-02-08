@@ -92,7 +92,7 @@ public class RequestHandler implements Runnable {
                 response200Header(dos, response.getBody().length);
                 break;
             case FOUND:
-                response302Header(dos, response.getHeader("Location"));
+                response302Header(dos);
                 break;
             case BAD_REQUEST:
                 response400Header(dos);
@@ -134,7 +134,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response302Header(DataOutputStream dos, String location) {
+    private void response302Header(DataOutputStream dos) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found " + CRLF);
         } catch (IOException e) {
