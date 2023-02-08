@@ -5,7 +5,7 @@ import java.util.*;
 public class RequestParser {
     public static RequestHeader parseHeader(List<String> request) {
         RequestHeader.RequestHeaderBuilder requestHeaderBuilder = RequestHeader.builder();
-        ListIterator<String> iterator = request.listIterator();
+        Iterator<String> iterator = request.iterator();
 
         extractStartLine(requestHeaderBuilder, iterator);
         extractHeader(requestHeaderBuilder, iterator);
@@ -13,7 +13,7 @@ public class RequestParser {
         return requestHeaderBuilder.build();
     }
 
-    private static void extractStartLine(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
+    private static void extractStartLine(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, Iterator<String> iterator) {
         String[] startLine = iterator.next().split(" ");
 
         String[] splitedUrl = startLine[1].split("\\?");
@@ -40,7 +40,7 @@ public class RequestParser {
         return queryParams;
     }
 
-    private static void extractHeader(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, ListIterator<String> iterator) {
+    private static void extractHeader(RequestHeader.RequestHeaderBuilder requestHeaderBuilder, Iterator<String> iterator) {
         Map<String, String> headers = new HashMap<>();
         while (iterator.hasNext()) {
             String[] splitedHeader = iterator.next().split(": ");
