@@ -9,6 +9,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static webserver.domain.HttpMethod.*;
@@ -29,12 +32,13 @@ public class WebServerContext implements Closeable {
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
 
+            ExecutorService threadPool = Executors.newFixedThreadPool(10);
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection, routingHandler));
-                thread.start();
+                threadPool.execute(new RequestHandler(connection, routingHandler));
             }
-        } catch (IOException e) {
+            threadPool.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (IOException | InterruptedException e) {
             logger.error(e.getMessage());
         }
     }
