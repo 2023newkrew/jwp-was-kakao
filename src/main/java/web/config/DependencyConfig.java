@@ -1,26 +1,26 @@
-package support;
+package web.config;
 
-import web.RequestHandler;
+import utils.SessionIdGenerator;
+import utils.UUIDGenerator;
 import web.controller.*;
 import web.infra.MemorySessionManager;
 import web.infra.SessionManager;
 import web.validator.LoginValidator;
 
-import java.net.Socket;
-
-public class RequestHandlerFactory {
+public class DependencyConfig {
 
     private final static SessionManager sessionManager = new MemorySessionManager();
+    private final static SessionIdGenerator sessionIdGenerator = new UUIDGenerator();
     private final static LoginValidator loginValidator = new LoginValidator(sessionManager);
     private final static HandlerMapping handlerMapping = HandlerMapping.of(
             new DefaultController(),
             new PostSignInController(),
-            new PostLoginController(() -> "UUID", sessionManager),
+            new PostLoginController(sessionIdGenerator, sessionManager),
             new GetUserListController(loginValidator),
             new GetResourceController(loginValidator)
     );
-    public static RequestHandler create(Socket connectionSocket) {
-        return new RequestHandler(connectionSocket, handlerMapping);
-    }
 
+    public static HandlerMapping getHandlerMapping() {
+        return handlerMapping;
+    }
 }

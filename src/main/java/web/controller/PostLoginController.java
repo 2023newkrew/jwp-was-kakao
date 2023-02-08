@@ -44,7 +44,7 @@ public class PostLoginController implements Controller {
 
     private HttpResponse createLoginSuccessResponse(User user) {
         String sessionId = sessionIdGenerator.generate();
-        sessionManager.addAttribute(sessionId, user.getUserId());
+        sessionManager.setAttribute(sessionId, user.getUserId());
 
         return HttpResponse.redirect(() -> {
             HttpCookies httpCookies = new HttpCookies();

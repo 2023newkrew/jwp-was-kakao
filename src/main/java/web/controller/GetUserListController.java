@@ -2,18 +2,16 @@ package web.controller;
 
 import http.Body;
 import http.ContentType;
-import http.HttpCookies;
 import http.HttpHeaders;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
 import http.response.HttpResponse;
 import utils.HandlebarsTemplateUtils;
+import web.validator.LoginValidator;
 import web.domain.MemoryUserRepository;
-import web.infra.SessionManager;
 
 import java.util.Objects;
 
-import static http.HttpCookies.SESSION_ID;
 import static http.HttpHeaders.*;
 
 public class GetUserListController implements Controller {
@@ -22,16 +20,15 @@ public class GetUserListController implements Controller {
     private static final String RESOURCE_PATH = "user/list";
     private static final String LOGIN_PAGE_PATH = "/login.html";
 
-    private final SessionManager sessionManager;
+    private final LoginValidator loginValidator;
 
-    public GetUserListController(SessionManager sessionManager) {
-        super();
-        this.sessionManager = sessionManager;
+    public GetUserListController(LoginValidator loginValidator) {
+        this.loginValidator = loginValidator;
     }
 
     @Override
     public HttpResponse run(HttpRequest httpRequest) {
-        if (!verifyLogin(httpRequest)) {
+        if (!loginValidator.validate(httpRequest)) {
             return createFailedResponse();
         }
 
@@ -58,14 +55,6 @@ public class GetUserListController implements Controller {
 
             return httpHeaders;
         });
-    }
-
-    private boolean verifyLogin(HttpRequest httpRequest) {
-        HttpCookies httpCookies = httpRequest.getCookies();
-        String sessionId = httpCookies.get(SESSION_ID);
-
-        return Objects.nonNull(sessionId) && sessionManager.getAttribute(sessionId)
-                .isPresent();
     }
 
     @Override

@@ -9,7 +9,7 @@ public class MemorySessionManager implements SessionManager {
     private final static Map<String, Object> sessions = new ConcurrentHashMap<>();
 
     @Override
-    public void addAttribute(String key, Object value) {
+    public void setAttribute(String key, Object value) {
         sessions.put(key, value);
     }
 
