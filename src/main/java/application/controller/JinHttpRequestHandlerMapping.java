@@ -32,6 +32,10 @@ public class JinHttpRequestHandlerMapping implements HttpRequestHandlerMapping {
         if (requestURL.startsWith("/user/list") && request.getRequestMethod() == RequestMethod.GET) {
             return userController::userList;
         }
+        if (requestURL.startsWith("/user/profile") && request.getRequestMethod() == RequestMethod.GET) {
+            return userController::userProfile;
+        }
+
 
         // HomeController
         if (requestURL.equals("/") && request.getRequestMethod() == RequestMethod.GET) {

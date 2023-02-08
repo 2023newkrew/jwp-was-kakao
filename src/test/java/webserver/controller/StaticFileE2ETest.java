@@ -26,7 +26,7 @@ class StaticFileE2ETest extends DefaultBaseE2ETest {
         // then
         String expectedFirstLine = "HTTP/1.1 200 OK";
         String expectedContentTypeHeader = "Content-Type: text/html;charset=utf-8";
-        String expectedContentLengthHeader = "Content-Length: 7153";
+        String expectedContentLengthHeader = "Content-Length: 6816";
         String expectedBody = new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
         assertThat(socketOutput)

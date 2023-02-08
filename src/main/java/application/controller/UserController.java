@@ -87,4 +87,15 @@ public class UserController {
                 .location("http://localhost:8080/user/login.html")
                 .build();
     }
+
+    public HttpResponse userProfile(HttpRequest request) {
+        if (SecurityUtils.isLoggedIn(request)) {
+            return TemplateEngine.getTemplateResponse("/user/profile", SecurityUtils.getLoggedInUser(request));
+        }
+
+        return HttpResponse
+                .status(HttpStatus.FOUND)
+                .location("http://localhost:8080/user/login.html")
+                .build();
+    }
 }

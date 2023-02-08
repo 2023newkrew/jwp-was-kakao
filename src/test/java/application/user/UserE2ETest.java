@@ -25,7 +25,7 @@ class UserE2ETest extends JinBaseE2ETest {
         String expectedFirstLine = "HTTP/1.1 302 FOUND";
         String expectedLocationHeader = "Location: http://localhost:8080/index.html";
 
-        assertThat(DataBase.findAll()).hasSize(1);
+        assertThat(DataBase.findAll()).hasSize(2);
 
         assertThat(socketOutput)
                 .startsWith(expectedFirstLine)
@@ -55,7 +55,7 @@ class UserE2ETest extends JinBaseE2ETest {
         String expectedFirstLine = "HTTP/1.1 302 FOUND";
         String expectedLocationHeader = "Location: http://localhost:8080/index.html";
 
-        assertThat(DataBase.findAll()).hasSize(1);
+        assertThat(DataBase.findAll()).hasSize(2);
         assertThat(socketOutput)
                 .startsWith(expectedFirstLine)
                 .contains(expectedLocationHeader);
