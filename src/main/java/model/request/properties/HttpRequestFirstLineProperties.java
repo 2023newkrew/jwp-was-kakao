@@ -11,6 +11,7 @@ import static utils.parser.QueryStringParser.*;
 public class HttpRequestFirstLineProperties {
     private final String QUERY_STRING_STARTING_POINT_REGEX = "\\?";
     private final String QUERY_STRING_STARTING_POINT = "?";
+    private final String BLANK_IN_FIRST_LINE = " ";
 
     private HttpMethod httpMethod;
     private String URL;
@@ -18,9 +19,9 @@ public class HttpRequestFirstLineProperties {
     private QueryParams queryParams;
 
     public HttpRequestFirstLineProperties(String line) {
-        this.httpMethod = HttpMethod.valueOf(line.split(" ")[0]);
-        this.URL = line.split(" ")[1];
-        this.httpProtocol = line.split(" ")[2];
+        this.httpMethod = HttpMethod.valueOf(line.split(BLANK_IN_FIRST_LINE)[0]);
+        this.URL = line.split(BLANK_IN_FIRST_LINE)[1];
+        this.httpProtocol = line.split(BLANK_IN_FIRST_LINE)[2];
 
         setQueryParamsMapIfExists();
     }

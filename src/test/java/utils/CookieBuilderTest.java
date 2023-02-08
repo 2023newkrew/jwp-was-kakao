@@ -1,7 +1,6 @@
 package utils;
 
 import model.web.Cookie;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import utils.builder.CookieBuilder;
@@ -17,7 +16,8 @@ public class CookieBuilderTest {
 
         Cookie result = CookieBuilder.build(key, value);
 
-        assertThat(result.key()).isEqualTo(key);
-        assertThat(result.value()).isEqualTo(value + "; Path=/");
+        assertThat(result.getKey()).isEqualTo(key);
+        assertThat(result.getValue()).isEqualTo(value);
+        assertThat(result.getPath()).isEqualTo("Path=/");
     }
 }

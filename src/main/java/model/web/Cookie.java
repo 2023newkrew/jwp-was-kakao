@@ -1,6 +1,7 @@
 package model.web;
 
 public class Cookie {
+    private final String COOKIE_PATH_DELIMITER = "; ";
     private final String key;
     private final String value;
 
@@ -9,12 +10,15 @@ public class Cookie {
         this.value = value;
     }
 
-    public String key() {
+    public String getKey() {
         return key;
     }
 
-    public String value() {
-        return value;
+    public String getValue() {
+        return value.split(COOKIE_PATH_DELIMITER)[0];
+    }
+    public String getPath() {
+        return value.split(COOKIE_PATH_DELIMITER)[1];
     }
 
     @Override

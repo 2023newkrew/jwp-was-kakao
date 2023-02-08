@@ -43,9 +43,12 @@ public class HttpRequest {
     }
 
     private boolean isContentTypeCanConsume(Api annotation) {
-        return findHeaderValue(CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
-                .equals(annotation.consumes().getValue()) ||
+        return findContentType().equals(annotation.consumes()) ||
                 annotation.consumes().equals(ContentType.ANY);
+    }
+
+    private ContentType findContentType() {
+        return ContentType.of(findHeaderValue(CONTENT_TYPE, DEFAULT_CONTENT_TYPE));
     }
 
     public HttpRequest(HttpRequestFirstLineProperties firstLineProperties,
@@ -60,6 +63,6 @@ public class HttpRequest {
     }
 
     public Session getSession(String id) {
-        return SessionManager.findSession(DEFAULT_SESSION_ID);
+        return SessionManager.findSession(id);
     }
 }

@@ -12,16 +12,8 @@ public class ResponseHeader {
         return Collections.unmodifiableMap(headers);
     }
 
-    private ResponseHeader(Map<String, String> headers) {
-        this.headers = (LinkedHashMap<String, String>) headers;
-    }
-
     public ResponseHeader() {
         this.headers = new LinkedHashMap<>();
-    }
-
-    public static ResponseHeader of(Map<String, String> map) {
-        return new ResponseHeader(map);
     }
 
     public void setAttribute(String key, String value) {

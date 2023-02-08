@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionManager {
     private final Map<String, Session> sessions = new ConcurrentHashMap<>();
 
-    public void add(String id, final Session session) {
+    public void createSession(String id, final Session session) {
         sessions.put(id, session);
     }
 
@@ -19,6 +19,11 @@ public class SessionManager {
         } catch (Exception e) {
             throw new RuntimeException("해당 세션이 존재하지 않습니다.");
         }
+    }
+
+    public void setCookieInSession(Cookie cookie, Session session, Object object) {
+        SessionManager.createSession(cookie.getKey(), session);
+        session.setAttribute(cookie.getValue(), object);
     }
 
     public void remove(final String id) {

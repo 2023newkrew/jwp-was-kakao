@@ -54,7 +54,7 @@ public class LoginController extends ApiController {
         }
 
         HttpResponse response = ResponseBuilder.found(DEFAULT_PAGE);
-        response.addCookieAndSession(getCookie(), loginUser.get());
+        response.addCookie(getCookie(), loginUser.get());
 
         return response;
     }

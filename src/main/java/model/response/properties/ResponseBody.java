@@ -4,7 +4,7 @@ public class ResponseBody {
     byte[] body;
 
     public ResponseBody() {
-        this.body = "".getBytes();
+        this.body = new byte[0];
     }
 
     public ResponseBody(byte[] body) {
