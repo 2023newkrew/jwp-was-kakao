@@ -74,9 +74,9 @@ public enum HttpHeader {
 
     public static HttpHeader of(String input) {
         return Arrays.stream(values())
-                .filter(header -> header.headerValue.equalsIgnoreCase(input.trim()))
-                .findFirst()
-                .orElse(OTHER);
+            .filter(header -> header.headerValue.equalsIgnoreCase(input.trim()))
+            .findFirst()
+            .orElse(OTHER);
     }
 
     public String getHeaderValue() {

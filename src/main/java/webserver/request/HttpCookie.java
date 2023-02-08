@@ -1,7 +1,5 @@
 package webserver.request;
 
-import org.apache.tomcat.Jar;
-
 import java.util.HashMap;
 import java.util.Map;
 

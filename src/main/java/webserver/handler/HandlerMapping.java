@@ -30,9 +30,9 @@ public enum HandlerMapping {
         Method method = request.getMethod();
         String path = request.getPath();
         return Arrays.stream(values())
-                .filter(handlerMapping -> handlerMapping.method == method && handlerMapping.path.equals(path))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
+            .filter(handlerMapping -> handlerMapping.method == method && handlerMapping.path.equals(path))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
     }
 
     public static Response handle(Request request) {

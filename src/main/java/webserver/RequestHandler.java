@@ -23,12 +23,12 @@ public class RequestHandler implements Runnable {
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+            connection.getPort());
 
         try (
-                InputStream in = connection.getInputStream();
-                OutputStream out = connection.getOutputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in))
+            InputStream in = connection.getInputStream();
+            OutputStream out = connection.getOutputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in))
         ) {
             Request request = Request.parse(reader);
             Response response = findResponseByPath(request);

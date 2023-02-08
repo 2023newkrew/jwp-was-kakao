@@ -23,9 +23,9 @@ public class Response {
     public static Response ok(byte[] body, FileType fileType) {
         Map<HttpHeader, String> responseHeader = generateResponseHeader(body, fileType);
         return new Response(
-                StatusCode.OK,
-                responseHeader,
-                body
+            StatusCode.OK,
+            responseHeader,
+            body
         );
     }
 
@@ -33,9 +33,9 @@ public class Response {
         Map<HttpHeader, String> responseHeader = generateResponseHeader(body, fileType);
         responseHeader.put(HttpHeader.LOCATION, location);
         return new Response(
-                StatusCode.FOUND,
-                responseHeader,
-                body
+            StatusCode.FOUND,
+            responseHeader,
+            body
         );
     }
 

@@ -24,9 +24,9 @@ public enum FileType {
 
     public static FileType findType(String extension) {
         return Arrays.stream(values())
-                .filter(fileType -> fileType.fileExtension.equalsIgnoreCase(extension))
-                .findAny()
-                .orElse(HANDLER);
+            .filter(fileType -> fileType.fileExtension.equalsIgnoreCase(extension))
+            .findAny()
+            .orElse(HANDLER);
     }
 
     public String getContentType() {

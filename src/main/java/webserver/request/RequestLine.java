@@ -24,9 +24,9 @@ public class RequestLine {
     public static RequestLine parse(String input) {
         String[] parsedInput = input.split(" ");
         return new RequestLine(
-                Method.of(parsedInput[0]),
-                parsedInput[1],
-                parsedInput[2]
+            Method.of(parsedInput[0]),
+            parsedInput[1],
+            parsedInput[2]
         );
     }
 
@@ -45,8 +45,8 @@ public class RequestLine {
 
     public Map<String, String> parseQueryString() {
         return Arrays.stream(getQueryString().split("&"))
-                .map(s -> s.split("="))
-                .collect(Collectors.toMap(keyValuePair -> keyValuePair[0], keyValuePair -> keyValuePair[1], (a, b) -> b));
+            .map(s -> s.split("="))
+            .collect(Collectors.toMap(keyValuePair -> keyValuePair[0], keyValuePair -> keyValuePair[1], (a, b) -> b));
     }
 
     public FileType findRequestedFileType() {
