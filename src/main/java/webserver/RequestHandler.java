@@ -8,7 +8,7 @@ import exceptions.InvalidQueryParameterException;
 import exceptions.ResourceNotFoundException;
 import http.HttpRequest;
 import http.HttpResponse;
-import http.HttpUtils;
+import utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

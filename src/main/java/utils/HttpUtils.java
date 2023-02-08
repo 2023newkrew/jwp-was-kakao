@@ -1,5 +1,7 @@
-package http;
+package utils;
 
+import http.HttpRequest;
+import http.HttpRequestHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import utils.IOUtils;

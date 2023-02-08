@@ -1,6 +1,5 @@
 package utils;
 
-import model.user.UserUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

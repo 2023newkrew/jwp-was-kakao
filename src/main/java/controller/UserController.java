@@ -6,7 +6,7 @@ import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.user.User;
-import model.user.UserUtils;
+import utils.UserUtils;
 import session.SessionManager;
 
 import java.util.Map;
