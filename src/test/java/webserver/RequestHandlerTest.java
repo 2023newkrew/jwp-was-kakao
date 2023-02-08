@@ -304,4 +304,31 @@ class RequestHandlerTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @Test
+    void login() throws IOException, URISyntaxException {
+        // given
+        final String httpRequest = String.join(CRLF,
+                "GET /user/login.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4759 " + CRLF,
+                new String(FileIoUtils.loadFileFromClasspath("templates/user/login.html")));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+
 }
