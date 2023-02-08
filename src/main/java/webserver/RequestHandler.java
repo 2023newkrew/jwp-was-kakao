@@ -1,52 +1,74 @@
 package webserver;
 
+import http.HttpMethod;
+import http.HttpStartLine;
+import http.Uri;
+import http.request.Request;
+import http.request.RequestBody;
+import http.request.RequestHeaders;
+import http.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import servlet.ServletContainer;
+import utils.IOUtils;
+import utils.ParsingUtils;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
+    private final ServletContainer servletContainer;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.servletContainer = ServletContainer.getInstance();
     }
 
+    /**
+     * 요청을 가져와서 응답을 보내주는 역할만
+     */
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
-
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            Request request = createRequest(in);
+            Response response = servletContainer.serve(request);
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            sendResponse(response, dos);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private Request createRequest(InputStream in) throws IOException {
+        BufferedReader bufferReader = new BufferedReader(new InputStreamReader(in));
+
+        Map<HttpStartLine, String> startLine = ParsingUtils.parseStartLine(IOUtils.readStartLine(bufferReader));
+        HttpMethod method = HttpMethod.valueOf(startLine.get(HttpStartLine.METHOD));
+        Uri uri = new Uri(startLine.get(HttpStartLine.URI));
+        String version = startLine.get(HttpStartLine.VERSION);
+
+        Map<String, String> headers = ParsingUtils.parseHeader(IOUtils.readRequestHeader(bufferReader));
+        RequestHeaders requestHeaders = new RequestHeaders(headers);
+
+        RequestBody requestBody = null;
+        if (requestHeaders.get("Content-Length").isPresent()) {
+            String body = IOUtils.readData(bufferReader, Integer.parseInt(requestHeaders.get("Content-Length").get()));
+            requestBody = RequestBody.fromQueryString(body);
+        }
+
+        return new Request(method, uri, version, requestHeaders, requestBody);
+    }
+
+    private void sendResponse(Response response, DataOutputStream dos) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+            dos.writeBytes(response.getStatusLine() + " \r\n");
+            dos.writeBytes(response.getHeaders());
             dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
+            dos.write(response.getBody(), 0, response.getBody().length);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
