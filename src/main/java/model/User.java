@@ -1,6 +1,7 @@
 package model;
 
 public class User {
+
     private String userId;
     private String password;
     private String name;
@@ -27,6 +28,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean isCorrectPassword(String password) {
+        return this.password.equals(password);
     }
 
     @Override
