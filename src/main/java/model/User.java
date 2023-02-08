@@ -1,10 +1,12 @@
 package model;
 
+import java.util.Map;
+
 public class User {
-    private String userId;
-    private String password;
-    private String name;
-    private String email;
+    private final String userId;
+    private final String password;
+    private final String name;
+    private final String email;
 
     public User(String userId, String password, String name, String email) {
         this.userId = userId;
@@ -17,16 +19,12 @@ public class User {
         return userId;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getName() {
         return name;
     }
 
-    public String getEmail() {
-        return email;
+    public static User from(Map<String, String> map) {
+        return new User(map.get("userId"), map.get("password"), map.get("name"), map.get("email"));
     }
 
     @Override

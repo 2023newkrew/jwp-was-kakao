@@ -1,18 +1,24 @@
 package webserver;
 
+import controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import request.Request;
+import request.RequestParser;
+import requestmapper.HandlerMapper;
+import requestmapper.ResourceMapper;
+import response.Response;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
+
+import static utils.IOUtils.writeResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -23,32 +29,21 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello world".getBytes();
-            response200Header(dos, body.length);
-            responseBody(dos, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+            DataOutputStream dataOutputStream = new DataOutputStream(out);
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
+            Request request = RequestParser.getRequestFrom(bufferedReader);
+            String uri = request.getUri();
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
+            Controller handler;
+            Response response;
+            if ((handler = HandlerMapper.getInstance().findHandler(uri)) != null) {
+                response = HandlerMapper.getInstance().handle(request, handler);
+            } else {
+                response = ResourceMapper.getInstance().handle(uri);
+            }
+            writeResponse(dataOutputStream, response.toString());
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
