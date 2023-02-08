@@ -1,6 +1,6 @@
 package webserver.controller;
 
-import db.DataBase;
+import db.UserStorage;
 import java.util.Map;
 import model.MyHttpRequest;
 import model.User;
@@ -14,7 +14,7 @@ public class UserSaveController implements Controller {
 
         User user = new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"),
                 userInfo.get("email"));
-        DataBase.addUser(user);
+        UserStorage.addUser(user);
 
         return "";
     }
