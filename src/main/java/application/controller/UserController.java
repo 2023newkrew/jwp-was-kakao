@@ -39,6 +39,8 @@ public class UserController {
         return HttpResponse
                 .status(HttpStatus.FOUND)
                 .location("http://localhost:8080/index.html")
+                .setCookie("JSESSIONID", request.getSession().getId())
+                .setCookie("Path", "/")
                 .build();
     }
 
@@ -52,6 +54,8 @@ public class UserController {
         return HttpResponse
                 .status(HttpStatus.FOUND)
                 .location("http://localhost:8080/index.html")
+                .setCookie("JSESSIONID", request.getSession().getId())
+                .setCookie("Path", "/")
                 .build();
     }
 
