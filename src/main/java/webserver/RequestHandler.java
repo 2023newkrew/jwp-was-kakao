@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import webserver.controller.StaticController;
+import webserver.controller.UserLoginController;
 import webserver.controller.UserSaveController;
 import webserver.controller.ViewController;
 
@@ -30,7 +31,8 @@ public class RequestHandler implements Runnable {
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        controllerMap.put("/user/create", new UserSaveController());
+        controllerMap.put(UserSaveController.URL, new UserSaveController());
+        controllerMap.put(UserLoginController.URL, new UserLoginController());
     }
 
     public void run() {

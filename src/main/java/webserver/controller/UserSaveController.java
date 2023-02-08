@@ -10,6 +10,8 @@ import webserver.Controller;
 
 public class UserSaveController implements Controller {
 
+    public static final String URL = "/user/create";
+
     @Override
     public String process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
         Map<String, String> userInfo = httpRequest.getBody();
