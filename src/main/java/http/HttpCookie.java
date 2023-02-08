@@ -26,4 +26,12 @@ public class HttpCookie {
         String value = token[1];
         this.cookieMap.put(key, value);
     }
+
+    public Boolean isSessionId() {
+        return cookieMap.containsKey("JSESSIONID");
+    }
+
+    public String getPath() {
+        return cookieMap.getOrDefault("Path", "/");
+    }
 }
