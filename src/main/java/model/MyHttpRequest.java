@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.http.HttpMethod;
 
 @Getter
+@ToString
 public class MyHttpRequest {
 
     private final HttpMethod httpMethod;
@@ -15,20 +17,21 @@ public class MyHttpRequest {
     private final Map<String, String> queryParams;
     private final Map<String, String> headers;
     private final Map<String, String> body;
+    private final Map<String, String> cookies;
     private final List<String> staticUrls = Arrays.asList("css", "js", "images", "fonts", "favicon");
 
     public MyHttpRequest(String httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
-            Map<String, String> body) {
-        this(HttpMethod.resolve(httpMethod), url, queryParams, headers, body);
+            Map<String, String> cookies, Map<String, String> body) {
+        this(HttpMethod.resolve(httpMethod), url, queryParams, headers, cookies, body);
     }
 
     public MyHttpRequest(HttpMethod httpMethod, String url, Map<String, String> queryParams,
-            Map<String, String> headers,
-            Map<String, String> body) {
+            Map<String, String> headers, Map<String, String> cookies, Map<String, String> body) {
         this.httpMethod = httpMethod;
         this.url = url;
         this.queryParams = new HashMap<>(queryParams);
         this.headers = new HashMap<>(headers);
+        this.cookies = new HashMap<>(cookies);
         this.body = new HashMap<>(body);
     }
 
