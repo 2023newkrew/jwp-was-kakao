@@ -1,5 +1,7 @@
 package webserver.controller;
 
+import constant.DefaultConstant;
+import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.annotation.Api;
@@ -9,6 +11,7 @@ import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.UserService;
 
+import static constant.DefaultConstant.*;
 import static constant.HeaderConstant.*;
 import static utils.utils.TemplateUtils.*;
 
@@ -28,19 +31,23 @@ public class UserController extends ApiController {
         return instance;
     }
 
-    @Api(method = HttpMethod.POST, url = "/user/create")
+    @Api(method = HttpMethod.POST, url = "/user/create", consumes = ContentType.APPLICATION_URL_ENCODED)
     public HttpResponse register(HttpRequest request) {
         userService.addUser(request);
 
-        return ResponseBuilder.found("/index.html");
+        return ResponseBuilder.found(DEFAULT_PAGE);
     }
 
     @Api(method = HttpMethod.GET, url = "/user/list.html")
     public HttpResponse showUserList(HttpRequest request){
-        if (request.findHeaderValue(COOKIE,  null) == null) {
-            return ResponseBuilder.found("/index.html");
+        if (cookieNotExists(request)) {
+            return ResponseBuilder.found(DEFAULT_PAGE);
         }
 
         return ViewResolver.resolve(handleUserListTemplate());
+    }
+
+    private boolean cookieNotExists(HttpRequest request) {
+        return request.findHeaderValue(COOKIE, null) == null;
     }
 }
