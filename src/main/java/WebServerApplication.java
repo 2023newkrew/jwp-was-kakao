@@ -33,8 +33,8 @@ public class WebServerApplication {
         return HandlerMapping.of(
                 new DefaultController(),
                 new PostSignInController(),
-                new PostLoginController(new UUIDGenerator(), MEMORY_SESSION_MANAGER.getSessionManager()),
-                new GetUserListController(MEMORY_SESSION_MANAGER.getSessionManager()),
+                new PostLoginController(new UUIDGenerator(), MEMORY_SESSION_MANAGER.getInstance()),
+                new GetUserListController(MEMORY_SESSION_MANAGER.getInstance()),
                 new GetResourceController()
         );
     }

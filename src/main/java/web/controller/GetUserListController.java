@@ -1,10 +1,5 @@
 package web.controller;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
-import com.github.jknack.handlebars.io.TemplateLoader;
-import error.ApplicationException;
 import http.Body;
 import http.ContentType;
 import http.HttpCookies;
@@ -12,25 +7,20 @@ import http.HttpHeaders;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
 import http.response.HttpResponse;
+import utils.HandlebarsTemplateUtils;
 import web.domain.MemoryUserRepository;
-import web.domain.User;
 import web.infra.SessionManager;
 
-import java.io.IOException;
-import java.util.Collection;
 import java.util.Objects;
 
-import static error.ErrorType.FILE_READ_FAILED;
 import static http.HttpCookies.SESSION_ID;
 import static http.HttpHeaders.*;
 
 public class GetUserListController implements Controller {
 
     private static final String PATH = "/user/list";
-    private static final String RESOURCE_PREFIX = "/templates";
-    private static final String RESOURCE_SUFFIX = ".html";
-    private static final String RESOURCE_PATH = "user/profile";
-    private static final String INDEX_PAGE_PATH = "/index.html";
+    private static final String RESOURCE_PATH = "user/list";
+    private static final String LOGIN_PAGE_PATH = "/login.html";
 
     private final SessionManager sessionManager;
 
@@ -50,10 +40,10 @@ public class GetUserListController implements Controller {
 
     private HttpResponse createSuccessResponse() {
         return HttpResponse.ok(
-                this::createUserListPage,
+                () -> new Body(HandlebarsTemplateUtils.create(RESOURCE_PATH, MemoryUserRepository.findAll())),
                 body -> {
                     HttpHeaders httpHeaders = new HttpHeaders();
-                    httpHeaders.put(CONTENT_TYPE, ContentType.from(RESOURCE_SUFFIX).toString());
+                    httpHeaders.put(CONTENT_TYPE, ContentType.TEXT_HTML.toString());
                     httpHeaders.put(CONTENT_LENGTH, String.valueOf(body.length()));
 
                     return httpHeaders;
@@ -61,26 +51,10 @@ public class GetUserListController implements Controller {
             );
     }
 
-    private Body createUserListPage() {
-        try {
-            TemplateLoader loader = new ClassPathTemplateLoader();
-            loader.setPrefix(RESOURCE_PREFIX);
-            loader.setSuffix(RESOURCE_SUFFIX);
-            Handlebars handlebars = new Handlebars(loader);
-
-            Template template = handlebars.compile(RESOURCE_PATH);
-
-            Collection<User> users = MemoryUserRepository.findAll();
-            return new Body(template.apply(users));
-        } catch (IOException e) {
-            throw new ApplicationException(FILE_READ_FAILED, e.getMessage());
-        }
-    }
-
     private HttpResponse createFailedResponse() {
         return HttpResponse.redirect(() -> {
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.put(LOCATION, INDEX_PAGE_PATH);
+            httpHeaders.put(LOCATION, LOGIN_PAGE_PATH);
 
             return httpHeaders;
         });
@@ -90,7 +64,7 @@ public class GetUserListController implements Controller {
         HttpCookies httpCookies = httpRequest.getCookies();
         String sessionId = httpCookies.get(SESSION_ID);
 
-        return sessionManager.getAttribute(sessionId)
+        return Objects.nonNull(sessionId) && sessionManager.getAttribute(sessionId)
                 .isPresent();
     }
 

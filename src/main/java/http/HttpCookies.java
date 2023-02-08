@@ -3,6 +3,7 @@ package http;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class HttpCookies {
@@ -23,6 +24,10 @@ public class HttpCookies {
     }
 
     public static HttpCookies from(String cookies) {
+        if (Objects.isNull(cookies)) {
+            return new HttpCookies();
+        }
+
          return new HttpCookies(Arrays.stream(cookies.split(COOKIE_DELIMITER))
                  .map(cookie -> cookie.split(KEY_VALUE_DELIMITER))
                  .collect(Collectors.toMap(cookie -> cookie[0], cookie -> cookie[1])));

@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MemorySessionManager implements SessionManager {
 
-    private final Map<String, Object> sessions = new ConcurrentHashMap<>();
+    private final static Map<String, Object> sessions = new ConcurrentHashMap<>();
 
     @Override
     public void addAttribute(String key, Object value) {

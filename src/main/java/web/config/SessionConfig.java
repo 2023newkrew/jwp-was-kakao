@@ -14,7 +14,7 @@ public enum SessionConfig {
         this.sessionManager = sessionManager;
     }
 
-    public SessionManager getSessionManager() {
+    public SessionManager getInstance() {
         return sessionManager;
     }
 }
