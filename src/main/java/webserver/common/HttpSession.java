@@ -22,4 +22,8 @@ public class HttpSession {
     public String getId() {
         return id;
     }
+
+    public Object getAttribute(String key) {
+        return sessionValues.get(key);
+    }
 }

@@ -49,9 +49,10 @@
   - [ ] handlebars 템플릿 엔진을 활용하여 출력한다
 
 **[8. Session 구현하기]**
-- [ ] JSESSIONID의 값으로 로그인 여부를 체크한다
-- [ ] 로그인에 성공했다면, Session 객체의 값으로 User 객체를 저장할 것
-- [ ] 로그인 상황에서 `/user/login`에 접근한 경우, `index.html`에 리다이렉트 할 것
+- [x] JSESSIONID의 값으로 로그인 여부를 체크한다
+- [x] 로그인에 성공했다면, Session 객체의 값으로 User 객체를 저장할 것
+- [x] 로그인 상황에서 `/user/login`에 접근한 경우, `index.html`에 리다이렉트 할 것
+- [x] 로그인 하지 않은 상황에 `/user/login`에 접근한 경우, `user/login.html`에 리다이렉트 할 것
 
 ## 리팩터링 중점 사안
 - [x] FileType이 static 경로에 있는지를 FileType에 메시지 던져서 해결

@@ -53,11 +53,14 @@ public class Request {
     }
 
     public HttpSession getSession() {
-        HttpCookie cookie = requestHeader.getCookie();
-        String sessionId = cookie.getSessionId();
-        if (Objects.isNull(sessionId)) {
+        String sessionId = getSessionId();
+        if (Objects.isNull(sessionId) || Objects.isNull(HttpSessions.get(sessionId))) {
             return HttpSessions.create();
         }
         return HttpSessions.get(sessionId);
+    }
+
+    public String getSessionId() {
+        return requestHeader.getCookie().getSessionId();
     }
 }
