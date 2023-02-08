@@ -1,7 +1,9 @@
 package webserver;
 
 import org.junit.jupiter.api.Test;
+import request.RequestHandler;
 import support.StubSocket;
+import utils.StringParser;
 import utils.FileIoUtils;
 
 import java.io.IOException;
@@ -14,7 +16,7 @@ class RequestHandlerTest {
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, new StringParser());
 
         // when
         handler.run();
@@ -26,7 +28,6 @@ class RequestHandlerTest {
                 "Content-Length: 11 ",
                 "",
                 "Hello world");
-
         assertThat(socket.output()).isEqualTo(expected);
     }
 
@@ -41,7 +42,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, new StringParser());
 
         // when
         handler.run();
@@ -49,7 +50,7 @@ class RequestHandlerTest {
         // then
 
 
-        var expected = "HTTP/1.1 200 \r\n" +
+        String expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6902 \r\n" +
                 "\r\n" +
