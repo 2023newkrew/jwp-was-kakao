@@ -10,12 +10,12 @@ import java.util.Map;
 public class CreateUserHandler implements Handler {
     @Override
     public Response apply(Request request) {
-        Map<String, String> queryString = request.getRequestBody();
+        Map<String, String> requestBody = request.getRequestBody();
         User user = new User(
-                queryString.get("userId"),
-                queryString.get("password"),
-                queryString.get("name"),
-                queryString.get("email")
+                requestBody.get("userId"),
+                requestBody.get("password"),
+                requestBody.get("name"),
+                requestBody.get("email")
         );
         DataBase.addUser(user);
         return Response.found(new byte[0], request.findRequestedFileType(), "/index.html");

@@ -37,9 +37,26 @@
 - [x] 회원 가입 완료 후 index.html로 이동한다
   - [x] 상태 코드를 302를 사용한다
 
+**[6. 로그인 기능 구현]**
+- [x] `POST /user/login` 로그인 성공 시, `index.html`로, 로그인 실패 시, `/user/login_failed.html`로 이동한다
+  - [x] 회원가입한 사용자로 로그인 할 수 있어야 한다
+  - [x] 로그인한 사용자는 JSESSIONID로 세션을 발급받는다
+  - [x] UUID를 활용해 고유한 아이디를 만든다
+
+**[7. 템플릿 엔진 활용하기]**
+- [ ] 사용자가 로그인 상태일 경우에 한해, `/user/list`의 사용자 목록을 출력한다
+  - [ ] 로그인 되어있지 않으면 `index.html`로 이동한다
+  - [ ] handlebars 템플릿 엔진을 활용하여 출력한다
+
+**[8. Session 구현하기]**
+- [ ] JSESSIONID의 값으로 로그인 여부를 체크한다
+- [ ] 로그인에 성공했다면, Session 객체의 값으로 User 객체를 저장할 것
+- [ ] 로그인 상황에서 `/user/login`에 접근한 경우, `index.html`에 리다이렉트 할 것
+
 ## 리팩터링 중점 사안
 - [x] FileType이 static 경로에 있는지를 FileType에 메시지 던져서 해결
 - [x] Request를 RequestLine, Headers, RequestBody의 wrapper 클래스로 감싸기
 - [x] 매직 넘버 상수화
 - [x] HTTP Header를 enum으로 관리
 - [ ] 단위테스트 작성
+- [ ] 예외 처리 구현하기

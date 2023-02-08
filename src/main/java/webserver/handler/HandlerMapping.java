@@ -12,8 +12,8 @@ import static webserver.request.Method.POST;
 public enum HandlerMapping {
 
     BASE_URL(GET, "/", new BaseHandler()),
-    CREATE_USER_GET(GET, "/user/create", new CreateUserHandler()),
-    CREATE_USER_POST(POST, "/user/create", new CreateUserHandler());
+    CREATE_USER(POST, "/user/create", new CreateUserHandler()),
+    LOGIN_USER(POST, "/user/login", new LoginUserHandler());
 
     private final Method method;
     private final String path;

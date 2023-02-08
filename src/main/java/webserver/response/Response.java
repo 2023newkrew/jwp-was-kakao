@@ -48,6 +48,10 @@ public class Response {
         return responseHeader;
     }
 
+    public void addHeader(HttpHeader httpHeader, String value) {
+        responseHeader.put(httpHeader, value);
+    }
+
     public void flush(DataOutputStream dos) throws IOException {
         dos.writeBytes("HTTP/1.1 " + statusCode.getCode() + " " + statusCode.getMessage() + " \r\n");
         for (Map.Entry<HttpHeader, String> header : responseHeader.entrySet()) {
