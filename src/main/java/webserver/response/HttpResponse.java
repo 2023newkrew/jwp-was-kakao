@@ -31,7 +31,7 @@ public class HttpResponse {
 
     private void setCookie(HttpRequest httpRequest) {
         HttpCookie httpCookie = new HttpCookie(httpRequest.getHeader("Cookie"));
-        if (!httpCookie.existSessionId()) {
+        if (httpCookie.getCookie(HttpCookie.SESSION_ID_NAME) == null) {
             addHeader("Set-Cookie", HttpRequestUtils.generateRandomCookieString());
         }
     }

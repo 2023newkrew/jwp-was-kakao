@@ -12,10 +12,9 @@ public class HttpCookie {
     }
 
     public String getCookie(String name) {
+        if (!cookies.containsKey(name)) {
+            return null;
+        }
         return cookies.get(name);
-    }
-
-    public boolean existSessionId() {
-        return cookies.containsKey(SESSION_ID_NAME);
     }
 }
