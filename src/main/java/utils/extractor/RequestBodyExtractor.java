@@ -4,39 +4,46 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.experimental.UtilityClass;
 import model.enumeration.ContentType;
 import utils.factory.ObjectMapperFactory;
+import utils.utils.IOUtils;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Map;
 
 import static constant.HeaderConstant.*;
 import static utils.parser.QueryStringParser.*;
-import static utils.utils.IOUtils.*;
 
 @UtilityClass
 public class RequestBodyExtractor {
     public Map<String, String> extract(Map<String, String> requestHeaders, BufferedReader bufferedReader) {
+        switch (ContentType.of(requestHeaders.get(CONTENT_TYPE))) {
+            case APPLICATION_JSON:
+                return convertJsonBodyToMap(requestHeaders, bufferedReader);
+            case APPLICATION_URL_ENCODED:
+                return convertQueryStringToMap(requestHeaders, bufferedReader);
+            default:
+                throw new RuntimeException("지원하지 않는 Content-Type 입니다.");
+        }
+    }
+
+    private Map<String, String> convertJsonBodyToMap(Map<String, String> requestHeaders, BufferedReader bufferedReader) {
         try {
-            switch (ContentType.of(requestHeaders.get(CONTENT_TYPE))) {
-                case APPLICATION_JSON:
-                    return ObjectMapperFactory.getInstance()
-                            .readValue(
-                                    readData(
-                                            bufferedReader,
-                                            Integer.parseInt(requestHeaders.get(CONTENT_LENGTH))
-                                    ),
-                                    new TypeReference<Map<String, String>>() {
-                                    }
-                            );
-                case APPLICATION_URL_ENCODED:
-                    return parseQueryString(
-                            readData(bufferedReader, Integer.parseInt(requestHeaders.get(CONTENT_LENGTH)))
-                    );
-                default:
-                    throw new RuntimeException("지원하지 않는 Content-Type 입니다.");
-            }
-        } catch (IOException e) {
+            return ObjectMapperFactory.getInstance()
+                    .readValue(readData(bufferedReader, getContentLength(requestHeaders)),
+                            new TypeReference<>() {});
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String readData(BufferedReader bufferedReader, int length) {
+        return IOUtils.readData(bufferedReader, length);
+    }
+
+    private int getContentLength(Map<String, String> requestHeaders) {
+        return Integer.parseInt(requestHeaders.get(CONTENT_LENGTH));
+    }
+
+    private Map<String, String> convertQueryStringToMap(Map<String, String> requestHeaders, BufferedReader bufferedReader) {
+        return parseQueryString(readData(bufferedReader, getContentLength(requestHeaders)));
     }
 }

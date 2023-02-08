@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static constant.HeaderConstant.*;
+import static utils.extractor.RequestBodyExtractor.*;
 
 public class RequestBody {
     private final Map<String, String> requestBody;
@@ -22,9 +23,7 @@ public class RequestBody {
 
     public static RequestBody of(Map<String, String> requestHeaders, BufferedReader bufferedReader) {
         if (requestHeaders.containsKey(CONTENT_LENGTH)) {
-            return new RequestBody(
-                    RequestBodyExtractor.extract(requestHeaders, bufferedReader)
-            );
+            return new RequestBody(extract(requestHeaders, bufferedReader));
         }
         return new RequestBody(new HashMap<>());
     }

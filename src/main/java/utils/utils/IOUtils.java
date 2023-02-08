@@ -10,9 +10,13 @@ public class IOUtils {
      * @return
      * @throws IOException
      */
-    public static String readData(BufferedReader br, int contentLength) throws IOException {
-        char[] body = new char[contentLength];
-        br.read(body, 0, contentLength);
-        return String.copyValueOf(body);
+    public static String readData(BufferedReader br, int contentLength){
+        try {
+            char[] body = new char[contentLength];
+            br.read(body, 0, contentLength);
+            return String.copyValueOf(body);
+        } catch (IOException e) {
+            throw new RuntimeException("데이터 읽기에 실패하였습니다.");
+        }
     }
 }

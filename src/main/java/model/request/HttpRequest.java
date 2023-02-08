@@ -44,7 +44,7 @@ public class HttpRequest {
 
     private boolean isContentTypeCanConsume(Api annotation) {
         return findHeaderValue(CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
-                .equals(annotation.consumes().value()) ||
+                .equals(annotation.consumes().getValue()) ||
                 annotation.consumes().equals(ContentType.ANY);
     }
 
