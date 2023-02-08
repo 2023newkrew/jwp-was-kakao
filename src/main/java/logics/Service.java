@@ -2,9 +2,11 @@ package logics;
 
 import db.DataBase;
 import model.User;
+import utils.session.Session;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * contains business logic, which is similar to Service component in Spring Framework.
@@ -22,16 +24,44 @@ public class Service {
             User user = parseUser(body);
             DataBase.addUser(user);
         } catch(IndexOutOfBoundsException e){ // parseUser에서 split이 되지 않는 경우
-            throw new IllegalArgumentException("body");
+            throw new IllegalArgumentException("body is not valid");
         }
     }
 
     private User parseUser(String body){
+        Map<String, String> bodyMap = parseBody(body);
+        return new User(bodyMap.get("userId"), bodyMap.get("password"),
+                bodyMap.get("name"), bodyMap.get("email"));
+    }
+
+    private Map<String, String> parseBody(String body){
         Map<String, String> bodyMap = new HashMap<>();
         for (String splitted : body.split("&")) {
             bodyMap.put(splitted.split("=")[0], splitted.split("=")[1]);
         }
-        return new User(bodyMap.get("userId"), bodyMap.get("password"),
-                bodyMap.get("name"), bodyMap.get("email"));
+        return bodyMap;
+    }
+
+    public Session login(String body){
+        try{
+            Map<String, String> bodyMap = parseBody(body);
+            return verifyLogin(bodyMap);
+        } catch(IndexOutOfBoundsException e){
+            throw new IllegalArgumentException("body is not valid");
+        }
+    }
+
+    private Session verifyLogin(final Map<String, String> bodyMap){
+        String userId = bodyMap.get("userId");
+        String password = bodyMap.get("password");
+        if (Objects.isNull(DataBase.findUserById(userId)) ||
+                !DataBase.findUserById(userId).getPassword().equals(password)){
+            throw new IllegalArgumentException("Invalid ID or Password");
+        }
+        return makeSession();
+    }
+
+    private Session makeSession(){
+        return new Session.Builder().setRandomId().build();
     }
 }
