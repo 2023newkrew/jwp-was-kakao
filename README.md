@@ -7,17 +7,10 @@
 * 코드 리뷰 피드백에 대한 개선 작업을 하고 다시 PUSH한다.
 * 모든 피드백을 완료하면 다음 단계를 도전하고 앞의 과정을 반복한다.
 
-## 온라인 코드 리뷰 과정
-
-* [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
 ## 기능 요구사항
-
-1. GET /index.html 응답하기
-
-- [ ] 
-
-2. CSS 지원하기
-3. Query String 파싱
-4. POST 방식으로 회원가입
-5. Redirect
+### 1단계
+- [x] GET /index.html 응답하기
+- [x] CSS 지원하기 
+- [x] Query String 파싱
+- [x] POST 방식으로 회원가입
+- [x] Redirect 기능 구현
