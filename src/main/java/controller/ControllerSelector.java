@@ -6,6 +6,7 @@ import webserver.StatusCode;
 
 import java.util.Map;
 
+import static webserver.HttpMethod.GET;
 import static webserver.HttpMethod.POST;
 
 public class ControllerSelector {
@@ -18,7 +19,7 @@ public class ControllerSelector {
                 .orElse("text/html");
 
         // baseController
-        if (request.getHeader().checkRequest(POST, "/")) {
+        if (request.getHeader().checkRequest(GET, "/")) {
             return new BaseResponseDto(StatusCode.OK,
                     baseController.hello(),
                     contentType);
