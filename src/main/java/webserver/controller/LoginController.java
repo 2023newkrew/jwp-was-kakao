@@ -50,7 +50,7 @@ public class LoginController extends ApiController {
         }
 
         HttpResponse response = ResponseBuilder.found(DEFAULT_PAGE);
-        response.setHeaderAttribute(SET_COOKIE, "JSESSIONID=" + UUID.randomUUID());
+        response.setHeaderAttribute(SET_COOKIE, "JSESSIONID=" + UUID.randomUUID() + "; Path=/");
 
         return response;
     }
