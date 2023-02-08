@@ -23,6 +23,6 @@ public class ControllerHandlerAdapter {
     }
 
     private boolean isMethodExistMatched(HttpRequest request, Api annotation) {
-        return request.methodAndURLEquals(annotation);
+        return request.methodAndURLAndContentEquals(annotation);
     }
 }

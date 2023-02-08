@@ -5,7 +5,8 @@ import java.util.Arrays;
 public enum ContentType {
     APPLICATION_JSON("application/json"),
     TEXT_HTML("text/html"),
-    APPLICATION_URL_ENCODED("application/x-www-form-urlencoded");
+    APPLICATION_URL_ENCODED("application/x-www-form-urlencoded"),
+    ANY("*/*");
 
     private final String value;
 

@@ -1,6 +1,7 @@
 package model.request;
 
 import model.annotation.Api;
+import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import model.request.properties.RequestBody;
 import model.request.properties.RequestHeaders;
 
 import static constant.DefaultConstant.*;
+import static constant.HeaderConstant.*;
 
 @Getter
 @AllArgsConstructor
@@ -30,8 +32,17 @@ public class HttpRequest {
     public String findHeaderValue(String key, String defaultValue) {
         return headers.getHeaders().getOrDefault(key, defaultValue);
     }
-    public boolean methodAndURLEquals(Api annotation) {
-        return method.equals(annotation.method()) && URL.equals(annotation.url());
+    public boolean methodAndURLAndContentEquals(Api annotation) {
+        return method.equals(annotation.method()) &&
+                URL.equals(annotation.url()) &&
+                isContentTypeCanConsume(annotation);
+
+    }
+
+    private boolean isContentTypeCanConsume(Api annotation) {
+        return findHeaderValue(CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
+                .equals(annotation.consumes().value()) ||
+                annotation.consumes().equals(ContentType.ANY);
     }
 
     public boolean isNotDefaultURL() {

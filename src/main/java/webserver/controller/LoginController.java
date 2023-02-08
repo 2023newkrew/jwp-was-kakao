@@ -1,6 +1,7 @@
 package webserver.controller;
 
 import model.annotation.Api;
+import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
 import model.response.HttpResponse;

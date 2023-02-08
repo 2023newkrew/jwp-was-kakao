@@ -1,6 +1,7 @@
 package webserver.infra;
 
 import lombok.experimental.UtilityClass;
+import model.annotation.Api;
 import model.request.HttpRequest;
 import model.response.HttpResponse;
 import utils.builder.ResponseBuilder;
@@ -10,8 +11,10 @@ import webserver.controller.UserController;
 import webserver.controller.ViewController;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static webserver.infra.ControllerHandlerAdapter.*;
 
@@ -21,10 +24,11 @@ public class FrontController {
 
     static {
         handleControllerMap.put("/user/create", UserController.getInstance());
-        handleControllerMap.put("/user/login/success", LoginController.getInstance());
         handleControllerMap.put("/user/list.html", UserController.getInstance());
-        handleControllerMap.put("/user/login", LoginController.getInstance());
+
+        handleControllerMap.put("/user/login/success", LoginController.getInstance());
         handleControllerMap.put("/user/login.html", LoginController.getInstance());
+        handleControllerMap.put("/user/login", LoginController.getInstance());
     }
 
     public HttpResponse handleRequest(HttpRequest request) {

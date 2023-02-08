@@ -14,7 +14,6 @@ import static utils.utils.TemplateUtils.*;
 
 public class UserController extends ApiController {
     private static final UserController instance;
-
     private final UserService userService;
 
     private UserController(UserService userService) {

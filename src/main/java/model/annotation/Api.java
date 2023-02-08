@@ -13,6 +13,5 @@ import java.lang.annotation.Target;
 public @interface Api {
     HttpMethod method() default HttpMethod.GET;
     String url() default "/";
-    ContentType consumes() default ContentType.APPLICATION_JSON;
-    ContentType produces() default ContentType.APPLICATION_JSON;
+    ContentType consumes() default ContentType.ANY;
 }
