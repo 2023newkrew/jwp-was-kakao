@@ -5,11 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import lombok.ToString;
 import org.springframework.http.HttpMethod;
 
 @Getter
-@ToString
 public class MyHttpRequest {
 
     private final HttpMethod httpMethod;

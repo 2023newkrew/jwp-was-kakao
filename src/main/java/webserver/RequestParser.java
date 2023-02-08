@@ -28,10 +28,8 @@ public class RequestParser {
         String httpMethod = tokens[0];
         String requestUrl = tokens[1];
 
-        // url parsing
         requestUrl = parseQueryParams(requestUrl, queryParams);
 
-        // header parsing
         while (!StringUtils.isEmpty(line)) {
             parseHeaders(line);
             line = br.readLine();
