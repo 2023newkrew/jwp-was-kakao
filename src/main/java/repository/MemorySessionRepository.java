@@ -1,25 +1,30 @@
 package repository;
 
-import model.User;
+import model.Session;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class MemorySessionRepository implements SessionRepository {
-    private static final ConcurrentMap<String, User> sessionMap = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, Session> sessionMap = new ConcurrentHashMap<>();
 
     @Override
-    public void put(String key, User user) {
-        sessionMap.put(key, user);
+    public void save(Session session) {
+        sessionMap.put(session.getId(), session);
     }
 
     @Override
-    public User get(String key) {
-        return sessionMap.get(key);
+    public Session findById(String id) {
+        return sessionMap.get(id);
     }
 
     @Override
-    public boolean containsKey(String uuid) {
-        return sessionMap.containsKey(uuid);
+    public boolean isExist(String id) {
+        return sessionMap.containsKey(id);
+    }
+
+    @Override
+    public void remove(String id) {
+        sessionMap.remove(id);
     }
 }

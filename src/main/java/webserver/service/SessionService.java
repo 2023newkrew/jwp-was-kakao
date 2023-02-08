@@ -1,25 +1,25 @@
 package webserver.service;
 
 import lombok.RequiredArgsConstructor;
+import model.Session;
 import model.User;
 import repository.SessionRepository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class SessionService {
     private final SessionRepository sessionRepository;
 
     public String register(User user) {
-        String uuid = UUID.randomUUID().toString();
-        sessionRepository.put(uuid, user);
-        return uuid;
+        Session session = Session.of(user);
+        sessionRepository.save(session);
+        return session.getId();
     }
 
-    public Optional<User> find(String uuid) {
-        if (sessionRepository.containsKey(uuid)) {
-            return Optional.of(sessionRepository.get(uuid));
+    public Optional<Session> find(String uuid) {
+        if (sessionRepository.isExist(uuid)) {
+            return Optional.of(sessionRepository.findById(uuid));
         }
         return Optional.empty();
     }

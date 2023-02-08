@@ -1,11 +1,13 @@
 package repository;
 
-import model.User;
+import model.Session;
 
 public interface SessionRepository {
-    void put(String key, User user);
+    void save(Session session);
 
-    User get(String key);
+    Session findById(String id);
 
-    boolean containsKey(String uuid);
+    boolean isExist(String id);
+
+    void remove(String id);
 }
