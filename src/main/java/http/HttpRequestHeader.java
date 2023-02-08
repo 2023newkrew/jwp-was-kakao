@@ -1,13 +1,24 @@
 package http;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpRequestHeader {
     private final List<String> headers;
+    private List<HttpCookie> cookies;
+
+    public HttpRequestHeader(List<String> headers) {
+        this.headers = headers;
+        this.cookies = headers.stream()
+                .filter(this::isCookieHeader)
+                .map(HttpCookie::new)
+                .collect(Collectors.toList());
+    }
 
     public String getRequestMethod() {
         String[] token = headers.get(0)
@@ -29,4 +40,13 @@ public class HttpRequestHeader {
                 .map(String::trim)
                 .map(Integer::parseInt);
     }
+
+    public List<HttpCookie> getCookies() {
+        return this.cookies;
+    }
+
+    private Boolean isCookieHeader(String header) {
+        return header.startsWith("Cookie:");
+    }
+
 }
