@@ -1,7 +1,6 @@
-package webserver.resolver;
+package webserver.handler.resource.resolver;
 
 import webserver.content.Content;
-
 
 public interface Resolver {
 

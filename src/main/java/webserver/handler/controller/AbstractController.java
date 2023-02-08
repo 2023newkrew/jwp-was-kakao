@@ -1,4 +1,4 @@
-package webserver.controller;
+package webserver.handler.controller;
 
 import org.springframework.http.HttpMethod;
 import webserver.handler.Handler;

@@ -3,7 +3,7 @@ package application.controller;
 import application.db.DataBase;
 import application.model.User;
 import org.springframework.http.HttpStatus;
-import webserver.controller.AbstractController;
+import webserver.handler.controller.AbstractController;
 import webserver.http.Headers;
 import webserver.request.Request;
 import webserver.request.path.PathVariables;

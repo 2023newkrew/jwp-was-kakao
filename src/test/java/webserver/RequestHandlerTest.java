@@ -3,15 +3,17 @@ package webserver;
 import application.controller.RootController;
 import application.controller.UserController;
 import application.db.DataBase;
+import application.enums.ApplicationContentType;
 import application.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import webserver.handler.Handlers;
-import webserver.resolver.Resolvers;
-import webserver.resolver.ResourceHandler;
-import webserver.resolver.ResourceResolver;
-import webserver.resolver.ViewResolver;
+import webserver.handler.resource.ResourceHandler;
+import webserver.handler.resource.resolver.statics.StaticResolver;
+import webserver.handler.resource.resolver.statics.StaticType;
+import webserver.handler.resource.resolver.statics.StaticTypes;
+import webserver.handler.resource.resolver.view.ViewResolver;
 import webserver.utils.FileIoUtils;
 
 import java.io.IOException;
@@ -20,23 +22,36 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
-    Resolvers resolvers = new Resolvers(
-            new ResourceResolver(),
-            new ViewResolver()
+
+    private static final StaticTypes STATIC_TYPES = new StaticTypes(
+            new StaticType("/css", ApplicationContentType.TEXT_CSS),
+            new StaticType("/fonts", ApplicationContentType.FONT_TTF),
+            new StaticType("/images", ApplicationContentType.IMAGE_PNG),
+            new StaticType("/js", ApplicationContentType.TEXT_JAVASCRIPT)
     );
 
+    private static final StaticResolver STATIC_RESOLVER = new StaticResolver(
+            "./static",
+            STATIC_TYPES,
+            ApplicationContentType.TEXT_HTML
+    );
 
-    Handlers handlers = new Handlers(
+    private static final ViewResolver VIEW_RESOLVER = new ViewResolver(
+            "./templates",
+            ApplicationContentType.TEXT_HTML
+    );
+
+    private static final Handlers HANDLERS = new Handlers(
             new RootController(),
             new UserController(),
-            new ResourceHandler(resolvers)
+            new ResourceHandler(STATIC_RESOLVER, VIEW_RESOLVER)
     );
 
     @Test
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
 
         // when
         handler.run();
@@ -62,7 +77,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
         // when
         handler.run();
 
@@ -87,7 +102,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
 
         // when
         handler.run();
@@ -124,7 +139,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
 
         // when
         handler.run();
