@@ -2,20 +2,33 @@ package webserver;
 
 import controller.RequestController;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import model.RequestInfo;
+import model.Request;
+import model.Response;
 import org.springframework.http.HttpMethod;
 
 public class RequestAdapter {
     private final RequestController requestController = new RequestController();
 
-    public void mapHandler(RequestInfo request, DataOutputStream dos) throws URISyntaxException {
+    public void mapHandler(Request request, Response response) throws URISyntaxException, IOException {
 
-        if (request.getMethod().equals(HttpMethod.POST) && request.getPath().equals("/user/create")) {
-            requestController.createUser(request, dos);
-            return;
+        if (request.getMethod().equals(HttpMethod.GET)) {
+            requestController.sendPage(request, response);
         }
 
-        requestController.sendPage(request, dos);
+        if (request.getMethod().equals(HttpMethod.POST)) {
+
+            if (request.getPath().equals("/user/create")) {
+                requestController.createUser(request, response);
+                return;
+            }
+
+            if (request.getPath().equals("/user/login")) {
+                requestController.login(request, response);
+                return;
+            }
+
+        }
     }
 }

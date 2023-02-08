@@ -11,18 +11,17 @@ import org.springframework.http.HttpMethod;
 import utils.FileIoUtils;
 import webserver.HttpCookies;
 
-public class RequestInfo {
-    private HttpMethod method;
+public class Request {
+    private final HttpMethod method;
     private final String path;
     private String root = "./templates";
+    private String accept = "text/html";
     private final Map<String, String> mappings = new HashMap<>();
     private final Map<String, String> queryMappings = new HashMap<>();
     private final Map<String, String> bodyMappings = new HashMap<>();
     private final HttpCookies cookies = new HttpCookies();
 
-    private String accept = "text/html";
-
-    public RequestInfo(String firstLine) {
+    public Request(String firstLine) {
         System.out.println(firstLine);
         if (Objects.isNull(firstLine)) {
             throw new RuntimeException("잘못된 HTTP 메시지입니다. 첫 줄은 \"메소드 경로\" 의 형식이어야 합니다.");
@@ -80,6 +79,10 @@ public class RequestInfo {
         return cookies.getCookie(key);
     }
 
+    public void setCookie(String key, String value) {
+        cookies.setCookie(key, value);
+    }
+
     public void readNextLine(String line) {
         String[] tokens = line.split(": ");
         if (tokens[0].equals("Accept")) {
@@ -94,7 +97,6 @@ public class RequestInfo {
 
     public byte[] getResponse() {
         try {
-            System.out.println("######## : " + root + path);
             return FileIoUtils.loadFileFromClasspath(root + path);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException("잘못된 경로의 요청");
@@ -114,10 +116,12 @@ public class RequestInfo {
     }
 
     private void setCookies(String cookieString) {
-        String[] cookies = cookieString.split("\t*");
+        String[] cookies = cookieString.split(";\t*");
         for (String cookie : cookies) {
             String[] cookieToken = cookie.split("=");
-            this.cookies.setCookie(cookieToken[0], Objects.nonNull(cookieToken[1]) ? cookieToken[1] : null);
+            if (cookieToken.length == 2) {
+                this.cookies.setCookie(cookieToken[0], Objects.nonNull(cookieToken[1]) ? cookieToken[1] : null);
+            }
         }
     }
 
