@@ -7,3 +7,13 @@
 
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+
+## 1단계 - HTTP 웹 서버 구현하기
+
+- GET /index.html 응답하기
+  - http://localhost:8080/index.html에 접근할 수 있도록 구현한다.
+  - RequestHandlerTest 테스트가 모두 통과하도록 구현한다.
+- CSS 지원하기
+- Query String 파싱
+- POST 방식으로 회원가입
+- Redirect
