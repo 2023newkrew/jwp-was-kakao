@@ -12,7 +12,7 @@ public class HomeController {
 
     public static HomeController getInstance() {
         if (instance == null) {
-            return new HomeController();
+            instance = new HomeController();
         }
         return instance;
     }
