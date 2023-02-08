@@ -1,9 +1,9 @@
-package webserver;
+package webserver.application;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.domain.*;
-import webserver.utils.FileIoUtils;
+import webserver.infra.util.FileIoUtil;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
             if (requestReader.isFile()) {
                 FileExtensions requestedFileExtension = FileExtensions.of(requestReader.getExtension());
                 try {
-                    body = FileIoUtils.loadFileFromClasspath(requestReader.getPath());
+                    body = FileIoUtil.loadFileFromClasspath(requestReader.getPath());
                     response = HttpResponse.builder(HttpStatus.OK)
                             .contentType(requestedFileExtension.getMediaType().value())
                             .contentLength(body.length)

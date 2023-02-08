@@ -3,7 +3,7 @@ package webserver.domain;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.RequestHandler;
+import webserver.application.RequestHandler;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -2,8 +2,9 @@ package webserver;
 
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
+import webserver.application.RequestHandler;
 import webserver.domain.RoutingHandler;
-import webserver.utils.FileIoUtils;
+import webserver.infra.util.FileIoUtil;
 
 import java.io.IOException;
 
@@ -55,7 +56,7 @@ class HttpRequestHandlerTest {
                 "Content-Length: 7159\r\n" +
                 "Content-Type: text/html\r\n" +
                 "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("/index.html"));
+                new String(FileIoUtil.loadFileFromClasspath("/index.html"));
 
         assertThat(socket.output()).isEqualTo(expected);
     }

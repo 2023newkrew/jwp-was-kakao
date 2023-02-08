@@ -2,7 +2,7 @@ package webserver.domain;
 
 import lombok.Builder;
 import lombok.ToString;
-import webserver.utils.IOUtils;
+import webserver.infra.util.IoUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class HttpRequest {
             if (line == null || line.isEmpty()) break;
             httpRequest.addHeader(line);
         }
-        line = IOUtils.readData(reader, httpRequest.getHeader("Content-Length").map(Integer::parseInt).orElse(0));
+        line = IoUtil.readData(reader, httpRequest.getHeader("Content-Length").map(Integer::parseInt).orElse(0));
         httpRequest.setBody(line);
 
         return httpRequest;
