@@ -24,10 +24,9 @@ public class HomeController implements MyController{
     @Override
     public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
-        String contentType = headers.get("contentType");
 
         if(path.equals("/favicon.ico") && headers.get("method").equals("GET")){
-            getIco(path, contentType, dataOutputStream);
+            getIco(path, dataOutputStream);
             return;
         }
 
@@ -37,14 +36,14 @@ public class HomeController implements MyController{
         }
 
         if(path.equals("/index.html")){
-            index(headers, dataOutputStream);
+            index(path, dataOutputStream);
         }
     }
 
-    private void getIco(String path, String contentType, DataOutputStream dataOutputStream){
+    private void getIco(String path, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, contentType, body.length);
+            response200Header(dataOutputStream, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -58,10 +57,10 @@ public class HomeController implements MyController{
         responseBody(dataOutputStream, body);
     }
 
-    private void index(MyHeaders headers, DataOutputStream dataOutputStream){
+    private void index(String path, DataOutputStream dataOutputStream){
         try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + headers.get("path"));
-            response200Header(dataOutputStream, headers.get("contentType"), body.length);
+            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
+            response200Header(dataOutputStream, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());

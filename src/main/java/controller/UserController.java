@@ -36,7 +36,7 @@ public class UserController  implements MyController {
         }
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
-            form(headers, dataOutputStream);
+            form(path, dataOutputStream);
         }
     }
 
@@ -46,10 +46,10 @@ public class UserController  implements MyController {
         response302Header(dataOutputStream, "/index.html");
     }
 
-    private void form(MyHeaders headers, DataOutputStream dataOutputStream){
+    private void form(String path, DataOutputStream dataOutputStream){
         try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + headers.get("path"));
-            response200Header(dataOutputStream, headers.get("contentType"), body.length);
+            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
+            response200Header(dataOutputStream, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());

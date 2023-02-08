@@ -33,14 +33,14 @@ public class ResponseHeaders {
         }
     }
 
-    public static void response200Header(DataOutputStream dos,String contentType, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 \r\n");
-            dos.writeBytes(String.format("Content-Type: %s;charset=utf-8 \r\n", contentType));
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
+//    public static void response200Header(DataOutputStream dos,String contentType, int lengthOfBodyContent) {
+//        try {
+//            dos.writeBytes("HTTP/1.1 200 \r\n");
+//            dos.writeBytes(String.format("Content-Type: %s;charset=utf-8 \r\n", contentType));
+//            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+//            dos.writeBytes("\r\n");
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//        }
+//    }
 }
