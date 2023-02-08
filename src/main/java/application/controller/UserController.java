@@ -2,18 +2,17 @@ package application.controller;
 
 import application.db.DataBase;
 import application.model.User;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import webserver.handler.controller.Controller;
+import webserver.handler.controller.AbstractController;
 import webserver.http.Headers;
 import webserver.http.request.Request;
 import webserver.http.request.path.PathVariables;
 import webserver.http.response.Response;
 
-public class UserController extends Controller {
+public class UserController extends AbstractController {
 
     public UserController() {
-        methodHandlers.put(HttpMethod.POST, "/user/create", this::createUser);
+        addPostHandler("/user/create", this::createUser);
     }
 
     private Response createUser(Request request) {

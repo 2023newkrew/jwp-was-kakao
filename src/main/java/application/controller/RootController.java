@@ -1,18 +1,17 @@
 package application.controller;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import webserver.handler.controller.Controller;
+import webserver.handler.controller.AbstractController;
 import webserver.http.content.Content;
 import webserver.http.content.ContentData;
 import webserver.http.content.ContentType;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
 
-public class RootController extends Controller {
+public class RootController extends AbstractController {
 
     public RootController() {
-        methodHandlers.put(HttpMethod.GET, "/", this::helloWorld);
+        addGetHandler("/", this::helloWorld);
     }
 
     private Response helloWorld(Request request) {
