@@ -9,8 +9,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static webserver.domain.HttpMethod.*;
@@ -19,7 +17,7 @@ import static webserver.domain.HttpMethod.*;
 public class WebServerContext implements Closeable {
     private static final Logger logger = LoggerFactory.getLogger(WebServerContext.class);
     private static final int DEFAULT_PORT = 8080;
-    private final RoutingHandler routingHandler = new RoutingHandler();
+    private static final RoutingHandler routingHandler = new RoutingHandler();
 
     private int port = DEFAULT_PORT;
 
@@ -64,21 +62,5 @@ public class WebServerContext implements Closeable {
 
     public void PATCH(String uri, Consumer<Context> handler) {
         routingHandler.addHandler(PATCH, uri, handler);
-    }
-
-    public static class RoutingHandler {
-        private static final Map<HttpEndpoint, Consumer<Context>> handlerMapper = new ConcurrentHashMap<>();
-
-        public void addHandler(HttpMethod method, String relativePath, Consumer<Context> handler) {
-            handlerMapper.put(new HttpEndpoint(method, relativePath), handler);
-        }
-
-        public boolean canHandle(HttpMethod method, String relativePath) {
-            return handlerMapper.containsKey(new HttpEndpoint(method, relativePath));
-        }
-
-        public Consumer<Context> getHandler(HttpMethod method, String relativePath) {
-            return handlerMapper.get(new HttpEndpoint(method, relativePath));
-        }
     }
 }

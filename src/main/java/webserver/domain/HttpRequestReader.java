@@ -1,5 +1,6 @@
 package webserver.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -71,11 +72,19 @@ public class HttpRequestReader {
         return path;
     }
 
+    public <T> T bindQuery(Class<T> clazz) {
+        return objectMapper.convertValue(queryParams, clazz);
+    }
+
     public <T> T bindBody(Class<T> clazz) {
         return objectMapper.convertValue(parseQuery(httpRequest.getBody()), clazz);
     }
 
-    public <T> T bindQuery(Class<T> clazz) {
-        return objectMapper.convertValue(queryParams, clazz);
+    public <T> T bindJson(Class<T> clazz) {
+        try {
+            return objectMapper.readValue(httpRequest.getBody(), clazz);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException();
+        }
     }
 }

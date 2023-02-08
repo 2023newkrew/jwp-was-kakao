@@ -8,11 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class Context {
-    private HttpRequestReader requestReader;
+    private final HttpRequestReader requestReader;
+    private final Map<String, Object> keys = new ConcurrentHashMap<>();
     @Setter
     private HttpResponse httpResponse;
-
-    private Map<String, Object> keys = new ConcurrentHashMap<>();
 
     public Context(HttpRequestReader requestReader) {
         this.requestReader = requestReader;
@@ -26,11 +25,15 @@ public class Context {
         keys.put(key, value);
     }
 
+    public <T> T bindQuery(Class<T> clazz) {
+        return this.requestReader.bindQuery(clazz);
+    }
+
     public <T> T bindBody(Class<T> clazz) {
         return this.requestReader.bindBody(clazz);
     }
 
-    public <T> T bindQuery(Class<T> clazz) {
-        return this.requestReader.bindQuery(clazz);
+    public <T> T bindJson(Class<T> clazz) {
+        return this.requestReader.bindJson(clazz);
     }
 }

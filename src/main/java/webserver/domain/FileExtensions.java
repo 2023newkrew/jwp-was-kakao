@@ -10,25 +10,23 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public enum FileExtensions {
-    JPG(FileDirectory.STATIC, "image/jpeg"),
-    JPEG(FileDirectory.STATIC, "image/jpeg"),
-    PNG(FileDirectory.STATIC, "image/png"),
-    GIF(FileDirectory.STATIC, "image/gif"),
-    ICO(FileDirectory.STATIC, "image/x-icon"),
-    TXT(FileDirectory.STATIC, "text/plain"),
-    HTML(FileDirectory.TEMPLATES, "text/html"),
-    CSS(FileDirectory.STATIC, "text/css"),
-    JS(FileDirectory.STATIC, "text/javascript"),
-    XML(FileDirectory.STATIC, "application/xml"),
-    JSON(FileDirectory.STATIC, "application/json"),
-    TTF(FileDirectory.STATIC, "application/x-font-ttf"),
-    WOFF(FileDirectory.STATIC, "application/x-font-woff"),
-    WOFF2(FileDirectory.STATIC, "application/x-font-woff"),
-    EOT(FileDirectory.STATIC, "application/vnd.ms-fontobject"),
-    SVG(FileDirectory.STATIC, "image/svg+xml"),
-    ZIP(FileDirectory.STATIC, "application/zip"),
-
-    DEFAULT(null, "text/plain"),
+    JPG(MediaType.IMAGE_JPEG),
+    JPEG(MediaType.IMAGE_JPEG),
+    PNG(MediaType.IMAGE_PNG),
+    GIF(MediaType.IMAGE_GIF),
+    ICO(MediaType.IMAGE_X_ICON),
+    TXT(MediaType.TEXT_PLAIN),
+    HTML(MediaType.TEXT_HTML),
+    CSS(MediaType.TEXT_CSS),
+    JS(MediaType.TEXT_JAVASCRIPT),
+    XML(MediaType.APPLICATION_XML),
+    JSON(MediaType.APPLICATION_JSON),
+    TTF(MediaType.APPLICATION_X_FONT_TTF),
+    WOFF(MediaType.APPLICATION_X_FONT_WOFF),
+    WOFF2(MediaType.APPLICATION_X_FONT_WOFF),
+    EOT(MediaType.APPLICATION_VND_MS_FONDOBJECT),
+    SVG(MediaType.IMAGE_SVG_XML),
+    ZIP(MediaType.APPLICATION_ZIP),
     ;
 
     private static final Map<String, FileExtensions> enumMapper = new HashMap<>();
@@ -38,14 +36,9 @@ public enum FileExtensions {
                 .forEach(item -> enumMapper.putIfAbsent(item.toString(), item));
     }
 
-    private final FileDirectory directory;
-    private final String contentType;
+    private final MediaType mediaType;
 
     public static FileExtensions of(String fileExtension) {
-        return enumMapper.getOrDefault(fileExtension.toUpperCase(), FileExtensions.DEFAULT);
-    }
-
-    public String getDirectory() {
-        return directory.getDirectory();
+        return enumMapper.getOrDefault(fileExtension.toUpperCase(), FileExtensions.TXT);
     }
 }

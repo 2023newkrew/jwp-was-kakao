@@ -59,6 +59,10 @@ public class HttpRequest {
         this.body = body;
     }
 
+    public MediaType getContentType() {
+        return MediaType.from(this.headers.get("Content-Type"));
+    }
+
     public HttpMethod getMethod() {
         return this.statusLine.method;
     }
