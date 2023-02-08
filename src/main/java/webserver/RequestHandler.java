@@ -33,6 +33,7 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             HttpResponse response = HttpResponse.builder(HttpStatus.OK)
                     .contentLength(body.length)
+                    .contentType(MediaType.TEXT_PLAIN)
                     .body(body)
                     .build();
 

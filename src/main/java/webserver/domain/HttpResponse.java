@@ -39,6 +39,10 @@ public class HttpResponse {
             this.status = status;
         }
 
+        public HttpResponseBuilder contentType(MediaType contentType) {
+            return this.contentType(contentType.value());
+        }
+
         public HttpResponseBuilder contentType(String contentType) {
             this.contentType = contentType;
             return this;
