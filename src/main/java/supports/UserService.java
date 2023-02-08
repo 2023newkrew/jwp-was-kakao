@@ -28,7 +28,6 @@ public class UserService {
                 queryParam.get("email")
         );
         DataBase.addUser(user);
-        System.out.println(DataBase.findAll());
     }
 
     private HashMap<String, String> parseQueryParameter(String userBody) {
