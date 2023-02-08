@@ -1,6 +1,6 @@
-package db;
+package container.db;
 
-import model.User;
+import container.model.User;
 
 import java.util.Collection;
 import java.util.Map;

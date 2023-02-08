@@ -1,4 +1,4 @@
-package support;
+package webserver.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
