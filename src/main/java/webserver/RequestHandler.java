@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import model.MyHttpRequest;
+import model.MyHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -43,15 +44,11 @@ public class RequestHandler implements Runnable {
             MyHttpRequest httpRequest = requestParser.buildHttpRequest();
 
             Controller controller = handleControllerMapping(httpRequest);
-            String viewName = controller.process(httpRequest);
+            MyHttpResponse httpResponse = new MyHttpResponse();
+            String viewName = controller.process(httpRequest, httpResponse);
 
             DataOutputStream dos = new DataOutputStream(out);
-
-            if (controller.isRedirectRequired()) {
-                responseRedirectHome(dos);
-                return;
-            }
-            sendBody(httpRequest, viewName, dos);
+            sendResponse(dos, httpResponse, viewName);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
@@ -64,43 +61,15 @@ public class RequestHandler implements Runnable {
         return this.controllerMap.getOrDefault(httpRequest.getUrl(), this.viewController);
     }
 
-    private void responseRedirectHome(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
-            dos.writeBytes("Content-Type: text/html; charset=utf-8 \r\n");
-            dos.writeBytes("Location: /index.html \r\n");
-            dos.writeBytes("\r\n");
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void sendBody(MyHttpRequest httpRequest, String viewName, DataOutputStream dos)
+    private void sendResponse(DataOutputStream dos, MyHttpResponse httpResponse, String viewName)
             throws IOException, URISyntaxException {
+        dos.writeBytes(httpResponse.toString());
 
-        byte[] body = FileIoUtils.loadFileFromClasspath(viewName);
-        response200Header(dos, httpRequest.getContentType(), body.length);
-        responseBody(dos, body);
-    }
-
-    private void response200Header(DataOutputStream dos, String contentType, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + "; charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+        if (!httpResponse.isRedirectRequired()) {
+            byte[] body = FileIoUtils.loadFileFromClasspath(viewName);
             dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
             dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
         }
+        dos.flush();
     }
 }
