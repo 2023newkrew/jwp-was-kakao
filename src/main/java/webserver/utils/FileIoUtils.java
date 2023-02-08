@@ -16,7 +16,7 @@ public class FileIoUtils {
         try {
             path = Paths.get(FileIoUtils.class.getClassLoader().getResource(filePath).toURI());
         } catch (NullPointerException e) {
-            throw new ResourceNotFoundException("요청하신 경로에 파일이 존재하지 않습니다.");
+            throw new ResourceNotFoundException();
         }
         return Files.readAllBytes(path);
     }
