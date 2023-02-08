@@ -3,6 +3,7 @@ package supports;
 import db.DataBase;
 import model.User;
 import utils.IoUtils;
+import webserver.RequestHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class UserService {
                 queryParam.get("email")
         );
         DataBase.addUser(user);
+        RequestHandler.logger.info("User saved. : {}", DataBase.findUserById(queryParam.get("userId")));
     }
 
     private HashMap<String, String> parseQueryParameter(String userBody) {
