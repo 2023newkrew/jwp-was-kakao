@@ -2,12 +2,12 @@ package application;
 
 import application.controller.RootController;
 import application.controller.UserController;
-import application.handler.ResourceHandler;
-import application.handler.resolver.ResourceResolver;
-import application.handler.resolver.ViewResolver;
 import webserver.WebServer;
 import webserver.handler.Handlers;
-import webserver.handler.resolver.Resolvers;
+import webserver.resolver.Resolvers;
+import webserver.resolver.ResourceHandler;
+import webserver.resolver.ResourceResolver;
+import webserver.resolver.ViewResolver;
 
 public class Application {
 

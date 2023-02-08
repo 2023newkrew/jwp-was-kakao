@@ -1,4 +1,4 @@
-package webserver.http.content;
+package webserver.content;
 
 public enum ContentType {
     TEXT_HTML("text/html;charset=utf-8"),

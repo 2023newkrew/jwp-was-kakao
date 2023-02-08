@@ -1,10 +1,10 @@
-package webserver.handler.controller;
+package webserver.controller;
 
 import org.springframework.http.HttpMethod;
 import webserver.handler.Handler;
-import webserver.http.request.MethodPath;
-import webserver.http.request.Request;
-import webserver.http.response.Response;
+import webserver.request.MethodPath;
+import webserver.request.Request;
+import webserver.response.Response;
 
 import java.util.HashMap;
 import java.util.Map;

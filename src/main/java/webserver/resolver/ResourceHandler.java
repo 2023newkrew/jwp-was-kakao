@@ -1,11 +1,10 @@
-package application.handler;
+package webserver.resolver;
 
 import org.springframework.http.HttpStatus;
+import webserver.content.Content;
 import webserver.handler.Handler;
-import webserver.handler.resolver.Resolvers;
-import webserver.http.content.Content;
-import webserver.http.request.Request;
-import webserver.http.response.Response;
+import webserver.request.Request;
+import webserver.response.Response;
 
 public class ResourceHandler implements Handler {
 

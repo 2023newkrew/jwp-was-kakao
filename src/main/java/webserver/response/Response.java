@@ -1,8 +1,8 @@
-package webserver.http.response;
+package webserver.response;
 
 import org.springframework.http.HttpStatus;
+import webserver.content.Content;
 import webserver.http.Headers;
-import webserver.http.content.Content;
 
 import java.util.Objects;
 

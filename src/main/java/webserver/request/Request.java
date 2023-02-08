@@ -1,8 +1,8 @@
-package webserver.http.request;
+package webserver.request;
 
 import org.springframework.http.HttpMethod;
-import webserver.http.request.path.PathVariables;
-import webserver.http.request.path.URL;
+import webserver.request.path.PathVariables;
+import webserver.request.path.URL;
 
 public class Request {
 

@@ -1,6 +1,6 @@
-package webserver.handler.resolver;
+package webserver.resolver;
 
-import webserver.http.content.Content;
+import webserver.content.Content;
 
 import java.util.List;
 

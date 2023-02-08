@@ -1,7 +1,7 @@
 package webserver.io;
 
-import webserver.http.content.Content;
-import webserver.http.response.Response;
+import webserver.content.Content;
+import webserver.response.Response;
 
 import java.io.Closeable;
 import java.io.DataOutputStream;

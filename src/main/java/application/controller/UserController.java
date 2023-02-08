@@ -3,11 +3,11 @@ package application.controller;
 import application.db.DataBase;
 import application.model.User;
 import org.springframework.http.HttpStatus;
-import webserver.handler.controller.AbstractController;
+import webserver.controller.AbstractController;
 import webserver.http.Headers;
-import webserver.http.request.Request;
-import webserver.http.request.path.PathVariables;
-import webserver.http.response.Response;
+import webserver.request.Request;
+import webserver.request.path.PathVariables;
+import webserver.response.Response;
 
 public class UserController extends AbstractController {
 

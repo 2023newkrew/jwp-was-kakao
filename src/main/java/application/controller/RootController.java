@@ -1,12 +1,12 @@
 package application.controller;
 
 import org.springframework.http.HttpStatus;
-import webserver.handler.controller.AbstractController;
-import webserver.http.content.Content;
-import webserver.http.content.ContentData;
-import webserver.http.content.ContentType;
-import webserver.http.request.Request;
-import webserver.http.response.Response;
+import webserver.content.Content;
+import webserver.content.ContentData;
+import webserver.content.ContentType;
+import webserver.controller.AbstractController;
+import webserver.request.Request;
+import webserver.response.Response;
 
 public class RootController extends AbstractController {
 

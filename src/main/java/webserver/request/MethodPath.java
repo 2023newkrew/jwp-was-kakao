@@ -1,4 +1,4 @@
-package webserver.http.request;
+package webserver.request;
 
 import org.springframework.http.HttpMethod;
 

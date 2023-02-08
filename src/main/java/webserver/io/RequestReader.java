@@ -2,8 +2,8 @@ package webserver.io;
 
 import org.springframework.http.HttpMethod;
 import webserver.http.Headers;
-import webserver.http.request.Request;
-import webserver.http.request.path.URL;
+import webserver.request.Request;
+import webserver.request.path.URL;
 import webserver.utils.IOUtils;
 
 import java.io.*;

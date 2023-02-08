@@ -1,4 +1,4 @@
-package webserver.http.request.path;
+package webserver.request.path;
 
 import java.util.Arrays;
 import java.util.Map;
