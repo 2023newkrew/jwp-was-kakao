@@ -1,12 +1,21 @@
 package session;
 
+import controller.UserController;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SessionManager {
+    private static SessionManager instance;
+    public static SessionManager getInstance(){
+        if (instance == null) {
+            instance = new SessionManager();
+        }
+        return instance;
+    }
     private static final Map<String, Session> SESSIONS = new HashMap<>();
 
     public void add(final Session session) {
