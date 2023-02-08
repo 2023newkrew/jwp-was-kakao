@@ -3,6 +3,7 @@ package webserver;
 import webserver.handler.Handler;
 import webserver.handler.LoginHandler;
 import webserver.handler.UserHandler;
+import webserver.handler.UserListHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class HandlerMapping {
 
     static {
         map.put("/user/create", new UserHandler());
+        map.put("/user/list", new UserListHandler());
         map.put("/user/login", new LoginHandler());
     }
 

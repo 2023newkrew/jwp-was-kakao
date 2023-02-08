@@ -3,6 +3,8 @@ package service;
 import db.DataBase;
 import model.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserService {
@@ -14,5 +16,9 @@ public class UserService {
     public boolean login(String userId, String password) {
         Optional<User> user = DataBase.findByUserId(userId);
         return user.map(value -> value.checkPassword(password)).orElse(false);
+    }
+
+    public List<User> showList() {
+        return new ArrayList<>(DataBase.findAll());
     }
 }

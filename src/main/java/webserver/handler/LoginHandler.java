@@ -29,6 +29,7 @@ public class LoginHandler extends AbstractHandler {
             Optional<User> user = DataBase.findByUserId(userId);
             user.ifPresent(value -> session.setAttribute("user", value));
             response.setHeader("Location", "/index.html");
+            response.setHeader("Set-Cookie", "logined=true");
         } else {
             response.setHeader("Location", "/user/login_failed.html");
         }
