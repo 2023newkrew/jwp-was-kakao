@@ -10,6 +10,7 @@ import webserver.controller.UserController;
 import webserver.controller.ViewController;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,11 +32,13 @@ public class FrontController {
     public HttpResponse handleRequest(HttpRequest request) {
         try {
             ApiController apiController = handleControllerMap.getOrDefault(request.getURL(), ViewController.getInstance());
+
             if (isViewController(apiController)) {
                 return ViewResolver.resolve(request);
             }
+            
             return (HttpResponse) findMethodToExecute(request, apiController).invoke(apiController, request);
-        } catch (InvocationTargetException | IllegalAccessException | RuntimeException e) {
+        } catch (Exception e) {
             return ResponseBuilder.notFound();
         }
     }
