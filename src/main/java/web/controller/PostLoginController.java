@@ -1,6 +1,6 @@
 package web.controller;
 
-import http.HttpCookie;
+import http.HttpCookies;
 import http.HttpHeaders;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
@@ -9,12 +9,13 @@ import utils.ParameterUtils;
 import utils.SessionIdGenerator;
 import web.domain.MemoryUserRepository;
 import web.domain.User;
+import web.infra.SessionManager;
 
 import java.util.Map;
 import java.util.Objects;
 
-import static http.HttpCookie.PATH;
-import static http.HttpCookie.SESSION_ID;
+import static http.HttpCookies.PATH;
+import static http.HttpCookies.SESSION_ID;
 import static http.HttpHeaders.LOCATION;
 import static http.HttpHeaders.SET_COOKIE;
 
@@ -22,12 +23,14 @@ public class PostLoginController implements Controller {
 
     private static final String LOGIN_PATH = "/user/login";
     private static final String INDEX_PAGE_PATH = "/index.html";
-    private static final String LOGIN_FAILED_PAGE = "/user/login_failed.html";
+    private static final String LOGIN_FAILED_PAGE_PATH = "/user/login_failed.html";
 
     private final SessionIdGenerator sessionIdGenerator;
+    private final SessionManager sessionManager;
 
-    public PostLoginController(SessionIdGenerator sessionIdGenerator) {
+    public PostLoginController(SessionIdGenerator sessionIdGenerator, SessionManager sessionManager) {
         this.sessionIdGenerator = sessionIdGenerator;
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -35,19 +38,22 @@ public class PostLoginController implements Controller {
         Map<String, String> params = ParameterUtils.parse(httpRequest.getBody());
         return MemoryUserRepository.findUserById(params.get("userId"))
                 .filter(user -> user.checkPassword(params.get("password")))
-                .map(user -> createLoginSuccessResponse())
+                .map(this::createLoginSuccessResponse)
                 .orElseGet(this::createLoginFailedResponse);
     }
 
-    private HttpResponse createLoginSuccessResponse() {
+    private HttpResponse createLoginSuccessResponse(User user) {
+        String sessionId = sessionIdGenerator.generate();
+        sessionManager.addAttribute(sessionId, user.getUserId());
+
         return HttpResponse.redirect(() -> {
-            HttpCookie httpCookie = new HttpCookie();
-            httpCookie.put(SESSION_ID, sessionIdGenerator.generate());
-            httpCookie.put(PATH, "/");
+            HttpCookies httpCookies = new HttpCookies();
+            httpCookies.put(SESSION_ID, sessionId);
+            httpCookies.put(PATH, "/");
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.put(LOCATION, INDEX_PAGE_PATH);
-            httpHeaders.put(SET_COOKIE, httpCookie.toString());
+            httpHeaders.put(SET_COOKIE, httpCookies.toString());
 
             return httpHeaders;
         });
@@ -56,7 +62,7 @@ public class PostLoginController implements Controller {
     private HttpResponse createLoginFailedResponse() {
         return HttpResponse.redirect(() -> {
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.put(LOCATION, LOGIN_FAILED_PAGE);
+            httpHeaders.put(LOCATION, LOGIN_FAILED_PAGE_PATH);
 
             return httpHeaders;
         });

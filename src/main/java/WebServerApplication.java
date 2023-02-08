@@ -8,6 +8,8 @@ import web.controller.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static web.config.SessionConfig.MEMORY_SESSION_MANAGER;
+
 public class WebServerApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(WebServerApplication.class);
@@ -30,9 +32,10 @@ public class WebServerApplication {
     private static HandlerMapping createHandlerMapping() {
         return HandlerMapping.of(
                 new DefaultController(),
-                new GetResourceController(),
                 new PostSignInController(),
-                new PostLoginController(new UUIDGenerator())
+                new PostLoginController(new UUIDGenerator(), MEMORY_SESSION_MANAGER.getSessionManager()),
+                new GetUserListController(MEMORY_SESSION_MANAGER.getSessionManager()),
+                new GetResourceController()
         );
     }
 
