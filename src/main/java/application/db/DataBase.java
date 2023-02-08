@@ -8,10 +8,14 @@ import java.util.Map;
 
 public class DataBase {
     private static Map<String, User> users = new HashMap<>();
+    static {
+        users.put("jin.100", new User("jin.100", "password", "jin", "jin.100@kakaocorp.com"));
+    }
+
+    private DataBase(){}
 
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
-        System.out.println("Added " + user.getName());
     }
 
     public static User findUserById(String userId) {
