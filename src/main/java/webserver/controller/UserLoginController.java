@@ -1,5 +1,6 @@
 package webserver.controller;
 
+import utils.HttpRequestUtils;
 import utils.LoginFailException;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
@@ -10,9 +11,9 @@ public class UserLoginController implements Controller {
     public HttpResponse response(HttpRequest httpRequest) {
         try {
             UserService.login(httpRequest);
-            return HttpResponse.redirect("/index.html");
+            return HttpResponse.redirect(httpRequest, "http://localhost:8080/index.html");
         } catch (LoginFailException e) {
-            return HttpResponse.redirect("/user/login_failed.html");
+            return HttpResponse.redirect(httpRequest, "http://localhost:8080/user/login_failed.html");
         }
     }
 }

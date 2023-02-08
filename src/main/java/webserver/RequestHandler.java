@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.controller.Controller;
@@ -29,8 +30,7 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            InputStreamReader reader = new InputStreamReader(in);
-            BufferedReader bufferedReader = new BufferedReader(reader);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
             handleHttpRequest(httpRequest, out);
         } catch (IOException e) {

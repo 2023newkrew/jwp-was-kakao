@@ -9,6 +9,6 @@ public class UserCreateController implements Controller {
     public HttpResponse response(HttpRequest httpRequest) {
         UserService.createUser(httpRequest);
 
-        return HttpResponse.redirect("http://localhost:8080/index.html");
+        return HttpResponse.redirect(httpRequest, "http://localhost:8080/index.html");
     }
 }

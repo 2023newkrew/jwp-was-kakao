@@ -15,7 +15,7 @@ public class FileLoadController implements Controller {
             String path = httpRequest.getPath();
             byte[] body = FileIoUtils.getBodyFromPath(path);
             String contentType = Files.probeContentType(new File(path).toPath());
-            return HttpResponse.ok(body, contentType);
+            return HttpResponse.ok(httpRequest, body, contentType);
         } catch (IOException | URISyntaxException e) {
             return HttpResponse.pageNotFound();
         }

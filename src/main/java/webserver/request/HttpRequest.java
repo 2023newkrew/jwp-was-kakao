@@ -1,5 +1,6 @@
 package webserver.request;
 
+import java.util.Optional;
 import lombok.Getter;
 import utils.IOUtils;
 
@@ -25,6 +26,13 @@ public class HttpRequest {
         this.path = firstLine.split(" ")[1];
         this.header = parseHttpHeaders(bufferedReader);
         this.body = parseHttpBody(bufferedReader);
+    }
+
+    public String getHeader(String headerKey) {
+        if (!header.containsKey(headerKey)) {
+            return null;
+        }
+        return header.get(headerKey);
     }
 
     private String parseHttpBody(BufferedReader bufferedReader) throws IOException {
