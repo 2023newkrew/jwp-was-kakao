@@ -31,13 +31,14 @@ public class UserController  implements MyController {
     public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
         String cookie = headers.get("cookie");
+        String contentType = headers.get("contentType");
 
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
             createUser(params, cookie, dataOutputStream);
         }
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
-            form(path, cookie, dataOutputStream);
+            form(path, contentType, cookie, dataOutputStream);
         }
     }
 
@@ -47,10 +48,10 @@ public class UserController  implements MyController {
         response302Header(dataOutputStream, cookie, "/index.html");
     }
 
-    private void form(String path, String cookie, DataOutputStream dataOutputStream){
+    private void form(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, cookie, body.length);
+            response200Header(dataOutputStream, contentType, cookie, body.length);
             responseBody(dataOutputStream, body);
         } catch (IOException e) {
             logger.error(e.getMessage());

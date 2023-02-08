@@ -12,11 +12,11 @@ public class ResponseHeaders {
 
     private ResponseHeaders(){}
 
-    public static void response200Header(DataOutputStream dos, String cookie, int lengthOfBodyContent) {
+    public static void response200Header(DataOutputStream dos, String contentType, String cookie, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
+            dos.writeBytes("Content-Type: "+ contentType +";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

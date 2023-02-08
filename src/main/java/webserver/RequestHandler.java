@@ -104,7 +104,7 @@ public class RequestHandler implements Runnable {
     // Cookie 추출
     private void getCookie(String line) {
         if(!line.startsWith("Cookie: ")) return;
-        String cookie = String.format("%s %s", line.split(" ")[1], line.split(" ")[2]);
+        String cookie = line.split(" ")[1] + ";";
         headers.put("cookie", cookie);
     }
 
