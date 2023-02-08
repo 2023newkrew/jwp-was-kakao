@@ -1,12 +1,15 @@
 package webserver.handler;
 
+import db.DataBase;
+import model.User;
 import service.UserService;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
+import webserver.http.session.Session;
+import webserver.http.session.SessionManager;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.Optional;
 
 public class LoginHandler extends AbstractHandler {
 
@@ -21,12 +24,10 @@ public class LoginHandler extends AbstractHandler {
         String password = request.getParameter("password");
         boolean isAuthenticated = new UserService().login(userId, password);
         if (isAuthenticated) {
-            String jsessionid = request.getCookies().getCookie("JSESSIONID");
-            /* jssesionid 세팅 */
-            if (Objects.isNull(jsessionid)) {
-                UUID uuid = UUID.randomUUID();
-                response.setHeader("Set-Cookie", "JSESSIONID=" + uuid + "; Path=/");
-            }
+            String jsessionId = request.getCookies().getCookie("JSESSIONID");
+            Session session = SessionManager.findSession(jsessionId);
+            Optional<User> user = DataBase.findByUserId(userId);
+            user.ifPresent(value -> session.setAttribute("user", value));
             response.setHeader("Location", "/index.html");
         } else {
             response.setHeader("Location", "/user/login_failed.html");

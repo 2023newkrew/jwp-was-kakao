@@ -1,19 +1,24 @@
 package webserver;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.handler.Handler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
+import webserver.http.session.Session;
+import webserver.http.session.SessionManager;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+
     private static final String CRLF = "\r\n";
 
     private final Socket connection;
@@ -33,6 +38,24 @@ public class RequestHandler implements Runnable {
 
             HttpResponse response = new HttpResponse();
             HttpRequest request = RequestParser.parseRequestMessage(reader, response);
+
+            String jsessionid = request.getCookies().getCookie("JSESSIONID");
+            /* sessionid 생성 */
+            if (Objects.isNull(jsessionid)) {
+                UUID uuid = UUID.randomUUID();
+                response.setHeader("Set-Cookie", "JSESSIONID=" + uuid + "; Path=/");
+                jsessionid = uuid.toString();
+                SessionManager.add(new Session(jsessionid));
+            }
+
+            /* 이미 로그인 되어 있으면 리다이렉트 */
+            if (request.getPath().equals("/user/login.html")) {
+                User user = (User) SessionManager.findSession(jsessionid).getAttribute("user");
+                if (Objects.nonNull(user)) {
+                    response.setHeader("Location", "/index.html");
+                    response.setStatus(HttpStatus.FOUND);
+                }
+            }
 
             if (Objects.nonNull(response.getStatus())) {
                 sendResponse(response, dos);

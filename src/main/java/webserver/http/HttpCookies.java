@@ -2,10 +2,10 @@ package webserver.http;
 
 import java.util.Map;
 
-public class Cookies {
+public class HttpCookies {
     private final Map<String, String> cookies;
 
-    public Cookies(final Map<String, String> cookies) {
+    public HttpCookies(final Map<String, String> cookies) {
         this.cookies = cookies;
     }
 

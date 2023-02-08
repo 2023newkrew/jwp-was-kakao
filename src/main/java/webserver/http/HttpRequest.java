@@ -7,9 +7,9 @@ public class HttpRequest {
     private final HttpMethod method;
     private final HttpHeaders headers;
     private final Map<String, String> parameter;
-    private final Cookies cookies;
+    private final HttpCookies cookies;
 
-    public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter, final Cookies cookies) {
+    public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter, final HttpCookies cookies) {
         this.path = path;
         this.method = method;
         this.headers = headers;
@@ -35,7 +35,7 @@ public class HttpRequest {
         return headers.getHeaders().get(headerName);
     }
 
-    public Cookies getCookies() {
+    public HttpCookies getCookies() {
         return cookies;
     }
 }

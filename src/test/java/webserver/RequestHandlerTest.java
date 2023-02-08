@@ -29,10 +29,11 @@ class RequestHandlerTest {
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 11 ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ",
                 "",
                 "Hello world");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -54,10 +55,12 @@ class RequestHandlerTest {
         // then
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 6902 " + CRLF,
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
+                "Content-Length: 6902 ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output().substring(0, 153))).isTrue();
+        String indexHtml = new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
+        assertThat(socket.output().substring(153)).isEqualTo(indexHtml);
     }
 
     @Test
@@ -77,9 +80,12 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 404 Not Found " + CRLF + CRLF;
+        var expected = String.join(CRLF, "HTTP/1.1 404 Not Found ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ",
+                "",
+                "");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -103,10 +109,12 @@ class RequestHandlerTest {
         // then
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 7065 " + CRLF,
-                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css")));
+                "Content-Length: 7065 ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output().substring(0, 153))).isTrue();
+        String css = new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
+        assertThat(socket.output().substring(153)).isEqualTo(css);
     }
 
     @Test
@@ -130,10 +138,12 @@ class RequestHandlerTest {
         // then
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 109518 " + CRLF,
-                new String(FileIoUtils.loadFileFromClasspath("static/css/bootstrap.min.css")));
+                "Content-Length: 109518 ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output().substring(0, 155))).isTrue();
+        String css = new String(FileIoUtils.loadFileFromClasspath("static/css/bootstrap.min.css"));
+        assertThat(socket.output().substring(155)).isEqualTo(css);
     }
 
     @Test
@@ -155,9 +165,10 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 404 Not Found " + CRLF + CRLF;
+        var expected = String.join(CRLF, "HTTP/1.1 404 Not Found ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ", CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -179,10 +190,12 @@ class RequestHandlerTest {
         // then
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 5168 " + CRLF,
-                new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html")));
+                "Content-Length: 5168 ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output().substring(0, 153))).isTrue();
+        String css = new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html"));
+        assertThat(socket.output().substring(153)).isEqualTo(css);
     }
 
     @Test
@@ -204,9 +217,10 @@ class RequestHandlerTest {
 
         // then
         var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ",
                 "Location: /index.html " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -227,9 +241,10 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 400 Bad Request " + CRLF + CRLF;
+        var expected = String.join(CRLF, "HTTP/1.1 400 Bad Request ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -250,9 +265,10 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 400 Bad Request " + CRLF + CRLF;
+        var expected = String.join(CRLF, "HTTP/1.1 400 Bad Request ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
 
@@ -277,9 +293,10 @@ class RequestHandlerTest {
 
         // then
         var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ",
                 "Location: /index.html " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -302,9 +319,10 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 400 Bad Request " + CRLF + CRLF;
+        var expected = String.join(CRLF, "HTTP/1.1 400 Bad Request ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @Test
@@ -326,16 +344,43 @@ class RequestHandlerTest {
         // then
         var expected = String.join(CRLF, "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 4759 " + CRLF,
-                new String(FileIoUtils.loadFileFromClasspath("templates/user/login.html")));
+                "Content-Length: 4759 ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ " + CRLF + CRLF);
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(Pattern.matches(expected, socket.output().substring(0, 153))).isTrue();
+        String css = new String(FileIoUtils.loadFileFromClasspath("templates/user/login.html"));
+        assertThat(socket.output().substring(153)).isEqualTo(css);
+    }
+
+    @Test
+    void cannotGetLoginPageWhenLogined() throws IOException, URISyntaxException {
+        String jsessionId = login();
+        // given
+        final String httpRequest = String.join(CRLF,
+                "GET /user/login.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + jsessionId,
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Location: /index.html " + CRLF + CRLF);
+
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
     }
 
     @DisplayName("로그인 후 리다이렉트 됐을 때 JSESSIONID가 쿠키에 실려서 요청되는지까지 테스트")
     @Test
     void loginSuccess() throws IOException, URISyntaxException {
-        createUserByPost();
+        String jsessionId = createUser();
         // given
         final String httpRequest = String.join(CRLF,
                 "POST /user/login HTTP/1.1 ",
@@ -344,6 +389,7 @@ class RequestHandlerTest {
                 "Content-Length: 27",
                 "Content-Type: application/x-www-form-urlencoded",
                 "Accept: */*",
+                "Cookie: JSESSIONID=" + jsessionId,
                 "",
                 "userId=cu&password=password");
 
@@ -355,7 +401,6 @@ class RequestHandlerTest {
 
         // then
         var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
-                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ",
                 "Location: /index.html " + CRLF + CRLF);
 
         assertThat(Pattern.matches(expected, socket.output())).isTrue();
@@ -365,7 +410,7 @@ class RequestHandlerTest {
                 "GET /index.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
-                "Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}",
+                "Cookie: JSESSIONID=" + jsessionId,
                 "",
                 "");
 
@@ -386,7 +431,7 @@ class RequestHandlerTest {
 
     @Test
     void loginFailCauseNotExistUserid() {
-        createUserByPost();
+        String jsessionId = createUser();
         // given
         final String httpRequest = String.join(CRLF,
                 "POST /user/login HTTP/1.1 ",
@@ -395,6 +440,7 @@ class RequestHandlerTest {
                 "Content-Length: 27",
                 "Content-Type: application/x-www-form-urlencoded",
                 "Accept: */*",
+                "Cookie: JSESSIONID=" + jsessionId,
                 "",
                 "userId=abcd&password=password");
 
@@ -413,7 +459,7 @@ class RequestHandlerTest {
 
     @Test
     void loginFailCauseWrongPassword() {
-        createUserByPost();
+        String jsessionId = createUser();
         // given
         final String httpRequest = String.join(CRLF,
                 "POST /user/login HTTP/1.1 ",
@@ -422,6 +468,7 @@ class RequestHandlerTest {
                 "Content-Length: 27",
                 "Content-Type: application/x-www-form-urlencoded",
                 "Accept: */*",
+                "Cookie: JSESSIONID=" + jsessionId,
                 "",
                 "userId=cu&password=wrongpassword");
 
@@ -438,5 +485,81 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    String createUser() {
+        // given
+        final String httpRequest = String.join(CRLF,
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 59",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
 
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Set-Cookie: JSESSIONID=[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}; Path=/ ",
+                "Location: /index.html " + CRLF + CRLF);
+
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
+        return socket.output().split("JSESSIONID=")[1].substring(0, 36);
+    }
+
+    String login() throws IOException, URISyntaxException {
+        String jsessionId = createUser();
+        // given
+        final String httpRequest = String.join(CRLF,
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 27",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "Cookie: JSESSIONID=" + jsessionId,
+                "",
+                "userId=cu&password=password");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = String.join(CRLF, "HTTP/1.1 302 Found ",
+                "Location: /index.html " + CRLF + CRLF);
+
+        assertThat(Pattern.matches(expected, socket.output())).isTrue();
+
+        // given
+        final String indexPageRequest = String.join(CRLF,
+                "GET /index.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + jsessionId,
+                "",
+                "");
+
+        final var Othersocket = new StubSocket(indexPageRequest);
+        final RequestHandler Otherhandler = new RequestHandler(Othersocket);
+
+        // when
+        Otherhandler.run();
+
+        // then
+        expected = String.join(CRLF, "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 6902 " + CRLF,
+                new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
+
+        assertThat(Othersocket.output()).isEqualTo(expected);
+        return jsessionId;
+    }
 }

@@ -44,6 +44,6 @@
       로그인하지 않은 상태라면 로그인 페이지(login.html)로 이동한다.
     - [ ] 동적으로 html을 생성하기 위해 handlebars.java template engine을 활용한다.
 3. Session 구현하기
-    - [ ] 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
-    - [ ] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.
-    - [ ] 로그인된 상태에서 /user/login 페이지에 HTTP GET method로 접근하면 이미 로그인한 상태니 index.html 페이지로 리다이렉트 처리한다.
+    - [x] 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
+    - [x] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.
+    - [x] 로그인된 상태에서 /user/login 페이지에 HTTP GET method로 접근하면 이미 로그인한 상태니 index.html 페이지로 리다이렉트 처리한다.

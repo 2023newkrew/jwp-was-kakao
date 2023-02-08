@@ -50,7 +50,7 @@ public class RequestParser {
         String uri = getURI(startLine, response).orElse("/");
         HttpMethod method = getMethod(startLine, response);
         HttpHeaders headers = getHttpHeaders(Headers, response);
-        Cookies cookie = getCookies(headers, response);
+        HttpCookies cookie = getCookies(headers, response);
         String[] pathAndParameters = uri.split("\\?");
         String path = pathAndParameters[0];
 
@@ -130,11 +130,11 @@ public class RequestParser {
         return Optional.empty();
     }
 
-    private static Cookies getCookies(final HttpHeaders headers, final HttpResponse response) {
+    private static HttpCookies getCookies(final HttpHeaders headers, final HttpResponse response) {
         Map<String, String> cookies = new ConcurrentHashMap<>();
         String cookieStrings = headers.getHeaders().get("Cookie");
         if (Objects.isNull(cookieStrings)) {
-            return new Cookies(cookies);
+            return new HttpCookies(cookies);
         }
         String[] cookieString = cookieStrings.split("; ");
         for (int i = 0; i < cookieString.length; i++) {
@@ -146,6 +146,6 @@ public class RequestParser {
                 response.setStatus(HttpStatus.BAD_REQUEST);
             }
         }
-        return new Cookies(cookies);
+        return new HttpCookies(cookies);
     }
 }
