@@ -15,7 +15,7 @@ public class UserService {
 
     public boolean login(String userId, String password) {
         Optional<User> user = DataBase.findByUserId(userId);
-        return user.map(value -> value.checkPassword(password)).orElse(false);
+        return user.map(value -> value.isCorrectPassword(password)).orElse(false);
     }
 
     public List<User> showList() {

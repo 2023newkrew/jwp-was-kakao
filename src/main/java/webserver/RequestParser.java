@@ -133,7 +133,7 @@ public class RequestParser {
     }
 
     private static HttpCookies getCookies(final HttpHeaders headers, final HttpResponse response) {
-        Map<String, String> cookies = new ConcurrentHashMap<>();
+        Map<String, HttpCookie> cookies = new ConcurrentHashMap<>();
         String cookieStrings = headers.getHeaders().get("Cookie");
         if (Objects.isNull(cookieStrings)) {
             return new HttpCookies(cookies);
@@ -142,7 +142,7 @@ public class RequestParser {
         for (String s : cookieString) {
             String[] keyAndValue = s.split("=");
             if (keyAndValue.length == 2) {
-                cookies.put(keyAndValue[0], keyAndValue[1]);
+                cookies.put(keyAndValue[0], new HttpCookie(keyAndValue[0], keyAndValue[1]));
             } else {
                 logger.error("잘못된 쿠키 형식입니다.");
                 response.setStatus(HttpStatus.BAD_REQUEST);

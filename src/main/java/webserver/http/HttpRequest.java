@@ -6,14 +6,14 @@ public class HttpRequest {
     private final String path;
     private final HttpMethod method;
     private final HttpHeaders headers;
-    private final Map<String, String> parameter;
+    private final Map<String, String> parameters;
     private final HttpCookies cookies;
 
     public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter, final HttpCookies cookies) {
         this.path = path;
         this.method = method;
         this.headers = headers;
-        this.parameter = parameter;
+        this.parameters = parameter;
         this.cookies = cookies;
     }
 
@@ -26,7 +26,7 @@ public class HttpRequest {
     }
 
     public String getParameter(String parameterName) {
-        return parameter.get(parameterName);
+        return parameters.get(parameterName);
     }
 
     /* 2단계에서 사용 예정 */
@@ -35,7 +35,11 @@ public class HttpRequest {
         return headers.getHeaders().get(headerName);
     }
 
-    public HttpCookies getCookies() {
-        return cookies;
+    public Map<String, HttpCookie> getCookies() {
+        return cookies.getCookies();
+    }
+
+    public HttpCookie getCookie(String cookieName) {
+        return cookies.getCookie(cookieName);
     }
 }

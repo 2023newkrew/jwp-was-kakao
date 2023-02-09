@@ -33,7 +33,7 @@ public class User {
         return email;
     }
 
-    public boolean checkPassword(String password) {
+    public boolean isCorrectPassword(String password) {
         return Objects.nonNull(password) && password.equals(getPassword());
     }
 

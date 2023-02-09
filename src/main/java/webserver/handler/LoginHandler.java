@@ -24,7 +24,7 @@ public class LoginHandler extends AbstractHandler {
         String password = request.getParameter("password");
         boolean isAuthenticated = new UserService().login(userId, password);
         if (isAuthenticated) {
-            String jsessionId = request.getCookies().getCookie("JSESSIONID");
+            String jsessionId = request.getCookie("JSESSIONID").getValue();
             Session session = SessionManager.findSession(jsessionId);
             Optional<User> user = DataBase.findByUserId(userId);
             user.ifPresent(value -> session.setAttribute("user", value));

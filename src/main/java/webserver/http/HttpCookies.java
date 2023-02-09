@@ -3,13 +3,17 @@ package webserver.http;
 import java.util.Map;
 
 public class HttpCookies {
-    private final Map<String, String> cookies;
+    private final Map<String, HttpCookie> cookies;
 
-    public HttpCookies(final Map<String, String> cookies) {
+    public HttpCookies(final Map<String, HttpCookie> cookies) {
         this.cookies = cookies;
     }
 
-    public String getCookie(String cookieName) {
+    public Map<String, HttpCookie> getCookies() {
+        return cookies;
+    }
+
+    public HttpCookie getCookie(String cookieName) {
         return cookies.get(cookieName);
     }
 }

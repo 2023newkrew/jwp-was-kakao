@@ -18,7 +18,7 @@ public class UserListHandler extends AbstractHandler {
 
     @Override
     protected void doGet(final HttpRequest request, final HttpResponse response) {
-        if (Objects.isNull(request.getCookies().getCookie("logined"))) {
+        if (Objects.isNull(request.getCookie("logined"))) {
             response.setStatus(HttpStatus.FOUND);
             response.setHeader("Location", "/index.html");
             return;

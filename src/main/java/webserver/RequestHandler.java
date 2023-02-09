@@ -4,6 +4,7 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.handler.Handler;
+import webserver.http.HttpCookie;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
@@ -32,25 +33,26 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
 
             HttpResponse response = new HttpResponse();
             HttpRequest request = RequestParser.parseRequestMessage(reader, response);
 
-            String jsessionid = request.getCookies().getCookie("JSESSIONID");
+            HttpCookie sessionCookie = request.getCookie("JSESSIONID");
+            String jsessionId;
             /* sessionid 생성 */
-            if (Objects.isNull(jsessionid)) {
+            if (Objects.isNull(sessionCookie)) {
                 UUID uuid = UUID.randomUUID();
                 response.setHeader("Set-Cookie", "JSESSIONID=" + uuid + "; Path=/");
-                jsessionid = uuid.toString();
-                SessionManager.add(new Session(jsessionid));
+                jsessionId = uuid.toString();
+                SessionManager.add(new Session(jsessionId));
+            } else {
+                jsessionId = sessionCookie.getValue();
             }
 
             /* 이미 로그인 되어 있으면 리다이렉트 */
             if (request.getPath().equals("/user/login.html")) {
-                User user = (User) SessionManager.findSession(jsessionid).getAttribute("user");
+                User user = (User) SessionManager.findSession(jsessionId).getAttribute("user");
                 if (Objects.nonNull(user)) {
                     response.setHeader("Location", "/index.html");
                     response.setStatus(HttpStatus.FOUND);

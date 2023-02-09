@@ -17,9 +17,7 @@ public class DataBase {
     public static Optional<User> findByUserId(String userId) {
         return Optional.ofNullable(users.get(userId));
     }
-
-    /* 2단계에서 사용 예정 */
-    @SuppressWarnings("unused")
+    
     public static Collection<User> findAll() {
         return users.values();
     }
