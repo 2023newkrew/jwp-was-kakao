@@ -20,7 +20,10 @@ public enum ContentType {
     }
 
     public static ContentType of(String extension) {
-        return Arrays.stream(values()).filter(item -> extension.equals(item.fileExtension)).findAny().orElseThrow(IllegalArgumentException::new);
+        return Arrays.stream(values())
+                .filter(item -> item.fileExtension.equals(extension))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public static boolean isFileExtension(String extension) {
