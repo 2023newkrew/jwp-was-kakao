@@ -23,7 +23,7 @@
 - [x] ResponseUtils 개선하기 (응답 처리 개선)
   - [x] throws IOException에 대한 대책 생각
   - [x] in-line 코딩에 대한 의견 제시
-- [] handlerController map에 컨트롤러 매핑시 UserController에 정의되어 있는 값들을 읽어와서 세팅 시도
+- [x] handlerController map에 컨트롤러 매핑시 UserController에 정의되어 있는 값들을 읽어와서 세팅 시도
 - [x] 동일한 method, url에 대해서 content-type이 다른 경우 어떻게 처리해야 할지 고민
 
 ### 2단계 구현 목록

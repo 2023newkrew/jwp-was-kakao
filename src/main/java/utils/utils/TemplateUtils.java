@@ -19,15 +19,15 @@ import static constant.PathConstant.*;
 
 @UtilityClass
 public class TemplateUtils {
-    private final int INITIAL_INDEX = 1;
+    private final String TEMPLATE_PREFIX = TEMPLATES.substring(1);
 
-    public TemplateLoadResult handleUserListTemplate() {
+    public TemplateLoadResult createTemplate(String path, Object context) {
         try {
             Handlebars handlebars = getTemplateHandlerBars();
-            Template template = handlebars.compile("user/list");
+            Template template = handlebars.compile(path);
 
             return TemplateLoadResult.from(
-                    template.apply(mappingAllUserToUserViewDto(new AtomicInteger(INITIAL_INDEX)))
+                    template.apply(context)
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -40,19 +40,9 @@ public class TemplateUtils {
 
     private TemplateLoader getTemplateLoader() {
         TemplateLoader templateLoader = new ClassPathTemplateLoader();
-        templateLoader.setPrefix(TEMPLATES.substring(1));
+        templateLoader.setPrefix(TEMPLATE_PREFIX);
         templateLoader.setSuffix(DEFAULT_VIEW_FILE_TYPE);
 
         return templateLoader;
-    }
-
-    private List<UserListViewDto> mappingAllUserToUserViewDto(AtomicInteger index) {
-        return DataBase.findAll().stream()
-                .map(user -> new UserListViewDto(
-                        (long) index.getAndIncrement(),
-                        user.getUserId(),
-                        user.getName(),
-                        user.getEmail()))
-                .collect(Collectors.toList());
     }
 }

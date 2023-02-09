@@ -21,7 +21,7 @@ public class FileIoUtils {
         return Files.readAllBytes(path);
     }
 
-    public Set getStaticFolderNames() {
+    public Set<String> getStaticFolderNames() {
         return Arrays.stream(
                         new File(Thread.currentThread()
                                 .getContextClassLoader()

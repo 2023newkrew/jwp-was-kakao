@@ -1,6 +1,9 @@
 package webserver.controller;
 
+import db.DataBase;
 import model.annotation.Api;
+import model.annotation.ApiController;
+import model.dto.user.UserListViewDto;
 import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
@@ -10,13 +13,19 @@ import webserver.dao.UserDao;
 import webserver.infra.ViewResolver;
 import webserver.service.UserService;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import static constant.DefaultConstant.*;
 import static utils.utils.LoginUtils.*;
 import static utils.utils.TemplateUtils.*;
 
-public class UserController extends ApiController {
+@ApiController
+public class UserController {
     private static final UserController instance;
     private final UserService userService;
+    private final int INITIAL_LIST_INDEX = 1;
 
     private UserController(UserService userService) {
         this.userService = userService;
@@ -43,6 +52,20 @@ public class UserController extends ApiController {
             return ResponseBuilder.found(DEFAULT_PAGE);
         }
 
-        return ViewResolver.resolve(handleUserListTemplate());
+        return ViewResolver.resolve(
+                createTemplate(
+                        "/user/list",
+                        mappingAllUserToUserViewDto(new AtomicInteger(INITIAL_LIST_INDEX)))
+        );
+    }
+
+    private List<UserListViewDto> mappingAllUserToUserViewDto(AtomicInteger index) {
+        return DataBase.findAll().stream()
+                .map(user -> new UserListViewDto(
+                        (long) index.getAndIncrement(),
+                        user.getUserId(),
+                        user.getName(),
+                        user.getEmail()))
+                .collect(Collectors.toList());
     }
 }

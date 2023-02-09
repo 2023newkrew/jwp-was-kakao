@@ -1,6 +1,7 @@
 package webserver.controller;
 
 import model.annotation.Api;
+import model.annotation.ApiController;
 import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 import model.request.HttpRequest;
@@ -20,7 +21,8 @@ import java.util.UUID;
 import static constant.DefaultConstant.*;
 import static utils.utils.LoginUtils.*;
 
-public class LoginController extends ApiController {
+@ApiController
+public class LoginController {
     private static final LoginController instance;
 
     private final LoginService loginService;
