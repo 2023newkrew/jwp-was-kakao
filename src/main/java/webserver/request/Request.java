@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static webserver.request.RequestConstant.*;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
 public class Request {
-
-    // Request Information
     private final Method method;
     private final String path;
     private final Map<String, String> queryString;
@@ -26,27 +26,6 @@ public class Request {
     private final Cookie cookie;
     private final String requestBody;
 
-    // String Constant
-    private static final String WHITE_SPACE_REGEX = " ";
-    private static final String PERIOD_REGEX = "\\.";
-    private static final String HEADER_KEY_SEPARATOR = ":";
-    private static final String QUERY_STRING_IDENTIFIER = "\\?";
-    private static final String QUERY_STRING_CONNECTOR = "&";
-    private static final String QUERY_STRING_SEPARATOR = "=";
-    private static final String CONTENT_LENGTH = "Content-Length";
-    private static final String COOKIE = "Cookie";
-    private static final String SESSION_KEY = "JSESSIONID";
-
-    // Number Constant
-    private static final int METHOD_INDEX = 0;
-    private static final int URL_INDEX = 1;
-    private static final int PROTOCOL_INDEX = 2;
-    private static final int PATH_INDEX = 0;
-    private static final int QUERY_STRING_INDEX = 1;
-    private static final int KEY_INDEX = 0;
-    private static final int VALUE_INDEX = 1;
-
-    // Method
     public static Request parse(BufferedReader reader) throws IOException {
         String firstLine = reader.readLine();
 
