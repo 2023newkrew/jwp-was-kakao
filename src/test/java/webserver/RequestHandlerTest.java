@@ -1,18 +1,31 @@
 package webserver;
 
+import controller.UserController;
 import db.DataBase;
+import exception.handler.GlobalExceptionHandler;
 import framework.RequestHandler;
+import framework.requestmapper.ExceptionHandlerMapper;
+import framework.requestmapper.HandlerMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import framework.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    @BeforeEach
+    void setUp() {
+        HandlerMapper.getInstance().setHandlers(List.of(UserController.getInstance()));
+        ExceptionHandlerMapper.getInstance().setHandlers(List.of(GlobalExceptionHandler.getInstance()));
+    }
+
     @Test
     void 안녕세상() {
         // given

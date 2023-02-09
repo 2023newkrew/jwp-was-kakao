@@ -16,6 +16,9 @@ public class DataBase {
     }
 
     public static User findUserById(String userId) {
+        if (userId == null) {
+            return null;
+        }
         return users.get(userId);
     }
 

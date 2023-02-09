@@ -45,7 +45,7 @@ public class RequestParser {
 
     private static Map<String, String> parseParams(String requestBody) {
         if (requestBody == null || !requestBody.contains("=")) {
-            return null;
+            return Map.of();
         }
         return extractParams(requestBody);
     }

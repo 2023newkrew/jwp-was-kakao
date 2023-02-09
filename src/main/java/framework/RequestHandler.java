@@ -1,17 +1,19 @@
 package framework;
 
 import framework.controller.Controller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import framework.controller.ExceptionController;
 import framework.request.Request;
 import framework.request.RequestParser;
+import framework.requestmapper.ExceptionHandlerMapper;
 import framework.requestmapper.HandlerMapper;
 import framework.requestmapper.ResourceMapper;
 import framework.response.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URISyntaxException;
 
 import static framework.utils.IOUtils.writeResponse;
 
@@ -36,15 +38,28 @@ public class RequestHandler implements Runnable {
             String uri = request.getUri();
             logger.debug("{} {}", request.getMethod(), request.getUri());
 
-            Controller handler;
-            Response response;
-            if ((handler = HandlerMapper.getInstance().findHandler(uri)) != null) {
-                response = HandlerMapper.getInstance().handle(request, handler);
-            } else {
-                response = ResourceMapper.getInstance().handle(uri);
+            try {
+                Controller handler;
+                Response response;
+                if ((handler = HandlerMapper.getInstance().findHandler(uri)) != null) {
+                    response = HandlerMapper.getInstance().handle(request, handler);
+                } else {
+                    response = ResourceMapper.getInstance().handle(uri);
+                }
+                writeResponse(dataOutputStream, response.getBytes());
+            } catch (Exception e) {
+                ExceptionController handler;
+                Response response;
+                if ((handler = ExceptionHandlerMapper.getInstance().findHandler(e)) != null) {
+                    response = ExceptionHandlerMapper.getInstance().handle(e, handler);
+                } else {
+                    response = Response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("500 Internal Server Error")
+                            .build();
+                }
+                writeResponse(dataOutputStream, response.getBytes());
             }
-            writeResponse(dataOutputStream, response.getBytes());
-        } catch (IOException | URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

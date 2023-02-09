@@ -1,6 +1,5 @@
 package framework.requestmapper;
 
-import controller.UserController;
 import framework.controller.Controller;
 import framework.request.Request;
 import framework.response.Response;
@@ -9,7 +8,7 @@ import java.util.List;
 
 public final class HandlerMapper {
 
-    private final List<Controller> controllers = List.of(UserController.getInstance());
+    private List<Controller> controllers;
 
     private static class LazyHolder {
         static final HandlerMapper INSTANCE = new HandlerMapper();
@@ -20,6 +19,10 @@ public final class HandlerMapper {
 
     public static HandlerMapper getInstance() {
         return HandlerMapper.LazyHolder.INSTANCE;
+    }
+
+    public void setHandlers(List<Controller> controllers) {
+        this.controllers = controllers;
     }
 
     public Controller findHandler(String uri) {

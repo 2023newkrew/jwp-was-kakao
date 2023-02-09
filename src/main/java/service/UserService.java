@@ -1,6 +1,9 @@
 package service;
 
 import db.DataBase;
+import exception.AuthErrorCode;
+import exception.BusinessException;
+import exception.CommonErrorCode;
 import framework.request.HttpCookie;
 import model.User;
 
@@ -28,7 +31,7 @@ public class UserService {
     public HttpCookie loginUser(Map<String, String> params) {
         User user = DataBase.findUserById(params.get("userId"));
         if (user == null) {
-            throw new RuntimeException();
+            throw new BusinessException(AuthErrorCode.INVALID_CREDENTIAL);
         }
         if (user.checkPassword(params.get("password"))) {
             UUID uuid = UUID.randomUUID();
@@ -36,7 +39,7 @@ public class UserService {
             SessionHandler.getInstance().saveSession(uuid, session);
             return HttpCookie.from(Map.of("JSESSIONID", uuid.toString()));
         }
-        throw new RuntimeException();
+        throw new BusinessException(CommonErrorCode.SERVER_ERROR);
     }
 
     public User getUserFromCookie(HttpCookie cookie) {
@@ -45,7 +48,7 @@ public class UserService {
             Session session = SessionHandler.getInstance().getSession(uuid);
             return (User) session.get("user");
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new RuntimeException();
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
     }
 

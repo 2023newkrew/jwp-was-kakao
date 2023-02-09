@@ -1,6 +1,7 @@
 package framework.response;
 
 import framework.request.HttpCookie;
+import org.springframework.http.HttpStatus;
 
 import java.io.ByteArrayOutputStream;
 import java.util.stream.Collectors;
@@ -90,6 +91,10 @@ public class Response {
 
     public static ResponseBuilder found() {
         return new ResponseBuilder("HTTP/1.1 302 Found");
+    }
+
+    public static ResponseBuilder setStatus(HttpStatus httpStatus) {
+        return new ResponseBuilder("HTTP/1.1 " + httpStatus.value() + " " + httpStatus.name());
     }
 
     public static ResponseBuilder unauthorized() {

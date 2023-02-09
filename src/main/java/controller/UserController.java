@@ -5,6 +5,8 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
+import exception.AuthErrorCode;
+import exception.BusinessException;
 import framework.annotation.MyRequestMapping;
 import framework.controller.Controller;
 import framework.request.HttpCookie;
@@ -27,7 +29,6 @@ public final class UserController implements Controller {
     public static final String TEMPLATE_PREFIX = "/templates";
     public static final String TEMPLATE_SUFFIX = ".html";
     private final Map<String, Method> map = new HashMap<>();
-
     private final UserService userService = UserService.getInstance();
 
     private static class LazyHolder {
@@ -55,9 +56,17 @@ public final class UserController implements Controller {
     public Response handleRequest(Request request) {
         try {
             return (Response) map.get(request.getUri()).invoke(UserController.getInstance(), request);
-        } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
-            return null;
+            throw new RuntimeException();
+        } catch (InvocationTargetException e) {
+            if (e.getTargetException() instanceof BusinessException) {
+                throw (BusinessException) e.getTargetException();
+            }
+            else {
+                e.getTargetException().printStackTrace();
+                throw new RuntimeException();
+            }
         }
     }
 
@@ -76,13 +85,6 @@ public final class UserController implements Controller {
     public Response handleUserLogin(Request request) {
         HttpCookie cookie = userService.loginUser(request.getRequestParams());
         return Response.found().location("/index.html").setCookie(cookie).build();
-//        String body = "";
-//        try {
-//            body = new String(Objects.requireNonNull(FileIoUtils.loadFileFromClasspath("templates/user/login_failed.html")), StandardCharsets.UTF_8);
-//        } catch (IOException | NullPointerException | URISyntaxException e) {
-//            e.printStackTrace();
-//        }
-//        return Response.unauthorized().body(body).build();
     }
 
     @MyRequestMapping(uri = "/user/profile.html")
@@ -104,7 +106,7 @@ public final class UserController implements Controller {
     public Response handleUserList(Request request) {
         Handlebars handlebars = getHandlebars(TEMPLATE_PREFIX, TEMPLATE_SUFFIX);
         if (!userService.isUserLoggedIn(request.getCookie())) {
-            throw new RuntimeException();
+            throw new BusinessException(AuthErrorCode.UNAUTHORIZED);
         }
 
         try {
