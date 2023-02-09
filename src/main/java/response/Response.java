@@ -1,5 +1,7 @@
 package response;
 
+import request.HttpCookie;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,7 +26,7 @@ public class Response {
         private String contentLength;
         private String contentType;
         private String location;
-        private String accessControlCrossOrigin;
+        private String setCookie;
         private String body;
 
         public ResponseBuilder(String status) {
@@ -37,9 +39,6 @@ public class Response {
 
         public ResponseBuilder contentType(ContentType contentType) {
             this.contentType = "Content-Type: " + contentType.getString();
-            if (contentType == ContentType.CSS) {
-                accessControlCrossOrigin("*");
-            }
             return this;
         }
 
@@ -54,8 +53,8 @@ public class Response {
             return this;
         }
 
-        public ResponseBuilder accessControlCrossOrigin(String value) {
-            this.accessControlCrossOrigin = "Access-Control-Allow-Origin: " +value;
+        public ResponseBuilder setCookie(HttpCookie cookie) {
+            this.setCookie = "Set-Cookie: " + cookie.toString();
             return this;
         }
 
@@ -63,7 +62,7 @@ public class Response {
             if (body == null) {
                 contentLength(0);
             }
-            String header = Stream.of(status, contentType, location, accessControlCrossOrigin, contentLength)
+            String header = Stream.of(status, contentType, location, setCookie, contentLength)
                     .filter(s -> s != null && !s.isEmpty())
                     .collect(Collectors.joining(" \r\n")) + " ";
             if (body == null) {
@@ -84,6 +83,10 @@ public class Response {
 
     public static ResponseBuilder found() {
         return new ResponseBuilder("HTTP/1.1 302 Found");
+    }
+
+    public static ResponseBuilder unauthorized() {
+        return new ResponseBuilder("HTTP/1.1 401 Unauthorized");
     }
 
     @Override

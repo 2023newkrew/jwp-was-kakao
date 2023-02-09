@@ -18,6 +18,12 @@ public class Request {
         return this.requestParams;
     }
 
-    public String getUri() { return requestHeader.getUri(); }
+    public String getUri() {
+        return requestHeader.getUri();
+    }
+
+    public String getMethod() {
+        return requestHeader.getMethod();
+    }
 
 }

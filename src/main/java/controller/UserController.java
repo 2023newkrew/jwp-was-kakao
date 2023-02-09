@@ -3,15 +3,20 @@ package controller;
 import annotation.MyRequestMapping;
 import db.DataBase;
 import model.User;
+import request.HttpCookie;
 import request.Request;
 import response.ContentType;
 import response.Response;
+import service.Session;
+import service.SessionHandler;
+import utils.FileIoUtils;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public final class UserController implements Controller {
 
@@ -58,5 +63,28 @@ public final class UserController implements Controller {
         DataBase.addUser(user);
 
         return Response.found().location("/index.html").build();
+    }
+
+    @MyRequestMapping(uri = "/user/login")
+    public Response handleUserLogin(Request request) {
+        Map<String, String> params = request.getRequestParams();
+        User user = DataBase.findUserById(params.get("userId"));
+        String body = "";
+        try {
+            body = new String(Objects.requireNonNull(FileIoUtils.loadFileFromClasspath("templates/user/login_failed.html")), StandardCharsets.UTF_8);
+        } catch (IOException | NullPointerException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        if (user == null) {
+            return Response.unauthorized().body(body).build();
+        }
+        if (user.checkPassword(params.get("password"))) {
+            UUID uuid = UUID.randomUUID();
+            Session session = new Session(Map.of("userId", user.getUserId()));
+            SessionHandler.getInstance().saveSession(uuid, session);
+            HttpCookie httpCookie = HttpCookie.from(Map.of("JSESSIONID", uuid.toString()));
+            return Response.found().location("/index.html").setCookie(httpCookie).build();
+        }
+        return Response.unauthorized().body(body).build();
     }
 }

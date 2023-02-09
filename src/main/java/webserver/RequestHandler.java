@@ -34,6 +34,7 @@ public class RequestHandler implements Runnable {
 
             Request request = RequestParser.getRequestFrom(bufferedReader);
             String uri = request.getUri();
+            logger.debug("{} {}", request.getMethod(), request.getUri());
 
             Controller handler;
             Response response;
@@ -44,7 +45,7 @@ public class RequestHandler implements Runnable {
             }
             writeResponse(dataOutputStream, response.toString());
         } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
