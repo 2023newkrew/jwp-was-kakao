@@ -24,6 +24,7 @@ public class FrontController {
 
     private FrontController() {
         controllerMapping.put("/user/create", new UserController());
+        controllerMapping.put("/user/login", new UserController());
     }
 
     public static FrontController getInstance() {
