@@ -39,4 +39,4 @@
   - resolve() 파라미터 이름 수정
   - 삼항연산자 제거
 - [x] RequestHeader의 메서드에서 depth 2이상인 코드 Steam API로 리팩토링
-- [ ] printStackTrace 대신 에러 추적성을 위해 logger로 로그 출력
+- [x] printStackTrace 대신 에러 추적성을 위해 logger로 로그 출력

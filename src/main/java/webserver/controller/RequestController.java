@@ -2,9 +2,12 @@ package webserver.controller;
 
 import db.DataBase;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
+import webserver.RequestHandler;
 import webserver.request.support.FormData;
 import webserver.request.support.QueryParameters;
 import webserver.request.Request;
@@ -13,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestController {
+    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private static final PathMapKey RESOURCE_KEY = PathMapKey.of(HttpMethod.GET, "RESOURCE");
     private static final Map<PathMapKey, ControllerMethod> pathMap = new HashMap<>();
 
@@ -27,7 +31,7 @@ public class RequestController {
                 res.setBody(FileIoUtils.loadFileFromClasspath(rootPath + req.getPath()));
                 res.setStatus(HttpStatus.OK);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
                 res.setBody("404 Not Found - 요청한 페이지를 찾을 수 없습니다.".getBytes());
                 res.setStatus(HttpStatus.NOT_FOUND);
             }
