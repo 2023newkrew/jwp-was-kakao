@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class User {
     private String userId;
     private String password;
@@ -27,6 +29,13 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean isValid(String userId, String password) {
+        if (this.userId.equals(userId) && this.password.equals(password)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

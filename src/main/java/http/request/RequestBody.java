@@ -1,5 +1,8 @@
 package http.request;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 public class RequestBody {
     private final String body;
 
@@ -8,6 +11,6 @@ public class RequestBody {
     }
 
     public RequestParam getRequestParam() {
-        return new RequestParam(body);
+        return new RequestParam(URLDecoder.decode(body, StandardCharsets.UTF_8));
     }
 }

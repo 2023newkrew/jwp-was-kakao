@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 public class UserCreateController extends PostController {
     static final Logger logger = LoggerFactory.getLogger(UserCreateController.class);
 
-    public void doPost(HttpRequest request, HttpResponse response) {
-        RequestParam requestParam = request.getRequestBodyParam();
+    public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
+        RequestParam requestParam = httpRequest.getRequestBodyParam();
         User user = new User(
                 requestParam.get("userId"),
                 requestParam.get("password"),
@@ -20,6 +20,6 @@ public class UserCreateController extends PostController {
                 requestParam.get("email")
         );
         DataBase.addUser(user);
-        response.sendRedirect("/index.html");
+        httpResponse.sendRedirect("/index.html");
     }
 }

@@ -1,5 +1,6 @@
 package webserver;
 
+import http.HttpSessions;
 import http.request.HttpMethod;
 import http.request.HttpRequest;
 import http.request.RequestLine;
@@ -7,9 +8,11 @@ import http.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.controller.Controller;
+import webserver.router.Router;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -40,6 +43,10 @@ public class RequestHandler implements Runnable {
     }
 
     private void handle(HttpRequest request, HttpResponse response) {
+        if (request.getSessionId() == null) {
+            response.addCookie(HttpSessions.SESSION_KEY, UUID.randomUUID().toString());
+        }
+
         RequestLine requestLine = request.getRequestLine();
         HttpMethod method = requestLine.getHttpMethod();
         String path = requestLine.getRequestUri().getPath();
