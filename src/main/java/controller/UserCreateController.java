@@ -25,8 +25,6 @@ public class UserCreateController extends Controller {
 
     @Override
     public void doGet(HttpRequest request, DataOutputStream dos) {
-        String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
-
         db.addUser(new User(
                 request.getParam("userId"),
                 request.getParam("password"),
