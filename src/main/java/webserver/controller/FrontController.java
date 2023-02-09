@@ -3,6 +3,7 @@ package webserver.controller;
 import webserver.controller.annotation.Handler;
 import webserver.controller.support.HandlerMethod;
 import webserver.controller.support.PathMapKey;
+import webserver.controller.support.RequestController;
 import webserver.request.Request;
 
 import java.lang.reflect.Method;
@@ -13,13 +14,20 @@ public class FrontController {
     private static final Map<PathMapKey, HandlerMethod> handlerMap = new HashMap<>();
 
     static {
-        controllers.add(new ResourceController());
-        controllers.add(new HomeController());
-        controllers.add(new UserController());
+        addController(new ResourceController());
+        addController(new HomeController());
+        addController(new UserController());
 
         for (Object controller : controllers) {
             mapHandlerMethod(controller, controller.getClass().getMethods());
         }
+    }
+
+    private static void addController(Object controller) {
+        if(!controller.getClass().isAnnotationPresent(RequestController.class)) {
+            return;
+        }
+        controllers.add(controller);
     }
 
     private static void mapHandlerMethod(Object controller, Method[] methods) {

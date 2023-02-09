@@ -8,9 +8,11 @@ import utils.FileIoUtils;
 import webserver.RequestHandler;
 import webserver.controller.annotation.Handler;
 import webserver.controller.support.PathMapKey;
+import webserver.controller.support.RequestController;
 import webserver.request.Request;
 import webserver.response.Response;
 
+@RequestController
 public class ResourceController {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
