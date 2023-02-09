@@ -2,6 +2,7 @@ package webserver;
 
 import db.DataBase;
 import java.util.List;
+import java.util.UUID;
 import model.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import webserver.controller.LoginController;
 import webserver.controller.PostController;
 import webserver.controller.QueryStringController;
 import webserver.controller.UserCreateController;
+import webserver.controller.UserListController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +30,8 @@ class RequestHandlerTest {
             new PostController(),
             new QueryStringController(),
             new UserCreateController(),
-            new LoginController()
+            new LoginController(),
+            new UserListController()
     );
 
     @Test
@@ -274,6 +277,53 @@ class RequestHandlerTest {
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 302 Found ",
                 "Location: /user/login_failed.html "
+        );
+    }
+
+    @Test
+    void userListWithoutSessionId() {
+        final String httpRequest = String.join("\r\n",
+                "POST /user/list HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login.html "
+        );
+    }
+
+    @Test
+    void userListWithSessionId() {
+        String sessionId = UUID.randomUUID().toString();
+        SessionManager.add(new Session(sessionId));
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/list HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + sessionId,
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 200 OK "
         );
     }
 }

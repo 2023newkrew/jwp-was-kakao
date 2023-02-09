@@ -4,8 +4,12 @@ import db.DataBase;
 import java.util.Map;
 import java.util.UUID;
 import model.User;
+import webserver.HttpCookie;
+import webserver.HttpCookies;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
+import webserver.Session;
+import webserver.SessionManager;
 
 public class LoginController implements Controller {
     @Override
@@ -26,9 +30,13 @@ public class LoginController implements Controller {
         }
 
         String sessionId = UUID.randomUUID().toString();
-        Map<String, String> headers = Map.of(
-                "Set-Cookie", "JSESSIONID=" + sessionId + "; Path=/"
-        );
-        return HttpResponse.redirect(headers, "/index.html");
+
+        SessionManager.add(new Session(sessionId));
+
+        HttpCookies cookies = new HttpCookies();
+        cookies.addCookie(new HttpCookie("JSESSIONID", sessionId));
+        cookies.addCookie(new HttpCookie("Path", "/"));
+
+        return HttpResponse.redirect("/index.html").setCookie(cookies);
     }
 }

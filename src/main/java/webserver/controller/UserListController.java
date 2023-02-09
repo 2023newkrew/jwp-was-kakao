@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Map;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
+import webserver.Session;
 
 public class UserListController implements Controller {
     @Override
@@ -18,6 +19,16 @@ public class UserListController implements Controller {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
+        Session session = request.getSession();
+
+        if (session == null) {
+            return HttpResponse.redirect("/user/login.html");
+        }
+
+        return createUserListPageResponse();
+    }
+
+    private static HttpResponse createUserListPageResponse() {
         try {
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/templates");

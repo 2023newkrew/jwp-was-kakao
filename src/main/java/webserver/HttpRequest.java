@@ -73,6 +73,32 @@ public class HttpRequest {
         return body;
     }
 
+    public Session getSession() {
+        HttpCookies cookies = getCookies();
+        String sessionId = cookies.getCookies().stream()
+                .filter(cookie -> cookie.getKey().equals("JSESSIONID"))
+                .map(HttpCookie::getValue)
+                .findAny()
+                .orElse("");
+
+        return SessionManager.findSession(sessionId);
+    }
+
+    public HttpCookies getCookies() {
+        String cookies = headers.get("Cookie");
+        HttpCookies result = new HttpCookies();
+
+        if (cookies != null) {
+            for (String cookie : cookies.split(";")) {
+                String key = cookie.split("=")[0];
+                String value = cookie.split("=")[1];
+                result.addCookie(new HttpCookie(key, value));
+            }
+        }
+
+        return result;
+    }
+
     public Map<String, String> toApplicationForm() {
         return Arrays.stream(body.split("&"))
                 .map(v -> v.split("="))
