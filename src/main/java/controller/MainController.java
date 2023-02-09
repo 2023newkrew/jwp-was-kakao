@@ -42,7 +42,7 @@ public class MainController extends Controller {
                             .getValue()
             );
 
-            responseBody(dos, returnBody);
+            dos.write(returnBody);
         } catch (URISyntaxException | IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

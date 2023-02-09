@@ -52,7 +52,6 @@ public class UserCreateController extends Controller {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
-        responseBody(dos, new byte[0]);
     }
 
 }

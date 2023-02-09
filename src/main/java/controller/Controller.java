@@ -20,20 +20,10 @@ public abstract class Controller {
             doPost(request, dos);
         }
         doFinally(request, dos);
+        dos.flush();
     };
 
     protected void doGet(HttpRequest request, DataOutputStream dos) {}
     protected void doPost(HttpRequest request, DataOutputStream dos) {}
     protected void doFinally(HttpRequest request, DataOutputStream dos) {}
-
-    void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
 }

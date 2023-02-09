@@ -18,7 +18,7 @@ public class HelloController extends Controller {
         try {
             dos.writeBytes(ResponseHeader.of(HttpStatusCode.OK, ContentType.HTML, contentLength).getValue());
             byte[] body = data.getBytes();
-            responseBody(dos, body);
+            dos.write(body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
