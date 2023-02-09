@@ -28,3 +28,15 @@
 ---
 5. Redirect
     - Response에 302 status code와 Location 헤더를 지정하여 리다이렉트 구현
+
+---
+### 리팩토링 목록
+- [ ] QueryParameters 클래스명 오타 수정
+- [ ] RequestHandler의 mapRequest 메서드 하나의 기능만 처리하도록 리팩토링
+- [ ] static 리소스 판별 메서드 Request 내부로 이동
+- [ ] StaticDirectory enum 리팩토링
+  - capacity 수정 및 상수 선언
+  - resolve() 파라미터 이름 수정
+  - 삼항연산자 제거
+- [ ] RequestHeader의 메서드에서 depth 2이상인 코드 Steam API로 리팩토링
+- [ ] printStackTrace 대신 에러 추적성을 위해 logger로 로그 출력
