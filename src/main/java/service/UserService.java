@@ -10,4 +10,11 @@ public class UserService {
         DataBase.addUser(user);
     }
 
+    public boolean loginUser(String userId, String password) {
+        User user = DataBase.findUserById(userId);
+        if (user == null) {
+            return false;
+        }
+        return user.getPassword().equals(password);
+    }
 }
