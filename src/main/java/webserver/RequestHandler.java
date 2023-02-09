@@ -3,15 +3,10 @@ package webserver;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import repository.MemorySessionRepository;
-import repository.MemoryUserRepository;
 import utils.FileIoUtils;
-import webserver.controller.GlobalController;
 import webserver.controller.RequestMappingHandler;
 import webserver.request.Request;
 import webserver.response.Response;
-import webserver.service.SessionService;
-import webserver.service.UserService;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private final Socket connection;
-    private final RequestMappingHandler requestMappingHandler = new RequestMappingHandler(new GlobalController(new UserService(new MemoryUserRepository()), new SessionService(new MemorySessionRepository())));
+    private final RequestMappingHandler requestMappingHandler;
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
