@@ -10,22 +10,22 @@ public class Response {
     private String contentType;
     private String protocol;
     private String location;
-    private Cookie cookie;
+    private Cookie cookies;
     private byte[] body;
 
     public Response(Request request) {
         protocol = request.getProtocol();
         contentType = request.getAccept();
         body = new byte[]{};
-        cookie = new Cookie();
+        cookies = new Cookie();
     }
 
     public byte[] getBody() {
         return body;
     }
 
-    public Cookie getCookie() {
-        return this.cookie;
+    public Cookie getCookies() {
+        return this.cookies;
     }
 
     public void setStatus(HttpStatus status) {
@@ -55,8 +55,8 @@ public class Response {
         if(location != null) {
             header += String.format("Location: %s \r\n", location);
         }
-        if(!cookie.isEmpty()) {
-            header += cookie.toResponseHeaderLine();
+        if(!cookies.isEmpty()) {
+            header += cookies.toResponseHeaderLine();
         }
         return header += "\r\n";
     }

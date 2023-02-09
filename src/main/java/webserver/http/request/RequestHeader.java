@@ -3,6 +3,8 @@ package webserver.http.request;
 import org.springframework.http.HttpMethod;
 import webserver.exception.InvalidRequestHeaderException;
 import webserver.http.Cookie;
+import webserver.http.Session;
+import webserver.http.SessionManager;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +24,7 @@ public class RequestHeader {
     private String contentType;
     private int contentLength;
     private String accept = "text/html";
-    private Cookie cookie;
+    private Cookie cookies;
 
     public RequestHeader(List<String> headerLines) {
         if (headerLines == null || headerLines.size() < 1) {
@@ -65,7 +67,7 @@ public class RequestHeader {
         }
         contentType = headerInfoMap.get(CONTENT_TYPE);
         String cookieString = headerInfoMap.get(COOKIE);
-        cookie = new Cookie(cookieString);
+        cookies = new Cookie(cookieString);
     }
 
     public HttpMethod getHttpMethod() {
@@ -88,8 +90,16 @@ public class RequestHeader {
         return accept;
     }
 
-    public Cookie getCookie() {
-        return cookie;
+    public Cookie getCookies() {
+        return cookies;
+    }
+
+    public Session getSession() {
+        return SessionManager.getSession(cookies.getCookie(SessionManager.SESSION_ID_NAME));
+    }
+
+    public boolean hasSessionId() {
+        return cookies.hasSessionId();
     }
 
     @Override

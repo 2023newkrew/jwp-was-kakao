@@ -6,12 +6,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.controller.annotation.Handler;
 import webserver.controller.annotation.RequestController;
+import webserver.http.Session;
+import webserver.http.SessionManager;
 import webserver.http.request.Request;
 import webserver.http.request.support.FormData;
 import webserver.http.request.support.QueryParameters;
 import webserver.http.response.Response;
-
-import java.util.UUID;
 
 @RequestController
 public class UserController {
@@ -50,9 +50,13 @@ public class UserController {
 
         if (matched) {
             res.setRedirection("http://localhost:8080/index.html");
-            res.getCookie().setCookie("JSESSIONID", UUID.randomUUID().toString());
+            // 세션
+            Session session = req.getSession();
+            session.setAttribute("user", user);
+            System.out.println(SessionManager.getStatus());
             return;
         }
-        res.setRedirection("http://localhost:8080/user/login_failed.html");
+        res.setRedirection("http://localhㄴost:8080/user/login_failed.html");
     }
+
 }

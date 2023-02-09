@@ -43,6 +43,11 @@ public class Cookie {
         return sb.toString();
     }
 
+    public boolean hasSessionId() {
+        String sessionId = cookies.get(SessionManager.SESSION_ID_NAME);
+        return sessionId != null && !sessionId.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "Cookie{" +

@@ -3,11 +3,13 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.controller.FrontController;
+import webserver.http.SessionManager;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -26,11 +28,20 @@ public class RequestHandler implements Runnable {
             Request request = new Request(br);
             Response response = new Response(request);
 
+            setSessionId(request, response);
+
             handleRequest(request, response);
             sendResponse(dos, response);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
+        }
+    }
+
+    private void setSessionId(Request request, Response response) {
+        if(!request.hasSessionId()) {
+            response.getCookies().setCookie(SessionManager.SESSION_ID_NAME, UUID.randomUUID().toString());
+            response.getCookies().setCookie("Path", "/");
         }
     }
 

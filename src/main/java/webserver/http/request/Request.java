@@ -3,6 +3,7 @@ package webserver.http.request;
 import org.springframework.http.HttpMethod;
 import utils.IOUtils;
 import webserver.http.Cookie;
+import webserver.http.Session;
 import webserver.http.request.support.StaticDirectory;
 
 import java.io.BufferedReader;
@@ -24,7 +25,7 @@ public class Request {
 
         this.header = new RequestHeader(headerLines);
         this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()));
-        System.out.println(header + "\n" + body + "\n" + header.getCookie());
+        System.out.println(header + "\n" + body + "\n" + header.getCookies());
     }
 
     public String getProtocol() {
@@ -51,8 +52,16 @@ public class Request {
         return body.getBody();
     }
 
-    public Cookie getCookie() {
-        return header.getCookie();
+    public Cookie getCookies() {
+        return header.getCookies();
+    }
+
+    public Session getSession() {
+        return header.getSession();
+    }
+
+    public boolean hasSessionId() {
+        return header.hasSessionId();
     }
 
     public boolean hasStaticPath() {
