@@ -1,5 +1,7 @@
 package webserver.controller;
 
+import static webserver.controller.UserLoginController.REDIRECTION_HOME;
+
 import db.UserStorage;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -30,7 +32,7 @@ public class UserSaveController implements Controller {
                 userInfo.get("email"));
         UserStorage.addUser(user);
         httpResponse.setStatus(HttpStatus.FOUND);
-        httpResponse.setLocation("/index.html");
+        httpResponse.setLocation(REDIRECTION_HOME);
 
         return new MyModelAndView();
     }
