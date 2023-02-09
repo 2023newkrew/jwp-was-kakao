@@ -1,6 +1,7 @@
 package webserver;
 
 import controller.DispatcherServlet;
+import controller.MyController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import model.dto.MyHeaders;
@@ -53,7 +54,7 @@ public class RequestHandler implements Runnable {
 
                 line = br.readLine();
             }
-logger.info("COOKIE : {}", headers.get("cookie"));
+
             DataOutputStream dos = new DataOutputStream(out);
 
             // [POST] Request Body (추후 다른 메서드로 확장 가능)
@@ -62,9 +63,8 @@ logger.info("COOKIE : {}", headers.get("cookie"));
             }
 
             // Handler Mapping (FrontController는 Dispatcher Servlet의 역할을 수행)
-            if(dispatcherServlet.canHandle(headers, params)){
-                dispatcherServlet.handlerMapping(headers, params, dos);
-            }
+            MyController myController = dispatcherServlet.handlerMapping(headers, params, dos);
+            myController.handle(headers, params, dos);
 
         } catch (IOException e) {
             logger.error(e.getMessage());

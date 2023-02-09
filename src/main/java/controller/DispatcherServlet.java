@@ -21,16 +21,10 @@ public class DispatcherServlet {
         controllers.addAll(List.of(myControllers));
     }
 
-    public void handlerMapping(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream){
-        controllers.stream()
+    public MyController handlerMapping(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream){
+        return controllers.stream()
                 .filter((con) -> con.canHandle(headers, params))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("매핑된 컨트롤러가 존재하지 않습니다."))
-                .handle(headers, params, dataOutputStream);
-    }
-
-    public boolean canHandle(MyHeaders headers, MyParams params){
-        return controllers.stream()
-                .anyMatch(con -> con.canHandle(headers, params));
+                .orElseThrow(() -> new IllegalArgumentException("매핑된 컨트롤러가 존재하지 않습니다."));
     }
 }
