@@ -3,20 +3,20 @@ package auth;
 import java.util.UUID;
 
 public class HttpCookie {
-    private final UUID cookie;
+    private final String cookie;
     private final String path;
 
     public HttpCookie(UUID cookie) {
-        this.cookie = cookie;
+        this.cookie = cookie.toString();
         this.path = "/";
     }
 
     public HttpCookie(UUID cookie, String path) {
-        this.cookie = cookie;
+        this.cookie = cookie.toString();
         this.path = path;
     }
 
-    public UUID getCookie() {
+    public String getCookie() {
         return cookie;
     }
 
