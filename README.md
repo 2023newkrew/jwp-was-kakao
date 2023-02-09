@@ -77,6 +77,8 @@
 ### 템플릿 엔진 활용하기
 - 접근하고 있는 사용자가 “로그인” 상태일 경우(Cookie 값이 logined=true) 경우 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다. 만약 로그인하지 않은 상태라면 로그인 페이지(login.html)로 이동한다.
 - 동적으로 html을 생성하기 위해 handlebars.java template engine을 활용한다.
+  - [x] login 되지 않은 경우 filter 에서 login 페이지로 exception 발생시켜 login page 로 redirect 시키기
+  - [x] html 파일의 경우 handlebars 사용해서 template 적용되게 하기 
 
 ### Session 구현하기
 - 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
@@ -85,7 +87,3 @@
   - [x] session 정보를 담는 Session 객체 생성
   - [x] session id 와 Session 을 매핑할 SessionManager 객체 생성
   - [x] 인가를 담당하는 AuthorizationFilter 객체 생성
-
-### 여유가 있다면
-- TCP keep alive 가능하게
-- 쓰레드풀 사용하게

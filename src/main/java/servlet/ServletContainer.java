@@ -88,7 +88,8 @@ public class ServletContainer {
         }
         if (e instanceof UnauthorizedException) {
             return commonBuilder
-                    .httpStatus(HttpStatus.UNAUTHORIZED)
+                    .httpStatus(HttpStatus.FOUND)
+                    .location("/user/login.html")
                     .build();
         }
         if (e instanceof AuthorizedException) {
