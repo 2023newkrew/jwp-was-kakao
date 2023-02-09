@@ -13,6 +13,8 @@ import utils.FileIoUtils;
 import model.dto.MyHeaders;
 import model.dto.MyParams;
 import utils.UserFactory;
+import webserver.session.Session;
+import webserver.session.SessionManager;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import static db.DataBase.*;
 import static model.dto.ResponseBodies.responseBody;
 import static model.dto.ResponseHeaders.response200Header;
 import static model.dto.ResponseHeaders.response302Header;
+import static webserver.session.SessionManager.*;
 
 public class UserController  implements MyController {
 
@@ -69,16 +72,24 @@ public class UserController  implements MyController {
 
     private void login(String userId, String password, DataOutputStream dataOutputStream) {
         if(isUser(userId, password)){
-            loginSuccess(dataOutputStream);
+            loginSuccess(userId, dataOutputStream);
             return;
         }
         loginFail(dataOutputStream);
     }
 
-    private void loginSuccess(DataOutputStream dataOutputStream){
+    private void loginSuccess(String userId, DataOutputStream dataOutputStream){
         // 쿠키 생성
         Cookie cookie = new Cookie();
+        // 세션 저장
+        saveSession(cookie.toString(), userId);
         response302Header(dataOutputStream, cookie.toString(), "/index.html");
+    }
+
+    private void saveSession(String sessionId, String userId){
+        Session session = new Session(sessionId);
+        session.setAttribute("user", findUserById(userId));
+        add(session);
     }
 
     private void loginFail(DataOutputStream dataOutputStream){
