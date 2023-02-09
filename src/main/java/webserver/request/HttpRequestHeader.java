@@ -11,13 +11,13 @@ public class HttpRequestHeader {
     private final HttpEndPoint httpEndPoint;
     private final String httpVersion;
 
-    private HttpRequestHeader(String method, URI uri, String httpVersion) {
+    private HttpRequestHeader(HttpRequestMethod method, URI uri, String httpVersion) {
         this.httpEndPoint = HttpEndPoint.of(method, uri);
         this.httpVersion = httpVersion;
     }
 
     public static HttpRequestHeader of(String method, String uri, String httpVersion) {
-        return new HttpRequestHeader(method, URI.create(uri), httpVersion);
+        return new HttpRequestHeader(HttpRequestMethod.from(method), URI.create(uri), httpVersion);
     }
 
     public Optional<String> getAttribute(String key) {
@@ -28,7 +28,7 @@ public class HttpRequestHeader {
         headers.put(key, value);
     }
 
-    public String getMethod() {
+    public HttpRequestMethod getMethod() {
         return httpEndPoint.getMethod();
     }
 

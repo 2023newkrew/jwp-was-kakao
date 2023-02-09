@@ -21,7 +21,7 @@ public class HttpRequest {
         return httpRequestHeader.getAttribute(key);
     }
 
-    public String getMethod() {
+    public HttpRequestMethod getMethod() {
         return httpRequestHeader.getMethod();
     }
 

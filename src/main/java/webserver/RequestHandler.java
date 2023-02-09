@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import webserver.request.HttpRequest;
+import webserver.request.HttpRequestMethod;
 import webserver.request.HttpRequestParser;
 import webserver.request.QueryStringParser;
 import webserver.response.HttpResponse;
@@ -42,9 +43,9 @@ public class RequestHandler implements Runnable {
             HttpRequest request = HttpRequestParser.parse(in);
             HttpResponse response = HttpResponse.of(new DataOutputStream(out));
 
-            if (request.getMethod().equals("GET")) {
+            if (request.getMethod() == HttpRequestMethod.GET) {
                 doGet(request, response);
-            } else if (request.getMethod().equals("POST")) {
+            } else if (request.getMethod() == HttpRequestMethod.POST) {
                 doPost(request, response);
             }
 
