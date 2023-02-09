@@ -6,9 +6,6 @@ import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
@@ -31,7 +28,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void index() throws IOException, URISyntaxException {
+    void index() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
@@ -55,7 +52,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void css() throws IOException, URISyntaxException {
+    void css() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /css/styles.css HTTP/1.1 ",
@@ -80,7 +77,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserGet() throws IOException, URISyntaxException {
+    void createUserGet() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
@@ -113,7 +110,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserPost() throws IOException, URISyntaxException {
+    void createUserPost() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
@@ -148,7 +145,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserRedirect() throws IOException, URISyntaxException {
+    void createUserRedirect() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
