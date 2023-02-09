@@ -1,7 +1,6 @@
 package webserver;
 
-import controller.FrontController;
-import model.dto.Cookie;
+import controller.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import model.dto.MyHeaders;
@@ -12,21 +11,18 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static db.DataBase.addUser;
 import static utils.IOUtils.readData;
-import static model.dto.ResponseHeaders.response302Header;
-import static utils.UserFactory.createUser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
-    private FrontController frontController;
+    private DispatcherServlet dispatcherServlet;
     private MyHeaders headers;
     private MyParams params;
 
-    public RequestHandler(Socket connection, FrontController frontController){
-        this.frontController = frontController;
+    public RequestHandler(Socket connection, DispatcherServlet dispatcherServlet){
+        this.dispatcherServlet = dispatcherServlet;
         this.connection = connection;
         this.headers = new MyHeaders();
         this.params = new MyParams();
@@ -66,8 +62,8 @@ logger.info("COOKIE : {}", headers.get("cookie"));
             }
 
             // Handler Mapping (FrontController는 Dispatcher Servlet의 역할을 수행)
-            if(frontController.canHandle(headers, params)){
-                frontController.handlerMapping(headers, params, dos);
+            if(dispatcherServlet.canHandle(headers, params)){
+                dispatcherServlet.handlerMapping(headers, params, dos);
             }
 
         } catch (IOException e) {

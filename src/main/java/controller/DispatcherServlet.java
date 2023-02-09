@@ -7,9 +7,9 @@ import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FrontController {
+public class DispatcherServlet {
     List<MyController> controllers;
-    public FrontController(){
+    public DispatcherServlet(){
         controllers = new ArrayList<>();
     }
 
