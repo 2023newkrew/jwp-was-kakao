@@ -4,7 +4,9 @@ import controller.HomeController;
 import controller.StaticFileController;
 import controller.UserController;
 import enums.ContentType;
+import exceptions.AuthenticationException;
 import exceptions.InvalidQueryParameterException;
+import exceptions.InvalidSessionException;
 import exceptions.ResourceNotFoundException;
 import http.HttpRequest;
 import http.HttpResponse;
@@ -63,6 +65,8 @@ public class RequestHandler implements Runnable {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
         } catch (InvalidQueryParameterException e) {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
+        } catch (AuthenticationException | InvalidSessionException e) {
+            return HttpResponse.create302FoundResponse("/user/login_failed.html");
         } catch (Exception e) {
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
