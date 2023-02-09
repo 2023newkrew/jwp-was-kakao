@@ -18,8 +18,7 @@ public class UserCreateController implements Controller {
 
     @Override
     public void service(HttpRequest request, HttpResponse response) {
-        String query = getQuery(request);
-        Map<String, String> attributes = QueryStringParser.parseQueryString(query, "&");
+        Map<String, String> attributes = QueryStringParser.parseQueryString(QueryStringParser.getQuery(request), "&");
 
         User user = new User(
                 attributes.get("userId"),
@@ -31,16 +30,6 @@ public class UserCreateController implements Controller {
         DataBase.addUser(user);
 
         ResponseUtil.response302(response, "/index.html");
-    }
-
-    private static String getQuery(HttpRequest request) {
-        if (request.getMethod() == POST) {
-            return request.getBody();
-        }
-        if (request.getMethod() == GET) {
-            return request.getUri().getQuery();
-        }
-        throw new RuntimeException();
     }
 
     @Override

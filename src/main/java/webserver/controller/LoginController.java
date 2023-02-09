@@ -14,16 +14,15 @@ import javax.servlet.http.Cookie;
 import java.util.Map;
 import java.util.UUID;
 
-import static webserver.request.HttpRequestMethod.GET;
 import static webserver.request.HttpRequestMethod.POST;
+import static webserver.request.QueryStringParser.getQuery;
 import static webserver.response.HttpResponseStatus.REDIRECT;
 
 public class LoginController implements Controller {
 
     @Override
     public void service(HttpRequest request, HttpResponse response) {
-        String query = getQuery(request);
-        Map<String, String> attributes = QueryStringParser.parseQueryString(query, "&");
+        Map<String, String> attributes = QueryStringParser.parseQueryString(getQuery(request), "&");
 
         User user = DataBase.findUserById(attributes.get("userId"));
         if (user == null || user.isWrongPassword(attributes.get("password"))) {
@@ -37,16 +36,6 @@ public class LoginController implements Controller {
         SessionManager.getInstance().add(sessionKey, session);
         response.addCookie(new Cookie("JSESSIONID", sessionKey));
         ResponseUtil.response302(response, "/index.html");
-    }
-
-    private static String getQuery(HttpRequest request) {
-        if (request.getMethod() == POST) {
-            return request.getBody();
-        }
-        if (request.getMethod() == GET) {
-            return request.getUri().getQuery();
-        }
-        throw new RuntimeException();
     }
 
     @Override
