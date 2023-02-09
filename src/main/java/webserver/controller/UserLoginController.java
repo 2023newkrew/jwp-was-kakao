@@ -1,5 +1,7 @@
 package webserver.controller;
 
+import static model.MyHttpRequest.JSESSIONID;
+
 import db.SessionStorage;
 import db.UserStorage;
 import java.util.Map;
@@ -17,9 +19,10 @@ import webserver.MyHttpCookie;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserLoginController implements Controller {
 
-    public static final String URL = "/user/login";
-
     private static final UserLoginController INSTANCE = new UserLoginController();
+    public static final String URL = "/user/login";
+    private static final String REDIRECTION_FAILED = "/user/login_failed.html";
+    private static final String REDIRECTION_SUCCESS = "/index.html";
 
     public static UserLoginController getInstance() {
         return INSTANCE;
@@ -36,14 +39,14 @@ public class UserLoginController implements Controller {
         httpResponse.setStatus(HttpStatus.FOUND);
 
         if (!user.isCorrectPassword(password)) {
-            httpResponse.setLocation("/user/login_failed.html");
+            httpResponse.setLocation(REDIRECTION_FAILED);
             return "";
         }
 
         String uuid = UUID.randomUUID().toString();
         createSession(user, uuid);
         createCookie(httpResponse, uuid);
-        httpResponse.setLocation("/index.html");
+        httpResponse.setLocation(REDIRECTION_SUCCESS);
 
         return "";
     }
@@ -55,7 +58,7 @@ public class UserLoginController implements Controller {
     }
 
     private void createCookie(MyHttpResponse httpResponse, String uuid) {
-        MyHttpCookie cookie = new MyHttpCookie("JSESSIONID", uuid);
+        MyHttpCookie cookie = new MyHttpCookie(JSESSIONID, uuid);
         cookie.setPath("/");
         httpResponse.setCookie(cookie);
     }
