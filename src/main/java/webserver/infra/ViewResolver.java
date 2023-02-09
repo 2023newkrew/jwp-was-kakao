@@ -1,5 +1,6 @@
 package webserver.infra;
 
+import exception.TemplateCannotLoadedException;
 import lombok.experimental.UtilityClass;
 import model.dto.view.TemplateLoadResult;
 import model.request.HttpRequest;
@@ -60,7 +61,7 @@ public class ViewResolver {
 
             return new ResponseBody(loadFileFromClasspath(TEMPLATES + requestURL));
         } catch (IOException | URISyntaxException | NullPointerException e) {
-            throw new RuntimeException(e);
+            throw new TemplateCannotLoadedException(e);
         }
     }
 

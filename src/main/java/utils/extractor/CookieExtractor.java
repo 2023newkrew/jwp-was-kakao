@@ -1,5 +1,6 @@
 package utils.extractor;
 
+import exception.NoSuchCookieException;
 import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
@@ -14,7 +15,7 @@ public class CookieExtractor {
                 .map(cookie -> cookie.split(COOKIE_KEY_VALUE_DELIMITER))
                 .filter(keyValue -> getKey(keyValue).equals(key))
                 .findFirst()
-                .orElseThrow(RuntimeException::new)[1];
+                .orElseThrow(NoSuchCookieException::new)[1];
     }
 
     private String getKey(String[] keyValue) {

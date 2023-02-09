@@ -1,6 +1,8 @@
 package utils.extractor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import exception.DataCannotLoadedException;
+import exception.UnsupportedContentTypeException;
 import lombok.experimental.UtilityClass;
 import model.enumeration.ContentType;
 import utils.factory.ObjectMapperFactory;
@@ -21,7 +23,7 @@ public class RequestBodyExtractor {
             case APPLICATION_URL_ENCODED:
                 return convertQueryStringToMap(requestHeaders, bufferedReader);
             default:
-                throw new RuntimeException("지원하지 않는 Content-Type 입니다.");
+                throw new UnsupportedContentTypeException();
         }
     }
 
@@ -31,7 +33,7 @@ public class RequestBodyExtractor {
                     .readValue(readData(bufferedReader, getContentLength(requestHeaders)),
                             new TypeReference<>() {});
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DataCannotLoadedException(e);
         }
     }
 

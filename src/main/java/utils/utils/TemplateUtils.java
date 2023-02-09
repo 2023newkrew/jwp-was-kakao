@@ -5,6 +5,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
+import exception.TemplateCannotLoadedException;
 import lombok.experimental.UtilityClass;
 import model.dto.user.UserListViewDto;
 import model.dto.view.TemplateLoadResult;
@@ -30,7 +31,7 @@ public class TemplateUtils {
                     template.apply(context)
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TemplateCannotLoadedException(e);
         }
     }
 

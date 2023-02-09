@@ -1,5 +1,6 @@
 package webserver.infra;
 
+import exception.NoSuchMethodException;
 import lombok.experimental.UtilityClass;
 import model.annotation.Api;
 import model.annotation.ApiController;
@@ -26,7 +27,7 @@ public class ControllerHandlerAdapter {
                 .filter(method -> Optional.ofNullable(method.getDeclaredAnnotation(Api.class)).isPresent() &&
                         isMethodExistMatched(request, method.getDeclaredAnnotation(Api.class)))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(NoSuchMethodException::new);
     }
 
     private boolean isMethodExistMatched(HttpRequest request, Api annotation) {

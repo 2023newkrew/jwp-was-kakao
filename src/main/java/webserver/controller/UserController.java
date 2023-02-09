@@ -1,5 +1,6 @@
 package webserver.controller;
 
+import constant.PathConstant;
 import db.DataBase;
 import model.annotation.Api;
 import model.annotation.ApiController;
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static constant.DefaultConstant.*;
+import static constant.PathConstant.*;
 import static utils.utils.LoginUtils.*;
 import static utils.utils.TemplateUtils.*;
 
@@ -49,7 +51,7 @@ public class UserController {
     @Api(method = HttpMethod.GET, url = "/user/list.html")
     public HttpResponse showUserList(HttpRequest request) {
         if (!isLogin(request)) {
-            return ResponseBuilder.found(DEFAULT_PAGE);
+            return ResponseBuilder.found(LOGIN_PAGE);
         }
 
         return ViewResolver.resolve(

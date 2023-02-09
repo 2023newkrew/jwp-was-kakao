@@ -1,5 +1,7 @@
 package model.enumeration;
 
+import exception.NoSuchContentTypeException;
+
 import java.util.Arrays;
 
 public enum ContentType {
@@ -14,7 +16,7 @@ public enum ContentType {
         return Arrays.stream(ContentType.values())
                 .filter(contentType -> contentType.value.equals(targetValue))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(NoSuchContentTypeException::new);
     }
 
     ContentType(String value) {

@@ -1,5 +1,7 @@
 package utils.utils;
 
+import exception.DataCannotLoadedException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -16,7 +18,7 @@ public class IOUtils {
             br.read(body, 0, contentLength);
             return String.copyValueOf(body);
         } catch (IOException e) {
-            throw new RuntimeException("데이터 읽기에 실패하였습니다.");
+            throw new DataCannotLoadedException(e);
         }
     }
 }

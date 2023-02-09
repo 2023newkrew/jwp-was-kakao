@@ -1,5 +1,6 @@
 package model.web;
 
+import exception.NoSuchSessionException;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class SessionManager {
         try {
             return sessions.get(id);
         } catch (Exception e) {
-            throw new RuntimeException("해당 세션이 존재하지 않습니다.");
+            throw new NoSuchSessionException(e);
         }
     }
 
