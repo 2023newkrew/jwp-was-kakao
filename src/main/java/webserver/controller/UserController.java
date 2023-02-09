@@ -45,18 +45,21 @@ public class UserController {
     public void login(Request req, Response res) {
         FormData formData = new FormData(req.getBody());
         User user = DataBase.findUserById(formData.getValue("userId"));
-        System.out.println(user.getName()+ user.getPassword());
-        boolean matched = user.checkPasswordMatch(formData.getValue("password"));
-
-        if (matched) {
-            res.setRedirection("http://localhost:8080/index.html");
-            // 세션
-            Session session = req.getSession();
-            session.setAttribute("user", user);
-            System.out.println(SessionManager.getStatus());
+        if(user == null || !user.checkPasswordMatch(formData.getValue("password"))) {
+            res.setRedirection("http://localhost:8080/user/login_failed.html");
             return;
         }
-        res.setRedirection("http://localhㄴost:8080/user/login_failed.html");
+
+        // 세션
+        Session session = req.getSession();
+        session.setAttribute("user", user);
+
+        res.setRedirection("http://localhost:8080/index.html");
     }
 
+    @Handler(method = HttpMethod.POST, value = "/user/logout")
+    public void logout(Request req, Response res) {
+        req.getSession().invalidate();
+        res.setRedirection("http://localhost:8080/user/login.html");
+    }
 }

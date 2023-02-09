@@ -40,8 +40,7 @@ public class RequestHandler implements Runnable {
 
     private void setSessionId(Request request, Response response) {
         if(!request.hasSessionId()) {
-            response.getCookies().setCookie(SessionManager.SESSION_ID_NAME, UUID.randomUUID().toString());
-            response.getCookies().setCookie("Path", "/");
+            response.getCookies().setCookie(SessionManager.SESSION_ID_NAME, UUID.randomUUID() + "; Path=/");
         }
     }
 

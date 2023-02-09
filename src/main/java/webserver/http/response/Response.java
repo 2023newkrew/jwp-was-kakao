@@ -56,7 +56,7 @@ public class Response {
             header += String.format("Location: %s \r\n", location);
         }
         if(!cookies.isEmpty()) {
-            header += cookies.toResponseHeaderLine();
+            header += String.format("%s \r\n", cookies.toResponseHeaderLine());
         }
         return header += "\r\n";
     }

@@ -51,7 +51,7 @@ public class Cookie {
     @Override
     public String toString() {
         return "Cookie{" +
-                cookies.keySet().stream().map(key -> key + "=" + cookies.get(key) + "; ")
+                cookies.keySet().stream().map(key -> key + "=" + cookies.get(key) )
                         .collect(Collectors.toList())
                 + '}';
     }
