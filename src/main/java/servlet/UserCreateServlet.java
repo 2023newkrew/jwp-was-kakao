@@ -14,7 +14,6 @@ import java.util.NoSuchElementException;
 
 @ServletMapping(uri = "/user/create")
 public class UserCreateServlet implements Servlet {
-    public static final String REQUEST_PATH = "/user/create";
     private static class UserCreateServletHolder {
         private static final UserCreateServlet instance = new UserCreateServlet();
     }

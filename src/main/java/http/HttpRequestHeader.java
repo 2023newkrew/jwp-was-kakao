@@ -1,7 +1,5 @@
 package http;
 
-import exception.BadRequestException;
-
 import java.util.Arrays;
 
 public enum HttpRequestHeader {
@@ -31,7 +29,7 @@ public enum HttpRequestHeader {
         return Arrays.stream(values())
                 .filter(header -> value.equals(header.getValue()))
                 .findAny()
-                .orElseThrow(BadRequestException::new);
+                .orElse(null);
     }
 }
 

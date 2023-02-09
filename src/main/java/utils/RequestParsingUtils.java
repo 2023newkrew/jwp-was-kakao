@@ -7,10 +7,7 @@ import http.Uri;
 import http.request.RequestHeaders;
 import http.request.RequestStartLine;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RequestParsingUtils {
@@ -34,6 +31,7 @@ public class RequestParsingUtils {
     public static RequestHeaders parseRequestHeader(List<String> rawHeader) {
         Map<HttpRequestHeader, String> parsedHeader = rawHeader.stream()
                 .map(header -> header.split(REGEX_COLON, KEY_VALUE_TUPLE_SIZE))
+                .filter(kv -> Objects.nonNull(HttpRequestHeader.of(kv[0].trim())))
                 .collect(Collectors.toMap(
                         kv -> HttpRequestHeader.of(kv[0].trim()),
                         kv -> kv[1].trim()

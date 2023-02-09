@@ -2,6 +2,7 @@ package http.response;
 
 import exception.InternalServerErrorException;
 import http.ContentType;
+import http.HttpCookie;
 import http.HttpResponseHeader;
 import http.HttpStatus;
 
@@ -18,6 +19,7 @@ public class ResponseBuilder {
     private Integer contentLength;
     private String connection;
     private String location;
+    private HttpCookie cookie;
 
     private byte[] body;
 
@@ -46,6 +48,11 @@ public class ResponseBuilder {
 
     public ResponseBuilder connection(String connection) {
         this.connection = connection;
+        return this;
+    }
+
+    public ResponseBuilder setCookie(HttpCookie cookie) {
+        this.cookie = cookie;
         return this;
     }
 
@@ -80,7 +87,8 @@ public class ResponseBuilder {
                 Objects.isNull(contentType) ? NONE : makeOneHeader(HttpResponseHeader.CONTENT_TYPE, contentType.getValue()),
                 Objects.isNull(contentLength) ? NONE : makeOneHeader(HttpResponseHeader.CONTENT_LENGTH, contentLength.toString()),
                 Objects.isNull(connection) ? NONE : makeOneHeader(HttpResponseHeader.CONNECTION, connection),
-                Objects.isNull(location) ? NONE : makeOneHeader(HttpResponseHeader.LOCATION, location)
+                Objects.isNull(location) ? NONE : makeOneHeader(HttpResponseHeader.LOCATION, location),
+                Objects.isNull(cookie) ? NONE : makeOneHeader(HttpResponseHeader.SET_COOKIE, cookie.toSetCookieValue())
         );
     }
 

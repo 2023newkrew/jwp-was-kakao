@@ -7,7 +7,6 @@ import http.response.Response;
 
 @ServletMapping(uri = "/")
 public class HomeServlet implements Servlet {
-    public static final String REQUEST_PATH = "/";
     private static class HomeServletHolder {
         private static final HomeServlet instance = new HomeServlet();
     }

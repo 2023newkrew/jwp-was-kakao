@@ -96,4 +96,41 @@ class RequestHandlerTest {
         assertThat(response.stream().filter(s -> s.contains("Location")).findAny().orElse("")).isEqualTo("Location: /index.html ");
         assertThat(DataBase.findUserById("cu").getPassword()).isEqualTo("password");
     }
+
+    @Test
+    void login() {
+        final String joinRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1\n" +
+                        "Host: localhost:8080\n" +
+                        "Connection: keep-alive\n" +
+                        "Content-Length: 59\n" +
+                        "Content-Type: application/x-www-form-urlencoded\n" +
+                        "Accept: */*\n" +
+                        "\n" +
+                        "userId=cu&password=password&name=lee&email=brainbackdoor@gmail.com");
+        final var joinSocket = new StubSocket(joinRequest);
+        final RequestHandler joinHandler = new RequestHandler(joinSocket);
+
+        joinHandler.run();
+
+        final String loginRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1\n" +
+                        "Host: localhost:8080\n" +
+                        "Connection: keep-alive\n" +
+                        "Content-Length: 27\n" +
+                        "Content-Type: application/x-www-form-urlencoded\n" +
+                        "Accept: */*\n" +
+                        "\n" +
+                        "userId=cu&password=password");
+        final var loginSocket = new StubSocket(loginRequest);
+        final RequestHandler loginHandler = new RequestHandler(loginSocket);
+
+        loginHandler.run();
+        List<String> response = Arrays.asList(loginSocket.output().split("\r\n"));
+
+        assertThat(response.get(0)).isEqualTo("HTTP/1.1 302 Found ");
+        assertThat(response.stream().filter(s -> s.contains("Location")).findAny().orElse("")).isEqualTo("Location: /index.html ");
+        assertThat(response.stream().anyMatch(item -> item.contains("JSESSIONID"))).isTrue();
+
+    }
 }
