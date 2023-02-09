@@ -3,9 +3,7 @@ package controller;
 import type.ContentType;
 import type.HttpStatusCode;
 import utils.FileIoUtils;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
-import webserver.ResponseHeader;
+import webserver.*;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,6 +25,21 @@ public class ViewController extends Controller {
     protected void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         super.doGet(request, response, dos);
         ResponseHeader responseHeader = response.getResponseHeader();
+        RequestHeader requestHeader = request.getRequestHeader();
+
+        String uri = requestHeader.get("URI").orElse("/index.html");
+
+        // list로 접근했으나 쿠키에 로그인 정보가 없다면 로그인 화면으로 redirect
+        if (uri.equals("/user/list.html")) {
+            HttpCookie cookie = new HttpCookie(requestHeader.get("Cookie").orElse(""));
+            boolean logined = Boolean.valueOf(cookie.get("logined").orElse("false"));
+            if (!logined) {
+                responseHeader.setHttpStatusCode(HttpStatusCode.REDIRECT);
+                responseHeader.setLocation("/user/login.html");
+                return;
+            }
+        }
+
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath(ROOT_PATH + path);
 
