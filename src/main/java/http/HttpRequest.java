@@ -8,7 +8,7 @@ public class HttpRequest {
     private HttpMethod method;
     private String URL;
     private String version;
-    private Map<String, String> parameters;
+    private HttpRequestParams parameters;
     private Map<String, List<String>> headers;
     private String body;
 
@@ -27,7 +27,7 @@ public class HttpRequest {
         return version;
     }
 
-    public Map<String, String> getParameters() {
+    public HttpRequestParams getParameters() {
         return parameters;
     }
 
@@ -73,13 +73,13 @@ public class HttpRequest {
         private HttpMethod method;
         private String URL;
         private String version;
-        private Map<String, String> parameters;
+        private HttpRequestParams parameters;
         private Map<String, List<String>> headers;
         private String body;
 
         private HttpRequestBuilder() {
             body = "";
-            parameters = Map.of();
+            parameters = new HttpRequestParams();
             headers = Map.of();
         }
 
@@ -102,7 +102,7 @@ public class HttpRequest {
             return this;
         }
 
-        public HttpRequestBuilder withParameters(Map<String, String> parameters) {
+        public HttpRequestBuilder withParameters(HttpRequestParams parameters) {
             this.parameters = parameters;
             return this;
         }

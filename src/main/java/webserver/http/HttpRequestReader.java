@@ -2,6 +2,7 @@ package webserver.http;
 
 import http.HttpMethod;
 import http.HttpRequest;
+import http.HttpRequestParams;
 import utils.IOUtils;
 
 import java.io.*;
@@ -17,7 +18,7 @@ public class HttpRequestReader implements Closeable {
 
     private HttpMethod httpMethod;
     private String url;
-    private Map<String, String> parameters;
+    private HttpRequestParams parameters;
     private String httpVersion;
     private Map<String, List<String>> headers;
 

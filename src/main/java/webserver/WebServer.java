@@ -44,7 +44,9 @@ public class WebServer {
                 new HomeRequestHandler(),
                 new QnaRequestHandler(),
                 new UserCreateRequestHandler(),
-                new UserRequestHandler());
+                new UserRequestHandler(),
+                new UserLoginRequestHandler()
+        );
 
         handlers.forEach(handler -> urlHandlerMappings.put(handler.getUrlMappingRegex(), handler));
 
