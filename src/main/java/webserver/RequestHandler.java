@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
 import utils.HttpUtils;
+import utils.IOUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class RequestHandler implements Runnable {
             HttpResponse response = handleHttpRequest(request);
 
             DataOutputStream dos = new DataOutputStream(out);
-            response.writeToOutputStream(dos);
+            IOUtils.writeToOutputStream(dos, response);
 
         } catch (Exception e) {
             logger.error(e.getMessage());

@@ -1,10 +1,12 @@
 package utils;
 
 import exceptions.InvalidQueryParameterException;
+import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -37,5 +39,30 @@ public class IOUtils {
                         a -> a[0],
                         a -> URLDecoder.decode(a[1], StandardCharsets.UTF_8)
                 ));
+    }
+
+    public static void writeToOutputStream(DataOutputStream dos, HttpResponse response) throws IOException {
+        writeHeaderToOutputStream(dos, response);
+        writeBodyToOutputStream(dos, response);
+    }
+
+    private static void writeHeaderToOutputStream(DataOutputStream dos, HttpResponse response) throws IOException {
+        response.getHeaders()
+                .getHeaders()
+                .stream()
+                .forEach(header -> {
+                    try {
+                        dos.writeBytes(header + "\r\n");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        dos.writeBytes("\r\n");
+    }
+
+    private static void writeBodyToOutputStream(DataOutputStream dos, HttpResponse response) throws IOException {
+        byte[] body = response.getBody();
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 }
