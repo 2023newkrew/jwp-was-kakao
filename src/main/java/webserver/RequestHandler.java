@@ -1,87 +1,55 @@
 package webserver;
 
-import db.DataBase;
-import model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.Map;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webserver.controller.Controller;
+import webserver.controller.StaticResourceController;
 
 public class RequestHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
+    private static final StaticResourceController STATIC_RESOURCE_CONTROLLER = new StaticResourceController();
 
     private final Socket connection;
+    private final List<Controller> controllers;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, List<Controller> controllers) {
         this.connection = connectionSocket;
+        this.controllers = controllers;
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+        LOGGER.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest request = HttpRequest.from(in);
             HttpResponse response = handleRequest(request);
+            String contentType = getContentType(request);
+            response.setContentType(contentType);
+
             writeResponse(out, response);
         } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
     private HttpResponse handleRequest(HttpRequest request) throws IOException, URISyntaxException {
-        String contentType = getContentType(request);
+        Controller controller = controllers.stream()
+                .filter(c -> c.isHandleable(request))
+                .findAny()
+                .orElse(STATIC_RESOURCE_CONTROLLER);
 
-        if (request.getPath().endsWith(".html")) {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + request.getPath());
-            return HttpResponse.ok(Map.of("Content-Type", contentType), body);
-        }
-
-        if (request.getPath().equals("/")) {
-            return HttpResponse.ok(Map.of("Content-Type", contentType), "Hello world".getBytes());
-        }
-
-        if (request.getPath().equals("/query")) {
-            return HttpResponse.ok(Map.of("Content-Type", contentType),
-                    ("hello " + request.getParameter("name")).getBytes()
-            );
-        }
-
-        if (request.getMethod().equals("POST") && request.getPath().equals("/user/create")) {
-            Map<String, String> applicationForm = request.toApplicationForm();
-            String userId = applicationForm.get("userId");
-            String password = applicationForm.get("password");
-            String name = applicationForm.get("name");
-            String email = applicationForm.get("email");
-
-            User user = new User(userId, password, name, email);
-            DataBase.addUser(user);
-            logger.debug("{}", user);
-            return HttpResponse.redirect(Map.of(), "/index.html");
-
-        }
-
-        if (request.getMethod().equals("POST") && request.getPath().equals("/post")) {
-            Map<String, String> applicationForm = request.toApplicationForm();
-            return HttpResponse.ok(
-                    Map.of("Content-Type", contentType),
-                    String.format("hello %s", applicationForm.get("name")).getBytes()
-            );
-        }
-
-        return HttpResponse.ok(
-                Map.of("Content-Type", contentType),
-                FileIoUtils.loadFileFromClasspath("static" + request.getPath())
-        );
+        return controller.handle(request);
     }
 
-    private String getContentType(HttpRequest request) throws IOException, URISyntaxException {
+    private String getContentType(HttpRequest request) {
         String accept = request.getHeader("Accept");
 
         if (accept == null || accept.isBlank()) {
@@ -106,7 +74,7 @@ public class RequestHandler implements Runnable {
 
             dos.writeBytes("\r\n");
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -115,7 +83,7 @@ public class RequestHandler implements Runnable {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 }

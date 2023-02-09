@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
+
     private final String statusLine;
     private final Map<String, String> header;
     private final byte[] body;
@@ -17,14 +18,26 @@ public class HttpResponse {
         this.body = body;
     }
 
+    public static HttpResponse ok(byte[] body) {
+        return HttpResponse.ok(Map.of(), body);
+    }
+
     public static HttpResponse ok(Map<String, String> headers, byte[] body) {
         return new HttpResponse("HTTP/1.1 200 OK", headers, body);
+    }
+
+    public static HttpResponse redirect(String location) {
+        return HttpResponse.redirect(Map.of(), location);
     }
 
     public static HttpResponse redirect(Map<String, String> headers, String location) {
         Map<String, String> newHeaders = new HashMap<>(headers);
         newHeaders.put("Location", location);
         return new HttpResponse("HTTP/1.1 302 Found", newHeaders, "".getBytes());
+    }
+
+    public void setContentType(String contentType) {
+        header.put("Content-Type", contentType);
     }
 
     public String getStatusLine() {

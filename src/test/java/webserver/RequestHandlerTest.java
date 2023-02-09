@@ -1,6 +1,7 @@
 package webserver;
 
 import db.DataBase;
+import java.util.List;
 import model.User;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -10,10 +11,23 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import webserver.controller.Controller;
+import webserver.controller.HelloWorldController;
+import webserver.controller.PostController;
+import webserver.controller.QueryStringController;
+import webserver.controller.UserCreateController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    private static final List<Controller> CONTROLLERS = List.of(
+            new HelloWorldController(),
+            new PostController(),
+            new QueryStringController(),
+            new UserCreateController()
+    );
+
     @Test
     void socket_out() {
         // given
@@ -25,7 +39,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
@@ -53,7 +67,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
@@ -82,18 +96,13 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
 
         // then
         var cssFile = FileIoUtils.loadFileFromClasspath("static/css/styles.css");
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/css;charset=utf-8 \r\n" +
-                "Content-Length: " + cssFile.length + " \r\n" +
-                "\r\n" +
-                new String(cssFile);
 
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 200 OK ",
@@ -115,19 +124,12 @@ class RequestHandlerTest {
                 "",
                 "");
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
 
         // then
-
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/plain;charset=utf-8 \r\n" +
-                "Content-Length: 12 \r\n" +
-                "\r\n" +
-                "hello 케인";
-
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/plain;charset=utf-8 ",
@@ -149,14 +151,12 @@ class RequestHandlerTest {
                 "",
                 "name=kane");
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
 
         // then
-
-
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 200 OK ",
                 "Content-Length: 10 ",
@@ -178,7 +178,7 @@ class RequestHandlerTest {
                 "",
                 "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
