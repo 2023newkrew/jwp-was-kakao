@@ -45,25 +45,26 @@ public class ResponseHeader {
     }
 
     public String getValue() {
-        String result = writeRequestLine(httpStatusCode);
+        StringBuilder sb = new StringBuilder();
+        sb.append(writeRequestLine(httpStatusCode));
         if (httpCookie != null) {
             Set<String> keys = httpCookie.keySet();
             for (String key : keys) {
-                result += "Set-Cookie: " + key + "=" + httpCookie.get(key) + " \r\n";
+                sb.append("Set-Cookie: ").append(key).append("=").append(httpCookie.get(key)).append(" \r\n");
             }
         }
         if (contentType != null) {
-            result += "Content-Type: " + contentType.getToResponseText() + " \r\n";
+            sb.append("Content-Type: ").append(contentType.getToResponseText()).append(" \r\n");
         }
         if (contentLength != null) {
-            result += "Content-Length: " + contentLength + " \r\n";
+            sb.append("Content-Length: ").append(contentLength).append(" \r\n");
         }
         if (location != null) {
-            result += "Location: " + location + " \r\n";
+            sb.append("Location: ").append(location).append(" \r\n");
         }
-        result += "\r\n"; // header의 끝은 줄바꿈으로 표시한다
+        sb.append("\r\n"); // header의 끝은 줄바꿈으로 표시한다
 
-        return result;
+        return sb.toString();
     }
 
     public void setCookie(HttpCookie httpCookie) {
