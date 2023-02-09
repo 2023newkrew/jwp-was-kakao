@@ -16,6 +16,8 @@ import java.util.Map;
 
 public class UserListRequestHandler extends GetRequestHandler {
 
+    public static final String USER_LIST_ENDPOINT = "/user/list";
+
     private UserListRequestHandler() {
     }
 
@@ -32,7 +34,7 @@ public class UserListRequestHandler extends GetRequestHandler {
         return super.canHandle(request)
                 && request.getTarget()
                 .getPath()
-                .equals("/user/list");
+                .equals(USER_LIST_ENDPOINT);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class UserListRequestHandler extends GetRequestHandler {
             loader.setSuffix(".html");
             Handlebars handlebars = new Handlebars(loader);
 
-            Template template = handlebars.compile("/user/list");
+            Template template = handlebars.compile(USER_LIST_ENDPOINT);
             String result = template.apply(Map.of("users", DataBase.findAll()));
 
             responseBuilder.setStatus(HttpStatus.OK)

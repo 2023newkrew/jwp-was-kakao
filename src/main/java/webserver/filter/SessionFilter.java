@@ -1,8 +1,9 @@
-package webserver;
+package webserver.filter;
 
+import webserver.http.Cookie;
+import webserver.http.Session;
+import webserver.http.SessionManager;
 import webserver.request.HttpRequest;
-import webserver.request.Session;
-import webserver.request.SessionManager;
 import webserver.response.HttpResponse;
 
 import java.util.Optional;

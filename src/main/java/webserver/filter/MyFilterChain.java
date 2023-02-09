@@ -1,4 +1,4 @@
-package webserver;
+package webserver.filter;
 
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;

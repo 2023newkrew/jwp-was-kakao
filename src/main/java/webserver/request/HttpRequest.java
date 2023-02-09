@@ -2,8 +2,9 @@ package webserver.request;
 
 import lombok.Getter;
 import utils.IOUtils;
-import webserver.Cookie;
 import webserver.constant.HttpHeaderProperties;
+import webserver.http.Cookie;
+import webserver.http.Session;
 
 import java.io.BufferedReader;
 import java.io.IOException;

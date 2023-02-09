@@ -1,4 +1,4 @@
-package webserver;
+package webserver.http;
 
 import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import lombok.Getter;
