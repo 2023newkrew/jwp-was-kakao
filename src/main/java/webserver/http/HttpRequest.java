@@ -34,16 +34,10 @@ public class HttpRequest {
         return parameters.get(parameterName);
     }
 
-    public Map<String, HttpHeader> getHeaders() {
-        return headers.getHeaders();
-    }
-
+    /* 기능 확장 시 사용 예정 */
+    @SuppressWarnings("unused")
     public HttpHeader getHeader(String headerName) {
         return headers.getHeader(headerName);
-    }
-
-    public Map<String, HttpCookie> getCookies() {
-        return cookies.getCookies();
     }
 
     public HttpCookie getCookie(String cookieName) {

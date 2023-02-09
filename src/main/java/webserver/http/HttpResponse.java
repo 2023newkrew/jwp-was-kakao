@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class HttpResponse {
     private final HttpHeaders headers;
-    private byte[] body = "".getBytes();
     private HttpStatus httpStatus;
+    private byte[] body = "".getBytes();
 
     public HttpResponse() {
         headers = new HttpHeaders(new HashMap<>());
@@ -17,10 +17,6 @@ public class HttpResponse {
 
     public Map<String, HttpHeader> getHeaders() {
         return headers.getHeaders();
-    }
-
-    public HttpHeader getHeader(String headerName) {
-        return headers.getHeader(headerName);
     }
 
     public byte[] getBody() {

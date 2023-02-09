@@ -1,20 +1,18 @@
 package webserver;
 
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.filter.ApplicationFilterChain;
+import webserver.filter.ApplicationFilterConfig;
+import webserver.filter.FilterChain;
 import webserver.handler.Handler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
-import webserver.http.cookie.HttpCookie;
-import webserver.http.session.Session;
-import webserver.http.session.SessionManager;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
-import java.util.UUID;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -34,35 +32,21 @@ public class RequestHandler implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
+            /* HttpRequest, HttpResponse 생성 */
             HttpResponse response = new HttpResponse();
             HttpRequest request = RequestParser.parseRequestMessage(reader, response);
 
-            HttpCookie sessionCookie = request.getCookie("JSESSIONID");
-            String jsessionId;
-            /* sessionid 생성 */
-            if (Objects.isNull(sessionCookie)) {
-                UUID uuid = UUID.randomUUID();
-                response.setHeader("Set-Cookie", "JSESSIONID=" + uuid + "; Path=/");
-                jsessionId = uuid.toString();
-                SessionManager.add(new Session(jsessionId));
-            } else {
-                jsessionId = sessionCookie.getValue();
-            }
+            /* SessionFilter, LoginFilter 처리 */
+            FilterChain chain = new ApplicationFilterChain(new ApplicationFilterConfig());
+            chain.doFilter(request, response);
 
-            /* 이미 로그인 되어 있으면 리다이렉트 */
-            if (request.getPath().equals("/user/login.html")) {
-                User user = (User) SessionManager.findSession(jsessionId).getAttribute("user");
-                if (Objects.nonNull(user)) {
-                    response.setHeader("Location", "/index.html");
-                    response.setStatus(HttpStatus.FOUND);
-                }
-            }
-
+            /* Request를 parsing하거나 filtering 중 Response Status가 결정된 경우 */
             if (Objects.nonNull(response.getStatus())) {
                 responseWriter.sendResponse(response, dos);
                 return;
             }
 
+            /* 요청을 처리 후 응답을 socket에 write */
             String path = request.getPath();
 
             HandlerMapping handlerMapping = new HandlerMapping();
