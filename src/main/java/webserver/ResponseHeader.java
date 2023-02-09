@@ -3,6 +3,8 @@ package webserver;
 import type.ContentType;
 import type.HttpStatusCode;
 
+import java.util.Set;
+
 public class ResponseHeader {
     private static final String PROTOCOL = "HTTP";
     private static final String VERSION = "1.1";
@@ -10,15 +12,15 @@ public class ResponseHeader {
     private ContentType contentType;
     private Integer contentLength;
     private String location;
-    private String cookie;
+    private HttpCookie httpCookie;
 
     public ResponseHeader(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
-                          String location, String cookie) {
+                          String location, HttpCookie httpCookie) {
         this.httpStatusCode = httpStatusCode;
         this.contentType = contentType;
         this.contentLength = contentLength;
         this.location = location;
-        this.cookie = cookie;
+        this.httpCookie = httpCookie;
     }
 
     public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
@@ -44,8 +46,11 @@ public class ResponseHeader {
 
     public String getValue() {
         String result = writeRequestLine(httpStatusCode);
-        if (cookie != null) {
-            result += "Set-Cookie: " + cookie + " \r\n";
+        if (httpCookie != null) {
+            Set<String> keys = httpCookie.keySet();
+            for (String key : keys) {
+                result += "Set-Cookie: " + key + "=" + httpCookie.get(key) + " \r\n";
+            }
         }
         if (contentType != null) {
             result += "Content-Type: " + contentType.getToResponseText() + " \r\n";
@@ -61,8 +66,8 @@ public class ResponseHeader {
         return result;
     }
 
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
+    public void setCookie(HttpCookie httpCookie) {
+        this.httpCookie = httpCookie;
     }
 
     private String writeRequestLine(HttpStatusCode httpStatusCode) {
