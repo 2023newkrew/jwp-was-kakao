@@ -1,11 +1,10 @@
 package webserver;
 
+import Controller.ResourceController;
 import Controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import session.HttpCookie;
-import session.SessionManager;
-import utils.FileIoUtils;
 import utils.HttpParser;
 import utils.IOUtils;
 
@@ -16,16 +15,15 @@ import java.util.HashMap;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private static final String TEMPLATE_ROOT_PATH = "./templates";
-    private static final String STATIC_ROOT_PATH = "./static";
-    private static final String SESSION_KEY = "JSESSIONID";
 
     private final Socket connection;
     private final UserController userController;
+    private final ResourceController resourceController;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
         this.userController = UserController.getInstance();
+        this.resourceController = ResourceController.getInstance();
     }
 
     public void run() {
@@ -62,19 +60,11 @@ public class RequestHandler implements Runnable {
                     }else if(path.equals("/user/list.html")){
                         body = userController.getUserList(dos, path, httpCookie);
                     }else if(path.equals("/user/login.html")){
-                        String sessionId = httpCookie.getCookieValueByKey(SESSION_KEY);
-                        if(SessionManager.findSession(sessionId) != null){
-                            ResponseUtils.response302Header(dos, "/index.html");
-                        }else{
-                            body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-                            ResponseUtils.response200Header(dos, body.length, path);
-                        }
+                        body = resourceController.getLoginTemplate(dos, path, httpCookie);
                     }else if(path.endsWith(".html") || path.endsWith("/favicon.ico")){
-                        body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-                        ResponseUtils.response200Header(dos, body.length, path);
+                        body = resourceController.getCommonTemplate(dos, path);
                     }else if(path.startsWith("/css") || path.startsWith("/fonts") || path.startsWith("/images") || path.startsWith("/js")){
-                        body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + path);
-                        ResponseUtils.response200Header(dos, body.length, path);
+                        body = resourceController.getStatic(dos, path);
                     }else{
                         ResponseUtils.response404Header(dos);
                     }
