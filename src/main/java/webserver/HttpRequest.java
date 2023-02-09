@@ -1,7 +1,5 @@
 package webserver;
 
-import utils.IOUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import utils.IOUtils;
 
 public class HttpRequest {
     private static final String CONTENT_LENGTH = "Content-Length";
@@ -28,15 +27,11 @@ public class HttpRequest {
     }
 
     public static HttpRequest from(InputStream inputStream) throws IOException {
-        try (
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
-        ) {
-            String startLine = bufferedReader.readLine();
-            Map<String, String> headers = readHeader(bufferedReader);
-            String body = readBody(bufferedReader, headers);
-            return new HttpRequest(HttpRequestLine.from(startLine), headers, body);
-        }
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String startLine = bufferedReader.readLine();
+        Map<String, String> headers = readHeader(bufferedReader);
+        String body = readBody(bufferedReader, headers);
+        return new HttpRequest(HttpRequestLine.from(startLine), headers, body);
     }
 
     private static Map<String, String> readHeader(BufferedReader bufferedReader) throws IOException {
@@ -80,10 +75,10 @@ public class HttpRequest {
 
     public Map<String, String> toApplicationForm() {
         return Arrays.stream(body.split("&"))
-                     .map(v -> v.split("="))
-                     .collect(Collectors.toMap(
-                             v -> v[0],
-                             v -> URLDecoder.decode(v[1], Charset.defaultCharset())
-                     ));
+                .map(v -> v.split("="))
+                .collect(Collectors.toMap(
+                        v -> v[0],
+                        v -> URLDecoder.decode(v[1], Charset.defaultCharset())
+                ));
     }
 }

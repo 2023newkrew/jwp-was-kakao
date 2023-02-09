@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import webserver.controller.Controller;
 import webserver.controller.HelloWorldController;
+import webserver.controller.LoginController;
 import webserver.controller.PostController;
 import webserver.controller.QueryStringController;
 import webserver.controller.UserCreateController;
@@ -42,7 +43,8 @@ public class WebServer {
                 new HelloWorldController(),
                 new PostController(),
                 new QueryStringController(),
-                new UserCreateController()
+                new UserCreateController(),
+                new LoginController()
         );
     }
 }

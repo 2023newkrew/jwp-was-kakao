@@ -3,6 +3,7 @@ package webserver;
 import db.DataBase;
 import java.util.List;
 import model.User;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -13,6 +14,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import webserver.controller.Controller;
 import webserver.controller.HelloWorldController;
+import webserver.controller.LoginController;
 import webserver.controller.PostController;
 import webserver.controller.QueryStringController;
 import webserver.controller.UserCreateController;
@@ -25,7 +27,8 @@ class RequestHandlerTest {
             new HelloWorldController(),
             new PostController(),
             new QueryStringController(),
-            new UserCreateController()
+            new UserCreateController(),
+            new LoginController()
     );
 
     @Test
@@ -194,5 +197,83 @@ class RequestHandlerTest {
         assertThat(user.getPassword()).isEqualTo("password");
         assertThat(user.getName()).isEqualTo("이동규");
         assertThat(user.getEmail()).isEqualTo("brainbackdoor@gmail.com");
+    }
+
+    @Test
+    void login() {
+        // given
+        DataBase.addUser(new User("userId", "password", "name", "email"));
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Content-Length: 31",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "userId=userId&password=password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /index.html "
+        );
+    }
+
+    @Test
+    void loginFailedByInvalidPassword() {
+        // given
+        DataBase.addUser(new User("userId", "password", "name", "email"));
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Content-Length: 31",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "userId=userId&password=wrong_password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login_failed.html "
+        );
+    }
+
+    @Test
+    void loginFailedByNotFoundUser() {
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Content-Length: 31",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "userId=userId&password=password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login_failed.html "
+        );
     }
 }
