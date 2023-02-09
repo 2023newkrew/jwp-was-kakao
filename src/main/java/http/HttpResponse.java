@@ -10,16 +10,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HttpResponse {
-    private final static Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     private static final String TEMPLATE_PATH = "./templates";
     private static final String STATIC_PATH = "./static";
     private static final String HTTP_VERSION = "HTTP/1.1";
     private static final String LOCATION = "Location";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String SET_COOKIE = "Set-Cookie";
 
     private ResponseStatus responseStatus = ResponseStatus.OK;
     private final Map<String, String> headers = new HashMap<>();
+    private final CookieList cookies = CookieList.empty();
     private byte[] body;
 
     public String getStatusLine() {
@@ -42,6 +44,11 @@ public class HttpResponse {
         this.body = FileIoUtils.loadFileFromClasspath(getResourcePath(path));
         logger.info("Forward to file : {}", getResourcePath(path));
         headers.put(CONTENT_LENGTH, String.valueOf(body.length));
+    }
+
+    public void setCookie(Cookie cookie) {
+        cookies.addCookie(cookie);
+        headers.put(SET_COOKIE, cookies.toString());
     }
 
     public void setResponseStatus(ResponseStatus responseStatus) {
