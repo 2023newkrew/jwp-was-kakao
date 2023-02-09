@@ -6,10 +6,7 @@ public class HttpCookie {
 
     private final Map<String, String> cookieMap = new HashMap<>();
 
-    public HttpCookie() {
-        cookieMap.put("JSESSIONID", UUID.randomUUID().toString());
-        cookieMap.put("Path", "/");
-    }
+    public HttpCookie() {}
 
     public HttpCookie(String cookie) {
         String[] datas = cookie.split(";");
@@ -17,7 +14,7 @@ public class HttpCookie {
             String[] line = data.split("=");
             // TODO: 개선할 수 없을까?
             if (line.length == 2) {
-                cookieMap.put(line[0], line[1]);
+                cookieMap.put(line[0].trim(), line[1].trim());
             }
         }
     }
@@ -26,10 +23,17 @@ public class HttpCookie {
         return Optional.ofNullable(cookieMap.get(key));
     }
 
+    public void put(String key, String value) {
+        cookieMap.put(key, value);
+    }
+
     public String parseString() {
         StringBuilder sb = new StringBuilder();
         for (String key : cookieMap.keySet()) {
-            sb.append("Set-Cookie: ").append(key).append("=").append(cookieMap.get(key)).append(" \r\n");
+            //TODO: 더 나은 방식으로 변경해야 함
+            if (!key.equals("Path")) {
+                sb.append("Set-Cookie: ").append(key).append("=").append(cookieMap.get(key)).append("; Path=/").append("\r\n");
+            }
         }
         return sb.toString();
     }
