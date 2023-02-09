@@ -6,11 +6,11 @@ import common.HttpResponse;
 import common.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import support.*;
+import support.CustomException;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Optional;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -43,6 +43,7 @@ public class RequestHandler implements Runnable {
            sendResponse(dos, new HttpResponse(e.getStatusCode(), e.getMessage()));
            logger.error("[" + e.getStatusCode() + "] " + e.getMessage());
        } catch (Exception e) {
+           e.printStackTrace();
            sendResponse(dos, new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR));
            logger.error("[" + HttpStatus.INTERNAL_SERVER_ERROR + "] " + e.getMessage());
        }
@@ -58,45 +59,17 @@ public class RequestHandler implements Runnable {
     }
 
     private void sendResponse(DataOutputStream dos, final HttpResponse response) {
-        if (response.getHttpStatus().equals(HttpStatus.OK)) {
-            responseHeaderWithContent(dos, response);
-        }
-        else if (response.getHttpStatus().equals(HttpStatus.FOUND)) {
-            responseHeaderWithLocation(dos, response);
-        }
-        else { // 400, 404, 405, 415, 500
-            responseHeader(dos, response);
-        }
+        responseHeader(dos, response);
         responseBody(dos, response.getBody());
     }
 
-    private void responseHeaderWithContent(DataOutputStream dos, final HttpResponse response) {
-        HttpStatus httpStatus = response.getHttpStatus();
-        try {
-            dos.writeBytes("HTTP/1.1 " + httpStatus.code + " " + httpStatus.message + " \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + response.getHeader(HttpHeader.CONTENT_LENGTH) + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseHeaderWithLocation(DataOutputStream dos, final HttpResponse response) {
-        HttpStatus httpStatus = response.getHttpStatus();
-        try {
-            dos.writeBytes("HTTP/1.1 " + httpStatus.code + " " + httpStatus.message + " \r\n");
-            dos.writeBytes("Location: " + response.getHeader(HttpHeader.LOCATION) + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
     private void responseHeader(DataOutputStream dos, final HttpResponse response) {
-        HttpStatus httpStatus = Optional.ofNullable(response.getHttpStatus()).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+        HttpStatus httpStatus = response.getHttpStatus();
         try {
             dos.writeBytes("HTTP/1.1 " + httpStatus.code + " " + httpStatus.message + " \r\n");
+            for (Map.Entry<HttpHeader, String> header : response.getHeaders().entrySet()) {
+                dos.writeBytes(header.getKey().value() + ": " + header.getValue() + " \r\n");
+            }
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());

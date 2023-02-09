@@ -2,7 +2,10 @@ package common;
 
 public enum HttpHeader {
     CONTENT_LENGTH("Content-Length"),
-    LOCATION("Location");
+    CONTENT_TYPE("Content-Type"),
+    COOKIE("Cookie"),
+    LOCATION("Location"),
+    SET_COOKIE("Set-Cookie");
 
     private final String value;
 

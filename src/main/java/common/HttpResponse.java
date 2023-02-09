@@ -20,6 +20,10 @@ public class HttpResponse {
         this.body = message.getBytes();
     }
 
+    public Map<HttpHeader, String> getHeaders() {
+        return headers;
+    }
+
     public String getHeader(HttpHeader header) {
         return headers.get(header);
     }
@@ -39,6 +43,7 @@ public class HttpResponse {
     public void setBody(final byte[] body) {
         this.body = body;
         setHeader(HttpHeader.CONTENT_LENGTH, String.valueOf(body.length));
+        setHeader(HttpHeader.CONTENT_TYPE, "text/html;charset=utf-8");
     }
 
     public void setHttpStatus(final HttpStatus httpStatus) {

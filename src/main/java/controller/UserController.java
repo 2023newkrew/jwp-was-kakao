@@ -9,11 +9,14 @@ import support.PathNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public class UserController implements Controller {
     private static final String SUCCESS_REDIRECT_PATH = "/index.html";
     private static final String LOGIN_FAIL_REDIRECT_PATH = "/user/login_failed.html";
+    private static final String SESSION_COOKIE = "JSESSIONID";
+
     private static Map<String, BiConsumer<HttpRequest, HttpResponse>> mapping = new HashMap<>();
 
     private UserService userService;
@@ -35,7 +38,7 @@ public class UserController implements Controller {
 
     public void createUser(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.GET) || request.getMethod().equals(HttpMethod.POST)) {
-            UserRequest userRequest = UserRequest.from(request.getParameter());
+            UserRequest userRequest = UserRequest.from(request.getParameters());
             userService.addUser(
                     userRequest.getUserId(),
                     userRequest.getPassword(),
@@ -49,12 +52,14 @@ public class UserController implements Controller {
 
     public void loginUser(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.POST)) {
-            LoginRequest loginRequest = LoginRequest.from(request.getParameter());
+            LoginRequest loginRequest = LoginRequest.from(request.getParameters());
             boolean success = userService.loginUser(loginRequest.getUserId(), loginRequest.getPassword());
 
+            if (success && request.getCookie(SESSION_COOKIE).isEmpty()) {
+                response.setHeader(HttpHeader.SET_COOKIE, SESSION_COOKIE+"="+UUID.randomUUID()+"; path= /;");
+            }
             response.setHttpStatus(HttpStatus.FOUND);
-            response.setHeader(HttpHeader.LOCATION,
-                    success ? SUCCESS_REDIRECT_PATH : LOGIN_FAIL_REDIRECT_PATH);
+            response.setHeader(HttpHeader.LOCATION,  success ? SUCCESS_REDIRECT_PATH : LOGIN_FAIL_REDIRECT_PATH);
         }
     }
 }

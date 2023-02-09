@@ -324,4 +324,89 @@ class RequestHandlerTest {
 
         assertThat(socket.output()).contains(expected);
     }
+
+    @DisplayName("로그인 실패한 사용자는 실패 페이지로 리다이렉트된다")
+    @Test
+    void loginFailed() {
+        // given
+        String userId = "subin";
+        String password = "asdfczxi";
+        createUserForTest(userId, password);
+
+        String parameter = "userId="+userId+"&password="+password+"not_equal!";
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login  HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: "+parameter.length(),
+                "Accept: */*",
+                "",
+                parameter);
+
+        var socket = new StubSocket(httpRequest);
+        var handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 Found \r\n" +
+                "Location: /user/login_failed.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("로그인 성공한 사용자는 쿠키가 설정되어있지 않으면 응답을 통해 쿠키가 설정된다")
+    @Test
+    void loginSucceed() {
+        // given
+        String userId = "subin";
+        String password = "asdfczxi";
+        createUserForTest(userId, password);
+
+        String parameter = "userId="+userId+"&password="+password;
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login  HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: "+parameter.length(),
+                "Accept: */*",
+                "",
+                parameter);
+
+        var socket = new StubSocket(httpRequest);
+        var handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 Found \r\n" +
+                "Location: /index.html \r\n" +
+                "Set-Cookie: ";
+
+        assertThat(socket.output()).contains(expected);
+    }
+
+    private void createUserForTest(String userId, String password) {
+        // given
+        String parameter = "userId="+userId+"&password="+password+"&name=subin&email=subin@google.com";
+        final String setUpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: "+parameter.length(),
+                "Accept: */*",
+                "",
+                parameter);
+
+        var socket = new StubSocket(setUpRequest);
+        RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        assertThat(socket.output()).contains("Found");
+    }
 }

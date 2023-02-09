@@ -1,5 +1,6 @@
 package webserver;
 
+import common.HttpHeader;
 import common.HttpMethod;
 import common.HttpRequest;
 import org.slf4j.Logger;
@@ -18,8 +19,9 @@ public class Parser {
 
     private static final String DELIM_QUERY_STRING = "?";
     private static final String DELIM_QUERY_PARAMETERS = "&";
-    private static final String DELIM_QUERY_PARAMETER = "=";
+    private static final String DELIM_KEY_VALUE = "=";
     private static final String DELIM_REQUEST_START_LINE = " ";
+    private static final String DELIM_COOKIE = ";";
 
     public static HttpRequest parseRequest(BufferedReader reader) throws IOException {
         List<String> lines = readRequestLines(reader);
@@ -33,10 +35,11 @@ public class Parser {
             parameters = getUriParameters(uri);
         }
         else if (method.equals(HttpMethod.POST)) {
-            String contentLength = Optional.ofNullable(headers.get("Content-Length")).orElse("0");
+            String contentLength = Optional.ofNullable(headers.get(HttpHeader.CONTENT_LENGTH.value())).orElse("0");
             parameters = getBodyParameters(reader, Integer.parseInt(contentLength));
         }
-        return new HttpRequest(uri.replaceAll("\\?.*", ""), method, parameters);
+        Map<String, String> cookies = getCookies(headers.get(HttpHeader.COOKIE.value()));
+        return new HttpRequest(uri.replaceAll("\\?.*", ""), method, headers, parameters, cookies);
     }
 
     private static Map<String, String> getHeaders(List<String> headerLines) {
@@ -44,10 +47,6 @@ public class Parser {
                 (line) -> line.split(":")[0].trim(),
                 (line) -> line.split(":")[1].trim()
         ));
-    }
-
-    private static String readRequestStartLine(BufferedReader reader) throws IOException {
-        return readRequestLines(reader).get(0);
     }
 
     private static List<String> readRequestLines(BufferedReader reader) throws IOException {
@@ -89,8 +88,21 @@ public class Parser {
 
         return Stream.of(line.split(DELIM_QUERY_PARAMETERS))
                 .collect(Collectors.toMap(
-                    (param)-> param.split(DELIM_QUERY_PARAMETER)[0],
-                    (param) -> param.split(DELIM_QUERY_PARAMETER)[1]
+                    (param)-> param.split(DELIM_KEY_VALUE)[0],
+                    (param) -> param.split(DELIM_KEY_VALUE)[1]
                 ));
+    }
+
+    public static Map<String, String> getCookies(String cookieHeader) {
+        if (cookieHeader == null || cookieHeader.isBlank()) {
+            return Map.of();
+        }
+        List<String> cookies = List.of(cookieHeader.split(DELIM_COOKIE));
+        return cookies
+            .stream()
+            .collect(Collectors.toMap(
+                    (cookie)-> cookie.split(DELIM_KEY_VALUE)[0],
+                    (cookie) -> cookie.split(DELIM_KEY_VALUE)[1]
+            ));
     }
 }
