@@ -46,7 +46,12 @@ public class UserCreateController extends Controller {
 
     @Override
     public void doFinally(HttpRequest request, HttpResponse response, DataOutputStream dos) {
-        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html"));
+        ResponseHeader responseHeader = response.getResponseHeader();
+
+        responseHeader.setHttpStatusCode(HttpStatusCode.REDIRECT);
+        responseHeader.setLocation("/index.html");
+
+        response.setResponseHeader(responseHeader);
     }
 
 }

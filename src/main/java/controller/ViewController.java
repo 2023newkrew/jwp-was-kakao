@@ -26,14 +26,21 @@ public class ViewController extends Controller {
     @Override
     protected void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         super.doGet(request, response, dos);
+        ResponseHeader responseHeader = response.getResponseHeader();
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath(ROOT_PATH + path);
 
             if (body == null) {
-                response.setResponseHeader(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML));
+                responseHeader.setHttpStatusCode(HttpStatusCode.NOT_FOUND);
+                responseHeader.setContentType(ContentType.HTML);
+                response.setResponseHeader(responseHeader);
                 return;
             }
-            response.setResponseHeader(ResponseHeader.of(HttpStatusCode.OK, ContentType.HTML, body.length));
+            responseHeader.setHttpStatusCode(HttpStatusCode.OK);
+            responseHeader.setContentType(ContentType.HTML);
+            responseHeader.setContentLength(body.length);
+
+            response.setResponseHeader(responseHeader);
             response.setResponseBody(body);
         } catch (URISyntaxException | IOException e) {
             logger.error(e.getMessage());

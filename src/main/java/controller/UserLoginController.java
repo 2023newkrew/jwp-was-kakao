@@ -35,10 +35,17 @@ public class UserLoginController extends Controller {
         User user = Optional.ofNullable(db.findUserById(userId))
                 .orElseThrow(() -> new WasException(USER_NOT_EXIST));
 
+        ResponseHeader header = response.getResponseHeader();
+
         if (user.checkPassword(password)) {
-            response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html"));
+            header.setHttpStatusCode(HttpStatusCode.REDIRECT);
+            header.setLocation("/index.html");
+            header.putCookieItem("logined", "true");
+            response.setResponseHeader(header);
             return;
         }
-        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/users/login_failed.html"));
+        header.setHttpStatusCode(HttpStatusCode.REDIRECT);
+        header.setLocation("/users/login_failed.html");
+        response.setResponseHeader(header);
     }
 }

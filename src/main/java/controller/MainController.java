@@ -29,15 +29,18 @@ public class MainController extends Controller {
 
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath(root + uri);
-
-            response.setResponseHeader(
-                    ResponseHeader.of(HttpStatusCode.OK, ContentType.valueOf(fileType.toUpperCase()), body.length)
-            );
+            ResponseHeader responseHeader = response.getResponseHeader();
 
             if (body == null) {
-                response.setResponseHeader(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML));
+                responseHeader.setHttpStatusCode(HttpStatusCode.NOT_FOUND);
+                responseHeader.setContentType(ContentType.HTML);
             }
 
+            responseHeader.setHttpStatusCode(HttpStatusCode.OK);
+            responseHeader.setContentType(ContentType.valueOf(fileType.toUpperCase()));
+            responseHeader.setContentLength(body.length);
+
+            response.setResponseHeader(responseHeader);
             response.setResponseBody(body);
         } catch (URISyntaxException | IOException e) {
             logger.error(e.getMessage());

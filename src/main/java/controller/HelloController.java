@@ -16,7 +16,12 @@ public class HelloController extends Controller {
         String data = "Hello world";
         Integer contentLength = data.length();
 
-        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.OK, ContentType.HTML, contentLength));
+        ResponseHeader header = response.getResponseHeader();
+        header.setHttpStatusCode(HttpStatusCode.OK);
+        header.setContentType(ContentType.HTML);
+        header.setContentLength(contentLength);
+        
+        response.setResponseHeader(header);
         response.setResponseBody(data.getBytes());
     }
 }

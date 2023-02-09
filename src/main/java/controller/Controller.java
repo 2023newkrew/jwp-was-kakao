@@ -2,13 +2,11 @@ package controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.HttpCookie;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
-import webserver.RequestHeader;
+import webserver.*;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 public abstract class Controller {
 
@@ -16,6 +14,22 @@ public abstract class Controller {
 
     public void process(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
         RequestHeader requestHeader = request.getRequestHeader();
+
+        // 요청 헤더에 쿠키가 없다면 생성하여 응답 전송
+        // TODO: Optional 활용 개성방안?
+        HttpCookie requestCookie = new HttpCookie(requestHeader.get("Cookie").orElse(""));
+
+        // 최초 접속 상황
+        if (requestCookie.get("JSESSIONID").isEmpty()) {
+            ResponseHeader header = new ResponseHeader();
+            HttpCookie httpCookie = new HttpCookie();
+            httpCookie.put("JSESSIONID", UUID.randomUUID().toString());
+            httpCookie.put("Path", "/");
+
+            header.setHttpCookie(httpCookie);
+            response.setResponseHeader(header);
+        }
+
         String method = requestHeader.get("method").orElseThrow(IllegalArgumentException::new);
         if (method.equals("GET")) {
             doGet(request, response, dos);
@@ -25,13 +39,6 @@ public abstract class Controller {
         }
         doFinally(request, response, dos);
 
-        // 요청 헤더에 쿠키가 없다면 생성하여 응답 전송
-        // TODO: Optional 활용 개성방안?
-        HttpCookie requestCookie = new HttpCookie(requestHeader.get("Cookie").orElse(""));
-
-        if (requestCookie.get("JSESSIONID").isEmpty()) {
-            response.getResponseHeader().setCookie(new HttpCookie());
-        }
         sendResponse(response, dos);
     }
 
