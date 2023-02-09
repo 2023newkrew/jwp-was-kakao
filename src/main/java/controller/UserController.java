@@ -14,6 +14,7 @@ import model.user.User;
 import org.springframework.http.HttpStatus;
 import session.Session;
 import session.SessionManager;
+import session.SessionUtils;
 import utils.HandleBarsUtils;
 import utils.IOUtils;
 
@@ -78,15 +79,7 @@ public class UserController {
     }
 
     public HttpResponse userListGet(HttpRequest request) throws IOException {
-        String sessionId = request.getSessionCookie()
-                .orElseThrow(AuthorizationException::new)
-                .getSessionId()
-                .orElseThrow(AuthorizationException::new);
-
-        if (sessionManager.findSession(sessionId)
-                .isEmpty()) {
-            throw new AuthorizationException();
-        }
+        SessionUtils.validateSession(request);
 
         List<User> userList = DataBase.findAll()
                 .stream()
