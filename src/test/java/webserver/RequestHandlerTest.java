@@ -275,7 +275,7 @@ class RequestHandlerTest {
 
     @DisplayName("지원하지 않는 바디 형식의 POST 요청은 415가 반환된다")
     @Test
-    void statusCodeNoDefined() {
+    void bodyNotSupported() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /index.html HTTP/1.1",
@@ -295,6 +295,56 @@ class RequestHandlerTest {
 
         // then
         var expected = "HTTP/1.1 415 Unsupported Media Type \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("요구되는 파라미터가 요청에 없는 경우 400이 반환된다")
+    @Test
+    void missingParameter() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Accept: */*",
+                "",
+                "userId=subin&name=subin&email=subin@google.com");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 400 Bad Request \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("요구되는 파라미터가 빈 문자열이나 공백의 문자열일 경우 400이 반환된다")
+    @Test
+    void blankParameter() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Accept: */*",
+                "",
+                "userId=subin&password= &name=subin&email=subin@google.com");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 400 Bad Request \r\n" +
                 "\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);

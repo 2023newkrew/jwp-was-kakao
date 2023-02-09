@@ -6,10 +6,7 @@ import common.HttpResponse;
 import common.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import support.IllegalMethodException;
-import support.MethodNotAllowedException;
-import support.PathNotFoundException;
-import support.UnsupportedContentTypeException;
+import support.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -42,7 +39,7 @@ public class RequestHandler implements Runnable {
     private void handleWithException(BufferedReader reader, DataOutputStream dos, DispatcherServlet servlet) throws IOException {
        try {
            handle(reader, dos, servlet);
-       } catch (IllegalMethodException e) {
+       } catch (IllegalMethodException | MissingParameterException | InvalidParameterException e) {
            sendResponse(dos, new HttpResponse(HttpStatus.BAD_REQUEST));
        } catch (PathNotFoundException e) {
            sendResponse(dos, new HttpResponse(HttpStatus.NOT_FOUND));

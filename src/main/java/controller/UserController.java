@@ -1,6 +1,7 @@
 package controller;
 
 import common.*;
+import controller.dto.UserRequest;
 import service.UserService;
 import support.PathNotFoundException;
 
@@ -31,12 +32,12 @@ public class UserController implements Controller {
 
     public void createUser(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.GET) || request.getMethod().equals(HttpMethod.POST)) {
-            Map<String, String> map = request.getParameter();
+            UserRequest userRequest = UserRequest.from(request.getParameter());
             userService.addUser(
-                    map.get("userId"),
-                    map.get("password"),
-                    map.get("name"),
-                    map.get("email")
+                    userRequest.getUserId(),
+                    userRequest.getPassword(),
+                    userRequest.getName(),
+                    userRequest.getEmail()
             );
             response.setHeader(HttpHeader.LOCATION, REDIRECT_PATH);
             response.setHttpStatus(HttpStatus.FOUND);
