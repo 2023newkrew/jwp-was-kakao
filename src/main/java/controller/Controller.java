@@ -24,9 +24,9 @@ public abstract class Controller {
         doFinally(request, dos);
     };
 
-    public abstract void doGet(HttpRequest request, DataOutputStream dos);
-    public abstract void doPost(HttpRequest request, DataOutputStream dos);
-    public abstract void doFinally(HttpRequest request, DataOutputStream dos);
+    protected void doGet(HttpRequest request, DataOutputStream dos) {}
+    protected void doPost(HttpRequest request, DataOutputStream dos) {}
+    protected void doFinally(HttpRequest request, DataOutputStream dos) {}
 
     void responseBody(DataOutputStream dos, byte[] body) {
         try {

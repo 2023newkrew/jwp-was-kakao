@@ -48,14 +48,4 @@ public class MainController extends Controller {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void doPost(HttpRequest request, DataOutputStream dos) {
-
-    }
-
-    @Override
-    public void doFinally(HttpRequest request, DataOutputStream dos) {
-
-    }
 }
