@@ -1,11 +1,13 @@
 package controller;
 
 import enums.ContentType;
+import exceptions.AuthorizationException;
 import http.HttpRequest;
 import http.HttpResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import session.SessionUtils;
 import utils.FileIoUtils;
 
 import java.io.IOException;
@@ -32,7 +34,16 @@ public class StaticFileController {
         return HttpResponse.of(HttpStatus.OK, contentType, body);
     }
 
-    public HttpResponse indexGet(){
+    public HttpResponse loginFileGet(HttpRequest request) throws IOException, URISyntaxException {
+        try {
+            SessionUtils.validateSession(request);
+            return indexGet();
+        } catch (AuthorizationException e) {
+            return staticFileGet(request);
+        }
+    }
+
+    public HttpResponse indexGet() {
         return HttpResponse.create302FoundResponse("/index.html");
     }
 }

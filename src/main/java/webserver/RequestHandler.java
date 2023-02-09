@@ -10,7 +10,6 @@ import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import session.SessionUtils;
 import utils.FileIoUtils;
 import utils.HttpUtils;
 
@@ -88,12 +87,7 @@ public class RequestHandler implements Runnable {
             return userController.userListGet(request);
         }
         if (requestPath.startsWith("/user/login.html") && "GET".equals(request.getRequestMethod())) {
-            try {
-                SessionUtils.validateSession(request);
-                return staticFileController.indexGet();
-            } catch (AuthorizationException e) {
-                return staticFileController.staticFileGet(request);
-            }
+            return staticFileController.loginFileGet(request);
         }
         if (requestPath.equals("/")) {
             return homeController.rootPathGet();
