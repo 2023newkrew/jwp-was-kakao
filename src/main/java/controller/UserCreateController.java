@@ -1,6 +1,6 @@
 package controller;
 
-import db.DataBase;
+import db.Database;
 import model.User;
 import type.HttpStatusCode;
 import utils.IOUtils;
@@ -17,11 +17,17 @@ import java.util.Map;
  */
 public class UserCreateController extends Controller {
 
+    private final Database db;
+
+    public UserCreateController(Database db) {
+        this.db = db;
+    }
+
     @Override
     public void doGet(HttpRequest request, DataOutputStream dos) {
         String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
 
-        DataBase.addUser(new User(
+        db.addUser(new User(
                 request.getParam("userId"),
                 request.getParam("password"),
                 request.getParam("name"),
@@ -32,7 +38,7 @@ public class UserCreateController extends Controller {
     @Override
     public void doPost(HttpRequest request, DataOutputStream dos) {
         Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
-        DataBase.addUser(new User(
+        db.addUser(new User(
                 createUserReqMap.get("userId"),
                 createUserReqMap.get("password"),
                 createUserReqMap.get("name"),

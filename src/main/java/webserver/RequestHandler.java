@@ -1,6 +1,7 @@
 package webserver;
 
 import controller.*;
+import db.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +14,13 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
+    private final Database db;
     private final Map<String, Controller> controllerMap = new HashMap<>();
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, Database db) {
         this.connection = connectionSocket;
-        controllerMap.put("/", new HelloController());
-        controllerMap.put("/index.html", new IndexController());
-        controllerMap.put("/user/create", new UserCreateController());
+        this.db = db;
+        setControllerMap();
     }
 
     public void run() {
@@ -49,5 +50,12 @@ public class RequestHandler implements Runnable {
 
     private void logConnected() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+    }
+
+    private Map<String, Controller> setControllerMap() {
+        controllerMap.put("/", new HelloController());
+        controllerMap.put("/index.html", new IndexController());
+        controllerMap.put("/user/create", new UserCreateController(db));
+        return null;
     }
 }
