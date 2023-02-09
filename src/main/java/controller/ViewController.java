@@ -11,15 +11,22 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * 관련 URI: /index.html, /
+ * HTML 파일 요청을 처리하기 위한 컨트롤러
  */
-public class IndexController extends Controller {
+public class ViewController extends Controller {
 
-    private static final String INDEX_FILE_PATH = "templates/index.html";
+    private static final String ROOT_PATH = "templates/";
+    private final String path;
+
+    public ViewController(String path) {
+        this.path = path;
+    }
+
     @Override
-    public void doGet(HttpRequest request, DataOutputStream dos) {
+    protected void doGet(HttpRequest request, DataOutputStream dos) {
+        super.doGet(request, dos);
         try {
-            byte[] returnBody = FileIoUtils.loadFileFromClasspath(INDEX_FILE_PATH);
+            byte[] returnBody = FileIoUtils.loadFileFromClasspath(ROOT_PATH + path);
 
             if (returnBody == null) {
                 dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
