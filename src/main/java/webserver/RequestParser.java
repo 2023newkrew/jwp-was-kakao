@@ -36,7 +36,6 @@ public class RequestParser {
         }
 
         parseBody(headerMap, requestBody);
-
         return new MyHttpRequest(httpMethod, requestUrl, queryParams, headerMap, cookies, requestBody);
     }
 
@@ -44,12 +43,13 @@ public class RequestParser {
         String[] headers = line.split(" ");
         if (headers[0].equals("Cookie:")) {
             parseCookie(line);
+            return;
         }
         headerMap.put(headers[0].substring(0, headers[0].length() - 1), headers[1]);
     }
 
     private void parseCookie(String line) {
-        String rawCookies = line.split(":")[1];
+        String rawCookies = line.split(":")[1].trim();
         for (String cookie : rawCookies.split(";")) {
             String key = cookie.split("=")[0];
             String value = cookie.split("=")[1];
