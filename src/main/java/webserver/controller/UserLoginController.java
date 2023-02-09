@@ -35,7 +35,7 @@ public class UserLoginController implements Controller {
 
         httpResponse.setStatus(HttpStatus.FOUND);
 
-        if (!user.isCorrectPassword(password)) {
+        if (!isValidUser(user, password)) {
             httpResponse.setLocation(REDIRECTION_FAILED);
             return new MyModelAndView();
         }
@@ -45,6 +45,10 @@ public class UserLoginController implements Controller {
         httpResponse.setLocation(REDIRECTION_SUCCESS);
 
         return new MyModelAndView();
+    }
+
+    private boolean isValidUser(User user, String password) {
+        return user != null && user.isCorrectPassword(password);
     }
 
     private void createUserSession(User user, String sessionId) {
