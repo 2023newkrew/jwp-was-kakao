@@ -2,6 +2,7 @@ package webserver;
 
 import auth.HttpCookie;
 import supports.HttpParser;
+import supports.TemplateService;
 import supports.UserService;
 import utils.FileIoUtils;
 import utils.ResponseUtils;
@@ -29,9 +30,11 @@ public class PathBinder {
     private static final String INDEX_PATH = "/index.html";
 
     private final UserService userService;
+    private final TemplateService templateService;
 
     public PathBinder() {
         userService = new UserService();
+        templateService = new TemplateService();
     }
 
     public void bind(OutputStream out, BufferedReader br, HttpParser httpParser) throws IOException, URISyntaxException {
@@ -51,7 +54,7 @@ public class PathBinder {
         String method = httpParser.getMethod();
         String path = httpParser.getPath();
         if (Objects.equals(method, "GET") && path.endsWith(HTML)) {
-            body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
+            body = templateService.createHtmlBody(httpParser);
             ResponseUtils.responseOkHeader(dos, body.length, path);
         }
         return body;

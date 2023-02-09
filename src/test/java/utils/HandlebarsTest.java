@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HandlebarsTest {
     private static final Logger log = LoggerFactory.getLogger(HandlebarsTest.class);
@@ -21,7 +23,7 @@ public class HandlebarsTest {
         loader.setSuffix(".html");
         Handlebars handlebars = new Handlebars(loader);
 
-        Template template = handlebars.compile("user/profile");
+        Template template = handlebars.compile("/user/profile");
 
         User user = new User("javajigi", "password", "자바지기", "javajigi@gmail.com");
         String profilePage = template.apply(user);
@@ -35,13 +37,13 @@ public class HandlebarsTest {
         loader.setSuffix(".html");
         Handlebars handlebars = new Handlebars(loader);
 
-        Template template = handlebars.compile("user/list");
+        Template template = handlebars.compile("/user/list");
 
-        ArrayList<User> users = new ArrayList<>();
+        ConcurrentHashMap<String, User> userMap = new ConcurrentHashMap<>();
 
-        users.add(new User("javajigi", "password", "자바지기", "javajigi@gmail.com"));
-        users.add(new User("asd", "asd", "asd", "asd@asd.asd"));
-        String profilePage = template.apply(users);
+        userMap.put("javajigi", new User("javajigi", "password", "자바지기", "javajigi@gmail.com"));
+        userMap.put("asd", new User("asd", "asd", "asd", "asd@asd.asd"));
+        String profilePage = template.apply(userMap);
         log.info("ProfilePage : {}", profilePage);
     }
 }

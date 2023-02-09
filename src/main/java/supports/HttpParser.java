@@ -33,6 +33,10 @@ public class HttpParser {
         }
     }
 
+    public String getCookie() {
+        return httpHeaderInfo.get("Cookie");
+    }
+
     public String getMethod() {
         return httpHeaderInfo.get("Http-Method");
     }
