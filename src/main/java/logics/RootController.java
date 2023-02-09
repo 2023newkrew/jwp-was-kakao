@@ -3,15 +3,23 @@ package logics;
 import utils.requests.HttpRequest;
 import utils.requests.RequestMethod;
 import utils.response.HttpResponse;
+import utils.response.HttpResponseVersion1;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * RootController class does similar role to Controller component of Spring framework.
  * Contains sub-controllers like getController and postController.
  */
 public class RootController extends Controller {
-    private final Service service = new Service();
-    private final Controller getController = new GetController();
-    private final Controller postController = new PostController(service);
+    private static final Service service = new Service();
+    private static final Map<RequestMethod, Controller> requestMethodMatcher = new HashMap<>();
+    static{
+        requestMethodMatcher.put(RequestMethod.GET, new GetController());
+        requestMethodMatcher.put(RequestMethod.POST, new PostController(service));
+    }
 
     /**
      * make response when httpRequest is given.
@@ -20,14 +28,10 @@ public class RootController extends Controller {
      * @throws IllegalArgumentException when request contains wrong information such as inappropriate path.
      */
     public HttpResponse makeResponse(HttpRequest httpRequest) {
-        return makeResponseByMethod(httpRequest);
-    }
-
-    private HttpResponse makeResponseByMethod(HttpRequest httpRequest) {
-        if (httpRequest.getRequestMethod().equals(RequestMethod.GET)) {
-            return getController.makeResponse(httpRequest);
+        Controller matchedController = requestMethodMatcher.get(httpRequest.getRequestMethod());
+        if (Objects.isNull(matchedController)){
+            return new HttpResponseVersion1().setResponseCode(405);
         }
-        return postController.makeResponse(httpRequest);
+        return requestMethodMatcher.get(httpRequest.getRequestMethod()).makeResponse(httpRequest);
     }
-
 }

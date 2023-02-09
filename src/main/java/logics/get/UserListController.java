@@ -28,7 +28,7 @@ public class UserListController extends Controller {
             String modifiedURL = urlConverter(httpRequest.getURI().getPath());
             return new HttpResponseVersion1().setResponseCode(200)
                     .setHeader("Content-Type", getAppropriateContentType(httpRequest))
-                    .setBody(ExecuteHandlebars.converter(FileIoUtils.loadFileFromClasspath(modifiedURL), service.getUserInformation()));
+                    .setBody(ExecuteHandlebars.convert(FileIoUtils.loadFileFromClasspath(modifiedURL), service.getUserInformation()));
         } catch(URISyntaxException | IOException | NullPointerException e){ // URI가 valid하지 않거나, URI가 null이거나 한다면
             e.printStackTrace();
             return new DefaultResponseController().makeResponse(httpRequest);

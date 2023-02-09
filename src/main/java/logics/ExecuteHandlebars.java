@@ -6,7 +6,7 @@ import com.github.jknack.handlebars.Template;
 import java.nio.charset.StandardCharsets;
 
 public class ExecuteHandlebars {
-    public static byte[] converter(byte[] originalText, Object applyObject){
+    public static byte[] convert(byte[] originalText, Object applyObject){
         try {
             Handlebars handlebars = new Handlebars();
             Template template = handlebars.compileInline(new String(originalText, StandardCharsets.UTF_8));
