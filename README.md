@@ -73,9 +73,9 @@
     ```
 
 ---
-- [ ] 템플릿 엔진 활용하기
-  - [ ] Cookie값이 logined=true 인 사용자는 `http://localhost:8080/user/list` 로 접근했을 때 사용자 목록을 출력, 만약 로그인하지 않은 상태라면 로그인 페이지(`login.html`)로 이동
-  - [ ] 동적 html 생성을 위해 handlebars.java template engine 활용
+- [x] 템플릿 엔진 활용하기
+  - [x] Cookie값이 logined=true 인 사용자는 `http://localhost:8080/user/list` 로 접근했을 때 사용자 목록을 출력, 만약 로그인하지 않은 상태라면 로그인 페이지(`login.html`)로 이동
+  - [x] 동적 html 생성을 위해 handlebars.java template engine 활용
 
 ---
 - [x] Session 구현하기

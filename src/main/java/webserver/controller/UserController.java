@@ -48,7 +48,7 @@ public class UserController {
     public void login(Request req, Response res) {
         FormData formData = new FormData(req.getBody());
         User user = DataBase.findUserById(formData.getValue("userId"));
-        if(user == null || !user.checkPasswordMatch(formData.getValue("password"))) {
+        if (user == null || !user.checkPasswordMatch(formData.getValue("password"))) {
             res.setRedirection("/user/login_failed.html");
             return;
         }
@@ -65,18 +65,15 @@ public class UserController {
     }
 
     @Handler(method = HttpMethod.GET, value = "/user/list")
-    public void listUser(Request req, Response res) {
+    public void listUser(Request req, Response res) throws Exception {
         TemplateViewResolver viewResolver = new TemplateViewResolver();
         String viewName = "/user/list";
-        if(!req.isLogined()) {
+        if (!req.isLogined()) {
             viewName = "/user/login";
         }
+        req.addAttribute("users", DataBase.findAll());
         TemplateView view = viewResolver.resolveViewName(viewName);
-        try {
-            view.render(req, res);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        view.render(req, res);
         res.setStatus(HttpStatus.OK);
     }
 }

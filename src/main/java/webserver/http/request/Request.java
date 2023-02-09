@@ -67,8 +67,12 @@ public class Request {
         return header.hasSessionId();
     }
 
-    public Object getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public void addAttribute(String name, Object value) {
+        attributes.put(name, value);
     }
 
     public boolean hasStaticPath() {
@@ -76,10 +80,6 @@ public class Request {
         String[] pathTokens = getPath().split("/");
         if (pathTokens.length < 2) return false;
         return StaticDirectory.resolve(pathTokens[1].toUpperCase()) != null;
-    }
-
-    public void addAttribute(String name, Object value) {
-        attributes.put(name, value);
     }
 
     public boolean isLogined() {
