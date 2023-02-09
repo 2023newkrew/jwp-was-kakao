@@ -8,7 +8,6 @@ import webserver.response.HttpResponse;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.UUID;
 
 @Slf4j
 public class RequestDispatcher implements Runnable {
@@ -36,10 +35,10 @@ public class RequestDispatcher implements Runnable {
 
     private HttpResponse dispatch(HttpRequest request) {
         HttpResponse.Builder responseBuilder = new HttpResponse.Builder();
+        new MyFilterChain().doFilter(request, responseBuilder);
         HttpRequestHandler mappedHandler = HandlerResolver.getInstance()
                 .resolve(request);
         mappedHandler.handle(request, responseBuilder);
-        responseBuilder.addHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID() + "; Path=/");
         return responseBuilder.build();
     }
 }
