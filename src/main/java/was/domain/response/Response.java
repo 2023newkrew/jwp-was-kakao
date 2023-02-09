@@ -3,7 +3,6 @@ package was.domain.response;
 import lombok.Builder;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,20 @@ public class Response {
         if (isValidBody()) {
             setHeader(CONTENT_LENGTH, String.valueOf(body.length));
         }
+    }
+
+    public static ResponseBuilder cssBuilder() {
+        return Response.builder()
+                .version(Version.HTTP_1_1)
+                .statusCode(StatusCode.OK)
+                .contentType("text/css");
+    }
+
+    public static ResponseBuilder htmlBuilder() {
+        return Response.builder()
+                .version(Version.HTTP_1_1)
+                .statusCode(StatusCode.OK)
+                .contentType("text/html;charset=utf-8");
     }
 
     private void setHeader(String header, String value) {

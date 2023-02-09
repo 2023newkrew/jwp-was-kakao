@@ -8,8 +8,6 @@ import was.annotation.Controller;
 import was.annotation.Mapping;
 import was.annotation.RequestMethod;
 import was.domain.response.Response;
-import was.domain.response.StatusCode;
-import was.domain.response.Version;
 import was.utils.FileIoUtils;
 
 import java.io.IOException;
@@ -24,10 +22,7 @@ public class MainController {
     @Mapping(method = RequestMethod.GET, path = "/index.html")
     public static Optional<Response> index() {
         try {
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .contentType("text/html;charset=utf-8")
+            return Optional.of(Response.htmlBuilder()
                     .body(FileIoUtils.loadFileFromClasspath("./templates/index.html")).build());
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
@@ -37,10 +32,7 @@ public class MainController {
 
     @Mapping(method = RequestMethod.GET, path = "/")
     public static Optional<Response> socket_out() {
-        return Optional.of(Response.builder()
-                .version(Version.HTTP_1_1)
-                .statusCode(StatusCode.OK)
-                .contentType("text/html;charset=utf-8")
+        return Optional.of(Response.htmlBuilder()
                 .body("Hello world".getBytes()).build());
     }
 }
