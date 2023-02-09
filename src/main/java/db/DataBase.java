@@ -14,6 +14,9 @@ public class DataBase {
     private static Long autoIncrementId = 1L;
     public static synchronized Optional<Long> addUser(UserRequest userRequest) {
         User user = userRequest.toEntity(autoIncrementId);
+        if (userIdIndex.containsKey(user.getUserId())) {
+            return Optional.empty();
+        }
         users.put(autoIncrementId, user);
         userIdIndex.put(user.getUserId(), user);
 

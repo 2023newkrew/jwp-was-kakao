@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 import service.UserService;
 import was.annotation.*;
 import was.domain.response.Response;
+import was.utils.SessionUtils;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,15 +28,19 @@ public class UserController {
         return Response.redirection("/index.html");
     }
 
+    @RequestHeader
     @Mapping(method = RequestMethod.GET, path = "/user/login.html")
-    public static Optional<Response> login() {
+    public static Optional<Response> login(Map<String, String> headers) {
+        if (SessionUtils.getSession(headers) != null) {
+            return Response.redirection("/index.html");
+        }
         return Response.htmlFromFile("./templates/user/login.html");
     }
 
     @RequestBody
     @Mapping(method = RequestMethod.POST, path = "/user/login")
     public static Optional<Response> submit(String body) {
-        UUID uuid = UserService.login(body).orElse(null);
+        String uuid = UserService.login(body).orElse(null);
         if (uuid == null) {
             return Response.redirection("/user/login_failed.html");
         }
@@ -48,7 +52,7 @@ public class UserController {
     public static Optional<Response> list(Map<String, String> headers) throws IOException {
         String body = UserService.list(headers).orElse(null);
         if (body == null) {
-            return Response.redirection("/index.html");
+            return Response.redirection("/user/login.html");
         }
         return Response.html(body);
     }
