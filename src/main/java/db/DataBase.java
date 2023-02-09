@@ -3,9 +3,7 @@ package db;
 
 import model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DataBase {
     private static final Map<String, User> users = new HashMap<>();
@@ -14,11 +12,6 @@ public class DataBase {
         int currentId = users.size();
         user.setId(currentId + 1);
         users.put(user.getUserId(), user);
-        System.out.println("ADD USER = " + user);
-    }
-
-    public static User findUserById(String userId) {
-        return users.get(userId);
     }
 
     public static User findUserByIdAndPassword(String userId, String password) {
@@ -26,13 +19,13 @@ public class DataBase {
             return null;
         }
         User user = users.get(userId);
-        if (user.hasSamePassword(password)) {
-            return user;
+        if (!user.hasSamePassword(password)) {
+            return null;
         }
-        return null;
+        return user;
     }
 
-    public static Collection<User> findAll() {
-        return users.values();
+    public static List<User> findAll() {
+        return new ArrayList<>(users.values());
     }
 }

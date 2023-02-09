@@ -26,6 +26,6 @@ public class RequestBody {
     public Map<String, String> parseRequestBody() {
         return Arrays.stream(requestBody.split("&"))
             .map(s -> s.split("="))
-            .collect(Collectors.toMap(keyValuePair -> keyValuePair[0], keyValuePair -> keyValuePair[1], (a, b) -> b));
+            .collect(Collectors.toMap(keyValuePair -> keyValuePair[0].trim(), keyValuePair -> keyValuePair[1].trim(), (a, b) -> b));
     }
 }

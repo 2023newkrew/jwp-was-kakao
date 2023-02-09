@@ -59,5 +59,5 @@
 - [x] Request를 RequestLine, Headers, RequestBody의 wrapper 클래스로 감싸기
 - [x] 매직 넘버 상수화
 - [x] HTTP Header를 enum으로 관리
-- [ ] 단위테스트 작성
+- [x] 단위테스트 작성
 - [x] 예외 처리 구현하기

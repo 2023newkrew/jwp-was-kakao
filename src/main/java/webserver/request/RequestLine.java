@@ -40,7 +40,10 @@ public class RequestLine {
     }
 
     public String getQueryString() {
-        return url.split(QUERY_STRING_DELIMITER)[1];
+        if (hasQueryString()) {
+            return url.split(QUERY_STRING_DELIMITER)[1];
+        }
+        return "";
     }
 
     public Map<String, String> parseQueryString() {

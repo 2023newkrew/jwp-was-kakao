@@ -48,10 +48,6 @@ public class Response {
         return new Response(StatusCode.NOT_FOUND);
     }
 
-    public static Response badRequest() {
-        return new Response(StatusCode.BAD_REQUEST);
-    }
-
     public static Response internalServerError() {
         return new Response(StatusCode.INTERNAL_SERVER_ERROR);
     }
