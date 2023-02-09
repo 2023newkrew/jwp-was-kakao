@@ -23,6 +23,7 @@ public class Request {
     private final Map<String, String> queryString;
     private final String protocol;
     private final Map<String, String> requestHeader;
+    private final Cookie cookie;
     private final String requestBody;
 
     // String Constant
@@ -33,6 +34,8 @@ public class Request {
     private static final String QUERY_STRING_CONNECTOR = "&";
     private static final String QUERY_STRING_SEPARATOR = "=";
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String COOKIE = "Cookie";
+    private static final String SESSION_KEY = "JSESSIONID";
 
     // Number Constant
     private static final int METHOD_INDEX = 0;
@@ -53,6 +56,7 @@ public class Request {
         String protocol = parseProtocol(firstLine);
 
         Map<String, String> requestHeader = parseHeader(reader);
+        Cookie cookie = parseCookie(requestHeader);
         String requestBody = parseBody(reader, requestHeader);
 
         return Request.builder()
@@ -61,6 +65,7 @@ public class Request {
                 .queryString(queryString)
                 .protocol(protocol)
                 .requestHeader(requestHeader)
+                .cookie(cookie)
                 .requestBody(requestBody)
                 .build();
     }
@@ -95,6 +100,13 @@ public class Request {
         return requestHeader;
     }
 
+    private static Cookie parseCookie(Map<String, String> requestHeader) {
+        if (requestHeader.containsKey(COOKIE)) {
+            return Cookie.of(requestHeader.get(COOKIE));
+        }
+        return Cookie.empty();
+    }
+
     private static String parseBody(BufferedReader reader, Map<String, String> requestHeader) throws IOException {
         if (requestHeader.containsKey(CONTENT_LENGTH)) {
             int contentLength = Integer.parseInt(requestHeader.get(CONTENT_LENGTH));
@@ -119,10 +131,7 @@ public class Request {
         return FileType.findType(fileExtension);
     }
 
-    public Optional<String> getCookie() {
-        if (requestHeader.containsKey("Cookie")) {
-            return Optional.of(requestHeader.get("Cookie").replace("JSESSIONID=", ""));
-        }
-        return Optional.empty();
+    public Optional<String> getSession() {
+        return cookie.getAttribute(SESSION_KEY);
     }
 }

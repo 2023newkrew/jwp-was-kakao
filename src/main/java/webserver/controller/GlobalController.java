@@ -56,7 +56,7 @@ public class GlobalController {
 
     @CustomRequestMapping(method = Method.GET, path = "/user/login")
     public Response loginGet(Request request) throws IOException, URISyntaxException {
-        if (request.getCookie().isPresent() && sessionService.find(request.getCookie().get()).isPresent()) {
+        if (request.getSession().isPresent() && sessionService.find(request.getSession().get()).isPresent()) {
             return Response.found(new byte[0], FileType.HTML, "/index.html");
         }
         return Response.ok(FileIoUtils.loadFileFromClasspath("./templates/user/login.html"), FileType.HTML);
@@ -64,8 +64,8 @@ public class GlobalController {
 
     @CustomRequestMapping(method = Method.GET, path = "/user/list")
     public Response list(Request request) throws IOException {
-        Optional<String> cookie = request.getCookie();
-        if (cookie.isEmpty() || sessionService.find(cookie.get()).isEmpty()) {
+        Optional<String> session = request.getSession();
+        if (session.isEmpty() || sessionService.find(session.get()).isEmpty()) {
             return Response.found(new byte[0], FileType.HTML, "/user/login.html");
         }
 
