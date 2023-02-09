@@ -11,21 +11,21 @@ import framework.request.HttpCookie;
 import framework.request.Request;
 import framework.response.ContentType;
 import framework.response.Response;
-import framework.utils.FileIoUtils;
 import model.User;
-import service.Session;
-import service.SessionHandler;
 import service.UserService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class UserController implements Controller {
 
+    public static final String TEMPLATE_PREFIX = "/templates";
+    public static final String TEMPLATE_SUFFIX = ".html";
     private final Map<String, Method> map = new HashMap<>();
 
     private final UserService userService = UserService.getInstance();
@@ -56,6 +56,7 @@ public final class UserController implements Controller {
         try {
             return (Response) map.get(request.getUri()).invoke(UserController.getInstance(), request);
         } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -73,68 +74,54 @@ public final class UserController implements Controller {
 
     @MyRequestMapping(uri = "/user/login")
     public Response handleUserLogin(Request request) {
-        Map<String, String> params = request.getRequestParams();
-        User user = DataBase.findUserById(params.get("userId"));
-        String body = "";
-        try {
-            body = new String(Objects.requireNonNull(FileIoUtils.loadFileFromClasspath("templates/user/login_failed.html")), StandardCharsets.UTF_8);
-        } catch (IOException | NullPointerException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-        if (user == null) {
-            return Response.unauthorized().body(body).build();
-        }
-        if (user.checkPassword(params.get("password"))) {
-            UUID uuid = UUID.randomUUID();
-            Session session = new Session(Map.of("user", user));
-            SessionHandler.getInstance().saveSession(uuid, session);
-            HttpCookie httpCookie = HttpCookie.from(Map.of("JSESSIONID", uuid.toString()));
-            return Response.found().location("/index.html").setCookie(httpCookie).build();
-        }
-        return Response.unauthorized().body(body).build();
+        HttpCookie cookie = userService.loginUser(request.getRequestParams());
+        return Response.found().location("/index.html").setCookie(cookie).build();
+//        String body = "";
+//        try {
+//            body = new String(Objects.requireNonNull(FileIoUtils.loadFileFromClasspath("templates/user/login_failed.html")), StandardCharsets.UTF_8);
+//        } catch (IOException | NullPointerException | URISyntaxException e) {
+//            e.printStackTrace();
+//        }
+//        return Response.unauthorized().body(body).build();
     }
 
     @MyRequestMapping(uri = "/user/profile.html")
     public Response handleUserProfile(Request request) {
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix("/templates");
-        loader.setSuffix(".html");
-        Handlebars handlebars = new Handlebars(loader);
+        Handlebars handlebars = getHandlebars(TEMPLATE_PREFIX, TEMPLATE_SUFFIX);
+        User user = userService.getUserFromCookie(request.getCookie());
 
         try {
-            UUID uuid = UUID.fromString(request.getCookie().get("JSESSIONID"));
-            Session session = SessionHandler.getInstance().getSession(uuid);
-            User user = (User) session.get("user");
-
             Template template = handlebars.compile("user/profile");
             String profilePage = template.apply(user);
             return Response.ok().body(profilePage).build();
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
-        return Response.unauthorized().body("Unauthorized").build();
+        throw new RuntimeException();
     }
 
     @MyRequestMapping(uri = "/user/list.html")
     public Response handleUserList(Request request) {
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix("/templates");
-        loader.setSuffix(".html");
-        Handlebars handlebars = new Handlebars(loader);
+        Handlebars handlebars = getHandlebars(TEMPLATE_PREFIX, TEMPLATE_SUFFIX);
+        if (!userService.isUserLoggedIn(request.getCookie())) {
+            throw new RuntimeException();
+        }
 
         try {
-            UUID uuid = UUID.fromString(request.getCookie().get("JSESSIONID"));
-            Session session = SessionHandler.getInstance().getSession(uuid);
-            User user = (User) session.get("user");
-
             List<User> users = new ArrayList<>(DataBase.findAll());
-
             Template template = handlebars.compile("user/list");
             String profilePage = template.apply(Map.of("users", users));
             return Response.ok().body(profilePage).build();
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
-        return Response.unauthorized().body("Unauthorized").build();
+        throw new RuntimeException();
+    }
+
+    private static Handlebars getHandlebars(String prefix, String suffix) {
+        TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setPrefix(prefix);
+        loader.setSuffix(suffix);
+        return new Handlebars(loader);
     }
 }

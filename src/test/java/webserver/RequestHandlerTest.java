@@ -87,7 +87,7 @@ class RequestHandlerTest {
     @Test
     void 유저를_생성할_수_있다() {
         // given
-        final String httpBody = "userId=test&" +
+        final String httpBody = "userId=testtest&" +
                 "password=passtest&" +
                 "name=Sanghwa&" +
                 "email=sss@ss.ss";
