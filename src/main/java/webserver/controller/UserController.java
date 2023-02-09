@@ -63,4 +63,20 @@ public class UserController {
         System.out.println("SESSION DELETE!!!");
         res.setRedirection("/user/login.html");
     }
+
+    @Handler(method = HttpMethod.GET, value = "/user/list")
+    public void listUser(Request req, Response res) {
+        TemplateViewResolver viewResolver = new TemplateViewResolver();
+        String viewName = "/user/list";
+        if(!req.isLogined()) {
+            viewName = "/user/login";
+        }
+        TemplateView view = viewResolver.resolveViewName(viewName);
+        try {
+            view.render(req, res);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        res.setStatus(HttpStatus.OK);
+    }
 }

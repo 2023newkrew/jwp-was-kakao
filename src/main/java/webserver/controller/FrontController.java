@@ -40,10 +40,14 @@ public class FrontController {
     }
 
     public static HandlerMethod getMappedMethod(Request request) {
-        HandlerMethod method = handlerMap.get(PathMapKey.of(request.getHttpMethod(), request.getPath()));
+        HandlerMethod method = handlerMap.get(PathMapKey.of(request.getHttpMethod(), removeSuffix(request.getPath())));
         if (method == null) {
             method = handlerMap.get(PathMapKey.RESOURCE_KEY());
         }
         return method;
+    }
+
+    private static String removeSuffix(String viewName) {
+        return viewName.replace(".html", "");
     }
 }

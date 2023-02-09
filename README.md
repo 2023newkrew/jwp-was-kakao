@@ -48,7 +48,7 @@
 
 ---
 ### 2단계 기능 구현 목록
-- [ ] 로그인 기능 구현
+- [x] 로그인 기능 구현
   - 로그인 클릭 시 `http://localhost:8080/user/login.html` 로 이동
   - 로그인 성공 시 `index.html` 로 이동
   - 로그인 실패 시 `/user/login_failed.html` 로 이동
@@ -72,15 +72,13 @@
     Content-Type: text/html;charset=utf-8;
     ```
 
-  - [ ] 로그인 시 세션 ID를 포함한 쿠키 반환 테스트 추가
-
 ---
 - [ ] 템플릿 엔진 활용하기
   - [ ] Cookie값이 logined=true 인 사용자는 `http://localhost:8080/user/list` 로 접근했을 때 사용자 목록을 출력, 만약 로그인하지 않은 상태라면 로그인 페이지(`login.html`)로 이동
   - [ ] 동적 html 생성을 위해 handlebars.java template engine 활용
 
 ---
-- [ ] Session 구현하기
+- [x] Session 구현하기
   - 쿠키로 전달받은 `JSESSIONID` 값으로 로그인 여부 체크
   - 로그인 성공 시 Session 객체의 값으로 User 객체 저장
   - 로그인 상태에서 `/user/login` 페이지에 HTTP GET method로 접근하면 `index.html` 페이지로 리다이렉트

@@ -9,11 +9,14 @@ import webserver.http.request.support.StaticDirectory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Request {
     private RequestHeader header;
     private RequestBody body;
+    private final Map<String, Object> attributes = new HashMap<>();
 
     public Request(BufferedReader br) throws IOException {
         String line = br.readLine();
@@ -64,10 +67,22 @@ public class Request {
         return header.hasSessionId();
     }
 
+    public Object getAttributes() {
+        return attributes;
+    }
+
     public boolean hasStaticPath() {
         if (getPath() == null) return false;
         String[] pathTokens = getPath().split("/");
         if (pathTokens.length < 2) return false;
         return StaticDirectory.resolve(pathTokens[1].toUpperCase()) != null;
+    }
+
+    public void addAttribute(String name, Object value) {
+        attributes.put(name, value);
+    }
+
+    public boolean isLogined() {
+        return header.getSession().getAttribute("user") != null;
     }
 }

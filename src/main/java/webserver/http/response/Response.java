@@ -41,6 +41,10 @@ public class Response {
         this.status = HttpStatus.FOUND;
     }
 
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
     public String getHeader() {
         String header = String.format(
                 "%s %d %s \r\n",
@@ -60,4 +64,5 @@ public class Response {
         }
         return header += "\r\n";
     }
+
 }
