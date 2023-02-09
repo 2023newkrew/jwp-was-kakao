@@ -1,7 +1,10 @@
 package webserver;
 
 import db.DataBase;
+import java.util.List;
+import java.util.UUID;
 import model.User;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -10,10 +13,27 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import webserver.controller.Controller;
+import webserver.controller.HelloWorldController;
+import webserver.controller.LoginController;
+import webserver.controller.PostController;
+import webserver.controller.QueryStringController;
+import webserver.controller.UserCreateController;
+import webserver.controller.UserListController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    private static final List<Controller> CONTROLLERS = List.of(
+            new HelloWorldController(),
+            new PostController(),
+            new QueryStringController(),
+            new UserCreateController(),
+            new LoginController(),
+            new UserListController()
+    );
+
     @Test
     void socket_out() {
         // given
@@ -25,7 +45,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
@@ -53,7 +73,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
@@ -82,18 +102,13 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
 
         // then
         var cssFile = FileIoUtils.loadFileFromClasspath("static/css/styles.css");
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/css;charset=utf-8 \r\n" +
-                "Content-Length: " + cssFile.length + " \r\n" +
-                "\r\n" +
-                new String(cssFile);
 
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 200 OK ",
@@ -115,19 +130,12 @@ class RequestHandlerTest {
                 "",
                 "");
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
 
         // then
-
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/plain;charset=utf-8 \r\n" +
-                "Content-Length: 12 \r\n" +
-                "\r\n" +
-                "hello 케인";
-
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/plain;charset=utf-8 ",
@@ -149,14 +157,12 @@ class RequestHandlerTest {
                 "",
                 "name=kane");
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
 
         // then
-
-
         assertThat(socket.output().split("\r\n")).contains(
                 "HTTP/1.1 200 OK ",
                 "Content-Length: 10 ",
@@ -178,7 +184,7 @@ class RequestHandlerTest {
                 "",
                 "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
 
         // when
         handler.run();
@@ -194,5 +200,130 @@ class RequestHandlerTest {
         assertThat(user.getPassword()).isEqualTo("password");
         assertThat(user.getName()).isEqualTo("이동규");
         assertThat(user.getEmail()).isEqualTo("brainbackdoor@gmail.com");
+    }
+
+    @Test
+    void login() {
+        // given
+        DataBase.addUser(new User("userId", "password", "name", "email"));
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Content-Length: 31",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "userId=userId&password=password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /index.html "
+        );
+    }
+
+    @Test
+    void loginFailedByInvalidPassword() {
+        // given
+        DataBase.addUser(new User("userId", "password", "name", "email"));
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Content-Length: 31",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "userId=userId&password=wrong_password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login_failed.html "
+        );
+    }
+
+    @Test
+    void loginFailedByNotFoundUser() {
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Content-Length: 31",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "userId=userId&password=password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login_failed.html "
+        );
+    }
+
+    @Test
+    void userListWithoutSessionId() {
+        final String httpRequest = String.join("\r\n",
+                "POST /user/list HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 302 Found ",
+                "Location: /user/login.html "
+        );
+    }
+
+    @Test
+    void userListWithSessionId() {
+        String sessionId = UUID.randomUUID().toString();
+        SessionManager.add(new Session(sessionId));
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/list HTTP/1.1",
+                "Host: localhost:8080 ",
+                "Accept: text/plain",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + sessionId,
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, CONTROLLERS);
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output().split("\r\n")).contains(
+                "HTTP/1.1 200 OK "
+        );
     }
 }

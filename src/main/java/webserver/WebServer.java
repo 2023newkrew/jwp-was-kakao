@@ -1,10 +1,18 @@
 package webserver;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import webserver.controller.Controller;
+import webserver.controller.HelloWorldController;
+import webserver.controller.LoginController;
+import webserver.controller.PostController;
+import webserver.controller.QueryStringController;
+import webserver.controller.UserCreateController;
+import webserver.controller.UserListController;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -25,9 +33,20 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection));
+                Thread thread = new Thread(new RequestHandler(connection, createControllers()));
                 thread.start();
             }
         }
+    }
+
+    private static List<Controller> createControllers() {
+        return List.of(
+                new HelloWorldController(),
+                new PostController(),
+                new QueryStringController(),
+                new UserCreateController(),
+                new LoginController(),
+                new UserListController()
+        );
     }
 }
