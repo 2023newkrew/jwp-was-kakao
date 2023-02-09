@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 public class UserRequestHandler implements UrlMappingHandler {
 
@@ -15,6 +16,12 @@ public class UserRequestHandler implements UrlMappingHandler {
 
     @Override
     public void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
+        if ((httpRequest.getURL().equals("/user/list.html") || httpRequest.getURL().equals("/user/profile.html")) &&
+                !isLoginUser(httpRequest)) {
+            redirectToLoginPage(httpResponse);
+            return;
+        }
+
         byte[] bytes;
         try {
             bytes = FileIoUtils.loadFileFromClasspath(TEMPLATES_FILEPATH + httpRequest.getURL());
@@ -37,6 +44,20 @@ public class UserRequestHandler implements UrlMappingHandler {
     @Override
     public String getUrlMappingRegex() {
         return URL_MAPPING_REGEX;
+    }
+
+    private boolean isLoginUser(HttpRequest httpRequest) {
+        HttpSession session = httpRequest.getSession();
+        if (session == null) {
+            return false;
+        }
+        Object attribute = session.getAttribute("user");
+        return session.isValidate() && attribute != null;
+    }
+
+    private void redirectToLoginPage(HttpResponse httpResponse) {
+        httpResponse.setStatus(HttpStatus.FOUND);
+        httpResponse.setHeaders(new HttpHeaders(Map.of(HttpHeaders.LOCATION, List.of("/user/login.html"))));
     }
 
     private HttpHeaders generateHeaders(HttpRequest httpRequest, byte[] body) {
