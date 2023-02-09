@@ -14,7 +14,10 @@ public class DataBase {
     }
 
     public static User findUserById(String userId) {
-        return users.get(userId);
+        if (users.containsKey(userId)) {
+            return users.get(userId);
+        }
+        return null;
     }
 
     public static Collection<User> findAll() {

@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 import model.User;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
+import utils.ExistUserException;
 import utils.LoginFailException;
 import webserver.request.HttpRequest;
 
 @NoArgsConstructor
 public class UserService {
-    public static void createUser(HttpRequest httpRequest) {
+    public static void registerUser(HttpRequest httpRequest) {
         MultiValueMap<String,String> requestParams = getRequestParams(httpRequest);
         addUser(requestParams);
     }
@@ -39,19 +40,17 @@ public class UserService {
                 .name(name)
                 .email(email)
                 .build();
+        if (DataBase.findUserById(userId) != null){
+            throw new ExistUserException();
+        }
         DataBase.addUser(user);
     }
 
     private static User validateAndGetUser(MultiValueMap<String, String> requestParams) {
         String userId = requestParams.getFirst("userId");
         String password = requestParams.getFirst("password");
-        User user;
-        try {
-            user = DataBase.findUserById(userId);
-        } catch (NullPointerException e) {
-            throw new LoginFailException();
-        }
-        if (!user.comparePassword(password)) {
+        User user = DataBase.findUserById(userId);
+        if (user == null || !user.comparePassword(password)) {
             throw new LoginFailException();
         }
         return user;
