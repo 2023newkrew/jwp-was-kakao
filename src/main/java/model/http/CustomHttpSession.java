@@ -20,7 +20,7 @@ public class CustomHttpSession {
     }
 
     public void setAttribute(final String name, final Object value) {
-        values.put("name", "value");
+        values.put(name, value);
     }
 
     public void removeAttribute(final String name) {
