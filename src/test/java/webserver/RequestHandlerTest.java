@@ -81,6 +81,7 @@ class RequestHandlerTest {
                 requestBody;
 
         final var expected = "HTTP/1.1 302 Found \r\n" +
+                "Content-Type: */* \r\n" +
                 "Location: /index.html \r\n" +
                 "\r\n";
 

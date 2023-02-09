@@ -2,7 +2,6 @@ package controller;
 
 import org.springframework.util.AntPathMatcher;
 import utils.FileIoUtils;
-import webserver.HttpMethod;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 
@@ -13,9 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public class FrontController {
-    private static final Map<String, PostMethodController> controllerMap = Map.of(
-            "/user/create", new UserSaveController(),
-            "/user/login", new LoginController()
+    private static final Map<String, Controller> controllerMap = Map.of(
+            "POST /user/create", new UserSaveController(),
+            "POST /user/login", new LoginController(),
+            "GET /user/list", new UserListController()
     );
 
     private static final String ROOT_PATH = "/";
@@ -25,19 +25,19 @@ public class FrontController {
 
     public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws NotFoundException, RedirectException {
         try {
-            if (httpRequest.getMethod().equals(HttpMethod.POST)) {
-                PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
-                postMethodController.process(httpRequest, httpResponse);
-                return;
-            }
-
             String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
                     .map(str -> str.split(",")[0])
                     .orElse("text/html;charset=utf-8");
+            httpResponse.addHeader("Content-Type", contentType);
+
+            String requestSignature = httpRequest.getMethod().name() + " " + httpRequest.getUrl();
+            if (controllerMap.containsKey(requestSignature)) {
+                Controller controller = controllerMap.get(requestSignature);
+                controller.process(httpRequest, httpResponse);
+                return;
+            }
 
             byte[] body = loadBody(httpRequest.getUrl());
-
-            httpResponse.addHeader("Content-Type", contentType);
             httpResponse.changeBody(body);
         } catch (URISyntaxException e) {
             throw new NotFoundException(e);

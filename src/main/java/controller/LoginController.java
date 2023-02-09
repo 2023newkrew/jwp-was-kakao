@@ -6,7 +6,7 @@ import webserver.HttpResponse;
 
 import java.util.UUID;
 
-public class LoginController implements PostMethodController {
+public class LoginController implements Controller {
     @Override
     public void process(HttpRequest httpRequest, HttpResponse httpResponse) throws RedirectException {
         String userId = httpRequest.getParameter("userId");
