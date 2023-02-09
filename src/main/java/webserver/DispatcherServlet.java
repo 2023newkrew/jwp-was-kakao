@@ -34,7 +34,7 @@ public class DispatcherServlet {
     }
 
     public Controller chooseHandler(String uri) {
-        if (uri.endsWith(".html") || uri.endsWith(".css")) {
+        if (uri.endsWith(".html") || uri.endsWith(".css") || uri.endsWith(".js")) {
             return fileController;
         }
         else if (uri.startsWith("/user")) {
