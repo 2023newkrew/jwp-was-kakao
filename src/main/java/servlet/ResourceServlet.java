@@ -10,20 +10,18 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Objects;
 
 public class ResourceServlet implements Servlet {
 
-    private static ResourceServlet instance;
+    private static class ResourceServletHolder {
+        private static final ResourceServlet instance = new ResourceServlet();
+    }
 
     private ResourceServlet() {
     }
 
     public static ResourceServlet getInstance() {
-        if (Objects.isNull(instance)) {
-            instance = new ResourceServlet();
-        }
-        return instance;
+        return ResourceServletHolder.instance;
     }
 
     @Override

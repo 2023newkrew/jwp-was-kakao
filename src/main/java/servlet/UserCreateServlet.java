@@ -11,20 +11,19 @@ import http.response.Response;
 import model.User;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
+@ServletMapping(uri = "/user/create")
 public class UserCreateServlet implements Servlet {
     public static final String REQUEST_PATH = "/user/create";
-    private static UserCreateServlet instance;
+    private static class UserCreateServletHolder {
+        private static final UserCreateServlet instance = new UserCreateServlet();
+    }
 
     private UserCreateServlet() {
     }
 
     public static UserCreateServlet getInstance() {
-        if (Objects.isNull(instance)) {
-            instance = new UserCreateServlet();
-        }
-        return instance;
+        return UserCreateServletHolder.instance;
     }
 
     @Override
