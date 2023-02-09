@@ -23,6 +23,14 @@ public class User {
         return name;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
     public static User from(Map<String, String> map) {
         return new User(map.get("userId"), map.get("password"), map.get("name"), map.get("email"));
     }

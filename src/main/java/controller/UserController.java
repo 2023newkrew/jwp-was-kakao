@@ -1,6 +1,7 @@
 package controller;
 
 import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
@@ -14,6 +15,7 @@ import framework.utils.FileIoUtils;
 import model.User;
 import service.Session;
 import service.SessionHandler;
+import service.UserService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +27,8 @@ import java.util.*;
 public final class UserController implements Controller {
 
     private final Map<String, Method> map = new HashMap<>();
+
+    private final UserService userService = UserService.getInstance();
 
     private static class LazyHolder {
         public static final UserController INSTANCE = new UserController();
@@ -63,9 +67,7 @@ public final class UserController implements Controller {
 
     @MyRequestMapping(uri = "/user/create")
     public Response handleUserCreate(Request request) {
-        User user = User.from(request.getRequestParams());
-        DataBase.addUser(user);
-
+        userService.createUser(request.getRequestParams());
         return Response.found().location("/index.html").build();
     }
 
@@ -84,7 +86,7 @@ public final class UserController implements Controller {
         }
         if (user.checkPassword(params.get("password"))) {
             UUID uuid = UUID.randomUUID();
-            Session session = new Session(Map.of("userId", user));
+            Session session = new Session(Map.of("user", user));
             SessionHandler.getInstance().saveSession(uuid, session);
             HttpCookie httpCookie = HttpCookie.from(Map.of("JSESSIONID", uuid.toString()));
             return Response.found().location("/index.html").setCookie(httpCookie).build();
@@ -92,12 +94,47 @@ public final class UserController implements Controller {
         return Response.unauthorized().body(body).build();
     }
 
-    @MyRequestMapping(uri = "/user/list")
-    private Response handleUserList(Request request) {
+    @MyRequestMapping(uri = "/user/profile.html")
+    public Response handleUserProfile(Request request) {
         TemplateLoader loader = new ClassPathTemplateLoader();
         loader.setPrefix("/templates");
         loader.setSuffix(".html");
         Handlebars handlebars = new Handlebars(loader);
-        return Response.notFound().build();
+
+        try {
+            UUID uuid = UUID.fromString(request.getCookie().get("JSESSIONID"));
+            Session session = SessionHandler.getInstance().getSession(uuid);
+            User user = (User) session.get("user");
+
+            Template template = handlebars.compile("user/profile");
+            String profilePage = template.apply(user);
+            return Response.ok().body(profilePage).build();
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return Response.unauthorized().body("Unauthorized").build();
+    }
+
+    @MyRequestMapping(uri = "/user/list.html")
+    public Response handleUserList(Request request) {
+        TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setPrefix("/templates");
+        loader.setSuffix(".html");
+        Handlebars handlebars = new Handlebars(loader);
+
+        try {
+            UUID uuid = UUID.fromString(request.getCookie().get("JSESSIONID"));
+            Session session = SessionHandler.getInstance().getSession(uuid);
+            User user = (User) session.get("user");
+
+            List<User> users = new ArrayList<>(DataBase.findAll());
+
+            Template template = handlebars.compile("user/list");
+            String profilePage = template.apply(Map.of("users", users));
+            return Response.ok().body(profilePage).build();
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return Response.unauthorized().body("Unauthorized").build();
     }
 }

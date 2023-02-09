@@ -34,4 +34,8 @@ public class HttpCookie {
         }
         return stringBuilder.toString();
     }
+
+    public String get(String key) {
+        return cookies.get(key);
+    }
 }
