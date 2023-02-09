@@ -197,12 +197,13 @@ class RequestHandlerTest {
     void userListSuccess() throws IOException {
         // given
         join();
+        String jSessionId = login();
         final String httpRequest = String.join("\r\n",
                 "GET /user/list HTTP/1.1",
                         "Host: localhost:8080",
                         "Connection: keep-alive",
                         "Content-Type: application/x-www-form-urlencoded",
-                        "Cookie: cookie",
+                        "Cookie: JSESSIONID=" + jSessionId,
                         "Accept: */*");
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
@@ -259,4 +260,21 @@ class RequestHandlerTest {
         final RequestHandler handler = new RequestHandler(socket);
         handler.run();
     }
+
+    String login() {
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 27",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "",
+                "userId=cu&password=password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+        handler.run();
+        return socket.output().split("JSESSIONID=")[1].split(";")[0];
+    }
+
 }
