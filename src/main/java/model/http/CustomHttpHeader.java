@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class CustomHttpHeader extends CustomBaseHttpRequest {
 
-    private Map<String, String> header;
+    private final  Map<String, String> header;
 
     public CustomHttpHeader() {
         this(new HashMap<>());
@@ -35,6 +35,10 @@ public class CustomHttpHeader extends CustomBaseHttpRequest {
         for (Map.Entry<String, String> entry : header.entrySet()) {
             dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");
         }
+    }
+
+    public boolean isLogined() {
+        return header.containsKey("Cookie");
     }
 
 }
