@@ -69,6 +69,7 @@ public class RequestHandler implements Runnable {
 
         if (!httpResponse.isRedirectRequired()) {
             byte[] body = FileIoUtils.loadFileFromClasspath(viewName);
+            dos.writeBytes(String.format("Content-Length: %d\r%n", body.length));
             dos.writeBytes("\r\n");
             dos.write(body, 0, body.length);
         }
