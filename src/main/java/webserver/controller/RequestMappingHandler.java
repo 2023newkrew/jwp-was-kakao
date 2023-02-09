@@ -7,6 +7,7 @@ import webserver.response.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class RequestMappingHandler {
@@ -15,14 +16,16 @@ public class RequestMappingHandler {
 
     public Response handle(Request request) throws InvocationTargetException, IllegalAccessException {
 
-        java.lang.reflect.Method[] methods = controller.getClass().getMethods();
-        Method invokeMethod = Arrays.stream(methods).filter(method ->
+        Method[] methods = controller.getClass().getMethods();
+        Optional<Method> invokeMethod = Arrays.stream(methods).filter(method ->
                         method.isAnnotationPresent(CustomRequestMapping.class) &&
                                 method.getAnnotation(CustomRequestMapping.class).method() == request.getMethod() &&
                                 method.getAnnotation(CustomRequestMapping.class).path().equals(BASE_URL + request.getPath()))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
+                .findAny();
 
-        return (Response) invokeMethod.invoke(controller, request);
+        if (invokeMethod.isEmpty()) {
+            return Response.notFound();
+        }
+        return (Response) invokeMethod.get().invoke(controller, request);
     }
 }

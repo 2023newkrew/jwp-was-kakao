@@ -48,6 +48,16 @@ public class Response {
         );
     }
 
+    public static Response notFound() {
+        byte[] body = "404 NOT FOUND".getBytes();
+        Map<String, String> responseHeader = generateResponseHeader(body, FileType.HTML);
+        return new Response(
+                StatusCode.NOT_FOUND,
+                responseHeader,
+                body
+        );
+    }
+
     public void setCookie(String name, String path) {
         responseHeader.put(SET_COOKIE, JSESSIONID + "=" + name + "; " + PATH + "=" + path);
     }
