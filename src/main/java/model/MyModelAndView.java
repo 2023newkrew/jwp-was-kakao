@@ -2,7 +2,9 @@ package model;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
+@Getter
 public class MyModelAndView {
 
     private final String prefix;
@@ -22,11 +24,7 @@ public class MyModelAndView {
         this.model.put(name, value);
     }
 
-    public String getViewName() {
+    public String getFullViewName() {
         return prefix + viewName;
-    }
-
-    public Map<String, Object> getModel() {
-        return new HashMap<>(model);
     }
 }
