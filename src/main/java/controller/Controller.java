@@ -11,7 +11,22 @@ public abstract class Controller {
 
     static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-    public abstract void process(HttpRequest request, DataOutputStream dos) throws IOException;
+    public void process(HttpRequest request, DataOutputStream dos) throws IOException {
+        String method = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
+        if (method.equals("GET")) {
+            doGet(request, dos);
+            return;
+        }
+        if (method.equals("POST")) {
+            doPost(request, dos);
+            return;
+        }
+        doFinally(request, dos);
+    };
+
+    public abstract void doGet(HttpRequest request, DataOutputStream dos);
+    public abstract void doPost(HttpRequest request, DataOutputStream dos);
+    public abstract void doFinally(HttpRequest request, DataOutputStream dos);
 
     void responseBody(DataOutputStream dos, byte[] body) {
         try {

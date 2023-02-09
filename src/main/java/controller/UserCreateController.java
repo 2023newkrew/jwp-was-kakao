@@ -18,32 +18,37 @@ import java.util.Map;
 public class UserCreateController extends Controller {
 
     @Override
-    public void process(HttpRequest request, DataOutputStream dos) throws IOException {
+    public void doGet(HttpRequest request, DataOutputStream dos) {
         String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
 
-        if (reqMethod.equals("GET")) {
-            DataBase.addUser(new User(
-                    request.getParam("userId"),
-                    request.getParam("password"),
-                    request.getParam("name"),
-                    request.getParam("email")
-            ));
-        }
+        DataBase.addUser(new User(
+                request.getParam("userId"),
+                request.getParam("password"),
+                request.getParam("name"),
+                request.getParam("email")
+        ));
+    }
 
-        if (reqMethod.equals("POST")) {
-            Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
-            DataBase.addUser(new User(
-                    createUserReqMap.get("userId"),
-                    createUserReqMap.get("password"),
-                    createUserReqMap.get("name"),
-                    createUserReqMap.get("email")
-            ));
-        }
+    @Override
+    public void doPost(HttpRequest request, DataOutputStream dos) {
+        Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
+        DataBase.addUser(new User(
+                createUserReqMap.get("userId"),
+                createUserReqMap.get("password"),
+                createUserReqMap.get("name"),
+                createUserReqMap.get("email")
+        ));
+    }
 
-        // index로 redirect
-        dos.writeBytes(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html").getValue());
+    @Override
+    public void doFinally(HttpRequest request, DataOutputStream dos) {
+        try {
+            dos.writeBytes(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html").getValue());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
         responseBody(dos, new byte[0]);
-
     }
 
 }

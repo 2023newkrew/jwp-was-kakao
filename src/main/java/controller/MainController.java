@@ -4,7 +4,6 @@ import type.ContentType;
 import type.HttpStatusCode;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
-import webserver.RequestHeader;
 import webserver.ResponseHeader;
 
 import java.io.DataOutputStream;
@@ -17,42 +16,46 @@ import java.net.URISyntaxException;
  */
 public class MainController extends Controller {
     @Override
-    public void process(HttpRequest request, DataOutputStream dos) throws IOException {
-        RequestHeader header = request.getRequestHeader();
-        String reqMethod = header.get("method").orElseThrow(IllegalArgumentException::new);
-        String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
+    public void doGet(HttpRequest request, DataOutputStream dos) {
+        String root = "static";
+        String uri = request.getRequestHeader().get("URI").orElseThrow(IllegalArgumentException::new);
+        String[] split = uri.split("\\.");
+        String fileType = split[split.length - 1];
 
-        if (reqMethod.equals("GET")) {
-            String root = "static";
-            String[] split = uri.split("\\.");
-            String fileType = split[split.length - 1];
-
-            if (fileType.equals("html")) {
-                root = "templates";
-            }
-
-            try {
-                byte[] returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
-
-                if (returnBody == null) {
-                    dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
-                    dos.flush();
-                    return;
-                }
-
-                dos.writeBytes(
-                        ResponseHeader.of(HttpStatusCode.OK,
-                                        ContentType.valueOf(fileType.toUpperCase()),
-                                        returnBody.length)
-                                .getValue()
-                );
-
-                responseBody(dos, returnBody);
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-            }
+        if (fileType.equals("html")) {
+            root = "templates";
         }
+
+        try {
+            byte[] returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
+
+            if (returnBody == null) {
+                dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
+                dos.flush();
+                return;
+            }
+
+            dos.writeBytes(
+                    ResponseHeader.of(HttpStatusCode.OK,
+                                    ContentType.valueOf(fileType.toUpperCase()),
+                                    returnBody.length)
+                            .getValue()
+            );
+
+            responseBody(dos, returnBody);
+        } catch (URISyntaxException | IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void doPost(HttpRequest request, DataOutputStream dos) {
+
+    }
+
+    @Override
+    public void doFinally(HttpRequest request, DataOutputStream dos) {
 
     }
 }

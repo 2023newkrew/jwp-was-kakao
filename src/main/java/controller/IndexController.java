@@ -16,34 +16,38 @@ import java.net.URISyntaxException;
 public class IndexController extends Controller {
 
     private static final String INDEX_FILE_PATH = "templates/index.html";
+    @Override
+    public void doGet(HttpRequest request, DataOutputStream dos) {
+        try {
+            byte[] returnBody = FileIoUtils.loadFileFromClasspath(INDEX_FILE_PATH);
+
+            if (returnBody == null) {
+                dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
+                dos.flush();
+                return;
+            }
+
+            dos.writeBytes(
+                    ResponseHeader.of(HttpStatusCode.OK,
+                                    ContentType.HTML,
+                                    returnBody.length)
+                            .getValue()
+            );
+
+            responseBody(dos, returnBody);
+        } catch (URISyntaxException | IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Override
-    public void process(HttpRequest request, DataOutputStream dos) throws IOException {
-        String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
+    public void doPost(HttpRequest request, DataOutputStream dos) {
 
-        if (reqMethod.equals("GET")) {
-            try {
-                byte[] returnBody = FileIoUtils.loadFileFromClasspath(INDEX_FILE_PATH);
+    }
 
-                if (returnBody == null) {
-                    dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
-                    dos.flush();
-                    return;
-                }
-
-                dos.writeBytes(
-                        ResponseHeader.of(HttpStatusCode.OK,
-                                        ContentType.HTML,
-                                        returnBody.length)
-                                .getValue()
-                );
-
-                responseBody(dos, returnBody);
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-            }
-        }
+    @Override
+    public void doFinally(HttpRequest request, DataOutputStream dos) {
 
     }
 }
