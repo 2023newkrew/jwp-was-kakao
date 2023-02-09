@@ -1,7 +1,9 @@
-package logics;
+package logics.controller;
 
-import logics.get.LoginPageController;
-import logics.get.UserListController;
+import logics.controller.get.DefaultPathController;
+import logics.controller.support.UrlMatcher;
+import logics.controller.get.LoginPageController;
+import logics.controller.get.UserListController;
 import utils.requests.HttpRequest;
 import utils.response.HttpResponse;
 import java.util.Objects;
@@ -9,7 +11,7 @@ import java.util.Objects;
 /**
  * GetController makes appropriate response when getting "GET request"
  */
-public class GetController extends Controller {
+public class GetController implements Controller {
     private final UrlMatcher urlMatcher = new UrlMatcher();
     public GetController(){
         urlMatcher.addMatch("/user/login.html", new LoginPageController());
@@ -22,6 +24,6 @@ public class GetController extends Controller {
         if (Objects.nonNull(matchedController)){
             return matchedController.makeResponse(httpRequest);
         }
-        return defaultPathHandling(httpRequest);
+        return new DefaultPathController().makeResponse(httpRequest);
     }
 }

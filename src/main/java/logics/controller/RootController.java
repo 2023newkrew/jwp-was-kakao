@@ -1,4 +1,4 @@
-package logics;
+package logics.controller;
 
 import utils.requests.HttpRequest;
 import utils.requests.RequestMethod;
@@ -13,12 +13,11 @@ import java.util.Objects;
  * RootController class does similar role to Controller component of Spring framework.
  * Contains sub-controllers like getController and postController.
  */
-public class RootController extends Controller {
-    private static final Service service = new Service();
+public class RootController implements Controller {
     private static final Map<RequestMethod, Controller> requestMethodMatcher = new HashMap<>();
     static{
         requestMethodMatcher.put(RequestMethod.GET, new GetController());
-        requestMethodMatcher.put(RequestMethod.POST, new PostController(service));
+        requestMethodMatcher.put(RequestMethod.POST, new PostController());
     }
 
     /**
@@ -32,6 +31,6 @@ public class RootController extends Controller {
         if (Objects.isNull(matchedController)){
             return new HttpResponseVersion1().setResponseCode(405);
         }
-        return requestMethodMatcher.get(httpRequest.getRequestMethod()).makeResponse(httpRequest);
+        return matchedController.makeResponse(httpRequest);
     }
 }

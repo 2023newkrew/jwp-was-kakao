@@ -1,13 +1,13 @@
-package logics.get;
+package logics.controller.get;
 
-import logics.Controller;
+import logics.controller.Controller;
 import utils.requests.HttpRequest;
 import utils.response.HttpResponse;
 import utils.response.HttpResponseVersion1;
 
 import java.nio.charset.StandardCharsets;
 
-public class DefaultResponseController extends Controller {
+public class DefaultResponseController implements Controller {
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         return new HttpResponseVersion1()

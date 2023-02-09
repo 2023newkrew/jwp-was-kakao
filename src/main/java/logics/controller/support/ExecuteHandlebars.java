@@ -1,4 +1,4 @@
-package logics;
+package logics.controller.support;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -6,7 +6,7 @@ import com.github.jknack.handlebars.Template;
 import java.nio.charset.StandardCharsets;
 
 public class ExecuteHandlebars {
-    public static byte[] convert(byte[] originalText, Object applyObject){
+    public static byte[] applyHandlebars(byte[] originalText, Object applyObject){
         try {
             Handlebars handlebars = new Handlebars();
             Template template = handlebars.compileInline(new String(originalText, StandardCharsets.UTF_8));

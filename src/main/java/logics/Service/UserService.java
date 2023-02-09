@@ -1,16 +1,15 @@
-package logics;
+package logics.Service;
 
 import db.DataBase;
 import model.User;
 import model.UserDto;
-import utils.session.Session;
 
 import java.util.*;
 
 /**
  * contains business logic, which is similar to Service component in Spring Framework.
  */
-public class Service {
+public class UserService {
     // Spring Framework 상으로는 아래 메소드 중 DataBase에 저장하는 역할을 Repository class로 분리하는 것이 맞을 수 있다만,
     // 이 코드에서는 DataBase가 Repository 역할을 한다고 생각하고 아래와 같이 코드를 작성하였다.
 
@@ -41,42 +40,6 @@ public class Service {
         return bodyMap;
     }
 
-    public Session login(String body){
-        try{
-            Map<String, String> bodyMap = parseBody(body);
-            return verifyLogin(bodyMap);
-        } catch(IndexOutOfBoundsException e){
-            throw new IllegalArgumentException("body is not valid");
-        }
-    }
-
-    private Session verifyLogin(final Map<String, String> bodyMap){
-        String userId = bodyMap.get("userId");
-        String password = bodyMap.get("password");
-        if (Objects.isNull(DataBase.findUserById(userId)) ||
-                !DataBase.findUserById(userId).getPassword().equals(password)){
-            throw new IllegalArgumentException("Invalid ID or Password");
-        }
-        return makeSession();
-    }
-
-    private Session makeSession(){
-        return new Session.Builder().setRandomId().build();
-    }
-
-    public String parseSessionKey(String value){
-        try {
-            String[] parsedValue = value.split(";");
-            for (String v : parsedValue){
-                if (v.trim().startsWith("JSESSIONID") && v.trim().split("=").length == 2){
-                    return v.trim().split("=")[1];
-                }
-            }
-            return null;
-        } catch(IndexOutOfBoundsException e){
-            return null;
-        }
-    }
 
     public List<UserDto> getUserInformation(){
         List<UserDto> result = new ArrayList<>();

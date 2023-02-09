@@ -1,9 +1,9 @@
 package webserver;
 
-import logics.Controller;
+import logics.controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import logics.RootController;
+import logics.controller.RootController;
 import utils.requests.HttpRequest;
 import utils.requests.HttpRequestVersion1;
 import utils.response.HttpResponseVersion1;

@@ -1,6 +1,7 @@
-package logics;
+package logics.controller.support;
 
-import logics.get.DefaultResponseController;
+import logics.controller.Controller;
+import logics.controller.get.DefaultResponseController;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,9 +12,8 @@ public class UrlMatcher {
 
     public UrlMatcher(){}
 
-    public UrlMatcher addMatch(String url, Controller controller){
+    public void addMatch(String url, Controller controller){
         matcher.put(url, controller);
-        return this;
     }
 
     public Controller getMatchingUrl(String url){

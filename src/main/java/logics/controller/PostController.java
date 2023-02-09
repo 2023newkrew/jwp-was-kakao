@@ -1,7 +1,8 @@
-package logics;
+package logics.controller;
 
-import logics.post.LoginController;
-import logics.post.UserCreateController;
+import logics.controller.support.UrlMatcher;
+import logics.controller.post.LoginController;
+import logics.controller.post.UserCreateController;
 import utils.requests.HttpRequest;
 import utils.response.HttpResponse;
 import utils.response.HttpResponseVersion1;
@@ -11,11 +12,9 @@ import java.util.Objects;
 /**
  * PostController makes appropriate response when getting "POST request"
  */
-public class PostController extends Controller {
-    private final Service service;
+public class PostController implements Controller {
     private final UrlMatcher urlMatcher = new UrlMatcher();
-    public PostController(Service service){
-        this.service = service;
+    public PostController(){
         urlMatcher.addMatch("/user/create", new UserCreateController());
         urlMatcher.addMatch("/user/login", new LoginController());
     }
