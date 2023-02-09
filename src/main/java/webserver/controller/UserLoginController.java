@@ -40,13 +40,13 @@ public class UserLoginController implements Controller {
         }
 
         String sessionId = httpRequest.getSession();
-        createSession(user, sessionId);
+        createUserSession(user, sessionId);
         httpResponse.setLocation(REDIRECTION_SUCCESS);
 
         return "";
     }
 
-    private void createSession(User user, String sessionId) {
+    private void createUserSession(User user, String sessionId) {
         Session session = SessionStorage.findSession(sessionId);
         session.setAttribute("user", user);
         SessionStorage.add(sessionId, session);
