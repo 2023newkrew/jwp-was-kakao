@@ -15,7 +15,8 @@ public class FrontController {
     private static final Map<String, Controller> controllerMap = Map.of(
             "POST /user/create", new UserSaveController(),
             "POST /user/login", new LoginController(),
-            "GET /user/list", new UserListController()
+            "GET /user/list", new UserListController(),
+            "GET /user/login", new LoginPageController()
     );
 
     private static final String ROOT_PATH = "/";

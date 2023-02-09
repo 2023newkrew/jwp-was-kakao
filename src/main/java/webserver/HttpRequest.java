@@ -104,7 +104,6 @@ public class HttpRequest {
                     .map(Integer::parseInt)
                     .orElse(-1);
             contentType = getHeader("Content-Type");
-            session = SessionManager.getSession(cookieMap.getOrDefault("JSESSIONID", ""));
 
             String cookieToken = headerMap.getOrDefault("Cookie", "");
             Arrays.stream(cookieToken.split(","))
@@ -112,6 +111,8 @@ public class HttpRequest {
                     .map(cookie -> cookie.split("="))
                     .filter(split -> split.length >= 2)
                     .forEach(split -> cookieMap.put(split[0], split[1]));
+
+            session = SessionManager.getSession(cookieMap.getOrDefault("JSESSIONID", ""));
         }
 
         private String readBody() throws IOException {
