@@ -8,13 +8,13 @@ import application.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
+import utils.FileIoUtils;
 import webserver.handler.Handlers;
 import webserver.handler.resource.ResourceHandler;
 import webserver.handler.resource.resolver.statics.StaticResolver;
 import webserver.handler.resource.resolver.statics.StaticType;
 import webserver.handler.resource.resolver.statics.StaticTypes;
 import webserver.handler.resource.resolver.view.ViewResolver;
-import webserver.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

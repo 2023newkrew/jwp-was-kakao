@@ -1,8 +1,8 @@
 package webserver.handler.resource.resolver.view;
 
-import webserver.content.Content;
-import webserver.content.ContentType;
 import webserver.handler.resource.resolver.AbstractResolver;
+import webserver.http.Content;
+import webserver.http.ContentType;
 
 public class ViewResolver extends AbstractResolver {
 

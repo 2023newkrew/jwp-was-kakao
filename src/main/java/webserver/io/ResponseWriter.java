@@ -1,6 +1,6 @@
 package webserver.io;
 
-import webserver.content.Content;
+import webserver.http.Content;
 import webserver.response.Response;
 
 import java.io.Closeable;

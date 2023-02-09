@@ -2,9 +2,9 @@ package application.controller;
 
 import application.enums.ApplicationContentType;
 import org.springframework.http.HttpStatus;
-import webserver.content.Content;
-import webserver.content.ContentData;
 import webserver.handler.controller.AbstractController;
+import webserver.http.Content;
+import webserver.http.ContentData;
 import webserver.request.Request;
 import webserver.response.Response;
 

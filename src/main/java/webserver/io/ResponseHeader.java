@@ -1,7 +1,7 @@
 package webserver.io;
 
 import org.springframework.http.HttpStatus;
-import webserver.content.Content;
+import webserver.http.Content;
 import webserver.http.Headers;
 import webserver.response.Response;
 

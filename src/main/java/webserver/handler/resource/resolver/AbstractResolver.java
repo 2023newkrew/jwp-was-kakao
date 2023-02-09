@@ -1,7 +1,7 @@
 package webserver.handler.resource.resolver;
 
-import webserver.content.ContentData;
-import webserver.utils.FileIoUtils;
+import utils.FileIoUtils;
+import webserver.http.ContentData;
 
 public abstract class AbstractResolver implements Resolver {
 

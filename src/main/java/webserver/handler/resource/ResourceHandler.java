@@ -1,9 +1,9 @@
 package webserver.handler.resource;
 
 import org.springframework.http.HttpStatus;
-import webserver.content.Content;
 import webserver.handler.Handler;
 import webserver.handler.resource.resolver.Resolver;
+import webserver.http.Content;
 import webserver.request.Request;
 import webserver.response.Response;
 

@@ -1,4 +1,4 @@
-package webserver.content;
+package webserver.http;
 
 public interface ContentType {
     String toString();

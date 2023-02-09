@@ -1,6 +1,6 @@
 package webserver.handler.resource.resolver;
 
-import webserver.content.Content;
+import webserver.http.Content;
 
 public interface Resolver {
 

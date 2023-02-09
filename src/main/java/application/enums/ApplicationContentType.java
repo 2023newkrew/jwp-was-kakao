@@ -1,6 +1,6 @@
 package application.enums;
 
-import webserver.content.ContentType;
+import webserver.http.ContentType;
 
 public enum ApplicationContentType implements ContentType {
     TEXT_HTML("text/html;charset=utf-8"),

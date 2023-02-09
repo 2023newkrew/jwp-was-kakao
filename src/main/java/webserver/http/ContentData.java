@@ -1,4 +1,4 @@
-package webserver.content;
+package webserver.http;
 
 import java.util.Objects;
 
