@@ -77,7 +77,6 @@ public class RequestController {
     public void sendUserListPage(Request request, Response response) throws IOException {
         Template template = getTemplate(request, "/user/list");
         List<User> users = new ArrayList<>(DataBase.findAll());
-//        User user = new User("cu", "password", "이도규", "park@park.com");
         byte[] body = template.apply(users).getBytes();
         sendPage(request, response, body);
     }

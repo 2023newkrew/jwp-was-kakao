@@ -73,9 +73,9 @@ public class RequestAdapter {
             }
 
             if (currentPath.equals("/user/list.html") || currentPath.equals("/user/list")) {
-//                if (!isLogin(request, response)) {
-//                    redirectToLoginPage(response);
-//                }
+                if (!isLogin(request, response)) {
+                    redirectToLoginPage(response);
+                }
                 requestController.sendUserListPage(request, response);
                 return;
             }
