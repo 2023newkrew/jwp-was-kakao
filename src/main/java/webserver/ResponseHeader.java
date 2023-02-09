@@ -3,16 +3,16 @@ package webserver;
 import type.ContentType;
 import type.HttpStatusCode;
 
-import java.util.Set;
-
 public class ResponseHeader {
     private static final String PROTOCOL = "HTTP";
     private static final String VERSION = "1.1";
-    private final HttpStatusCode httpStatusCode;
+    private HttpStatusCode httpStatusCode;
     private ContentType contentType;
     private Integer contentLength;
     private String location;
-    private HttpCookie httpCookie;
+    private HttpCookie httpCookie = new HttpCookie();
+
+    public ResponseHeader() {}
 
     public ResponseHeader(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
                           String location, HttpCookie httpCookie) {
@@ -64,8 +64,28 @@ public class ResponseHeader {
         return sb.toString();
     }
 
-    public void setCookie(HttpCookie httpCookie) {
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setContentLength(Integer contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setHttpCookie(HttpCookie httpCookie) {
         this.httpCookie = httpCookie;
+    }
+
+    public void setHttpStatusCode(HttpStatusCode httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
+    }
+
+    public void putCookieItem(String key, String value) {
+        httpCookie.put(key, value);
     }
 
     private String writeRequestLine(HttpStatusCode httpStatusCode) {
