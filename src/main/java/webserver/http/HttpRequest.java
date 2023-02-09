@@ -29,10 +29,12 @@ public class HttpRequest {
         return parameters.get(parameterName);
     }
 
-    /* 2단계에서 사용 예정 */
-    @SuppressWarnings("unused")
-    public String getHeader(String headerName) {
-        return headers.getHeaders().get(headerName);
+    public Map<String, HttpHeader> getHeaders() {
+        return headers.getHeaders();
+    }
+
+    public HttpHeader getHeader(String headerName) {
+        return headers.getHeader(headerName);
     }
 
     public Map<String, HttpCookie> getCookies() {

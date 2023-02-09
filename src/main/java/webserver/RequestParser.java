@@ -62,7 +62,7 @@ public class RequestParser {
             }
         } else if (method.equals(HttpMethod.POST)) {
             try {
-                String data = IOUtils.readData(reader, Integer.parseInt(headers.getHeaders().get("Content-Length")));
+                String data = IOUtils.readData(reader, Integer.parseInt(headers.getHeader("Content-Length").getValue()));
                 System.out.println(data);
                 parameters.putAll(getParameters(data, response));
             } catch (IOException e) {
@@ -86,11 +86,11 @@ public class RequestParser {
     }
 
     private static HttpHeaders getHttpHeaders(final List<String> headerLines, final HttpResponse response) {
-        Map<String, String> headers = new HashMap<>();
+        Map<String, HttpHeader> headers = new HashMap<>();
         headerLines.forEach(line -> {
             String[] headerKeyAndValue = line.split(": ");
             if (headerKeyAndValue.length == 2) {
-                headers.put(headerKeyAndValue[0], headerKeyAndValue[1]);
+                headers.put(headerKeyAndValue[0], new HttpHeader(headerKeyAndValue[0], headerKeyAndValue[1]));
             } else {
                 response.setStatus(HttpStatus.BAD_REQUEST);
             }
@@ -134,11 +134,11 @@ public class RequestParser {
 
     private static HttpCookies getCookies(final HttpHeaders headers, final HttpResponse response) {
         Map<String, HttpCookie> cookies = new ConcurrentHashMap<>();
-        String cookieStrings = headers.getHeaders().get("Cookie");
+        HttpHeader cookieStrings = headers.getHeader("Cookie");
         if (Objects.isNull(cookieStrings)) {
             return new HttpCookies(cookies);
         }
-        String[] cookieString = cookieStrings.split("; ");
+        String[] cookieString = cookieStrings.getValue().split("; ");
         for (String s : cookieString) {
             String[] keyAndValue = s.split("=");
             if (keyAndValue.length == 2) {

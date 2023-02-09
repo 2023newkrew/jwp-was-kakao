@@ -12,8 +12,12 @@ public class HttpResponse {
         headers = new HttpHeaders(new HashMap<>());
     }
 
-    public String getHeader(String headerName) {
-        return headers.getHeaders().get(headerName);
+    public Map<String, HttpHeader> getHeaders() {
+        return headers.getHeaders();
+    }
+
+    public HttpHeader getHeader(String headerName) {
+        return headers.getHeader(headerName);
     }
 
     public byte[] getBody() {
@@ -24,12 +28,8 @@ public class HttpResponse {
         return httpStatus;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers.getHeaders();
-    }
-
     public void setHeader(String header, String value) {
-        headers.getHeaders().put(header, value);
+        headers.getHeaders().put(header, new HttpHeader(header, value));
     }
 
     public void setBody(final byte[] body) {

@@ -4,10 +4,7 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.handler.Handler;
-import webserver.http.HttpCookie;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
-import webserver.http.HttpStatus;
+import webserver.http.*;
 import webserver.http.session.Session;
 import webserver.http.session.SessionManager;
 
@@ -111,10 +108,10 @@ public class RequestHandler implements Runnable {
     }
 
     private void responseCommonHeader(final DataOutputStream dos, final HttpResponse response) {
-        Map<String, String> headers = response.getHeaders();
+        Map<String, HttpHeader> headers = response.getHeaders();
         headers.keySet().forEach(headerName -> {
             try {
-                dos.writeBytes(headerName + ": " + headers.get(headerName) + " " + CRLF);
+                dos.writeBytes(headerName + ": " + headers.get(headerName).getValue() + " " + CRLF);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
