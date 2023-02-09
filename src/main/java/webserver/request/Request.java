@@ -1,32 +1,27 @@
 package webserver.request;
 
 import org.springframework.http.HttpMethod;
-import webserver.request.path.PathVariables;
-import webserver.request.path.URL;
 
 public class Request {
 
-    private final HttpMethod httpMethod;
+    private final RequestHeader header;
 
-    private final URL url;
+    private final RequestBody body;
 
-    private final String body;
-
-    public Request(HttpMethod httpMethod, URL url, String body) {
-        this.httpMethod = httpMethod;
-        this.url = url;
+    public Request(RequestHeader header, RequestBody body) {
+        this.header = header;
         this.body = body;
     }
 
-    public MethodPath getMethodPath() {
-        return new MethodPath(httpMethod, getPath());
+    public HttpMethod getHttpMethod() {
+        return header.getHttpMethod();
     }
 
     public String getPath() {
-        return url.getPath();
+        return header.getPath();
     }
 
-    public PathVariables getBodyAsPathVariables() {
-        return new PathVariables(body);
+    public String getBody(String key) {
+        return body.get(key);
     }
 }

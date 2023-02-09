@@ -1,10 +1,10 @@
 package webserver.handler.resource.resolver;
 
-import webserver.http.Content;
+import webserver.response.ResponseBody;
 
 public interface Resolver {
 
     boolean isResolvable(String path);
 
-    Content resolve(String path);
+    ResponseBody resolve(String path);
 }

@@ -1,8 +1,8 @@
 package webserver.handler.resource.resolver.view;
 
 import webserver.handler.resource.resolver.AbstractResolver;
-import webserver.http.Content;
-import webserver.http.ContentType;
+import webserver.http.content.ContentType;
+import webserver.response.ResponseBody;
 
 public class ViewResolver extends AbstractResolver {
 
@@ -14,7 +14,7 @@ public class ViewResolver extends AbstractResolver {
     }
 
     @Override
-    public Content resolve(String path) {
-        return new Content(contentType, getData(path));
+    public ResponseBody resolve(String path) {
+        return new ResponseBody(contentType, getData(path));
     }
 }

@@ -1,19 +1,18 @@
 package webserver.io;
 
-import org.springframework.http.HttpMethod;
 import utils.IOUtils;
-import webserver.http.Headers;
 import webserver.request.Request;
-import webserver.request.path.URL;
+import webserver.request.RequestBody;
+import webserver.request.RequestHeader;
 
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class RequestReader implements Closeable {
-
-    public static final String DELIMITER = " ";
 
     private final BufferedReader br;
 
@@ -23,41 +22,21 @@ public class RequestReader implements Closeable {
     }
 
     public Request read() throws IOException {
-        String line = readDecodedLine();
-        String[] headLines = line.split(DELIMITER);
-        Headers headers = getHeaders();
-        String contentLength = headers.get("Content-Length");
-        String requestBody = readRequestBody(contentLength);
+        RequestHeader header = readHeader();
+        RequestBody body = readBody(header.getContentLength());
 
-        HttpMethod httpMethod = HttpMethod.resolve(headLines[0]);
-        URL URL = new URL(headLines[1]);
-
-        return new Request(httpMethod, URL, requestBody);
+        return new Request(header, body);
     }
 
-    private String readRequestBody(String contentLength) throws IOException {
-        if (Objects.isNull(contentLength)) {
-            return null;
-        }
-        String requestBody = IOUtils.readData(br, Integer.parseInt(contentLength));
-        requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
-        System.out.println(requestBody);
-        return requestBody;
+    private RequestHeader readHeader() throws IOException {
+        String head = decode(readLine());
+        List<String> headers = readLines();
+
+        return new RequestHeader(head, headers);
     }
 
-    private Headers getHeaders() throws IOException {
-        Headers headers = new Headers();
-        String line = readDecodedLine();
-        while (isNotNullOrBlank(line)) {
-            headers.put(line);
-            line = readLine();
-        }
-
-        return headers;
-    }
-
-    private String readDecodedLine() throws IOException {
-        return URLDecoder.decode(readLine(), StandardCharsets.UTF_8);
+    private String decode(String requestBody) {
+        return URLDecoder.decode(requestBody, StandardCharsets.UTF_8);
     }
 
     private String readLine() throws IOException {
@@ -65,6 +44,33 @@ public class RequestReader implements Closeable {
         System.out.println(line);
 
         return line;
+    }
+
+    private List<String> readLines() throws IOException {
+        List<String> headers = new ArrayList<>();
+        String line = readLine();
+        while (isNotNullOrBlank(line)) {
+            headers.add(line);
+            line = readLine();
+        }
+
+        return headers;
+    }
+
+    private RequestBody readBody(int contentLength) throws IOException {
+        if (contentLength == 0) {
+            return null;
+        }
+
+        return new RequestBody(readData(contentLength));
+    }
+
+    private String readData(int contentLength) throws IOException {
+        String data = IOUtils.readData(br, contentLength);
+        System.out.println(data);
+
+        return decode(data);
+
     }
 
     private boolean isNotNullOrBlank(String line) {

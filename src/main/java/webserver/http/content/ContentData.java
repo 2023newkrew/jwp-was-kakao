@@ -1,9 +1,13 @@
-package webserver.http;
+package webserver.http.content;
 
 import java.util.Objects;
 
 public class ContentData {
     private final byte[] data;
+
+    public ContentData(String data) {
+        this(data.getBytes());
+    }
 
     public ContentData(byte[] data) {
         if (Objects.isNull(data)) {
@@ -12,7 +16,7 @@ public class ContentData {
         this.data = data;
     }
 
-    public byte[] getBytes() {
+    public byte[] getData() {
         return data.clone();
     }
 
@@ -20,4 +24,8 @@ public class ContentData {
         return data.length;
     }
 
+    @Override
+    public String toString() {
+        return new String(data);
+    }
 }

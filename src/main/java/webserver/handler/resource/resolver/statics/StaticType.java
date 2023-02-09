@@ -1,6 +1,6 @@
 package webserver.handler.resource.resolver.statics;
 
-import webserver.http.ContentType;
+import webserver.http.content.ContentType;
 
 public class StaticType {
 

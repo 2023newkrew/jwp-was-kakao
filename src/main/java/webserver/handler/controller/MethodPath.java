@@ -1,12 +1,17 @@
-package webserver.request;
+package webserver.handler.controller;
 
 import org.springframework.http.HttpMethod;
+import webserver.request.Request;
 
 public class MethodPath {
 
     private final HttpMethod httpMethod;
 
     private final String path;
+
+    public MethodPath(Request request) {
+        this(request.getHttpMethod(), request.getPath());
+    }
 
     public MethodPath(HttpMethod httpMethod, String path) {
         this.httpMethod = httpMethod;

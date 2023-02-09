@@ -1,8 +1,8 @@
 package webserver.handler.resource.resolver.statics;
 
 import webserver.handler.resource.resolver.AbstractResolver;
-import webserver.http.Content;
-import webserver.http.ContentType;
+import webserver.http.content.ContentType;
+import webserver.response.ResponseBody;
 
 public class StaticResolver extends AbstractResolver {
 
@@ -17,9 +17,9 @@ public class StaticResolver extends AbstractResolver {
     }
 
     @Override
-    public Content resolve(String path) {
+    public ResponseBody resolve(String path) {
         ContentType contentType = staticTypes.getContentType(path, defaultType);
 
-        return new Content(contentType, getData(path));
+        return new ResponseBody(contentType, getData(path));
     }
 }

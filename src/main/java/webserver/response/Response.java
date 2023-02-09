@@ -1,44 +1,40 @@
 package webserver.response;
 
-import org.springframework.http.HttpStatus;
-import webserver.http.Content;
-import webserver.http.Headers;
-
 import java.util.Objects;
 
 public class Response {
-    private final HttpStatus httpStatus;
 
-    private final Content body;
+    private final ResponseHeader header;
 
-    private final Headers headers;
+    private final ResponseBody body;
 
-    public Response(HttpStatus httpStatus) {
-        this(httpStatus, null, null);
+    public Response(ResponseHeader header) {
+        this(header, null);
     }
 
-    public Response(HttpStatus httpStatus, Content body) {
-        this(httpStatus, body, null);
-    }
-
-    public Response(HttpStatus httpStatus, Content body, Headers headers) {
-        if (Objects.isNull(headers)) {
-            headers = new Headers();
-        }
-        this.httpStatus = httpStatus;
+    public Response(ResponseHeader header, ResponseBody body) {
+        this.header = header;
         this.body = body;
-        this.headers = headers;
     }
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
+    public ResponseHeader getHeader() {
+        return header;
     }
 
-    public Content getBody() {
+    public ResponseBody getBody() {
         return body;
     }
 
-    public Headers getHeaders() {
-        return headers;
+    public byte[] getBytes() {
+        return toString().getBytes();
+    }
+
+    @Override
+    public String toString() {
+        if (Objects.isNull(body)) {
+            return header.toString();
+        }
+
+        return header.toString() + body;
     }
 }

@@ -3,10 +3,11 @@ package application.controller;
 import application.enums.ApplicationContentType;
 import org.springframework.http.HttpStatus;
 import webserver.handler.controller.AbstractController;
-import webserver.http.Content;
-import webserver.http.ContentData;
+import webserver.http.content.ContentData;
 import webserver.request.Request;
 import webserver.response.Response;
+import webserver.response.ResponseBody;
+import webserver.response.ResponseHeader;
 
 public class RootController extends AbstractController {
 
@@ -15,10 +16,10 @@ public class RootController extends AbstractController {
     }
 
     private Response helloWorld(Request request) {
-        byte[] data = "Hello world".getBytes();
-        ContentData contentData = new ContentData(data);
-        Content content = new Content(ApplicationContentType.TEXT_HTML, contentData);
+        ContentData contentData = new ContentData("Hello world");
+        ResponseBody responseBody = new ResponseBody(ApplicationContentType.TEXT_HTML, contentData);
+        ResponseHeader header = new ResponseHeader(HttpStatus.OK, responseBody);
 
-        return new Response(HttpStatus.OK, content);
+        return new Response(header, responseBody);
     }
 }

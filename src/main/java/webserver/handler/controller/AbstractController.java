@@ -2,7 +2,6 @@ package webserver.handler.controller;
 
 import org.springframework.http.HttpMethod;
 import webserver.handler.Handler;
-import webserver.request.MethodPath;
 import webserver.request.Request;
 import webserver.response.Response;
 
@@ -16,13 +15,12 @@ public abstract class AbstractController implements Handler {
 
     @Override
     public boolean canHandle(Request request) {
-        return requestHandlers.containsKey(request.getMethodPath());
+        return requestHandlers.containsKey(new MethodPath(request));
     }
-
 
     @Override
     public Response handle(Request request) {
-        RequestHandler handler = requestHandlers.get(request.getMethodPath());
+        RequestHandler handler = requestHandlers.get(new MethodPath(request));
         if (Objects.isNull(handler)) {
             throw new RuntimeException();
         }
