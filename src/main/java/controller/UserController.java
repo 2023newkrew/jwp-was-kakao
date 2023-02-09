@@ -5,6 +5,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import model.User;
+import model.dto.Cookie;
 import model.dto.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +17,10 @@ import utils.UserFactory;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static db.DataBase.addUser;
-import static db.DataBase.findAll;
+import static db.DataBase.*;
 import static model.dto.ResponseBodies.responseBody;
 import static model.dto.ResponseHeaders.response200Header;
 import static model.dto.ResponseHeaders.response302Header;
@@ -44,20 +42,86 @@ public class UserController  implements MyController {
         String cookie = headers.get("cookie");
         String contentType = headers.get("contentType");
 
+        if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
+            createForm(path, contentType, cookie, dataOutputStream);
+        }
+
+        if(path.equals("/user/login.html") && headers.get("method").equals("GET")){
+            loginForm(path, contentType, dataOutputStream);
+        }
+
+        if(path.equals("/user/list") && headers.get("method").equals("GET")){
+            isLogin(contentType, cookie, dataOutputStream);
+        }
+
+        if(path.equals("/user/login_failed.html") && headers.get("method").equals("GET")){
+            loginFailForm(path, contentType, cookie, dataOutputStream);
+        }
+
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
             createUser(params, cookie, dataOutputStream);
         }
 
-        if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
-            form(path, contentType, cookie, dataOutputStream);
-        }
-
-        if(path.equals("/user/list") && headers.get("method").equals("GET")){
-            getUserList(dataOutputStream, contentType, cookie);
+        if(path.equals("/user/login") && headers.get("method").equals("POST")){
+            login(params.get("userId"), params.get("password"), dataOutputStream);
         }
     }
 
-    private void getUserList(DataOutputStream dataOutputStream, String contentType, String cookie) {
+    private void login(String userId, String password, DataOutputStream dataOutputStream) {
+        if(isUser(userId, password)){
+            loginSuccess(dataOutputStream);
+            return;
+        }
+        loginFail(dataOutputStream);
+    }
+
+    private void loginSuccess(DataOutputStream dataOutputStream){
+        // 쿠키 생성
+        Cookie cookie = new Cookie();
+        response302Header(dataOutputStream, cookie.toString(), "/index.html");
+    }
+
+    private void loginFail(DataOutputStream dataOutputStream){
+        response302Header(dataOutputStream, "", "/user/login_failed.html");
+    }
+
+    private void loginFailForm(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
+        try {
+            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
+            response200Header(dataOutputStream, contentType, cookie, body.length);
+            responseBody(dataOutputStream, body);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    // 로그인 검증 로직
+    private boolean isUser(String userId, String password){
+        User user = findUserById(userId);
+        if(Objects.isNull(user) || !password.equals(user.getPassword())) return false;
+        return true;
+    }
+
+    private void isLogin(String contentType, String cookie, DataOutputStream dataOutputStream){
+        // login이 안되어있다면
+        if(Objects.isNull(cookie)){
+            String path = "/user/login.html";
+            loginForm(path, contentType, dataOutputStream);
+        }
+        getUserList(contentType, cookie, dataOutputStream);
+    }
+
+    private void loginForm(String path, String contentType, DataOutputStream dataOutputStream){
+        try{
+            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
+            response200Header(dataOutputStream, contentType, "", body.length);
+            responseBody(dataOutputStream, body);
+        } catch(Exception e){
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void getUserList(String contentType, String cookie, DataOutputStream dataOutputStream) {
         try{
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/templates");
@@ -85,7 +149,7 @@ public class UserController  implements MyController {
         response302Header(dataOutputStream, cookie, "/index.html");
     }
 
-    private void form(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
+    private void createForm(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
             response200Header(dataOutputStream, contentType, cookie, body.length);

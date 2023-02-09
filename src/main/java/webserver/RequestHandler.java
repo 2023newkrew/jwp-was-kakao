@@ -58,8 +58,6 @@ public class RequestHandler implements Runnable {
                 line = br.readLine();
             }
 
-            isCookie();
-
             DataOutputStream dos = new DataOutputStream(out);
 
             // [POST] Request Body (추후 다른 메서드로 확장 가능)
@@ -92,13 +90,6 @@ public class RequestHandler implements Runnable {
         catch(IOException e){
             logger.error(e.getMessage());
         }
-    }
-
-    // header에 쿠키 정보가 없다면 새로 생성
-    private void isCookie(){
-        if(!Objects.isNull(headers.get("cookie"))) return;
-        Cookie cookie = new Cookie();
-        headers.put("cookie", cookie.toString());
     }
 
     // Cookie 추출

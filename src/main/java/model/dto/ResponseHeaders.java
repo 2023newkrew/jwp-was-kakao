@@ -26,6 +26,7 @@ public class ResponseHeaders {
 
     public static void response302Header(DataOutputStream dos, String cookie, String redirectUrl) {
         try {
+            System.out.println(redirectUrl);
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
             dos.writeBytes(String.format("Location: %s", redirectUrl));
