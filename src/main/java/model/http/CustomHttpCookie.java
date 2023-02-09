@@ -8,13 +8,17 @@ public class CustomHttpCookie {
     private final String path;
 
     public CustomHttpCookie() {
-        this.jSessionId = getJSessionId();
+        this.jSessionId = createJSessionId();
         this.path = "/";
     }
 
-    public String getJSessionId() {
+    public String createJSessionId() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
+    }
+
+    public String getjSessionId() {
+        return jSessionId;
     }
 
     public String getCookie() {
