@@ -9,7 +9,11 @@ import java.util.stream.Collectors;
 
 public class CustomHttpHeader extends CustomBaseHttpRequest {
 
-    private final  Map<String, String> header;
+    private static final String COOKIE_HEADER = "Cookie";
+    private static final String JSESSIONID = "JSESSIONID";
+    private static final String ATTRIBUTE_DELIMITER = "; ";
+    private static final String KEY_VALUE_DELIMITER = "=";
+    private final Map<String, String> header;
 
     public CustomHttpHeader() {
         this(new HashMap<>());
@@ -40,16 +44,16 @@ public class CustomHttpHeader extends CustomBaseHttpRequest {
     }
 
     public boolean isLogined() {
-        if (!header.containsKey("Cookie")) {
+        if (!header.containsKey(COOKIE_HEADER)) {
             return false;
         }
-        Map<String, String> cookie = Arrays.stream(header.get("Cookie").split("; "))
-                .map(attribute -> attribute.split("="))
+        Map<String, String> cookie = Arrays.stream(header.get(COOKIE_HEADER).split(ATTRIBUTE_DELIMITER))
+                .map(attribute -> attribute.split(KEY_VALUE_DELIMITER))
                 .collect(Collectors.toMap(a -> a[0], a-> a[1]));
-        if (!cookie.containsKey("JSESSIONID")) {
+        if (!cookie.containsKey(JSESSIONID)) {
             return false;
         }
-        String id = cookie.get("JSESSIONID");
+        String id = cookie.get(JSESSIONID);
         return SessionManager.getInstance().findSession(id).isPresent();
     }
 
