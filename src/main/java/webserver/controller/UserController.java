@@ -6,6 +6,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.controller.annotation.Handler;
 import webserver.controller.annotation.RequestController;
+import webserver.controller.support.TemplateView;
+import webserver.controller.support.TemplateViewResolver;
 import webserver.http.Session;
 import webserver.http.SessionManager;
 import webserver.http.request.Request;
@@ -15,6 +17,7 @@ import webserver.http.response.Response;
 
 @RequestController
 public class UserController {
+
     @Handler(method = HttpMethod.GET, value = "/user/create")
     public void createUserGet(Request req, Response res) {
         QueryParameters parameters = new QueryParameters(req.getURL());
@@ -38,7 +41,7 @@ public class UserController {
                 formData.getValue("email")
         );
         DataBase.addUser(user);
-        res.setRedirection("http://localhost:8080/index.html");
+        res.setRedirection("/index.html");
     }
 
     @Handler(method = HttpMethod.POST, value = "/user/login")
@@ -46,20 +49,18 @@ public class UserController {
         FormData formData = new FormData(req.getBody());
         User user = DataBase.findUserById(formData.getValue("userId"));
         if(user == null || !user.checkPasswordMatch(formData.getValue("password"))) {
-            res.setRedirection("http://localhost:8080/user/login_failed.html");
+            res.setRedirection("/user/login_failed.html");
             return;
         }
-
-        // 세션
         Session session = req.getSession();
         session.setAttribute("user", user);
-
-        res.setRedirection("http://localhost:8080/index.html");
+        res.setRedirection("/index.html");
     }
 
-    @Handler(method = HttpMethod.POST, value = "/user/logout")
+    @Handler(method = HttpMethod.GET, value = "/user/logout")
     public void logout(Request req, Response res) {
         req.getSession().invalidate();
-        res.setRedirection("http://localhost:8080/user/login.html");
+        System.out.println("SESSION DELETE!!!");
+        res.setRedirection("/user/login.html");
     }
 }
