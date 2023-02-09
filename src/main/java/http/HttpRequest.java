@@ -24,7 +24,7 @@ public class HttpRequest {
         return header.getCookies();
     }
 
-    public Optional<HttpCookie> getSessionCookie(){
+    public Optional<HttpCookie> getSessionCookie() {
         return header.getSessionCookie();
     }
 }

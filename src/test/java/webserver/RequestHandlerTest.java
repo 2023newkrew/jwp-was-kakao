@@ -111,7 +111,7 @@ class RequestHandlerTest {
 
     @Test
     @DisplayName("Post 방식으로 로그인 테스트")
-    void loginUserByPostMethodTest(){
+    void loginUserByPostMethodTest() {
         User user = new User("cu", "password", "name", "email");
         DataBase.addUser(user);
         final String httpRequest = String.join("\r\n",

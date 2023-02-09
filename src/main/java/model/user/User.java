@@ -19,7 +19,7 @@ public class User {
         return new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
     }
 
-    public Boolean isPasswordValid(String password){
+    public Boolean isPasswordValid(String password) {
         return password.equals(this.password);
     }
 }

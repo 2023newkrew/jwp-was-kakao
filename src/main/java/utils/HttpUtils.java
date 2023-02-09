@@ -4,7 +4,6 @@ import http.HttpRequest;
 import http.HttpRequestHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -40,7 +40,7 @@ public class HttpResponse {
         dos.flush();
     }
 
-    public void addHeader(String header){
+    public void addHeader(String header) {
         headers.addHeader(header);
     }
 }
