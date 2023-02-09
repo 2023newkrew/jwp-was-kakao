@@ -1,6 +1,5 @@
 package was.utils;
 
-import controller.CssController;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
@@ -48,7 +47,7 @@ public class RequestUtils {
     private static List<String> getLines(BufferedReader reader) throws IOException {
         List<String> lines = new ArrayList<>();
         String line = reader.readLine();
-        while (line != null && line.equals("")) {
+        while (line != null && !line.equals("")) {
             lines.add(line);
             line = reader.readLine();
         }
@@ -56,6 +55,11 @@ public class RequestUtils {
     }
 
     private static String getBody(BufferedReader reader) throws IOException {
-        return String.join("\r\n", getLines(reader));
+        StringBuilder stringBuilder = new StringBuilder();
+        int ch;
+        while (reader.ready() && (ch = reader.read()) != -1) {
+            stringBuilder.append((char) ch);
+        }
+        return stringBuilder.toString();
     }
 }
