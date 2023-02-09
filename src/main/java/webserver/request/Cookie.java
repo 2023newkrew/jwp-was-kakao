@@ -1,6 +1,5 @@
 package webserver.request;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,24 +7,28 @@ public class Cookie {
 
     private final Map<String, String> cookies;
 
-    public Cookie(String cookieString) {
-        cookies = new HashMap<>();
-        if (cookieString != null) {
-            parseCookies(cookieString);
+    public Cookie(Map<String, String> cookies) {
+        this.cookies = cookies;
+    }
+
+    public static Cookie parse(String cookieString) {
+        Map<String, String> cookies = new HashMap<>();
+        if (cookieString.isBlank()) {
+            return new Cookie(cookies);
         }
+        String[] cookieRows = cookieString.split(";");
+        for (String cookieRow : cookieRows) {
+            String[] splitCookie = cookieRow.split("=");
+            cookies.put(splitCookie[0].strip(), splitCookie[1].strip());
+        }
+        return new Cookie(cookies);
     }
 
-    private void parseCookies(String cookieString) {
-        String[] cookies = cookieString.split(";");
-        Arrays.stream(cookies).forEach(this::parseCookie);
+    public String get(String key) {
+        return cookies.getOrDefault(key, "");
     }
 
-    private void parseCookie(String cookie) {
-        String[] stringCookie = cookie.split("=");
-        cookies.put(stringCookie[0], stringCookie[1]);
-    }
-
-    public Map<String, String> getCookies() {
-        return cookies;
+    public int size() {
+        return cookies.size();
     }
 }

@@ -1,6 +1,8 @@
 package webserver.request;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,19 +23,21 @@ public class HttpRequestLine {
         this.httpVersion = httpVersion;
     }
 
-    public HttpRequestLine(String stringStartLine) {
+    public static HttpRequestLine parse(BufferedReader bufferedReader) throws IOException {
+        String stringStartLine = bufferedReader.readLine();
         if (stringStartLine == null) {
             throw new RuntimeException("null point error");
         }
         String[] tokens = stringStartLine.split(" ");
-        httpMethod = HttpMethod.resolve(tokens[0]);
+        HttpMethod httpMethod = HttpMethod.resolve(tokens[0]);
         if (httpMethod == null) {
             throw new RuntimeException("올바른 HTTP Method Type이 아닙니다.");
         }
         String requestUri = tokens[1].trim();
-        path = requestUri.split("\\?")[0];
-        queryParams = getQueryParams(requestUri);
-        httpVersion = tokens[2].trim();
+        String path = requestUri.split("\\?")[0];
+        Map<String, String> queryParams = getQueryParams(requestUri);
+        String httpVersion = tokens[2].trim();
+        return new HttpRequestLine(httpMethod, path, queryParams, httpVersion);
     }
 
     public static Map<String, String> getQueryParams(String requestTarget) {

@@ -4,49 +4,28 @@ import static utils.IOUtils.readData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpMethod;
 import webserver.FilenameExtension;
 
 public class HttpRequest {
     private final HttpRequestLine requestLine;
-    private final Map<String, String> headers;
+    private final HttpRequestHeader headers;
     private final String body;
 
-    public HttpRequest(HttpRequestLine requestLine, Map<String, String> headers, String body) {
+    public HttpRequest(HttpRequestLine requestLine, HttpRequestHeader headers, String body) {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;
     }
 
     public static HttpRequest parse(BufferedReader bufferedReader) throws IOException {
-        HttpRequestLine requestLine = new HttpRequestLine(bufferedReader.readLine());
-        Map<String, String> headers = parseHttpHeaders(bufferedReader);
-        String body = parseBody(bufferedReader, headers);
+        HttpRequestLine requestLine = HttpRequestLine.parse(bufferedReader);
+        HttpRequestHeader headers = HttpRequestHeader.parse(bufferedReader);
+        String body = readData(bufferedReader, headers.getContentLength());
         return new HttpRequest(requestLine, headers, body);
     }
 
-    private static String parseBody(BufferedReader bufferedReader, Map<String, String> headers)
-            throws IOException {
-        int contentLength = Integer.parseInt(headers.getOrDefault("Content-Length", "0"));
-        return readData(bufferedReader, contentLength);
-    }
-
-    private static Map<String, String> parseHttpHeaders(BufferedReader bufferedReader) throws IOException {
-        String line = bufferedReader.readLine();
-        Map<String, String> headers = new HashMap<>();
-        while (!isNullOrEmpty(line)) {
-            String[] tokens = line.split(":");
-            headers.put(tokens[0], tokens[1].trim());
-            line = bufferedReader.readLine();
-        }
-        return headers;
-    }
-
-    private static boolean isNullOrEmpty(String line) {
-        return line == null || "".equals(line);
-    }
 
     public FilenameExtension getFilenameExtension() {
         String path = getPath();
@@ -63,7 +42,7 @@ public class HttpRequest {
         return requestLine;
     }
 
-    public Map<String, String> getHeaders() {
+    public HttpRequestHeader getHeaders() {
         return headers;
     }
 
