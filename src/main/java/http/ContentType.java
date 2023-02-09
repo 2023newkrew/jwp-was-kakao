@@ -27,12 +27,8 @@ public enum ContentType {
     }
 
     public static boolean isFileExtension(String extension) {
-        try {
-            of(extension);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return Arrays.stream(values())
+                .anyMatch(item -> item.fileExtension.equals(extension));
     }
 
     public String getFileExtension() {

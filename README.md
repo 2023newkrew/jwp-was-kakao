@@ -54,8 +54,8 @@
 - [x] HttpHeader enum 빼내기
 - [x] HttpMethod 한테 어떤 method 인지 물어볼 수 있음 (ex. isPost)
 - [x] reflection api 사용해서 ServletMapping 어노테이션 만들고 활용해보기
-- [ ] 가독성 위해 stream api 개행 개선하기
-- [ ] 로직분기 - 예외처리 혼용하지 않도록 수정하기 - ContentType.isFileExtension
+- [x] 가독성 위해 stream api 개행 개선하기
+- [x] 로직분기 - 예외처리 혼용하지 않도록 수정하기 - ContentType.isFileExtension
 - [ ] StartLine 일급 컬렉션으로 분리하기
 - [ ] ExceptionHandler 에서 instanceof 대신 catch 문 활용하기
 - [ ] Uri, ParsingUtils 등 단위테스트 작성하기
