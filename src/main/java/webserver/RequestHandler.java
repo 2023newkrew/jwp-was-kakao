@@ -55,7 +55,8 @@ public class RequestHandler implements Runnable {
     private Map<String, Controller> setControllerMap() {
         controllerMap.put("/", new HelloController());
         controllerMap.put("/index.html", new ViewController("/index.html"));
-        controllerMap.put("/login_failed.html", new ViewController("/user/login_failed.html"));
+        controllerMap.put("/user/login_failed.html", new ViewController("/user/login_failed.html"));
+        controllerMap.put("/user/list.html", new ViewController("/user/list.html"));
         controllerMap.put("/user/create", new UserCreateController(db));
         controllerMap.put("/user/login", new UserLoginController(db));
         return null;

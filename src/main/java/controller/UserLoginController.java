@@ -39,6 +39,6 @@ public class UserLoginController extends Controller {
             response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html"));
             return;
         }
-        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/login_failed.html"));
+        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/users/login_failed.html"));
     }
 }
