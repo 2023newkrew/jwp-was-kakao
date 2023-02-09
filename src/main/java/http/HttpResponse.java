@@ -30,7 +30,7 @@ public class HttpResponse {
 
     private void writeHeaderToOutputStream(DataOutputStream dos) throws IOException {
         for (String header : headers.getHeaders()) {
-            dos.writeBytes(header + " \r\n");
+            dos.writeBytes(header + "\r\n");
         }
         dos.writeBytes("\r\n");
     }
@@ -38,5 +38,9 @@ public class HttpResponse {
     private void writeBodyToOutputStream(DataOutputStream dos) throws IOException {
         dos.write(body, 0, body.length);
         dos.flush();
+    }
+
+    public void addHeader(String header){
+        headers.addHeader(header);
     }
 }

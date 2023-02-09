@@ -1,6 +1,7 @@
 package webserver;
 
 import db.DataBase;
+import model.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -106,6 +107,33 @@ class RequestHandlerTest {
 
         assertThat(DataBase.findAll()).hasSize(1);
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("Post 방식으로 로그인 테스트")
+    void loginUserByPostMethodTest(){
+        User user = new User("cu", "password", "name", "email");
+        DataBase.addUser(user);
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 27 ",
+                "Content-Type: text/plain ",
+                "Accept: */*",
+                "",
+                "userId=cu&password=password",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        handler.run();
+
+        String output = socket.output();
+
+        System.out.println("output = " + output);
+        assertThat(output).contains("Set-Cookie");
     }
 
     @Test

@@ -1,10 +1,12 @@
 package session;
 
+import exceptions.InvalidSessionException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SessionManager {
@@ -23,7 +25,8 @@ public class SessionManager {
     }
 
     public Session findSession(final String id) {
-        return SESSIONS.get(id);
+        return Optional.ofNullable(SESSIONS.get(id))
+                .orElseThrow(InvalidSessionException::new);
     }
 
     public void remove(final String id) {
