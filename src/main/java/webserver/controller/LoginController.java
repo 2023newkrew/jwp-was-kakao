@@ -6,6 +6,8 @@ import webserver.request.HttpRequest;
 import webserver.request.QueryStringParser;
 import webserver.response.HttpResponse;
 import webserver.response.HttpResponseStatus;
+import webserver.security.Session;
+import webserver.security.SessionManager;
 import webserver.utils.ResponseUtil;
 
 import javax.servlet.http.Cookie;
@@ -29,7 +31,11 @@ public class LoginController implements Controller {
             return;
         }
 
-        response.addCookie(new Cookie("JSESSIONID", UUID.randomUUID().toString()));
+        String sessionKey = UUID.randomUUID().toString();
+        Session session = new Session(sessionKey);
+        session.setAttribute(user.getUserId(), user);
+        SessionManager.getInstance().add(sessionKey, session);
+        response.addCookie(new Cookie("JSESSIONID", sessionKey));
         ResponseUtil.response302(response, "/index.html");
     }
 

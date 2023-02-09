@@ -17,6 +17,6 @@ public class SecurityHandler {
 
     public boolean isNotAuthenticated(HttpRequest request) {
         Optional<String> userInfo = request.getCookie("JSESSIONID");
-        return userInfo.isEmpty();
+        return userInfo.isEmpty() || SessionManager.getInstance().findSession(userInfo.get()).isEmpty();
     }
 }

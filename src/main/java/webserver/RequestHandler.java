@@ -9,6 +9,7 @@ import webserver.request.HttpRequestParser;
 import webserver.response.HttpResponse;
 import webserver.response.HttpResponseStatus;
 import webserver.security.SecurityHandler;
+import webserver.security.SessionManager;
 import webserver.utils.ResponseUtil;
 
 import java.io.DataOutputStream;
@@ -46,10 +47,22 @@ public class RequestHandler implements Runnable {
                 return;
             }
 
+            if (isUserTryLoginAgain(request)) {
+                response = HttpResponse.of(new DataOutputStream(out), HttpResponseStatus.REDIRECT);
+                ResponseUtil.response302(response, "/index.html");
+                response.send();
+            }
+
             controller.service(request, response);
             response.send();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private static boolean isUserTryLoginAgain(HttpRequest request) {
+        return request.getUri().getPath().equals("/user/login.html") &&
+                request.getCookie("JSESSIONID").isPresent() &&
+                SessionManager.getInstance().findSession(request.getCookie("JSESSIONID").get()).isPresent();
     }
 }
