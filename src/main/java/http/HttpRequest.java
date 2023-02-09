@@ -9,6 +9,7 @@ public class HttpRequest {
     private String version;
     private HttpRequestParams parameters;
     private HttpHeaders headers;
+    private HttpSession session;
     private String body;
 
     public HttpRequest() {
@@ -57,6 +58,10 @@ public class HttpRequest {
         return headers;
     }
 
+    public HttpSession getSession() {
+        return session;
+    }
+
     public String getBody() {
         return body;
     }
@@ -79,6 +84,10 @@ public class HttpRequest {
 
     public void setHeaders(HttpHeaders headers) {
         this.headers = headers;
+    }
+
+    public void setSession(HttpSession session) {
+        this.session = session;
     }
 
     public void setBody(String body) {
@@ -105,18 +114,13 @@ public class HttpRequest {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        HttpRequest request = (HttpRequest) o;
-        return method == request.method &&
-                Objects.equals(URL, request.URL) &&
-                Objects.equals(version, request.version) &&
-                Objects.equals(parameters, request.parameters) &&
-                Objects.equals(headers, request.headers) &&
-                Objects.equals(body, request.body);
+        HttpRequest that = (HttpRequest) o;
+        return method == that.method && Objects.equals(URL, that.URL) && Objects.equals(version, that.version) && Objects.equals(parameters, that.parameters) && Objects.equals(headers, that.headers) && Objects.equals(session, that.session) && Objects.equals(body, that.body);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(method, URL, version, parameters, headers, body);
+        return Objects.hash(method, URL, version, parameters, headers, session, body);
     }
 
     @Override
@@ -127,6 +131,7 @@ public class HttpRequest {
                 ", version='" + version + '\'' +
                 ", parameters=" + parameters +
                 ", headers=" + headers +
+                ", httpSession=" + session +
                 ", body='" + body + '\'' +
                 '}';
     }

@@ -20,7 +20,7 @@ public class FilterChain {
     }
 
     public void doFilter(HttpRequest httpRequest, HttpResponse httpResponse) {
-        while (++filterIdx < filters.size() && !findMatchedFilter(httpRequest, httpResponse));
+        while (++filterIdx < filters.size() && !findMatchedFilter(httpRequest));
 
         if (isFilteringFinished()) {
             handler.handle(httpRequest, httpResponse);
@@ -35,7 +35,7 @@ public class FilterChain {
         return filterIdx >= filters.size();
     }
 
-    private boolean findMatchedFilter(HttpRequest httpRequest, HttpResponse httpResponse) {
+    private boolean findMatchedFilter(HttpRequest httpRequest) {
         List<String> urlMappingRegex = filters.get(filterIdx).getKey();
         return urlMappingRegex.stream()
                 .anyMatch(regex -> Pattern.matches(regex, httpRequest.getURL()));

@@ -2,6 +2,9 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.filter.Filters;
+import webserver.filter.HttpFormParameterParseFilter;
+import webserver.filter.UserLoginFilter;
 import webserver.handler.*;
 
 import java.net.ServerSocket;
@@ -12,6 +15,7 @@ public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080;
     private static HandlerMappings handlerMappings = initHandlerMappings();
+    private static Filters filters = initFilters();
 
     public static void main(String args[]) throws Exception {
         int port = 0;
@@ -28,7 +32,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection, handlerMappings));
+                Thread thread = new Thread(new RequestHandler(connection, handlerMappings, filters));
                 thread.start();
             }
         }
@@ -49,5 +53,12 @@ public class WebServer {
                 handler -> handlerMappings.addUrlMappingHandler(handler));
 
         return handlerMappings;
+    }
+
+    private static Filters initFilters() {
+        filters = new Filters();
+        filters.addFilter(List.of("/.*"), new HttpFormParameterParseFilter());
+        filters.addFilter(List.of("/.*"), new UserLoginFilter());
+        return filters;
     }
 }

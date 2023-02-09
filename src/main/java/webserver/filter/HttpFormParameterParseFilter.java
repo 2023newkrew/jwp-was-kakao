@@ -13,13 +13,12 @@ public class HttpFormParameterParseFilter implements Filter {
         if (hasFormParameter(httpRequest)) {
             HttpRequestParams params = parser.parse(httpRequest.getBody());
             httpRequest.getParameters().setParameters(params.getParameters());
-
-            filterChain.doFilter(httpRequest, httpResponse);
         }
+        filterChain.doFilter(httpRequest, httpResponse);
     }
 
     private boolean hasFormParameter(HttpRequest httpRequest) {
         List<String> contentType = httpRequest.getHeaders().getHeader(HttpHeaders.CONTENT_TYPE);
-        return contentType != null && contentType.contains(HttpContentType.APPLICATION_X_WWW_FORM_URLENCODE.getValue());
+        return contentType != null && contentType.contains(HttpContentType.APPLICATION_X_WWW_FORM_URLENCODED.getValue());
     }
 }

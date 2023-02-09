@@ -4,13 +4,13 @@ import http.HttpRequest;
 import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.filter.Filters;
 import webserver.handler.Handler;
 import webserver.http.HttpRequestReader;
 import webserver.support.GlobalExceptionHandler;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
 
 public class RequestHandler implements Runnable {
@@ -19,10 +19,12 @@ public class RequestHandler implements Runnable {
     private final Socket connection;
     private final HandlerMappings handlerMappings;
     private final GlobalExceptionHandler globalExceptionHandler;
+    private final Filters filters;
 
-    public RequestHandler(Socket connectionSocket, HandlerMappings handlerMappings) {
+    public RequestHandler(Socket connectionSocket, HandlerMappings handlerMappings, Filters filters) {
         this.connection = connectionSocket;
         this.handlerMappings = handlerMappings;
+        this.filters = filters;
         this.globalExceptionHandler = new GlobalExceptionHandler(connection);
     }
 
@@ -31,37 +33,29 @@ public class RequestHandler implements Runnable {
                 connection.getInetAddress(),
                 connection.getPort());
 
-        HttpRequestReader httpRequestReader = null;
-        DataOutputStream dos = null;
-        try {
-            httpRequestReader = new HttpRequestReader(connection.getInputStream());
-            dos = new DataOutputStream(connection.getOutputStream());
+        try (HttpRequestReader httpRequestReader = new HttpRequestReader(connection.getInputStream());
+             DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
+            try {
+                HttpRequest httpRequest = httpRequestReader.readHttpRequest();
 
-            HttpRequest httpRequest = httpRequestReader.readHttpRequest();
+                logger.debug("HTTP Request: {}", httpRequest);
 
-            if (httpRequest == null) {
-                logger.debug("HTTP Request is null! Connection closed.");
-                close(httpRequestReader, dos, connection);
-                return;
+                HttpResponse httpResponse = getHttpResponse();
+                handle(httpRequest, httpResponse);
+
+                logger.debug("HTTP Response : {} {} {}, headers = {}",
+                        httpResponse.getVersion(),
+                        httpResponse.getStatus().getCode(),
+                        httpResponse.getStatus().getMessage(),
+                        httpResponse.getHeaders());
+
+                dos.write(httpResponse.toBytes());
+                dos.flush();
+            } catch (Exception e) {
+                globalExceptionHandler.handle(e);
             }
-
-            logger.debug("HTTP Request: {}", httpRequest);
-
-            HttpResponse httpResponse = getHttpResponse();
-            handle(httpRequest, httpResponse);
-
-            logger.debug("HTTP Response Status Line: {} {} {}",
-                    httpResponse.getVersion(),
-                    httpResponse.getStatus().getCode(),
-                    httpResponse.getStatus().getMessage());
-
-            dos.write(httpResponse.toBytes());
-            dos.flush();
-        } catch (Exception e) {
-            logger.error("Exception! - {}", e.getMessage());
-            globalExceptionHandler.handle(e);
-        } finally {
-            close(httpRequestReader, dos, connection);
+        } catch (IOException e) {
+            logger.error("Socket IOException! - {}", e.getMessage());
         }
     }
 
@@ -73,22 +67,6 @@ public class RequestHandler implements Runnable {
 
     private void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
         Handler handler = handlerMappings.findHandler(httpRequest);
-        handler.handle(httpRequest, httpResponse);
-    }
-
-    private void close(HttpRequestReader reader, OutputStream os, Socket connection) {
-        try {
-            if (reader != null) {
-                reader.close();
-            }
-            if (os != null) {
-                os.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (IOException ignored) {
-            throw new IllegalStateException();
-        }
+        filters.doFilterAndHandle(httpRequest, httpResponse, handler);
     }
 }

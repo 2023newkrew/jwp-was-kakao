@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
+import webserver.filter.Filters;
+import webserver.filter.HttpFormParameterParseFilter;
+import webserver.filter.UserLoginFilter;
 import webserver.handler.*;
 
 import java.io.IOException;
@@ -15,10 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RequestHandlerTest {
 
     HandlerMappings handlerMappings;
+    Filters filters;
 
     @BeforeEach
     void setUp() {
         initHandlerMappings();
+        initFilters();
     }
 
     @Test
@@ -32,7 +37,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, handlerMappings);
+        final RequestHandler handler = new RequestHandler(socket, handlerMappings, filters);
 
         // when
         handler.run();
@@ -60,5 +65,11 @@ class RequestHandlerTest {
 
         urlMappingHandlers.forEach(
                 handler -> handlerMappings.addUrlMappingHandler(handler));
+    }
+
+    private void initFilters() {
+        filters = new Filters();
+        filters.addFilter(List.of("/.*"), new HttpFormParameterParseFilter());
+        filters.addFilter(List.of("/.*"), new UserLoginFilter());
     }
 }
