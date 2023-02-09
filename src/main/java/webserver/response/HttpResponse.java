@@ -17,6 +17,10 @@ public class HttpResponse {
         this.body = body;
     }
 
+    public HttpResponse(HttpStatus status) {
+        this(status, new HttpResponseHeader(), status.getReasonPhrase().getBytes());
+    }
+
     public static HttpResponse ok(byte[] body, FilenameExtension extension) {
         return new HttpResponse(HttpStatus.OK, createHeader(body, extension), body);
     }
@@ -31,6 +35,10 @@ public class HttpResponse {
         header.setContentType(extension.getContentType());
         header.setContentLength(body.length);
         return header;
+    }
+
+    public static HttpResponse internalServerError() {
+        return new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public void writeResponse(DataOutputStream dos) throws IOException{

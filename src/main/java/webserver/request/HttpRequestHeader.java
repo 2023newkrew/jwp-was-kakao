@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequestHeader {
+
+    public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String COOKIE = "Cookie";
     private final Map<String, String> headers;
     private final Cookie cookie;
 
@@ -23,7 +26,7 @@ public class HttpRequestHeader {
             headers.put(tokens[0], tokens[1].trim());
             line = bufferedReader.readLine();
         }
-        Cookie cookie = Cookie.parse(headers.getOrDefault("Cookie", ""));
+        Cookie cookie = Cookie.parse(headers.getOrDefault(COOKIE, ""));
         return new HttpRequestHeader(headers, cookie);
     }
 
@@ -32,7 +35,7 @@ public class HttpRequestHeader {
     }
 
     public int getContentLength() {
-        return Integer.parseInt(headers.getOrDefault("Content-Length", "0"));
+        return Integer.parseInt(headers.getOrDefault(CONTENT_LENGTH, "0"));
     }
 
     public Cookie getCookie() {

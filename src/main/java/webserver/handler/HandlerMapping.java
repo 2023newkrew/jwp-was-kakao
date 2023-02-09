@@ -13,7 +13,8 @@ public enum HandlerMapping {
     BASE(GET, "/", new BaseHandler()),
     CREATE_USER_FROM_GET(GET, "/user/create", new CreateUserHandler()),
     CREATE_USER_FROM_POST(POST, "/user/create", new CreateUserHandler()),
-    LOGIN(POST, "/user/login", new LoginHandler());
+    LOGIN(POST, "/user/login", new LoginHandler()),
+    LOGIN_LIST(GET, "/user/list", new LoginListHandler());
 
     private final HttpMethod method;
     private final String path;
