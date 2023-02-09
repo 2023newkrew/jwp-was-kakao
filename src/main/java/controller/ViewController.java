@@ -1,13 +1,22 @@
 package controller;
 
 import controller.annotation.CustomRequestMapping;
-import model.http.CustomHttpHeader;
-import model.http.CustomHttpMethod;
-import model.http.CustomHttpResponse;
-import model.http.CustomHttpStatus;
+import model.http.*;
 import utils.FileIoUtils;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 public class ViewController extends BaseController {
+
+    @Override
+    public Method getProperMethod(CustomHttpRequest request) throws NoSuchMethodException {
+        return Arrays.stream(this.getClass().getDeclaredMethods())
+                .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getHttpRequestLine().getUrl())
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpRequestLine().getHttpMethod())
+                ).findFirst().orElse(this.getClass().getMethod("resource", CustomHttpRequest.class));
+    }
 
     @CustomRequestMapping(url = "/", httpMethod = CustomHttpMethod.GET)
     public CustomHttpResponse main() {
@@ -19,6 +28,32 @@ public class ViewController extends BaseController {
                 .headers(headers)
                 .body("Hello world")
                 .build();
+    }
+
+    @CustomRequestMapping(url = "", httpMethod = CustomHttpMethod.GET)
+    public CustomHttpResponse resource(CustomHttpRequest request) {
+        CustomHttpHeader headers = new CustomHttpHeader();
+        String url = request.getHttpRequestLine().getUrl();
+        String[] fileWithExt = url.split("\\.");
+        String ext = fileWithExt[fileWithExt.length - 1];
+        String filePath = "static";
+        if (ext.equals("html")) {
+            filePath = "templates";
+        }
+        headers.put("Content-Type", request.getHeaders().getOrDefault("Accept", "*/*").split(",")[0]);
+        try {
+            return new CustomHttpResponse.Builder()
+                    .httpStatus(CustomHttpStatus.OK)
+                    .headers(headers)
+                    .body(new String(FileIoUtils.loadFileFromClasspath(filePath + url)))
+                    .build();
+        } catch (Exception e) {
+            return new CustomHttpResponse.Builder()
+                    .httpStatus(CustomHttpStatus.OK)
+                    .headers(headers)
+                    .body("404 NOT FOUND")
+                    .build();
+        }
     }
 
     @CustomRequestMapping(url = "/index.html", httpMethod = CustomHttpMethod.GET)
