@@ -11,6 +11,10 @@ import java.nio.charset.StandardCharsets;
  * Default Web Page when other controllers cannot apprehend url.
  */
 public class DefaultResponseController implements Controller {
+
+    public static final DefaultResponseController instance = new DefaultResponseController();
+    private DefaultResponseController(){}
+
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         return new HttpResponseVersion1()

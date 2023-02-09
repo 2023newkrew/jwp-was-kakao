@@ -11,7 +11,10 @@ import utils.session.Session;
  * make response when receiving login-request.
  */
 public class LoginController implements Controller {
-    private final SessionService sessionService = new SessionService();
+
+    public static final Controller instance = new LoginController();
+    private LoginController(){}
+    private final SessionService sessionService = SessionService.instance;
     private static final HttpResponse loginSuccess = new HttpResponseVersion1().setResponseCode(302)
             .setHeader("Location", "/index.html");
     private static final HttpResponse loginFail = new HttpResponseVersion1().setResponseCode(302)

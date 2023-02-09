@@ -12,7 +12,11 @@ import utils.response.HttpResponseVersion1;
  * In case of being already logged-in, redirect to index.html
  */
 public class LoginPageController implements Controller {
-    private final SessionService sessionService = new SessionService();
+
+    public static Controller instance = new LoginPageController();
+    private final SessionService sessionService = SessionService.instance;
+
+    private LoginPageController(){}
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         String sessionId = sessionService.parseSessionKey(httpRequest.getHeaderParameter("Cookie"));
@@ -20,7 +24,7 @@ public class LoginPageController implements Controller {
             return new HttpResponseVersion1().setResponseCode(302)
                     .setHeader("Location", "/index.html");
         }
-        return new DefaultPathController().makeResponse(httpRequest);
+        return DefaultPathController.instance.makeResponse(httpRequest);
     }
 
 }

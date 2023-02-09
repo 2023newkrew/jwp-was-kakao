@@ -14,6 +14,8 @@ import java.net.URISyntaxException;
  * Controller that finds url and provides files located in given url with judging whether file is static or non-static.
  */
 public class DefaultPathController implements Controller {
+    public static final Controller instance = new DefaultPathController();
+    private DefaultPathController(){}
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         try {
@@ -23,7 +25,7 @@ public class DefaultPathController implements Controller {
                     .setBody(FileIoUtils.loadFileFromClasspath(modifiedURL));
         } catch(URISyntaxException | IOException | NullPointerException e){ // URI가 valid하지 않거나, URI가 null이거나 한다면
             e.printStackTrace();
-            return new DefaultResponseController().makeResponse(httpRequest);
+            return DefaultResponseController.instance.makeResponse(httpRequest);
         }
     }
 }

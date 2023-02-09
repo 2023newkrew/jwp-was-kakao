@@ -14,11 +14,13 @@ import java.util.Objects;
  * contains sub-controllers like getController and postController.
  */
 public class RootController implements Controller {
+    public static final Controller instance = new RootController();
     private static final Map<RequestMethod, Controller> requestMethodMatcher = new HashMap<>();
     static{
-        requestMethodMatcher.put(RequestMethod.GET, new GetController());
-        requestMethodMatcher.put(RequestMethod.POST, new PostController());
+        requestMethodMatcher.put(RequestMethod.GET, GetController.instance);
+        requestMethodMatcher.put(RequestMethod.POST, PostController.instance);
     }
+    private RootController(){}
 
     /**
      * make response when httpRequest is given.

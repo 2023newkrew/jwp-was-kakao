@@ -10,9 +10,8 @@ import java.util.*;
  * contains logic related to User.
  */
 public class UserService {
-    // Spring Framework 상으로는 아래 메소드 중 DataBase에 저장하는 역할을 Repository class로 분리하는 것이 맞을 수 있다만,
-    // 이 코드에서는 DataBase가 Repository 역할을 한다고 생각하고 아래와 같이 코드를 작성하였다.
-
+    public static final UserService instance = new UserService();
+    private UserService(){}
     /**
      * Update User into program's DB when given body containing information of user.
      * @param body should contain information of user with URL parameter sending method(param1=param1&param2=param2...).

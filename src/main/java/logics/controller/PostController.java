@@ -13,10 +13,11 @@ import java.util.Objects;
  * PostController makes appropriate response when getting "POST request"
  */
 public class PostController implements Controller {
+    public static final Controller instance = new PostController();
     private final UrlMatcher urlMatcher = new UrlMatcher();
-    public PostController(){
-        urlMatcher.addMatch("/user/create", new UserCreateController());
-        urlMatcher.addMatch("/user/login", new LoginController());
+    private PostController(){
+        urlMatcher.addMatch("/user/create", UserCreateController.instance);
+        urlMatcher.addMatch("/user/login", LoginController.instance);
     }
 
     @Override

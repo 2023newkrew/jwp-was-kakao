@@ -11,7 +11,9 @@ import java.util.Objects;
  * SessionService has business logic related to Session Management using utils.session.*
  */
 public class SessionService {
-    private final UserService userService = new UserService();
+    public static final SessionService instance = new SessionService();
+    private SessionService(){}
+    private final UserService userService = UserService.instance;
     public Session login(String body){
         try{
             Map<String, String> bodyMap = parseBody(body);

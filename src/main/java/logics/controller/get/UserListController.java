@@ -19,8 +19,12 @@ import static utils.FileIoUtils.*;
  * In case of not logged-in, redirect to "/user/login"
  */
 public class UserListController implements Controller {
-    private final SessionService sessionService = new SessionService();
-    private final UserService userService = new UserService();
+
+
+    public static final Controller instance = new UserListController();
+    private final SessionService sessionService = SessionService.instance;
+    private final UserService userService = UserService.instance;
+    private UserListController(){}
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         if (!sessionService.isValidSessionKey(sessionService.parseSessionKey(httpRequest.getHeaderParameter("Cookie")))){
@@ -32,7 +36,7 @@ public class UserListController implements Controller {
                     .setHeader("Content-Type", getAppropriateContentType(httpRequest))
                     .setBody(applyHandlebars(loadFileFromClasspath(modifiedURL), userService.getUserInformation()));
         } catch(URISyntaxException | IOException | NullPointerException e){ // URI가 valid하지 않거나, URI가 null이라면
-            return new DefaultResponseController().makeResponse(httpRequest);
+            return DefaultResponseController.instance.makeResponse(httpRequest);
         }
     }
 

@@ -12,10 +12,13 @@ import java.util.Objects;
  * GetController makes appropriate response when getting "GET request"
  */
 public class GetController implements Controller {
+    public static Controller instance = new GetController();
+
     private final UrlMatcher urlMatcher = new UrlMatcher();
-    public GetController(){
-        urlMatcher.addMatch("/user/login.html", new LoginPageController());
-        urlMatcher.addMatch("/user/list.html", new UserListController());
+
+    private GetController(){
+        urlMatcher.addMatch("/user/login.html", LoginPageController.instance);
+        urlMatcher.addMatch("/user/list.html", UserListController.instance);
     }
 
             //Content-Type: text/html;charset=utf-8
@@ -24,6 +27,6 @@ public class GetController implements Controller {
         if (Objects.nonNull(matchedController)){
             return matchedController.makeResponse(httpRequest);
         }
-        return new DefaultPathController().makeResponse(httpRequest);
+        return DefaultPathController.instance.makeResponse(httpRequest);
     }
 }

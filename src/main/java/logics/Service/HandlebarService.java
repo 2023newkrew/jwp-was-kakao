@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
  * HandlebarService contains methods related handlebars, which can make dynamic responses.
  */
 public class HandlebarService {
+    private HandlebarService(){}
+
     public static byte[] applyHandlebars(byte[] originalText, Object applyObject){
         try {
             Handlebars handlebars = new Handlebars();

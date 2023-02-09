@@ -1,6 +1,5 @@
 package webserver;
 
-import logics.controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import logics.controller.RootController;
@@ -38,8 +37,7 @@ public class RequestHandler implements Runnable {
     private void proceed(BufferedReader br, DataOutputStream dos) throws IOException{
         try{
             HttpRequest httpRequest = HttpRequestVersion1.readFrom(br);
-            Controller rootController = new RootController();
-            rootController.makeResponse(httpRequest).respond(dos);
+            RootController.instance.makeResponse(httpRequest).respond(dos);
         } catch(RuntimeException e){ // If RuntimeException Occurs,
             e.printStackTrace();
             new HttpResponseVersion1().setResponseCode(400).respond(dos); // Respond 400(Bad Request)
