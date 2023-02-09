@@ -21,30 +21,31 @@ public class ResourceController {
         return INSTANCE;
     }
 
-    public byte[] getCommonTemplate(DataOutputStream dos, String path) throws IOException, URISyntaxException {
+    public void getCommonTemplate(DataOutputStream dos, String path) throws IOException, URISyntaxException {
         byte[] body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-        ResponseUtils.response200Header(dos, body.length, path);
 
-        return body;
+        ResponseUtils.response200Header(dos, body.length, path);
+        ResponseUtils.responseBody(dos, body);
     }
 
-    public byte[] getStatic(DataOutputStream dos, String path) throws IOException, URISyntaxException{
+    public void getStatic(DataOutputStream dos, String path) throws IOException, URISyntaxException{
         byte[] body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + path);
-        ResponseUtils.response200Header(dos, body.length, path);
 
-        return body;
+        ResponseUtils.response200Header(dos, body.length, path);
+        ResponseUtils.responseBody(dos, body);
     }
 
-    public byte[] getLoginTemplate(DataOutputStream dos, String path, HttpCookie httpCookie) throws IOException, URISyntaxException{
+    public void getLoginTemplate(DataOutputStream dos, String path, HttpCookie httpCookie) throws IOException, URISyntaxException{
         byte[] body = new byte[0];
         String sessionId = httpCookie.getCookieValueByKey(SESSION_KEY);
-        if(SessionManager.findSession(sessionId) != null){
-            ResponseUtils.response302Header(dos, "/index.html");
-            return body;
-        }
-        body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-        ResponseUtils.response200Header(dos, body.length, path);
 
-        return body;
+        if(SessionManager.findSession(sessionId) != null){
+            ResponseUtils.response302(dos, "/index.html");
+        }else{
+            body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
+            ResponseUtils.response200Header(dos, body.length, path);
+        }
+
+        ResponseUtils.responseBody(dos, body);
     }
 }

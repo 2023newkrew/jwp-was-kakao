@@ -33,26 +33,29 @@ public abstract class ResponseUtils {
         }
     }
 
-    public static void response302Header(DataOutputStream dos, String redirectPath) {
+    public static void response302(DataOutputStream dos, String redirectPath) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: " + redirectPath + " \r\n");
+            ResponseUtils.responseBody(dos, new byte[0]);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public static void response404Header(DataOutputStream dos){
+    public static void response404(DataOutputStream dos){
         try {
             dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
+            ResponseUtils.responseBody(dos, new byte[0]);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public static void response400Header(DataOutputStream dos){
+    public static void response400(DataOutputStream dos){
         try {
             dos.writeBytes("HTTP/1.1 400 Bad Request \r\n");
+            ResponseUtils.responseBody(dos, new byte[0]);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

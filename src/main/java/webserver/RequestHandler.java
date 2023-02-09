@@ -35,7 +35,6 @@ public class RequestHandler implements Runnable {
             HttpParser httpParser = new HttpParser(IOUtils.readHeader(br));
             String path = httpParser.getPath();
             HttpCookie httpCookie = httpParser.getCookie();
-            byte[] body = new byte[0];
 
             switch (httpParser.getHttpMethod()){
                 case POST:
@@ -47,7 +46,7 @@ public class RequestHandler implements Runnable {
                     }else if(path.equals("/user/login")){
                         userController.login(dos, requestBody);
                     }else{
-                        ResponseUtils.response404Header(dos);
+                        ResponseUtils.response404(dos);
                     }
                     break;
 
@@ -56,30 +55,28 @@ public class RequestHandler implements Runnable {
                     if(path.contains("?")) queryParam = parseQueryString(path.substring(path.indexOf('?') + 1));
 
                     if(path.equals("/")){
-                        ResponseUtils.response302Header(dos, "/index.html");
+                        ResponseUtils.response302(dos, "/index.html");
                     }else if(path.equals("/user/list.html")){
-                        body = userController.getUserList(dos, path, httpCookie);
+                        userController.getUserList(dos, path, httpCookie);
                     }else if(path.equals("/user/login.html")){
-                        body = resourceController.getLoginTemplate(dos, path, httpCookie);
+                        resourceController.getLoginTemplate(dos, path, httpCookie);
                     }else if(path.endsWith(".html") || path.endsWith("/favicon.ico")){
-                        body = resourceController.getCommonTemplate(dos, path);
+                        resourceController.getCommonTemplate(dos, path);
                     }else if(path.startsWith("/css") || path.startsWith("/fonts") || path.startsWith("/images") || path.startsWith("/js")){
-                        body = resourceController.getStatic(dos, path);
+                        resourceController.getStatic(dos, path);
                     }else{
-                        ResponseUtils.response404Header(dos);
+                        ResponseUtils.response404(dos);
                     }
                     break;
 
                 case PUT:
                 case DELETE:
-                    ResponseUtils.response404Header(dos);
+                    ResponseUtils.response404(dos);
                     break;
 
                 default:
-                    ResponseUtils.response400Header(dos);
+                    ResponseUtils.response400(dos);
             }
-
-            ResponseUtils.responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }

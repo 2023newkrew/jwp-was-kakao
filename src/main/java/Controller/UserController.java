@@ -42,7 +42,7 @@ public class UserController {
             ResponseUtils.response200Header(dos);
             ResponseUtils.setCookie(dos, SESSION_KEY, session.getId());
         }else{
-            ResponseUtils.response400Header(dos);
+            ResponseUtils.response400(dos);
         }
     }
 
@@ -57,7 +57,7 @@ public class UserController {
         User user = requestBodyToUser(requestBody);
         userService.createUser(user);
 
-        ResponseUtils.response302Header(dos, "/index.html");
+        ResponseUtils.response302(dos, "/index.html");
     }
 
     private User requestBodyToUser(HashMap<String, String> requestBody){
@@ -69,24 +69,25 @@ public class UserController {
         );
     }
 
-    public byte[] getUserList(DataOutputStream dos, String path, HttpCookie httpCookie) throws IOException {
+    public void getUserList(DataOutputStream dos, String path, HttpCookie httpCookie) throws IOException {
+        byte[] body = new byte[0];
         String sessionId = httpCookie.getCookieValueByKey(SESSION_KEY);
+
         if(SessionManager.findSession(sessionId) == null){
-            ResponseUtils.response302Header(dos, "/user/login.html");
-            return new byte[0];
+            ResponseUtils.response302(dos, "/user/login.html");
+        }else{
+            TemplateLoader loader = new ClassPathTemplateLoader();
+            loader.setPrefix("/templates");
+            loader.setSuffix("");
+            Handlebars handlebars = new Handlebars(loader);
+            handlebars.registerHelper("incrementVal", (context, options) -> (Integer) context + 1);
+
+            Template template = handlebars.compile(path);
+
+            body = template.apply(DataBase.findAll()).getBytes();
+            ResponseUtils.response200Header(dos, body.length, path);
         }
 
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix("/templates");
-        loader.setSuffix("");
-        Handlebars handlebars = new Handlebars(loader);
-        handlebars.registerHelper("incrementVal", (context, options) -> (Integer) context + 1);
-
-        Template template = handlebars.compile(path);
-
-        byte[] body = template.apply(DataBase.findAll()).getBytes();
-        ResponseUtils.response200Header(dos, body.length, path);
-
-        return body;
+        ResponseUtils.responseBody(dos, body);
     }
 }
