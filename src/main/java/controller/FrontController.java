@@ -10,6 +10,7 @@ import model.http.CustomHttpResponse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,23 +31,26 @@ public class FrontController {
     }
 
     public CustomHttpResponse getHttpResponse(CustomHttpRequest request) throws NoSuchMethodException {
-        BaseController controller = controllerMapping.getOrDefault(request.getUrl(), new ViewController());
+        BaseController controller = controllerMapping.getOrDefault(request.getHttpRequestLine().getUrl(), new ViewController());
         Method foundMethod = controller.getProperMethod(request);
-        CustomHttpResponse response;
         try {
-            if (foundMethod.getParameterCount() == 1 && foundMethod.getParameters()[0].isAnnotationPresent(CustomRequestBody.class)) {
-                response = getResponseByRequest(foundMethod, request.getBody(), controller);
-            } else if (foundMethod.getParameterCount() == 1 && foundMethod.getParameters()[0].isAnnotationPresent(CustomRequestParams.class)) {
-                response = getResponseByRequest(foundMethod, request.getQuery(), controller);
-            } else if (foundMethod.getName().equals("resource")) {
-                response = (CustomHttpResponse) foundMethod.invoke(controller, request);
-            } else {
-                response = (CustomHttpResponse) foundMethod.invoke(controller);
-            }
+            return getResponse(foundMethod, controller, request);
         } catch (Exception e) {
             throw new UnsupportedResponseException("HttpResponse 생성에 실패했습니다.");
         }
-        return response;
+    }
+
+    private CustomHttpResponse getResponse(Method method, BaseController controller, CustomHttpRequest request) throws InvocationTargetException, IllegalAccessException {
+        if (method.getParameterCount() == 1 && method.getParameters()[0].isAnnotationPresent(CustomRequestBody.class)) {
+            return getResponseByRequest(method, request.getBody(), controller);
+        }
+        if (method.getParameterCount() == 1 && method.getParameters()[0].isAnnotationPresent(CustomRequestParams.class)) {
+            return getResponseByRequest(method, request.getHttpRequestLine().getQuery(), controller);
+        }
+        if (method.getName().equals("resource")) {
+            return (CustomHttpResponse) method.invoke(controller, request);
+        }
+        return (CustomHttpResponse) method.invoke(controller);
     }
 
     private CustomHttpResponse getResponseByRequest(Method method, CustomBaseHttpRequest request, BaseController controller) {

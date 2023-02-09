@@ -13,8 +13,8 @@ public class ViewController extends BaseController {
     public Method getProperMethod(CustomHttpRequest request) throws NoSuchMethodException {
         return Arrays.stream(this.getClass().getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
-                        && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getUrl())
-                        && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpMethod())
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getHttpRequestLine().getUrl())
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpRequestLine().getHttpMethod())
                 ).findFirst().orElse(this.getClass().getMethod("resource", CustomHttpRequest.class));
     }
 
@@ -33,7 +33,7 @@ public class ViewController extends BaseController {
     @CustomRequestMapping(url = "", httpMethod = CustomHttpMethod.GET)
     public CustomHttpResponse resource(CustomHttpRequest request) {
         CustomHttpHeader headers = new CustomHttpHeader();
-        String url = request.getUrl();
+        String url = request.getHttpRequestLine().getUrl();
         String[] fileWithExt = url.split("\\.");
         String ext = fileWithExt[fileWithExt.length - 1];
         String filePath = "static";
