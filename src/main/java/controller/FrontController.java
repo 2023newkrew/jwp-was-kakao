@@ -2,6 +2,7 @@ package controller;
 
 import org.springframework.util.AntPathMatcher;
 import utils.FileIoUtils;
+import webserver.HttpMethod;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 
@@ -22,7 +23,7 @@ public class FrontController {
     private static final String TEMPLATES = "./templates";
 
     public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException, URISyntaxException {
-        if (httpRequest.getMethod().equals("POST")) {
+        if (httpRequest.getMethod().equals(HttpMethod.POST)) {
             PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
             postMethodController.process(httpRequest, httpResponse);
             return;

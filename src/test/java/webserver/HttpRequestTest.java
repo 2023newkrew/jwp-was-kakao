@@ -26,7 +26,7 @@ class HttpRequestTest {
 
         HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(request.getBytes()));
 
-        assertThat(httpRequest.getMethod()).isEqualTo("POST");
+        assertThat(httpRequest.getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(httpRequest.getUrl()).isEqualTo("/user/create");
         assertThat(httpRequest.getHeader("Host")).isEqualTo("localhost:8080");
         assertThat(httpRequest.getParameter("userId")).isEqualTo("cu");

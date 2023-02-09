@@ -15,7 +15,7 @@ public class HttpRequest {
     private final InputStream inputStream;
     private final RequestParser requestParser;
 
-    private String method;
+    private HttpMethod method;
     private String url;
     private String queryString;
     private String protocol;
@@ -31,7 +31,7 @@ public class HttpRequest {
         requestParser.parse();
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
@@ -70,7 +70,7 @@ public class HttpRequest {
         private void parseStartLine() throws IOException {
             String[] tokens = bufferedReader.readLine().split(" ");
 
-            method = tokens[0];
+            method = HttpMethod.valueOf(tokens[0]);
             protocol = tokens[2];
 
             String[] requestTarget = tokens[1].split("\\?");
