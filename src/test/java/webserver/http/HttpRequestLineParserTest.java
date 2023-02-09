@@ -1,5 +1,6 @@
 package webserver.http;
 
+import http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,7 +29,7 @@ class HttpRequestLineParserTest {
             @DisplayName("첫 번째 토큰을 추출해서 반환한다")
             void returnHttpMethod() {
                 assertThat(httpRequestLineParser.extractHttpMethod(requestLine))
-                        .isEqualTo("GET");
+                        .isEqualTo(HttpMethod.GET);
             }
         }
     }

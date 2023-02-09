@@ -3,12 +3,14 @@ package webserver.handler;
 import db.DataBase;
 import http.*;
 import model.User;
+import webserver.http.HttpRequestParamParser;
 
 import java.util.*;
 
 public class UserCreateRequestHandler implements UrlMappingHandler {
 
     private static final String URL_MAPPING_REGEX = "/user/create";
+    private static final HttpRequestParamParser httpRequestParamParser = new HttpRequestParamParser();
 
     @Override
     public HttpResponse handle(HttpRequest httpRequest) {
@@ -16,7 +18,7 @@ public class UserCreateRequestHandler implements UrlMappingHandler {
         if (httpRequest.getMethod() == HttpMethod.GET) {
             params = httpRequest.getParameters();
         } else {
-            params = new HttpRequestParams(httpRequest.getBody());
+            params = httpRequestParamParser.parse(httpRequest.getBody());
         }
 
         User user = createUser(params);

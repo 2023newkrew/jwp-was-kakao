@@ -6,6 +6,8 @@ import http.exception.HttpRequestFormatException;
 
 public class HttpRequestLineParser {
 
+    private static final HttpRequestParamParser httpRequestParamParser = new HttpRequestParamParser();
+
     public HttpMethod extractHttpMethod(String requestLine) {
         validateRequestLine(requestLine);
         HttpMethod httpMethod = HttpMethod.of(requestLine.split(" ")[0]);
@@ -31,7 +33,7 @@ public class HttpRequestLineParser {
             return new HttpRequestParams();
         }
 
-        return new HttpRequestParams(urlAndParams[1]);
+        return httpRequestParamParser.parse(urlAndParams[1]);
     }
 
     public String extractHttpVersion(String requestLine) {
