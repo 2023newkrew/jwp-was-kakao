@@ -3,7 +3,6 @@ package servlet;
 import exception.BadRequestException;
 import exception.NotFoundException;
 import http.ContentType;
-import http.HttpMethod;
 import http.HttpStatus;
 import http.request.Request;
 import http.response.Response;
@@ -16,25 +15,25 @@ import java.util.Optional;
 
 public class ServletContainer {
     private static final Logger logger = LoggerFactory.getLogger(ServletContainer.class);
-    private static ServletContainer instance;
-    private final Map<String, Servlet> servlets;
+
+    private static class ServletContainerHolder {
+        private static final ServletContainer instance = new ServletContainer();
+    }
+
+    private static final ResourceServlet resourceServlet = ResourceServlet.getInstance();
+
+    private static final Map<String, Servlet> servlets;
 
     private ServletContainer() {
-        servlets = initiateContainer();
+
+    }
+
+    static {
+        servlets = ServletLoader.load();
     }
 
     public static ServletContainer getInstance() {
-        if (Objects.isNull(instance)) {
-            instance = new ServletContainer();
-        }
-        return instance;
-    }
-
-    private Map<String, Servlet> initiateContainer() {
-        return Map.of(
-                HomeServlet.REQUEST_PATH, HomeServlet.getInstance(),
-                UserCreateServlet.REQUEST_PATH, UserCreateServlet.getInstance()
-        );
+        return ServletContainerHolder.instance;
     }
 
     public Response serve(Request request) {
@@ -47,16 +46,18 @@ public class ServletContainer {
 
     private Response mapRequest(Request request) {
         if (isStaticResourceRequest(request)) {
-            return ResourceServlet.getInstance().doGet(request);
+            return resourceServlet.handle(request);
         }
+        Servlet servlet = getServlet(request);
+        return servlet.handle(request);
+    }
+
+    private Servlet getServlet(Request request) {
         Servlet servlet = servlets.getOrDefault(request.getUri().getPath(), null);
         if (Objects.isNull(servlet)) {
             throw new NotFoundException();
         }
-        if (request.getMethod().equals(HttpMethod.GET)) {
-            return servlet.doGet(request);
-        }
-        return servlet.doPost(request);
+        return servlet;
     }
 
     private boolean isStaticResourceRequest(Request request) {

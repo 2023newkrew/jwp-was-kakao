@@ -1,6 +1,7 @@
 package webserver;
 
 import http.HttpMethod;
+import http.HttpRequestHeader;
 import http.HttpStartLine;
 import http.Uri;
 import http.request.Request;
@@ -15,6 +16,7 @@ import utils.ParsingUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 import java.util.Map;
 
 public class RequestHandler implements Runnable {
@@ -36,12 +38,12 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             Request request = createRequest(in);
             Response response = servletContainer.serve(request);
-            DataOutputStream dos = new DataOutputStream(out);
-            sendResponse(response, dos);
+            sendResponse(out, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
+
 
     private Request createRequest(InputStream in) throws IOException {
         BufferedReader bufferReader = new BufferedReader(new InputStreamReader(in));
@@ -51,27 +53,19 @@ public class RequestHandler implements Runnable {
         Uri uri = new Uri(startLine.get(HttpStartLine.URI));
         String version = startLine.get(HttpStartLine.VERSION);
 
-        Map<String, String> headers = ParsingUtils.parseHeader(IOUtils.readRequestHeader(bufferReader));
-        RequestHeaders requestHeaders = new RequestHeaders(headers);
+        List<String> rawHeaders = IOUtils.readRequestHeader(bufferReader);
+        RequestHeaders requestHeaders = RequestHeaders.fromRawHeaders(rawHeaders);
 
         RequestBody requestBody = null;
-        if (requestHeaders.get("Content-Length").isPresent()) {
-            String body = IOUtils.readData(bufferReader, Integer.parseInt(requestHeaders.get("Content-Length").get()));
+        if (requestHeaders.get(HttpRequestHeader.CONTENT_LENGTH).isPresent()) {
+            String body = IOUtils.readData(bufferReader, Integer.parseInt(requestHeaders.get(HttpRequestHeader.CONTENT_LENGTH).get()));
             requestBody = RequestBody.fromQueryString(body);
         }
 
         return new Request(method, uri, version, requestHeaders, requestBody);
     }
 
-    private void sendResponse(Response response, DataOutputStream dos) {
-        try {
-            dos.writeBytes(response.getStatusLine() + " \r\n");
-            dos.writeBytes(response.getHeaders());
-            dos.writeBytes("\r\n");
-            dos.write(response.getBody(), 0, response.getBody().length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    private void sendResponse(OutputStream out, Response response) {
+        response.send(new DataOutputStream(out));
     }
 }

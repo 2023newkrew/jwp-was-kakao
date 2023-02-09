@@ -5,15 +5,15 @@ import http.request.RequestParams;
 import java.util.Optional;
 
 public class Uri {
-    private final String uri;
+    private String uri;
     private final String path;
     private final Optional<String> extension;
     private final Optional<RequestParams> params;
 
     public Uri(String uri) {
         this.uri = uri;
-        this.extension = extractExtension();
         this.params = extractParams();
+        this.extension = extractExtension();
         this.path = extractPath();
     }
 
@@ -33,6 +33,16 @@ public class Uri {
         return path;
     }
 
+    private Optional<RequestParams> extractParams() {
+        String[] splittedUri = uri.split("\\?", 2);
+        if (!isSplitted(splittedUri)) {
+            return Optional.empty();
+        }
+        this.uri = splittedUri[0];
+        String queryString = splittedUri[1];
+        return Optional.of(RequestParams.fromQueryString(queryString));
+    }
+
     private Optional<String> extractExtension() {
         String[] splittedUri = uri.split("\\.");
         if (!isSplitted(splittedUri)) {
@@ -45,26 +55,14 @@ public class Uri {
         return Optional.of(extention);
     }
 
-    private Optional<RequestParams> extractParams() {
-        String[] splittedUri = uri.split("\\?", 2);
-        if (!isSplitted(splittedUri)) {
-            return Optional.empty();
-        }
-        String queryString = splittedUri[1];
-        return Optional.of(RequestParams.fromQueryString(queryString));
-    }
-
     private boolean isSplitted(String[] splittedUri) {
         return splittedUri.length > 1;
     }
 
     private String extractPath() {
-        if (extension.isEmpty() && params.isEmpty()) {
+        if (extension.isEmpty()) {
             return uri;
         }
-        if (extension.isPresent()) {
-            return uri.substring(0, uri.lastIndexOf("/"));
-        }
-        return uri.substring(0, uri.lastIndexOf("?"));
+        return uri.substring(0, uri.lastIndexOf("/"));
     }
 }
