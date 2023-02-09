@@ -1,15 +1,21 @@
 package http.request;
 
+import exception.BadRequestException;
 import http.HttpMethod;
 import http.Uri;
 import utils.RequestParsingUtils;
 
+import java.util.Objects;
+
 public class RequestStartLine {
-    private HttpMethod method;
-    private Uri uri;
-    private String version;
+    private final HttpMethod method;
+    private final Uri uri;
+    private final String version;
 
     public RequestStartLine(HttpMethod method, Uri uri, String version) {
+        if (Objects.isNull(method) || Objects.isNull(uri) || Objects.isNull(version)) {
+            throw new BadRequestException();
+        }
         this.method = method;
         this.uri = uri;
         this.version = version;

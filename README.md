@@ -58,7 +58,7 @@
 - [x] 로직분기 - 예외처리 혼용하지 않도록 수정하기 - ContentType.isFileExtension
 - [x] StartLine 클래스로 분리하기
 - [?] ExceptionHandler 에서 instanceof 대신 catch 문 활용하기 - 예외처리 로직을 분리하고 싶어서 그렇게 했는데.. try-catch 를 써서 좋은점이 있을까요?
-- [ ] Uri, ParsingUtils 등 단위테스트 작성하기
+- [x] Uri, ParsingUtils 등 단위테스트 작성하기
 
 
 ## 2단계

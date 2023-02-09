@@ -1,9 +1,6 @@
 package webserver;
 
-import http.HttpMethod;
 import http.HttpRequestHeader;
-import http.HttpStartLine;
-import http.Uri;
 import http.request.Request;
 import http.request.RequestBody;
 import http.request.RequestHeaders;
@@ -13,12 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import servlet.ServletContainer;
 import utils.IOUtils;
-import utils.RequestParsingUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);

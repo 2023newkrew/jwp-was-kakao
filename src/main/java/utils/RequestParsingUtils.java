@@ -3,7 +3,6 @@ package utils;
 import exception.BadRequestException;
 import http.HttpMethod;
 import http.HttpRequestHeader;
-import http.HttpStartLine;
 import http.Uri;
 import http.request.RequestHeaders;
 import http.request.RequestStartLine;

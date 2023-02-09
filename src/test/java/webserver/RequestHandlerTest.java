@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
     @Test
-    void socket_out() {
+    void homeServlet() {
         // given
         final var socket = new StubSocket();
         final var handler = new RequestHandler(socket);
