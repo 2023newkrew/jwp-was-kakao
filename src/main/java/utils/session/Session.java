@@ -73,8 +73,8 @@ public class Session {
         public Session build(){
             Session session = new Session();
             session.id = Optional.ofNullable(id).orElse(setRandomId().id);
-            session.values.put("Timeout", timeoutMilli);
-            session.values.put("Expire-Milli", timeoutMilli + System.currentTimeMillis());
+            session.setAttribute("Timeout", timeoutMilli);
+            session.setAttribute("Expire-Milli", System.currentTimeMillis() + timeoutMilli);
             return session;
         }
     }

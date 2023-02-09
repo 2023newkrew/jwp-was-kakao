@@ -6,6 +6,9 @@ import logics.controller.get.DefaultResponseController;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * UrlMatcher helps controller associate specified-url with other sub-controllers.
+ */
 public class UrlMatcher {
     private final Map<String, Controller> matcher = new ConcurrentHashMap<>();
     private final Controller defaultController = new DefaultResponseController();

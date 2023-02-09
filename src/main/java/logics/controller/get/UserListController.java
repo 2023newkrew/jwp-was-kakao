@@ -10,16 +10,20 @@ import utils.response.HttpResponseVersion1;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static logics.controller.support.ExecuteHandlebars.applyHandlebars;
+import static logics.Service.HandlebarService.applyHandlebars;
 import static logics.controller.support.RequestUtility.*;
 import static utils.FileIoUtils.*;
 
+/**
+ * respond when receiving "GET /user/list"
+ * In case of not logged-in, redirect to "/user/login"
+ */
 public class UserListController implements Controller {
     private final SessionService sessionService = new SessionService();
     private final UserService userService = new UserService();
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
-        if (sessionService.isValidSessionKey(sessionService.parseSessionKey(httpRequest.getHeaderParameter("Cookie")))){
+        if (!sessionService.isValidSessionKey(sessionService.parseSessionKey(httpRequest.getHeaderParameter("Cookie")))){
             return new HttpResponseVersion1().setResponseCode(302).setHeader("Location", "/user/login.html");
         }
         try {

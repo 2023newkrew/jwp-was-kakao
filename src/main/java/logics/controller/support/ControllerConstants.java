@@ -3,7 +3,10 @@ package logics.controller.support;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Constants {
+/**
+ * ControllerConstants contains several constants used in controller package.
+ */
+public final class ControllerConstants {
     /**
      * defaultContentType is referred to <a href=https://mimetype.io/all-types/>this</a>.
      */

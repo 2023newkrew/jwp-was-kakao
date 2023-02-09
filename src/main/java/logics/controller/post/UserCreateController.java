@@ -6,6 +6,9 @@ import utils.requests.HttpRequest;
 import utils.response.HttpResponse;
 import utils.response.HttpResponseVersion1;
 
+/**
+ * make response when receiving sign-up request through form in "/user/form.html"
+ */
 public class UserCreateController implements Controller {
     private final UserService userService = new UserService();
     @Override

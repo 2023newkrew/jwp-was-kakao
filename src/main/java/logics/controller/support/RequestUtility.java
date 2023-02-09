@@ -4,8 +4,11 @@ import utils.requests.HttpRequest;
 
 import java.util.Objects;
 
-import static logics.controller.support.Constants.*;
+import static logics.controller.support.ControllerConstants.*;
 
+/**
+ * RequestUtility contains useful methods when parsing requestHeader.
+ */
 public class RequestUtility {
     public static String getAppropriateContentType(HttpRequest httpRequest){
         String fileFormat = extractFileFormat(httpRequest.getURI().getPath());

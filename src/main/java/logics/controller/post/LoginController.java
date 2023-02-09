@@ -7,6 +7,9 @@ import utils.response.HttpResponse;
 import utils.response.HttpResponseVersion1;
 import utils.session.Session;
 
+/**
+ * make response when receiving login-request.
+ */
 public class LoginController implements Controller {
     private final SessionService sessionService = new SessionService();
     private static final HttpResponse loginSuccess = new HttpResponseVersion1().setResponseCode(302)

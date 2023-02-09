@@ -1,6 +1,5 @@
 package logics.Service;
 
-import db.DataBase;
 import utils.session.Session;
 import utils.session.SessionManager;
 
@@ -8,25 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * SessionService has business logic related to Session Management using utils.session.*
+ */
 public class SessionService {
-
+    private final UserService userService = new UserService();
     public Session login(String body){
         try{
             Map<String, String> bodyMap = parseBody(body);
-            return verifyLogin(bodyMap);
+            if (userService.verifyLogin(bodyMap)){
+                return makeSession();
+            }
+            throw new IllegalArgumentException("ID and password not match!");
         } catch(IndexOutOfBoundsException e){
             throw new IllegalArgumentException("body is not valid");
         }
-    }
-
-    private Session verifyLogin(final Map<String, String> bodyMap){
-        String userId = bodyMap.get("userId");
-        String password = bodyMap.get("password");
-        if (Objects.isNull(DataBase.findUserById(userId)) ||
-                !DataBase.findUserById(userId).getPassword().equals(password)){
-            throw new IllegalArgumentException("Invalid ID or Password");
-        }
-        return makeSession();
     }
 
     private Session makeSession(){

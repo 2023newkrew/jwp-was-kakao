@@ -1,11 +1,14 @@
-package logics.controller.support;
+package logics.Service;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 
 import java.nio.charset.StandardCharsets;
 
-public class ExecuteHandlebars {
+/**
+ * HandlebarService contains methods related handlebars, which can make dynamic responses.
+ */
+public class HandlebarService {
     public static byte[] applyHandlebars(byte[] originalText, Object applyObject){
         try {
             Handlebars handlebars = new Handlebars();

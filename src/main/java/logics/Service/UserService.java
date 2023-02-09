@@ -7,7 +7,7 @@ import model.UserDto;
 import java.util.*;
 
 /**
- * contains business logic, which is similar to Service component in Spring Framework.
+ * contains logic related to User.
  */
 public class UserService {
     // Spring Framework 상으로는 아래 메소드 중 DataBase에 저장하는 역할을 Repository class로 분리하는 것이 맞을 수 있다만,
@@ -49,5 +49,15 @@ public class UserService {
             index++;
         }
         return result;
+    }
+
+    public boolean verifyLogin(final Map<String, String> bodyMap){
+        String userId = bodyMap.get("userId");
+        String password = bodyMap.get("password");
+        if (Objects.isNull(DataBase.findUserById(userId)) ||
+                !DataBase.findUserById(userId).getPassword().equals(password)){
+            return false;
+        }
+        return true;
     }
 }

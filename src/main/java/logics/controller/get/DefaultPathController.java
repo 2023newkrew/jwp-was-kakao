@@ -10,12 +10,14 @@ import utils.response.HttpResponseVersion1;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+/**
+ * Controller that finds url and provides files located in given url with judging whether file is static or non-static.
+ */
 public class DefaultPathController implements Controller {
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         try {
             String modifiedURL = RequestUtility.urlConverter(httpRequest.getURI().getPath());
-            System.out.println(modifiedURL);
             return new HttpResponseVersion1().setResponseCode(200)
                     .setHeader("Content-Type", RequestUtility.getAppropriateContentType(httpRequest))
                     .setBody(FileIoUtils.loadFileFromClasspath(modifiedURL));

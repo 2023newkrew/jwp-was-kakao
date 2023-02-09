@@ -40,7 +40,7 @@ public class HttpRequestVersion1 implements HttpRequest {
         return httpRequestVersion1;
     }
     private static void readFirstLine(HttpRequestVersion1 httpRequestVersion1, BufferedReader br) throws IOException {
-        String s = decodeString(br.readLine(), StandardCharsets.UTF_8);
+        String s = decodeURLString(br.readLine(), StandardCharsets.UTF_8);
         String[] tokens = s.split(" "); // GET URL HTTP/1.1
         httpRequestVersion1.httpRequestFirstLine = new HttpRequestFirstLine(
                 RequestMethod.valueOf(tokens[0].toUpperCase()),
@@ -51,7 +51,7 @@ public class HttpRequestVersion1 implements HttpRequest {
     private static void readHeader(HttpRequestVersion1 httpRequestVersion1, BufferedReader br) throws IOException {
         String headerLine;
         do {
-            headerLine = decodeString(br.readLine(), StandardCharsets.UTF_8);
+            headerLine = decodeURLString(br.readLine(), StandardCharsets.UTF_8);
             updateHeaderProperty(httpRequestVersion1, headerLine);
         } while(!("".equals(headerLine) || Objects.isNull(headerLine)));
     }
@@ -65,14 +65,14 @@ public class HttpRequestVersion1 implements HttpRequest {
     private static void readBody(HttpRequestVersion1 httpRequestVersion1, BufferedReader br) throws IOException {
         try {
             int contentLength = Integer.parseInt(httpRequestVersion1.getHeaderParameter("Content-Length"));
-            httpRequestVersion1.body = decodeString(IOUtils.readData(br, contentLength), StandardCharsets.UTF_8);
+            httpRequestVersion1.body = decodeURLString(IOUtils.readData(br, contentLength), StandardCharsets.UTF_8);
         } catch(NumberFormatException e){
             // No attribute of Content-Length, so there isn't body in request.
             httpRequestVersion1.body = "";
         }
     }
 
-    private static String decodeString(String originalStr, Charset encoding){
+    private static String decodeURLString(String originalStr, Charset encoding){
         return URLDecoder.decode(originalStr, encoding);
     }
 

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  * RootController class does similar role to Controller component of Spring framework.
- * Contains sub-controllers like getController and postController.
+ * contains sub-controllers like getController and postController.
  */
 public class RootController implements Controller {
     private static final Map<RequestMethod, Controller> requestMethodMatcher = new HashMap<>();

@@ -7,6 +7,8 @@ import utils.response.HttpResponse;
 import utils.response.HttpResponseVersion1;
 
 /**
+ *
+ * respond when receiving "GET /user/login"
  * In case of being already logged-in, redirect to index.html
  */
 public class LoginPageController implements Controller {

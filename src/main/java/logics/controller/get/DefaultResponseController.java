@@ -7,6 +7,9 @@ import utils.response.HttpResponseVersion1;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Default Web Page when other controllers cannot apprehend url.
+ */
 public class DefaultResponseController implements Controller {
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
