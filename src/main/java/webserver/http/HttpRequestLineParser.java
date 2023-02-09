@@ -1,18 +1,18 @@
 package webserver.http;
 
+import http.HttpMethod;
 import http.HttpRequestParams;
 import http.exception.HttpRequestFormatException;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 public class HttpRequestLineParser {
 
-    public String extractHttpMethod(String requestLine) {
+    public HttpMethod extractHttpMethod(String requestLine) {
         validateRequestLine(requestLine);
-        return requestLine.split(" ")[0];
+        HttpMethod httpMethod = HttpMethod.of(requestLine.split(" ")[0]);
+        if (httpMethod == null) {
+            throw new HttpRequestFormatException();
+        }
+        return httpMethod;
     }
 
     public String extractUrl(String requestLine) {

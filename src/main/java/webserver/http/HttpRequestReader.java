@@ -95,7 +95,7 @@ public class HttpRequestReader implements Closeable {
     }
 
     private void parseRequestLine(String requestLine) {
-        httpMethod = HttpMethod.valueOf(httpRequestLineParser.extractHttpMethod(requestLine));
+        httpMethod = httpRequestLineParser.extractHttpMethod(requestLine);
         url = httpRequestLineParser.extractUrl(requestLine);
         parameters = httpRequestLineParser.extractParams(requestLine);
         httpVersion = httpRequestLineParser.extractHttpVersion(requestLine);
