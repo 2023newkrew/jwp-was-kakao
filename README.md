@@ -31,6 +31,7 @@
 
 ---
 ### 리팩토링 목록
+#### 리뷰 반영
 - [x] QueryParameters 클래스명 오타 수정
 - [x] RequestHandler의 mapRequest 메서드 하나의 기능만 처리하도록 리팩토링
 - [x] static 리소스 판별 메서드 Request 내부로 이동
@@ -40,3 +41,6 @@
   - 삼항연산자 제거
 - [x] RequestHeader의 메서드에서 depth 2이상인 코드 Steam API로 리팩토링
 - [x] printStackTrace 대신 에러 추적성을 위해 logger로 로그 출력
+
+
+- [x] 어노테이션 기반으로 컨트롤러의 핸들러 메서드 매핑하기 

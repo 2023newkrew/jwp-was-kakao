@@ -2,10 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import utils.FileIoUtils;
-import webserver.controller.ControllerMethod;
-import webserver.controller.RequestController;
+import webserver.controller.FrontController;
 import webserver.request.Request;
 import webserver.response.Response;
 
@@ -42,7 +39,8 @@ public class RequestHandler implements Runnable {
     }
 
     private void handleRequest(Request request, Response response) {
-        RequestController.getMappedMethod(request).handle(request, response);
+        FrontController.getMappedMethod(request)
+                .handle(request, response);
     }
 
     private void sendResponse(DataOutputStream dos, Response response) {
