@@ -4,10 +4,10 @@ import controller.annotation.CustomRequestBody;
 import controller.annotation.CustomRequestMapping;
 import controller.annotation.CustomRequestParams;
 import db.DataBase;
-import model.*;
-import model.http.CustomHttpHeader;
-import model.http.CustomHttpMethod;
-import model.http.CustomHttpResponse;
+import exception.UserNotFoundException;
+import model.User;
+import model.http.*;
+
 import model.http.CustomHttpStatus;
 
 public class UserController extends BaseController {
@@ -35,6 +35,25 @@ public class UserController extends BaseController {
                 .httpStatus(CustomHttpStatus.FOUND)
                 .headers(headers)
                 .body("")
+                .build();
+    }
+
+    @CustomRequestMapping(url = "/user/login", httpMethod = CustomHttpMethod.POST)
+    public CustomHttpResponse login(@CustomRequestBody User user) {
+        CustomHttpHeader headers = new CustomHttpHeader();
+        User loginUser = DataBase.findUserById(user.getUserId()).orElseThrow(() -> new UserNotFoundException("아이디와 비밀번호가 일치하지 않습니다."));
+        if (loginUser.hasSamePassword(user.getPassword())) {
+            headers.put("Set-Cookie", new CustomHttpCookie().getCookie());
+            headers.put("Location", "/index.html");
+            return new CustomHttpResponse.Builder()
+                    .httpStatus(CustomHttpStatus.FOUND)
+                    .headers(headers)
+                    .build();
+        }
+        headers.put("Location", "/user/login_failed.html");
+        return new CustomHttpResponse.Builder()
+                .httpStatus(CustomHttpStatus.FOUND)
+                .headers(headers)
                 .build();
     }
 
