@@ -7,8 +7,8 @@ import webserver.HttpResponse;
 import webserver.HttpSession;
 import webserver.SessionManager;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -47,14 +47,14 @@ public class FrontController {
 
             byte[] body = loadBody(httpRequest.getUrl());
             httpResponse.changeBody(body);
-        } catch (URISyntaxException e) {
+        } catch (FileNotFoundException e) {
             throw new NotFoundException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private byte[] loadBody(String requestUrl) throws IOException, URISyntaxException {
+    private byte[] loadBody(String requestUrl) throws IOException {
         if (requestUrl.equals(ROOT_PATH)) {
             return "Hello world".getBytes();
         }

@@ -6,6 +6,7 @@ import controller.RedirectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -24,15 +25,20 @@ public class RequestHandler implements Runnable {
                 connection.getInetAddress(),
                 connection.getPort());
 
-        HttpRequest httpRequest = null;
-        HttpResponse httpResponse = null;
-
         try (InputStream inputStream = connection.getInputStream();
              OutputStream outputStream = connection.getOutputStream()) {
 
-            httpRequest = new HttpRequest(inputStream);
-            httpResponse = new HttpResponse(outputStream);
+            handle(inputStream, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void handle(InputStream inputStream, OutputStream outputStream) {
+        HttpRequest httpRequest = new HttpRequest(inputStream);
+        HttpResponse httpResponse = new HttpResponse(outputStream);
+
+        try {
             FrontController frontController = new FrontController();
             frontController.service(httpRequest, httpResponse);
 
