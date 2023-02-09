@@ -4,7 +4,6 @@ import db.DataBase;
 import dto.LoginDto;
 import enums.ContentType;
 import exceptions.AuthenticationException;
-import exceptions.AuthorizationException;
 import http.HttpRequest;
 import http.HttpResponse;
 import lombok.AccessLevel;
@@ -58,11 +57,10 @@ public class UserController {
 
     public HttpResponse loginUserPost(HttpRequest request) {
         LoginDto loginDto = LoginDto.of(IOUtils.extractParamsMap(request.getBody()));
-
         User user = DataBase.findUserById(loginDto.getUserId())
                 .orElseThrow(AuthenticationException::new);
 
-        if (Boolean.FALSE.equals(user.isPasswordValid(user.getPassword()))) {
+        if (Boolean.FALSE.equals(user.isPasswordValid(loginDto.getPassword()))) {
             throw new AuthenticationException();
         }
 
