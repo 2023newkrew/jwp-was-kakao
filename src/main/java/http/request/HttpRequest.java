@@ -43,13 +43,6 @@ public class HttpRequest {
         return requestBody.getRequestParam();
     }
 
-    public String getParameter(String key) {
-        if (HttpMethod.POST.equals(getMethod())) {
-            return requestBody.getRequestParam().get(key);
-        }
-        return getRequestParam().get(key);
-    }
-
     public String getCookie(String key) {
         return httpHeader.getCookies().getCookie(key);
     }
