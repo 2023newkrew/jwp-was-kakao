@@ -172,4 +172,61 @@ class RequestHandlerTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @Test
+    void loginFailedRedirect() {
+        // given
+        DataBase.addUser(new User("cu", "password", "name", "email"));
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 32 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=hyeonmo&password=password"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 Found \r\n" +
+                "Location: /user/login_failed.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void loginRedirect() {
+        // given
+        DataBase.addUser(new User("cu", "password", "name", "email"));
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 27 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output()).contains("HTTP/1.1 302 Found \r\n",
+                "Set-Cookie: JSESSIONID=",
+                "Location: /index.html \r\n",
+                "\r\n");
+    }
 }
