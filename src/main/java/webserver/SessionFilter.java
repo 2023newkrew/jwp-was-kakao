@@ -38,6 +38,8 @@ public class SessionFilter implements MyFilter {
                 .findFirst();
         if (findValidSession.isEmpty()) {
             Session session = new Session();
+            SessionManager.getInstance()
+                    .add(session);
             Cookie cookie = new Cookie("JSESSIONID", session.getSessionId());
             responseBuilder.addHeader("Set-Cookie", String.valueOf(cookie));
             return session;

@@ -15,10 +15,10 @@ public class MyFilterChain {
 
     public void doFilter(HttpRequest request, HttpResponse.Builder responseBuilder) {
         currentFilterIndex++;
-        if (currentFilterIndex >= filters.size()) {
+        if (currentFilterIndex > filters.size()) {
             return;
         }
-        filters.get(currentFilterIndex)
+        filters.get(currentFilterIndex - 1)
                 .doFilter(request, responseBuilder, this);
     }
 }
