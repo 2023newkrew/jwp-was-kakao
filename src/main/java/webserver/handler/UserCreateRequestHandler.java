@@ -27,7 +27,7 @@ public class UserCreateRequestHandler implements UrlMappingHandler {
         return HttpResponse.HttpResponseBuilder.aHttpResponse()
                 .withStatus(HttpStatus.FOUND)
                 .withVersion("HTTP/1.1")
-                .withHeaders(Map.of(HttpHeader.LOCATION, List.of("/index.html")))
+                .withHeaders(new HttpHeaders(Map.of(HttpHeaders.LOCATION, List.of("/index.html"))))
                 .build();
     }
 

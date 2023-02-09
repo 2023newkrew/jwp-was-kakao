@@ -9,7 +9,7 @@ public class HttpRequest {
     private String URL;
     private String version;
     private HttpRequestParams parameters;
-    private Map<String, List<String>> headers;
+    private HttpHeaders headers;
     private String body;
 
     private HttpRequest() {
@@ -31,7 +31,7 @@ public class HttpRequest {
         return parameters;
     }
 
-    public Map<String, List<String>> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headers;
     }
 
@@ -74,13 +74,13 @@ public class HttpRequest {
         private String URL;
         private String version;
         private HttpRequestParams parameters;
-        private Map<String, List<String>> headers;
+        private HttpHeaders headers;
         private String body;
 
         private HttpRequestBuilder() {
             body = "";
             parameters = new HttpRequestParams();
-            headers = Map.of();
+            headers = new HttpHeaders();
         }
 
         public static HttpRequestBuilder aHttpRequest() {
@@ -107,7 +107,7 @@ public class HttpRequest {
             return this;
         }
 
-        public HttpRequestBuilder withHeaders(Map<String, List<String>> headers) {
+        public HttpRequestBuilder withHeaders(HttpHeaders headers) {
             this.headers = headers;
             return this;
         }

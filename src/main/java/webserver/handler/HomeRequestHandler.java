@@ -44,17 +44,17 @@ public class HomeRequestHandler implements UrlMappingHandler {
         return URL_MAPPING_REGEX;
     }
 
-    private Map<String, List<String>> generateHeaders(HttpRequest httpRequest, byte[] body) {
-        Map<String, List<String>> headers = new LinkedHashMap<>();
+    private HttpHeaders generateHeaders(HttpRequest httpRequest, byte[] body) {
+        HttpHeaders headers = new HttpHeaders();
 
         String url = httpRequest.getURL();
         int extensionIndex = url.lastIndexOf(".") + 1;
         String extension = url.substring(extensionIndex);
 
-        headers.put(HttpHeader.CONTENT_TYPE,
+        headers.setHeader(HttpHeaders.CONTENT_TYPE,
                 List.of(HttpContentType.extensionToContentType(extension) + ";" + CHARSET_UTF_8));
 
-        headers.put(HttpHeader.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
+        headers.setHeader(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
 
         return headers;
     }

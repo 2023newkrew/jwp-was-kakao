@@ -32,10 +32,10 @@ class UserRequestHandlerTest {
         assertThat(urlMatches).isTrue();
 
         assertThat(httpResponse.getStatus()).isEqualTo(HttpStatus.OK);
-        assertThat(httpResponse.getHeaders())
+        assertThat(httpResponse.getHeaders().getHeaders())
                 .hasSize(2)
-                .containsEntry(HttpHeader.CONTENT_TYPE, List.of(HttpContentType.TEXT_HTML + ";charset=utf-8"))
-                .containsEntry(HttpHeader.CONTENT_LENGTH, List.of(String.valueOf(bytes.length)));
+                .containsEntry(HttpHeaders.CONTENT_TYPE, List.of(HttpContentType.TEXT_HTML + ";charset=utf-8"))
+                .containsEntry(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(bytes.length)));
         assertThat(httpResponse.getBody()).isEqualTo(bytes);
     }
 }

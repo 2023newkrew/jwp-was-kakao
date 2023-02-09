@@ -1,5 +1,6 @@
 package webserver.http;
 
+import http.HttpHeaders;
 import http.HttpMethod;
 import http.HttpRequest;
 import http.HttpRequestParams;
@@ -20,7 +21,7 @@ public class HttpRequestReader implements Closeable {
     private String url;
     private HttpRequestParams parameters;
     private String httpVersion;
-    private Map<String, List<String>> headers;
+    private HttpHeaders headers;
 
     public HttpRequestReader(InputStream in) {
         this.br = new BufferedReader(new InputStreamReader(in));
@@ -64,7 +65,7 @@ public class HttpRequestReader implements Closeable {
     }
 
     private Integer getContentLength() {
-        String headerName = headers.keySet().stream()
+        String headerName = headers.getHeaderNames().stream()
                 .filter(header -> header.equalsIgnoreCase("content-length"))
                 .findFirst()
                 .orElse(null);
@@ -73,7 +74,7 @@ public class HttpRequestReader implements Closeable {
             return null;
         }
 
-        return Integer.parseInt(headers.get(headerName).get(0));
+        return Integer.parseInt(headers.getHeader(headerName).get(0));
     }
 
     private void parseHeader(List<String> headerLines) {

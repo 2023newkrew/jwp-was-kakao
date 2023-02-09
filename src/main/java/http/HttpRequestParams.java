@@ -32,6 +32,14 @@ public class HttpRequestParams {
         return params.containsKey(name);
     }
 
+    public boolean isEmpty() {
+        return params.isEmpty();
+    }
+
+    public int size() {
+        return params.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

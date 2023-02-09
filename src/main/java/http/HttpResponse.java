@@ -6,7 +6,7 @@ import java.util.Map;
 public class HttpResponse {
     private HttpStatus status;
     private String version;
-    private Map<String, List<String>> headers;
+    private HttpHeaders headers;
     private byte[] body;
 
     public HttpStatus getStatus() {
@@ -17,7 +17,7 @@ public class HttpResponse {
         return version;
     }
 
-    public Map<String, List<String>> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headers;
     }
 
@@ -51,9 +51,9 @@ public class HttpResponse {
         }
 
         StringBuilder sb = new StringBuilder();
-        headers.keySet()
+        headers.getHeaderNames()
                 .forEach(headerName -> {
-                    String values = String.join(",", headers.get(headerName));
+                    String values = String.join(",", headers.getHeader(headerName));
                     sb.append(headerName).append(": ").append(values).append("\r\n");
                 });
 
@@ -79,12 +79,12 @@ public class HttpResponse {
     public static final class HttpResponseBuilder {
         private HttpStatus status;
         private String version;
-        private Map<String, List<String>> headers;
+        private HttpHeaders headers;
 
         private byte[] body;
 
         private HttpResponseBuilder() {
-            headers = Map.of();
+            headers = new HttpHeaders();
             body = new byte[0];
         }
 
@@ -102,7 +102,7 @@ public class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder withHeaders(Map<String, List<String>> headers) {
+        public HttpResponseBuilder withHeaders(HttpHeaders headers) {
             this.headers = headers;
             return this;
         }
