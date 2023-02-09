@@ -1,7 +1,7 @@
-package controller;
+package framework.controller;
 
-import request.Request;
-import response.Response;
+import framework.request.Request;
+import framework.response.Response;
 
 public interface Controller {
 

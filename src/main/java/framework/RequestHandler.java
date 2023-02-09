@@ -1,19 +1,19 @@
-package webserver;
+package framework;
 
-import controller.Controller;
+import framework.controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import request.Request;
-import request.RequestParser;
-import requestmapper.HandlerMapper;
-import requestmapper.ResourceMapper;
-import response.Response;
+import framework.request.Request;
+import framework.request.RequestParser;
+import framework.requestmapper.HandlerMapper;
+import framework.requestmapper.ResourceMapper;
+import framework.response.Response;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
 
-import static utils.IOUtils.writeResponse;
+import static framework.utils.IOUtils.writeResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);

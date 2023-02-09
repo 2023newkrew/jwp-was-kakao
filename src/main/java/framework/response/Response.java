@@ -1,6 +1,6 @@
-package response;
+package framework.response;
 
-import request.HttpCookie;
+import framework.request.HttpCookie;
 
 import java.io.ByteArrayOutputStream;
 import java.util.stream.Collectors;

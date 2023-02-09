@@ -1,6 +1,6 @@
-package request;
+package framework.request;
 
-import utils.IOUtils;
+import framework.utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

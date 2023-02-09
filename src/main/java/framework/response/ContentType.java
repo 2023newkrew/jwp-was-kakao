@@ -1,4 +1,4 @@
-package response;
+package framework.response;
 
 public enum ContentType {
     HTML("text/html;charset=utf-8"),

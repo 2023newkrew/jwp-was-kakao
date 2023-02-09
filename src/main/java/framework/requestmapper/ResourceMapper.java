@@ -1,8 +1,8 @@
-package requestmapper;
+package framework.requestmapper;
 
-import response.ContentType;
-import response.Response;
-import utils.FileIoUtils;
+import framework.response.ContentType;
+import framework.response.Response;
+import framework.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

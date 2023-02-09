@@ -1,9 +1,9 @@
-package requestmapper;
+package framework.requestmapper;
 
-import controller.Controller;
 import controller.UserController;
-import request.Request;
-import response.Response;
+import framework.controller.Controller;
+import framework.request.Request;
+import framework.response.Response;
 
 import java.util.List;
 
