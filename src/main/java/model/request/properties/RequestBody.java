@@ -13,10 +13,6 @@ import static utils.extractor.RequestBodyExtractor.*;
 public class RequestBody {
     private final Map<String, String> requestBody;
 
-    public Map<String, String> getRequestBody() {
-        return Collections.unmodifiableMap(requestBody);
-    }
-
     private RequestBody(Map<String, String> requestBody) {
         this.requestBody = requestBody;
     }
@@ -26,5 +22,9 @@ public class RequestBody {
             return new RequestBody(extract(requestHeaders, bufferedReader));
         }
         return new RequestBody(new HashMap<>());
+    }
+
+    public Map<String, String> getRequestBody() {
+        return Collections.unmodifiableMap(requestBody);
     }
 }

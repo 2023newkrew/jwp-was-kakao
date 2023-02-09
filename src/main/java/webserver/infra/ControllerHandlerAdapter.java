@@ -14,6 +14,7 @@ import java.util.Optional;
 @UtilityClass
 public class ControllerHandlerAdapter {
     private final String CONTROLLER_PACKAGE = "webserver.controller";
+
     public void mappingControllerByURL() {
         new Reflections(CONTROLLER_PACKAGE).getTypesAnnotatedWith(ApiController.class)
                 .stream()

@@ -12,15 +12,15 @@ public enum ContentType {
 
     private final String value;
 
+    ContentType(String value) {
+        this.value = value;
+    }
+
     public static ContentType of(String targetValue) {
         return Arrays.stream(ContentType.values())
                 .filter(contentType -> contentType.value.equals(targetValue))
                 .findFirst()
                 .orElseThrow(NoSuchContentTypeException::new);
-    }
-
-    ContentType(String value) {
-        this.value = value;
     }
 
     public String getValue() {

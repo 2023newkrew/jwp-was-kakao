@@ -17,6 +17,7 @@ public class Cookie {
     public String getValue() {
         return value.split(COOKIE_PATH_DELIMITER)[0];
     }
+
     public String getPath() {
         return value.split(COOKIE_PATH_DELIMITER)[1];
     }

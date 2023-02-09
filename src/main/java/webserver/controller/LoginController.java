@@ -25,11 +25,11 @@ import static utils.utils.LoginUtils.*;
 public class LoginController {
     private static final LoginController instance;
 
-    private final LoginService loginService;
-
     static {
         instance = new LoginController(new LoginService(new UserDao()));
     }
+
+    private final LoginService loginService;
 
     private LoginController(LoginService loginService) {
         this.loginService = loginService;

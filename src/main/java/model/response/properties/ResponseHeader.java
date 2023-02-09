@@ -8,12 +8,12 @@ import java.util.Set;
 public class ResponseHeader {
     private final LinkedHashMap<String, String> headers;
 
-    public Map<String, String> getHeaders() {
-        return Collections.unmodifiableMap(headers);
-    }
-
     public ResponseHeader() {
         this.headers = new LinkedHashMap<>();
+    }
+
+    public Map<String, String> getHeaders() {
+        return Collections.unmodifiableMap(headers);
     }
 
     public void setAttribute(String key, String value) {

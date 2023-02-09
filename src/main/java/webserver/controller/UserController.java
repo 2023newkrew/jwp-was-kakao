@@ -26,15 +26,16 @@ import static utils.utils.TemplateUtils.*;
 @ApiController
 public class UserController {
     private static final UserController instance;
+
+    static {
+        instance = new UserController(new UserService(new UserDao()));
+    }
+
     private final UserService userService;
     private final int INITIAL_LIST_INDEX = 1;
 
     private UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    static {
-        instance = new UserController(new UserService(new UserDao()));
     }
 
     public static UserController getInstance() {

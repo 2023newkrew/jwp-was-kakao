@@ -27,6 +27,17 @@ public class HttpRequest {
     private RequestHeaders headers;
     private RequestBody body;
 
+    public HttpRequest(HttpRequestFirstLineProperties firstLineProperties,
+                       RequestHeaders requestHeaders,
+                       RequestBody requestBody) {
+        this.method = firstLineProperties.getHttpMethod();
+        this.protocol = firstLineProperties.getHttpProtocol();
+        this.URL = firstLineProperties.getURL();
+        this.queryParams = firstLineProperties.getQueryParams();
+        this.headers = requestHeaders;
+        this.body = requestBody;
+    }
+
     public String findBodyValue(String key, String defaultValue) {
         return body.getRequestBody().getOrDefault(key, defaultValue);
     }
@@ -49,17 +60,6 @@ public class HttpRequest {
 
     private ContentType findContentType() {
         return ContentType.of(findHeaderValue(CONTENT_TYPE, DEFAULT_CONTENT_TYPE));
-    }
-
-    public HttpRequest(HttpRequestFirstLineProperties firstLineProperties,
-                       RequestHeaders requestHeaders,
-                       RequestBody requestBody) {
-        this.method = firstLineProperties.getHttpMethod();
-        this.protocol = firstLineProperties.getHttpProtocol();
-        this.URL = firstLineProperties.getURL();
-        this.queryParams = firstLineProperties.getQueryParams();
-        this.headers = requestHeaders;
-        this.body = requestBody;
     }
 
     public Session getSession(String id) {
