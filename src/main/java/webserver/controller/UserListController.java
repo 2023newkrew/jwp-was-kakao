@@ -1,6 +1,6 @@
 package webserver.controller;
 
-import static webserver.controller.UserLoginController.REDIRECTION_FAILED;
+import static webserver.controller.UserLoginController.REDIRECTION_HOME;
 
 import db.SessionStorage;
 import db.UserStorage;
@@ -28,7 +28,7 @@ public class UserListController implements Controller {
     public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
         if (!doAuthenticate(httpRequest)) {
             httpResponse.setStatus(HttpStatus.TEMPORARY_REDIRECT);
-            httpResponse.setLocation(REDIRECTION_FAILED);
+            httpResponse.setLocation(REDIRECTION_HOME);
             return new MyModelAndView();
         }
 

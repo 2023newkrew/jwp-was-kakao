@@ -18,8 +18,8 @@ public class UserLoginController implements Controller {
 
     private static final UserLoginController INSTANCE = new UserLoginController();
     public static final String URL = "/user/login";
-    public static final String REDIRECTION_FAILED = "/user/login_failed.html";
-    private static final String REDIRECTION_SUCCESS = "/index.html";
+    private static final String REDIRECTION_FAILED = "/user/login_failed.html";
+    public static final String REDIRECTION_HOME = "/index.html";
 
     public static UserLoginController getInstance() {
         return INSTANCE;
@@ -42,7 +42,7 @@ public class UserLoginController implements Controller {
 
         String sessionId = httpRequest.getSession();
         createUserSession(user, sessionId);
-        httpResponse.setLocation(REDIRECTION_SUCCESS);
+        httpResponse.setLocation(REDIRECTION_HOME);
 
         return new MyModelAndView();
     }
