@@ -2,7 +2,6 @@ package model;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import org.springframework.http.HttpMethod;
@@ -16,7 +15,6 @@ public class MyHttpRequest {
     private final Map<String, String> headers;
     private final Map<String, String> body;
     private final Map<String, String> cookies;
-    private final List<String> staticUrls = Arrays.asList("css", "js", "images", "fonts", "favicon");
 
     public MyHttpRequest(String httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
             Map<String, String> cookies, Map<String, String> body) {
@@ -34,8 +32,8 @@ public class MyHttpRequest {
     }
 
     public boolean isStaticRequest() {
-        return staticUrls.stream()
-                .anyMatch(staticUrl -> this.url.startsWith(staticUrl, 1));
+        return Arrays.stream(StaticFile.values())
+                .anyMatch(fileName -> this.url.startsWith(fileName.getValue(), 1));
     }
 
     public String getContentType() {
