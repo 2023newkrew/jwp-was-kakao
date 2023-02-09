@@ -7,13 +7,17 @@ import http.Uri;
 import http.request.RequestHeaders;
 import http.request.RequestStartLine;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RequestParsingUtils {
     private static final int START_LINE_SIZE = 3;
     private static final int KEY_VALUE_TUPLE_SIZE = 2;
     private static final String REGEX_COLON = ":";
+    private static final String REGEX_SEMICOLON = ";";
     private static final String REGEX_AMPERSAND = "&";
     private static final String REGEX_EQUAL_SIGN = "=";
     public static RequestStartLine parseStartLine(String rawStartLine) {
@@ -41,16 +45,20 @@ public class RequestParsingUtils {
     }
 
     public static Map<String, String> parseQueryString(String queryString) {
-        Map<String, String> newParams = new HashMap<>();
-        Arrays.stream(queryString.split(REGEX_AMPERSAND))
-                .forEach(item -> {
-                    String[] tuple = item.split(REGEX_EQUAL_SIGN);
-                    if (tuple.length == KEY_VALUE_TUPLE_SIZE) {
-                        newParams.put(tuple[0], tuple[1]);
-                    }
-                });
-
-        return newParams;
+        return parseKeyValueItemsByRegex(queryString, REGEX_AMPERSAND);
     }
 
+    public static Map<String, String> parseCookie(String rawCookie) {
+        return parseKeyValueItemsByRegex(rawCookie, REGEX_SEMICOLON);
+    }
+
+    private static Map<String, String> parseKeyValueItemsByRegex(String raw, String regex) {
+        return Arrays.stream(raw.split(regex))
+                .map(item -> item.split(REGEX_EQUAL_SIGN))
+                .filter(item -> item.length == KEY_VALUE_TUPLE_SIZE)
+                .collect(Collectors.toMap(
+                        kv -> kv[0].trim(),
+                        kv -> kv[1].trim()
+                ));
+    }
 }

@@ -2,9 +2,9 @@ package http.response;
 
 import exception.InternalServerErrorException;
 import http.ContentType;
-import http.HttpCookie;
 import http.HttpResponseHeader;
 import http.HttpStatus;
+import http.cookie.HttpCookie;
 
 import java.util.Objects;
 

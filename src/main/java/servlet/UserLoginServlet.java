@@ -3,21 +3,23 @@ package servlet;
 import datastructure.StringPair;
 import db.DataBase;
 import exception.BadRequestException;
-import http.HttpCookie;
 import http.HttpStatus;
+import http.cookie.HttpCookie;
 import http.request.Request;
 import http.request.RequestBody;
 import http.response.Response;
+import http.session.Session;
+import http.session.SessionManager;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @ServletMapping(uri = "/user/login")
 public class UserLoginServlet implements Servlet {
     private static final Logger logger = LoggerFactory.getLogger(UserLoginServlet.class);
+    private static final SessionManager sessionManager = SessionManager.getInstance();
     private static final String USER_ID = "userId";
     private static final String PASSWORD = "password";
     private static final String JSESSIONID = "JSESSIONID";
@@ -30,7 +32,7 @@ public class UserLoginServlet implements Servlet {
     }
 
     private static class UserLoginServletHolder {
-        private static UserLoginServlet instance = new UserLoginServlet();
+        private static final UserLoginServlet instance = new UserLoginServlet();
     }
 
     public static UserLoginServlet getInstance() {
@@ -45,7 +47,7 @@ public class UserLoginServlet implements Servlet {
         User user = DataBase.findUserById(userId);
 
         if (authenticateUser(user, password)) {
-            HttpCookie cookie = createCookie();
+            HttpCookie cookie = createCookie(user);
             return Response.builder()
                     .httpVersion(request.getStartLine().getVersion())
                     .httpStatus(HttpStatus.FOUND)
@@ -61,11 +63,12 @@ public class UserLoginServlet implements Servlet {
                 .build();
     }
 
-    private static HttpCookie createCookie() {
-        UUID uuid = UUID.randomUUID();
-        String sessionId = uuid.toString();
+    private static HttpCookie createCookie(User user) {
+        Session session = sessionManager.newSession();
+        session.setAttribute("user", user);
+
         return HttpCookie.of(
-                new StringPair(JSESSIONID, sessionId),
+                new StringPair(JSESSIONID, session.getId()),
                 new StringPair(PATH, ROOT)
         );
     }

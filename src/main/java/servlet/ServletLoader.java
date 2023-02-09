@@ -16,20 +16,24 @@ public class ServletLoader {
     private static final String SERVLET_PACKAGE_PATH = "/Users/kakao/Documents/jwp-was-kakao/src/main/java/servlet";
     private static final String PACKAGE_NAME = "servlet";
     private static final String JAVA_FILE_EXTENSION = ".java";
+    private static Map<String, Servlet> cache;
 
     public static Map<String, Servlet> load() {
-        File folder = new File(SERVLET_PACKAGE_PATH);
+        if (Objects.isNull(cache)) {
+            File folder = new File(SERVLET_PACKAGE_PATH);
 
-        return Arrays.stream(Objects.requireNonNull(folder.listFiles()))
-                .filter(ServletLoader::isJavaClassFile)
-                .map(ServletLoader::getClassReflection)
-                .filter(Objects::nonNull)
-                .filter(ServletLoader::hasServletMappingAnnotation)
-                .collect(Collectors.toMap(
-                                ServletLoader::getUri,
-                                ServletLoader::getInstance
-                        )
-                );
+            cache = Arrays.stream(Objects.requireNonNull(folder.listFiles()))
+                    .filter(ServletLoader::isJavaClassFile)
+                    .map(ServletLoader::getClassReflection)
+                    .filter(Objects::nonNull)
+                    .filter(ServletLoader::hasServletMappingAnnotation)
+                    .collect(Collectors.toUnmodifiableMap(
+                                    ServletLoader::getUri,
+                                    ServletLoader::getInstance
+                            )
+                    );
+        }
+        return cache;
     }
 
     private static boolean isJavaClassFile(File file) {

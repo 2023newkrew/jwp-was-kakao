@@ -82,6 +82,9 @@
 - 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
 - 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.
 - 로그인된 상태에서 /user/login 페이지에 HTTP GET method로 접근하면 이미 로그인한 상태니 index.html 페이지로 리다이렉트 처리한다.
+  - [x] session 정보를 담는 Session 객체 생성
+  - [x] session id 와 Session 을 매핑할 SessionManager 객체 생성
+  - [x] 인가를 담당하는 AuthorizationFilter 객체 생성
 
 ### 여유가 있다면
 - TCP keep alive 가능하게

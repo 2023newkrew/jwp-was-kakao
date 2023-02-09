@@ -1,4 +1,4 @@
-package http;
+package http.cookie;
 
 import datastructure.StringPair;
 import org.slf4j.Logger;
@@ -18,9 +18,9 @@ public class HttpCookie {
         this.data = Map.copyOf(data);
     }
 
-    public static HttpCookie fromQueryString(String queryString) {
+    public static HttpCookie fromQueryString(String rawCookie) {
         return new HttpCookie(
-                RequestParsingUtils.parseQueryString(queryString)
+                RequestParsingUtils.parseCookie(rawCookie)
         );
     }
 
@@ -39,9 +39,14 @@ public class HttpCookie {
     }
 
     public String toSetCookieValue() {
-        logger.debug("Cookie data : {}", data.entrySet());
-        return data.entrySet().stream()
-                .map(entry -> String.join("=", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining("; "));
+        return "JSESSIONID=" + data.get("JSESSIONID") + "; " +
+                "Path=" + data.get("Path");
+    }
+
+    @Override
+    public String toString() {
+        return "HttpCookie{" +
+                "data=" + data +
+                '}';
     }
 }

@@ -1,11 +1,15 @@
 package servlet;
 
+import exception.AuthorizedException;
 import exception.BadRequestException;
 import exception.NotFoundException;
+import exception.UnauthorizedException;
+import filter.FilterManager;
 import http.ContentType;
 import http.HttpStatus;
 import http.request.Request;
 import http.response.Response;
+import http.response.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +25,8 @@ public class ServletContainer {
     }
 
     private static final ResourceServlet resourceServlet = ResourceServlet.getInstance();
+
+    private static final FilterManager filterManager = FilterManager.getInstance();
 
     private static final Map<String, Servlet> servlets;
 
@@ -38,6 +44,7 @@ public class ServletContainer {
 
     public Response serve(Request request) {
         try {
+            filterManager.mapFilter(request);
             return mapRequest(request);
         } catch (RuntimeException e) {
             return handleException(request, e);
@@ -66,21 +73,32 @@ public class ServletContainer {
     }
 
     private Response handleException(Request request, RuntimeException e) {
+        ResponseBuilder commonBuilder = Response.builder()
+                .httpVersion(request.getStartLine().getVersion());
+
         if (e instanceof BadRequestException) {
-            return Response.builder()
-                    .httpVersion(request.getStartLine().getVersion())
+            return commonBuilder
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .build();
         }
         if (e instanceof NotFoundException) {
-            return Response.builder()
-                    .httpVersion(request.getStartLine().getVersion())
+            return commonBuilder
                     .httpStatus(HttpStatus.NOT_FOUND)
                     .build();
         }
+        if (e instanceof UnauthorizedException) {
+            return commonBuilder
+                    .httpStatus(HttpStatus.UNAUTHORIZED)
+                    .build();
+        }
+        if (e instanceof AuthorizedException) {
+            return commonBuilder
+                    .httpStatus(HttpStatus.FOUND)
+                    .location("/index.html")
+                    .build();
+        }
         logger.error("InternalServerError : {}", e.getMessage());
-        return Response.builder()
-                .httpVersion(request.getStartLine().getVersion())
+        return commonBuilder
                 .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
     }
