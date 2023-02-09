@@ -9,7 +9,6 @@ import utils.IOUtils;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class HttpRequestReader implements Closeable {
 
@@ -41,14 +40,7 @@ public class HttpRequestReader implements Closeable {
 
         String body = readBody();
 
-        return HttpRequest.HttpRequestBuilder.aHttpRequest()
-                .withMethod(httpMethod)
-                .withURL(url)
-                .withParameters(parameters)
-                .withVersion(httpVersion)
-                .withHeaders(headers)
-                .withBody(body)
-                .build();
+        return new HttpRequest(httpMethod, url, httpVersion, parameters, headers, body);
     }
 
     private String readBody() {

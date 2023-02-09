@@ -26,11 +26,11 @@ public class GlobalExceptionHandler {
 
     private void responseBadRequest() {
         try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())) {
-            HttpResponse httpResponse =
-                    HttpResponse.HttpResponseBuilder.aHttpResponse()
-                            .withVersion("HTTP/1.1")
-                            .withStatus(HttpStatus.BAD_REQUEST)
-                            .build();
+
+            HttpResponse httpResponse = new HttpResponse();
+            httpResponse.setVersion("HTTP/1.1");
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST);
+
             dataOutputStream.write(httpResponse.toBytes());
             dataOutputStream.flush();
         } catch (IOException e) {
@@ -40,11 +40,11 @@ public class GlobalExceptionHandler {
 
     private void responseInternalServerError() {
         try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())) {
-            HttpResponse httpResponse =
-                    HttpResponse.HttpResponseBuilder.aHttpResponse()
-                            .withVersion("HTTP/1.1")
-                            .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .build();
+
+            HttpResponse httpResponse = new HttpResponse();
+            httpResponse.setVersion("HTTP/1.1");
+            httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
             dataOutputStream.write(httpResponse.toBytes());
             dataOutputStream.flush();
         } catch (IOException e) {

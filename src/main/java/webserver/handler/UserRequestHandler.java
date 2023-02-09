@@ -14,7 +14,7 @@ public class UserRequestHandler implements UrlMappingHandler {
     private static final String TEMPLATES_FILEPATH = "./templates";
 
     @Override
-    public HttpResponse handle(HttpRequest httpRequest) {
+    public void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
         byte[] bytes;
         try {
             bytes = FileIoUtils.loadFileFromClasspath(TEMPLATES_FILEPATH + httpRequest.getURL());
@@ -24,12 +24,9 @@ public class UserRequestHandler implements UrlMappingHandler {
             throw new IllegalArgumentException(e);
         }
 
-        return HttpResponse.HttpResponseBuilder.aHttpResponse()
-                .withStatus(HttpStatus.OK)
-                .withVersion("HTTP/1.1")
-                .withHeaders(generateHeaders(httpRequest, bytes))
-                .withBody(bytes)
-                .build();
+        httpResponse.setStatus(HttpStatus.OK);
+        httpResponse.addHeaders(generateHeaders(httpRequest, bytes));
+        httpResponse.setBody(bytes);
     }
 
     @Override

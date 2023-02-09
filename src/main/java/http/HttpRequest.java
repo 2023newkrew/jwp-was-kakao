@@ -1,7 +1,6 @@
 package http;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class HttpRequest {
@@ -12,7 +11,30 @@ public class HttpRequest {
     private HttpHeaders headers;
     private String body;
 
-    private HttpRequest() {
+    public HttpRequest() {
+        parameters = new HttpRequestParams();
+        headers = new HttpHeaders();
+    }
+
+    public HttpRequest(HttpMethod method, String URL, String version, HttpHeaders headers) {
+        this(method, URL, version, headers, "");
+    }
+
+    public HttpRequest(HttpMethod method, String URL, String version, HttpHeaders headers, String body) {
+        this(method, URL, version, new HttpRequestParams(), headers, body);
+    }
+
+    public HttpRequest(HttpMethod method, String URL, String version, HttpRequestParams parameters, HttpHeaders headers) {
+        this(method, URL, version, parameters, headers, "");
+    }
+
+    public HttpRequest(HttpMethod method, String URL, String version, HttpRequestParams parameters, HttpHeaders headers, String body) {
+        this.method = method;
+        this.URL = URL;
+        this.version = version;
+        this.parameters = parameters;
+        this.headers = headers;
+        this.body = body;
     }
 
     public HttpMethod getMethod() {
@@ -37,6 +59,46 @@ public class HttpRequest {
 
     public String getBody() {
         return body;
+    }
+
+    public void setMethod(HttpMethod method) {
+        this.method = method;
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setParameters(HttpRequestParams parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setHeaders(HttpHeaders headers) {
+        this.headers = headers;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void addParameters(HttpRequestParams parameters) {
+        this.parameters.setParameters(parameters.getParameters());
+    }
+
+    public void addParameter(String name, String value) {
+        this.parameters.setParameter(name, value);
+    }
+
+    public void addHeaders(HttpHeaders headers) {
+        this.headers.setHeaders(headers.getHeaders());
+    }
+
+    public void addHeader(String name, List<String> value) {
+        this.headers.setHeader(name, value);
     }
 
     @Override
@@ -67,65 +129,5 @@ public class HttpRequest {
                 ", headers=" + headers +
                 ", body='" + body + '\'' +
                 '}';
-    }
-
-    public static final class HttpRequestBuilder {
-        private HttpMethod method;
-        private String URL;
-        private String version;
-        private HttpRequestParams parameters;
-        private HttpHeaders headers;
-        private String body;
-
-        private HttpRequestBuilder() {
-            body = "";
-            parameters = new HttpRequestParams();
-            headers = new HttpHeaders();
-        }
-
-        public static HttpRequestBuilder aHttpRequest() {
-            return new HttpRequestBuilder();
-        }
-
-        public HttpRequestBuilder withMethod(HttpMethod method) {
-            this.method = method;
-            return this;
-        }
-
-        public HttpRequestBuilder withURL(String URL) {
-            this.URL = URL;
-            return this;
-        }
-
-        public HttpRequestBuilder withVersion(String version) {
-            this.version = version;
-            return this;
-        }
-
-        public HttpRequestBuilder withParameters(HttpRequestParams parameters) {
-            this.parameters = parameters;
-            return this;
-        }
-
-        public HttpRequestBuilder withHeaders(HttpHeaders headers) {
-            this.headers = headers;
-            return this;
-        }
-
-        public HttpRequestBuilder withBody(String body) {
-            this.body = body;
-            return this;
-        }
-
-        public HttpRequest build() {
-            HttpRequest httpRequest = new HttpRequest();
-            httpRequest.parameters = this.parameters;
-            httpRequest.body = this.body;
-            httpRequest.version = this.version;
-            httpRequest.method = this.method;
-            httpRequest.URL = this.URL;
-            httpRequest.headers = this.headers;
-            return httpRequest;
-        }
     }
 }

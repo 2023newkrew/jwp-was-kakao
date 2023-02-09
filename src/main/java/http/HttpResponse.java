@@ -1,13 +1,28 @@
 package http;
 
 import java.util.List;
-import java.util.Map;
 
 public class HttpResponse {
     private HttpStatus status;
     private String version;
     private HttpHeaders headers;
     private byte[] body;
+
+    public HttpResponse() {
+        headers = new HttpHeaders();
+        body = new byte[0];
+    }
+
+    public HttpResponse(HttpStatus status, String version, HttpHeaders headers) {
+        this(status, version, headers, new byte[0]);
+    }
+
+    public HttpResponse(HttpStatus status, String version, HttpHeaders headers, byte[] body) {
+        this.status = status;
+        this.version = version;
+        this.headers = headers;
+        this.body = body;
+    }
 
     public HttpStatus getStatus() {
         return status;
@@ -23,6 +38,30 @@ public class HttpResponse {
 
     public byte[] getBody() {
         return body;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setHeaders(HttpHeaders headers) {
+        this.headers = headers;
+    }
+
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
+    public void addHeaders(HttpHeaders headers) {
+        this.headers.setHeaders(headers.getHeaders());
+    }
+
+    public void addHeader(String name, List<String> value) {
+        this.headers.setHeader(name, value);
     }
 
     public byte[] toBytes() {
@@ -74,51 +113,5 @@ public class HttpResponse {
                 ", headers=" + headers +
                 ", body=" + new String(body) +
                 '}';
-    }
-
-    public static final class HttpResponseBuilder {
-        private HttpStatus status;
-        private String version;
-        private HttpHeaders headers;
-
-        private byte[] body;
-
-        private HttpResponseBuilder() {
-            headers = new HttpHeaders();
-            body = new byte[0];
-        }
-
-        public static HttpResponseBuilder aHttpResponse() {
-            return new HttpResponseBuilder();
-        }
-
-        public HttpResponseBuilder withStatus(HttpStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public HttpResponseBuilder withVersion(String version) {
-            this.version = version;
-            return this;
-        }
-
-        public HttpResponseBuilder withHeaders(HttpHeaders headers) {
-            this.headers = headers;
-            return this;
-        }
-
-        public HttpResponseBuilder withBody(byte[] body) {
-            this.body = body;
-            return this;
-        }
-
-        public HttpResponse build() {
-            HttpResponse httpResponse = new HttpResponse();
-            httpResponse.version = this.version;
-            httpResponse.headers = this.headers;
-            httpResponse.body = this.body;
-            httpResponse.status = this.status;
-            return httpResponse;
-        }
     }
 }

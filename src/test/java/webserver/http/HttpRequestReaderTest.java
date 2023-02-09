@@ -46,12 +46,8 @@ class HttpRequestReaderTest {
                 headers.setHeader("Connection", List.of("keep-alive"));
                 headers.setHeader("Accept", List.of("text/html", "application/xhtml+xml"));
 
-                HttpRequest expected = HttpRequest.HttpRequestBuilder.aHttpRequest()
-                        .withMethod(HttpMethod.GET)
-                        .withURL("/index.html")
-                        .withVersion("HTTP/1.1")
-                        .withHeaders(headers)
-                        .build();
+                HttpRequest expected =
+                        new HttpRequest(HttpMethod.GET, "/index.html", "HTTP/1.1", headers);
 
                 HttpRequest request;
                 try (HttpRequestReader httpRequestReader = new HttpRequestReader(inputStream)) {
@@ -93,13 +89,8 @@ class HttpRequestReaderTest {
                 headers.setHeader("Connection", List.of("keep-alive"));
                 headers.setHeader("Content-Length", List.of(String.valueOf(body.length())));
 
-                HttpRequest expected = HttpRequest.HttpRequestBuilder.aHttpRequest()
-                        .withMethod(HttpMethod.POST)
-                        .withURL("/user/create")
-                        .withVersion("HTTP/1.1")
-                        .withHeaders(headers)
-                        .withBody(body)
-                        .build();
+                HttpRequest expected =
+                        new HttpRequest(HttpMethod.POST, "/user/create", "HTTP/1.1", headers, body);
 
                 HttpRequest request;
                 try (HttpRequestReader httpRequestReader = new HttpRequestReader(inputStream)) {

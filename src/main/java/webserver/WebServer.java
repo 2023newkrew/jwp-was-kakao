@@ -6,9 +6,7 @@ import webserver.handler.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);

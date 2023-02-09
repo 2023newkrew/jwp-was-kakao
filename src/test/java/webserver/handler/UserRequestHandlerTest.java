@@ -18,14 +18,15 @@ class UserRequestHandlerTest {
     void handle() throws IOException, URISyntaxException {
         UrlMappingHandler userRequestHandler = new UserRequestHandler();
 
-        HttpRequest httpRequest = HttpRequest.HttpRequestBuilder.aHttpRequest()
-                .withMethod(HttpMethod.GET)
-                .withURL("/user/form.html")
-                .build();
+        HttpRequest httpRequest = new HttpRequest();
+        httpRequest.setMethod(HttpMethod.GET);
+        httpRequest.setURL("/user/form.html");
 
         String urlMappingRegex = userRequestHandler.getUrlMappingRegex();
         boolean urlMatches = Pattern.compile(urlMappingRegex).matcher(httpRequest.getURL()).matches();
-        HttpResponse httpResponse = userRequestHandler.handle(httpRequest);
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setVersion("HTTP/1.1");
+        userRequestHandler.handle(httpRequest, httpResponse);
 
         byte[] bytes = FileIoUtils.loadFileFromClasspath("./templates/user/form.html");
 

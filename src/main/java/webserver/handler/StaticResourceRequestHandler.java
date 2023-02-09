@@ -13,7 +13,7 @@ public class StaticResourceRequestHandler implements Handler {
     public static final String STATIC_FILEPATH = "./static";
 
     @Override
-    public HttpResponse handle(HttpRequest httpRequest) {
+    public void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
         byte[] bytes;
         try {
             bytes = FileIoUtils.loadFileFromClasspath(STATIC_FILEPATH + httpRequest.getURL());
@@ -23,12 +23,9 @@ public class StaticResourceRequestHandler implements Handler {
             throw new IllegalArgumentException(e);
         }
 
-        return HttpResponse.HttpResponseBuilder.aHttpResponse()
-                .withStatus(HttpStatus.OK)
-                .withVersion("HTTP/1.1")
-                .withHeaders(generateHeaders(httpRequest, bytes))
-                .withBody(bytes)
-                .build();
+        httpResponse.setStatus(HttpStatus.OK);
+        httpResponse.addHeaders(generateHeaders(httpRequest, bytes));
+        httpResponse.setBody(bytes);
     }
 
     @Override

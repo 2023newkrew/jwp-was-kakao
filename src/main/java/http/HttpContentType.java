@@ -18,7 +18,9 @@ public enum HttpContentType {
 
     IMAGE_SVG("image/svg+xml", List.of("svg")),
     IMAGE_PNG("image/png", List.of("png")),
-    IMAGE_ICON("image/vnd.microsoft.icon", List.of("ico"));
+    IMAGE_ICON("image/vnd.microsoft.icon", List.of("ico")),
+
+    APPLICATION_X_WWW_FORM_URLENCODE("application/x-www-form-urlencode", List.of());
 
     private static final Map<String, HttpContentType> extensionMapping = new HashMap<>();
 

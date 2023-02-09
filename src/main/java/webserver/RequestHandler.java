@@ -5,8 +5,6 @@ import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.handler.Handler;
-import webserver.handler.StaticResourceRequestHandler;
-import webserver.handler.UrlMappingHandler;
 import webserver.http.HttpRequestReader;
 import webserver.support.GlobalExceptionHandler;
 
@@ -14,8 +12,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -51,7 +47,8 @@ public class RequestHandler implements Runnable {
 
             logger.debug("HTTP Request: {}", httpRequest);
 
-            HttpResponse httpResponse = handle(httpRequest);
+            HttpResponse httpResponse = getHttpResponse();
+            handle(httpRequest, httpResponse);
 
             logger.debug("HTTP Response Status Line: {} {} {}",
                     httpResponse.getVersion(),
@@ -68,9 +65,15 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private HttpResponse handle(HttpRequest httpRequest) {
+    private HttpResponse getHttpResponse() {
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setVersion("HTTP/1.1");
+        return httpResponse;
+    }
+
+    private void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
         Handler handler = handlerMappings.findHandler(httpRequest);
-        return handler.handle(httpRequest);
+        handler.handle(httpRequest, httpResponse);
     }
 
     private void close(HttpRequestReader reader, OutputStream os, Socket connection) {

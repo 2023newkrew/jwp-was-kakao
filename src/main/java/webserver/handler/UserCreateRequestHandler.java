@@ -13,7 +13,7 @@ public class UserCreateRequestHandler implements UrlMappingHandler {
     private static final HttpRequestParamParser httpRequestParamParser = new HttpRequestParamParser();
 
     @Override
-    public HttpResponse handle(HttpRequest httpRequest) {
+    public void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
         HttpRequestParams params;
         if (httpRequest.getMethod() == HttpMethod.GET) {
             params = httpRequest.getParameters();
@@ -24,11 +24,8 @@ public class UserCreateRequestHandler implements UrlMappingHandler {
         User user = createUser(params);
         DataBase.addUser(user);
 
-        return HttpResponse.HttpResponseBuilder.aHttpResponse()
-                .withStatus(HttpStatus.FOUND)
-                .withVersion("HTTP/1.1")
-                .withHeaders(new HttpHeaders(Map.of(HttpHeaders.LOCATION, List.of("/index.html"))))
-                .build();
+        httpResponse.setStatus(HttpStatus.FOUND);
+        httpResponse.addHeader(HttpHeaders.LOCATION, List.of("/index.html"));
     }
 
     @Override
