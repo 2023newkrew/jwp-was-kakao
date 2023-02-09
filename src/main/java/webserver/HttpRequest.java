@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HttpRequest {
+    private static final String CONTENT_LENGTH = "Content-Length";
+
     private final HttpRequestLine requestLine;
     private final Map<String, String> headers;
 
@@ -26,8 +28,18 @@ public class HttpRequest {
     }
 
     public static HttpRequest from(InputStream inputStream) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String startLine = bufferedReader.readLine();
+        try (
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
+        ) {
+            String startLine = bufferedReader.readLine();
+            Map<String, String> headers = readHeader(bufferedReader);
+            String body = readBody(bufferedReader, headers);
+            return new HttpRequest(HttpRequestLine.from(startLine), headers, body);
+        }
+    }
+
+    private static Map<String, String> readHeader(BufferedReader bufferedReader) throws IOException {
         Map<String, String> headers = new HashMap<>();
         String line = bufferedReader.readLine();
         while (!"".equals(line)) {
@@ -36,11 +48,14 @@ public class HttpRequest {
             headers.put(key, value);
             line = bufferedReader.readLine();
         }
-        String body = "";
-        if (headers.containsKey("Content-Length")) {
-            body = IOUtils.readData(bufferedReader, Integer.parseInt(headers.get("Content-Length")));
+        return headers;
+    }
+
+    private static String readBody(BufferedReader bufferedReader, Map<String, String> headers) throws IOException {
+        if (headers.containsKey(CONTENT_LENGTH)) {
+            return IOUtils.readData(bufferedReader, Integer.parseInt(headers.get(CONTENT_LENGTH)));
         }
-        return new HttpRequest(HttpRequestLine.from(startLine), headers, body);
+        return "";
     }
 
     public String getHeader(String key) {
