@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.MyHttpRequest;
 import model.MyHttpResponse;
+import model.MyModelAndView;
 import webserver.Controller;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,8 +17,8 @@ public class StaticController implements Controller {
     }
 
     @Override
-    public String process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
+    public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
         httpResponse.setContentType(httpRequest.getContentType());
-        return "./static" + httpRequest.getUrl();
+        return new MyModelAndView("./static" + httpRequest.getUrl());
     }
 }

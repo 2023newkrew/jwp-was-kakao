@@ -2,8 +2,9 @@ package webserver;
 
 import model.MyHttpRequest;
 import model.MyHttpResponse;
+import model.MyModelAndView;
 
 public interface Controller {
 
-    String process(MyHttpRequest httpRequest, MyHttpResponse httpResponse);
+    MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse);
 }

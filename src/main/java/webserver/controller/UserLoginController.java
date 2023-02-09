@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.MyHttpRequest;
 import model.MyHttpResponse;
+import model.MyModelAndView;
 import model.Session;
 import model.User;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class UserLoginController implements Controller {
 
     private static final UserLoginController INSTANCE = new UserLoginController();
     public static final String URL = "/user/login";
-    private static final String REDIRECTION_FAILED = "/user/login_failed.html";
+    public static final String REDIRECTION_FAILED = "/user/login_failed.html";
     private static final String REDIRECTION_SUCCESS = "/index.html";
 
     public static UserLoginController getInstance() {
@@ -25,7 +26,7 @@ public class UserLoginController implements Controller {
     }
 
     @Override
-    public String process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
+    public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
         Map<String, String> requestBody = httpRequest.getBody();
         String userId = requestBody.get("userId");
         String password = requestBody.get("password");
@@ -36,14 +37,14 @@ public class UserLoginController implements Controller {
 
         if (!user.isCorrectPassword(password)) {
             httpResponse.setLocation(REDIRECTION_FAILED);
-            return "";
+            return new MyModelAndView();
         }
 
         String sessionId = httpRequest.getSession();
         createUserSession(user, sessionId);
         httpResponse.setLocation(REDIRECTION_SUCCESS);
 
-        return "";
+        return new MyModelAndView();
     }
 
     private void createUserSession(User user, String sessionId) {

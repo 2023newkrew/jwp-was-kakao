@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import model.MyHttpRequest;
 import model.MyHttpResponse;
+import model.MyModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -51,10 +52,10 @@ public class RequestHandler implements Runnable {
             preHandleSession(httpRequest, httpResponse);
 
             Controller controller = handleControllerMapping(httpRequest);
-            String viewName = controller.process(httpRequest, httpResponse);
+            MyModelAndView mav = controller.process(httpRequest, httpResponse);
 
             DataOutputStream dos = new DataOutputStream(out);
-            sendResponse(dos, httpResponse, viewName);
+            sendResponse(dos, httpResponse, mav.getViewName());
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
