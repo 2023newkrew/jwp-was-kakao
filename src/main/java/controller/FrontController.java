@@ -5,6 +5,7 @@ import controller.annotation.CustomRequestHeader;
 import controller.annotation.CustomRequestParams;
 import exception.UnsupportedRequestException;
 import exception.UnsupportedResponseException;
+import exception.UserNotFoundException;
 import model.http.CustomBaseHttpRequest;
 import model.http.CustomHttpRequest;
 import model.http.CustomHttpResponse;
@@ -76,6 +77,8 @@ public class FrontController {
                             .collect(Collectors.toList())
                             .toArray())
             );
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException(e.getMessage());
         } catch (Exception e) {
             throw new UnsupportedRequestException("HttpRequest 매핑에 실패했습니다.");
         }

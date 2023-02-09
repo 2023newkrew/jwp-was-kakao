@@ -47,7 +47,6 @@ public class UserController extends BaseController {
     @CustomRequestMapping(url = "/user/login", httpMethod = CustomHttpMethod.POST)
     public CustomHttpResponse login(@CustomRequestBody User user) {
         CustomHttpHeader headers = new CustomHttpHeader();
-        User test = user;
         User loginUser = DataBase.findUserById(user.getUserId()).orElseThrow(() -> new UserNotFoundException("아이디와 비밀번호가 일치하지 않습니다."));
         if (loginUser.hasSamePassword(user.getPassword())) {
             headers.put("Set-Cookie", new CustomHttpCookie().getCookie());
