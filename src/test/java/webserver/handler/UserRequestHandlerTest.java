@@ -6,6 +6,7 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,8 @@ class UserRequestHandlerTest {
         assertThat(httpResponse.getStatus()).isEqualTo(HttpStatus.OK);
         assertThat(httpResponse.getHeaders().getHeaders())
                 .hasSize(2)
-                .containsEntry(HttpHeaders.CONTENT_TYPE, List.of(HttpContentType.TEXT_HTML + ";charset=utf-8"))
+                .containsEntry(HttpHeaders.CONTENT_TYPE,
+                        List.of(HttpContentType.fromExtensionAndCharset("html", StandardCharsets.UTF_8)))
                 .containsEntry(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(bytes.length)));
         assertThat(httpResponse.getBody()).isEqualTo(bytes);
     }

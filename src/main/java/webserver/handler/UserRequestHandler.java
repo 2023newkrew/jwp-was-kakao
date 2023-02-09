@@ -5,14 +5,12 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 public class UserRequestHandler implements UrlMappingHandler {
 
     private static final String URL_MAPPING_REGEX = "/user/.+";
-    private static final String CHARSET_UTF_8 = "charset=utf-8";
     private static final String TEMPLATES_FILEPATH = "./templates";
 
     @Override
@@ -52,7 +50,7 @@ public class UserRequestHandler implements UrlMappingHandler {
         String extension = url.substring(extensionIndex);
 
         headers.setHeader(HttpHeaders.CONTENT_TYPE,
-                List.of(HttpContentType.extensionToContentType(extension) + ";" + CHARSET_UTF_8));
+                List.of(HttpContentType.fromExtensionAndCharset(extension, StandardCharsets.UTF_8)));
 
         headers.setHeader(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
 

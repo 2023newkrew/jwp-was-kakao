@@ -5,14 +5,12 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 public class StaticResourceRequestHandler implements Handler {
 
     public static final String STATIC_FILEPATH = "./static";
-    public static final String CHARSET_UTF_8 = "charset=utf-8";
 
     @Override
     public HttpResponse handle(HttpRequest httpRequest) {
@@ -46,7 +44,7 @@ public class StaticResourceRequestHandler implements Handler {
         String extension = url.substring(extensionIndex);
 
         headers.setHeader(HttpHeaders.CONTENT_TYPE,
-                List.of(HttpContentType.extensionToContentType(extension) + ";" + CHARSET_UTF_8));
+                List.of(HttpContentType.fromExtensionAndCharset(extension, StandardCharsets.UTF_8)));
 
         headers.setHeader(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
 
