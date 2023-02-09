@@ -14,7 +14,8 @@ import java.util.Optional;
 
 public class FrontController {
     private static final Map<String, PostMethodController> controllerMap = Map.of(
-            "/user/create", new UserSaveController()
+            "/user/create", new UserSaveController(),
+            "/user/login", new LoginController()
     );
 
     private static final String ROOT_PATH = "/";
@@ -36,8 +37,8 @@ public class FrontController {
 
             byte[] body = loadBody(httpRequest.getUrl());
 
-            httpResponse.setContentType(contentType);
-            httpResponse.setBody(body);
+            httpResponse.addHeader("Content-Type", contentType);
+            httpResponse.changeBody(body);
         } catch (URISyntaxException e) {
             throw new NotFoundException(e);
         } catch (IOException e) {
