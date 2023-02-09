@@ -1,9 +1,9 @@
 package webserver.controller;
 
 import lombok.RequiredArgsConstructor;
-import model.LoginRequest;
+import dto.LoginRequest;
 import model.User;
-import model.UserRequest;
+import dto.UserRequest;
 import utils.DynamicTemplateLoader;
 import utils.FileIoUtils;
 import webserver.FileType;

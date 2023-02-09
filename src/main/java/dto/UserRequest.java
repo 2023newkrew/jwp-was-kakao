@@ -1,8 +1,9 @@
-package model;
+package dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import model.User;
 
 import java.util.Map;
 

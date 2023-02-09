@@ -1,4 +1,4 @@
-package model;
+package dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
