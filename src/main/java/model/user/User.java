@@ -20,6 +20,6 @@ public class User {
     }
 
     public Boolean isPasswordValid(String password){
-        return this.password.equals(password);
+        return password.equals(this.password);
     }
 }

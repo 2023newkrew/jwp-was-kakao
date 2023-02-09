@@ -57,9 +57,7 @@ public class UserController {
     }
 
     public HttpResponse loginUserPost(HttpRequest request) {
-        String requestBody = request.getBody();
-        Map<String, String> loginInfo = IOUtils.extractParamsMap(requestBody);
-        LoginDto loginDto = LoginDto.of(loginInfo);
+        LoginDto loginDto = LoginDto.of(IOUtils.extractParamsMap(request.getBody()));
 
         User user = DataBase.findUserById(loginDto.getUserId())
                 .orElseThrow(AuthenticationException::new);

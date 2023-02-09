@@ -30,6 +30,9 @@ public class StaticFileController {
         byte[] body = FileIoUtils.loadFileFromClasspath(resourcePath);
 
         return HttpResponse.of(HttpStatus.OK, contentType, body);
+    }
 
+    public HttpResponse indexGet(){
+        return HttpResponse.create302FoundResponse("/index.html");
     }
 }
