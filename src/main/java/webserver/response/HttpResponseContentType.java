@@ -6,7 +6,9 @@ public enum HttpResponseContentType {
     JS(".js", "text/javascript; charset=utf-8"),
     WOFF(".woff", "application/x-font-woff"),
     TTF(".ttf", "application/x-font-ttf"),
-    ICO(".ico", "image/x-icon");
+    ICO(".ico", "image/x-icon"),
+    PLAIN("", "text/plain"),
+    ;
 
     private final String suffix;
     private final String contentType;
