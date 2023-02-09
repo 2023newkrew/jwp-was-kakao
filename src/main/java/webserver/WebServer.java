@@ -12,6 +12,7 @@ import webserver.controller.LoginController;
 import webserver.controller.PostController;
 import webserver.controller.QueryStringController;
 import webserver.controller.UserCreateController;
+import webserver.controller.UserListController;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -44,7 +45,8 @@ public class WebServer {
                 new PostController(),
                 new QueryStringController(),
                 new UserCreateController(),
-                new LoginController()
+                new LoginController(),
+                new UserListController()
         );
     }
 }
