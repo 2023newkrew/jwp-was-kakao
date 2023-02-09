@@ -176,4 +176,32 @@ class RequestHandlerTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @Test
+    void showUserListWithoutLogin() throws IOException, URISyntaxException {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /user/list HTTP/1.1 \r\n" +
+                        "Host: localhost:8080 \r\n" +
+                        "Connection: keep-alive\n" +
+                        "Cookie: JSESSIONID=test\n" +
+                        "\r\n");
+        Session session = new Session("test");
+        SessionManager.add("test", session);
+        DataBase.addUser(new User("cu", "password", "test1", "brainbackdoor1%40gmail.com"));
+        DataBase.addUser(new User("cu2", "password", "test2", "brainbackdoor2%40gmail.com"));
+        DataBase.addUser(new User("cu3", "password", "test3", "brainbackdoor3%40gmail.com"));
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: /user/login.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
 }
