@@ -49,7 +49,7 @@ public class HttpRequestHeader {
         return header.startsWith("Cookie:");
     }
 
-    public Optional<HttpCookie> getSessionId() {
+    public Optional<HttpCookie> getSessionCookie() {
         return cookies.stream()
                 .filter(HttpCookie::isSessionId)
                 .findFirst();

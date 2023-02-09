@@ -27,6 +27,10 @@ public class HttpCookie {
         this.cookieMap.put(key, value);
     }
 
+    public Optional<String> getSessionId() {
+        return Optional.ofNullable(cookieMap.get("JSESSIONID"));
+    }
+
     public Boolean isSessionId() {
         return cookieMap.containsKey("JSESSIONID");
     }

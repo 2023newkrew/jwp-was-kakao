@@ -4,6 +4,7 @@ import db.DataBase;
 import dto.LoginDto;
 import enums.ContentType;
 import exceptions.AuthenticationException;
+import exceptions.AuthorizationException;
 import http.HttpRequest;
 import http.HttpResponse;
 import lombok.AccessLevel;
@@ -77,6 +78,16 @@ public class UserController {
     }
 
     public HttpResponse userListGet(HttpRequest request) throws IOException {
+        String sessionId = request.getSessionCookie()
+                .orElseThrow(AuthorizationException::new)
+                .getSessionId()
+                .orElseThrow(AuthorizationException::new);
+
+        if (sessionManager.findSession(sessionId)
+                .isEmpty()) {
+            throw new AuthorizationException();
+        }
+
         List<User> userList = DataBase.findAll()
                 .stream()
                 .collect(Collectors.toList());

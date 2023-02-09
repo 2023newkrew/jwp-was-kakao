@@ -1,6 +1,5 @@
 package session;
 
-import exceptions.InvalidSessionException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -24,9 +23,8 @@ public class SessionManager {
         SESSIONS.put(session.getId(), session);
     }
 
-    public Session findSession(final String id) {
-        return Optional.ofNullable(SESSIONS.get(id))
-                .orElseThrow(InvalidSessionException::new);
+    public Optional<Session> findSession(final String id) {
+        return Optional.ofNullable(SESSIONS.get(id));
     }
 
     public void remove(final String id) {

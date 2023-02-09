@@ -4,17 +4,14 @@ import controller.HomeController;
 import controller.StaticFileController;
 import controller.UserController;
 import enums.ContentType;
-import exceptions.AuthenticationException;
-import exceptions.InvalidQueryParameterException;
-import exceptions.InvalidSessionException;
-import exceptions.ResourceNotFoundException;
+import exceptions.*;
 import http.HttpRequest;
 import http.HttpResponse;
-import utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
+import utils.HttpUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -67,6 +64,8 @@ public class RequestHandler implements Runnable {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
         } catch (AuthenticationException | InvalidSessionException e) {
             return HttpResponse.create302FoundResponse("/user/login_failed.html");
+        } catch (AuthorizationException e) {
+            return HttpResponse.create302FoundResponse("/user/login.html");
         } catch (Exception e) {
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
