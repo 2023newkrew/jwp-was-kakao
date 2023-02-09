@@ -6,12 +6,10 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import model.User;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 import webserver.service.UserService;
-import webserver.session.HttpSession;
 
 public class UserListController implements Controller {
     @Override

@@ -2,8 +2,6 @@ package utils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-import webserver.session.HttpCookie;
 import webserver.session.HttpSession;
 
 public class HttpRequestUtils {

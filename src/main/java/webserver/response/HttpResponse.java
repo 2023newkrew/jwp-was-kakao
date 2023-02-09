@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import utils.HttpRequestUtils;
-import webserver.session.HttpCookie;
 import webserver.request.HttpRequest;
 import webserver.session.HttpSession;
 

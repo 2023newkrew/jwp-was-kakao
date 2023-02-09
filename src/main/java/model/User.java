@@ -1,8 +1,10 @@
 package model;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class User {
     private String userId;
     private String password;
@@ -14,22 +16,6 @@ public class User {
         this.password = password;
         this.name = name;
         this.email = email;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public boolean comparePassword(String password) {
