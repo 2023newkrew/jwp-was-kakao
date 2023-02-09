@@ -4,6 +4,8 @@ import org.springframework.util.AntPathMatcher;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
+import webserver.HttpSession;
+import webserver.SessionManager;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,6 +32,11 @@ public class FrontController {
                     .map(str -> str.split(",")[0])
                     .orElse("text/html;charset=utf-8");
             httpResponse.addHeader("Content-Type", contentType);
+
+            if (httpRequest.getSession() == null) {
+                HttpSession session = SessionManager.createSession();
+                httpResponse.setJSessionId(session.getId());
+            }
 
             String requestSignature = httpRequest.getMethod().name() + " " + httpRequest.getUrl();
             if (controllerMap.containsKey(requestSignature)) {
