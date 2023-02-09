@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
@@ -29,7 +28,7 @@ public class HttpResponse {
         headers.put(name, value);
     }
 
-    public void setJSessionId(UUID sessionId) {
+    public void setJSessionId(String sessionId) {
         headers.put("Set-Cookie", "JSESSIONID=" + sessionId + "; Path=/");
     }
 

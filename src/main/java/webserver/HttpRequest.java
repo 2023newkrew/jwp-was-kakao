@@ -23,6 +23,7 @@ public class HttpRequest {
 
     private int contentLength;
     private String contentType;
+    private HttpSession session;
     private Map<String, String> parameterMap = new HashMap<>();
     private Map<String, String> cookieMap = new HashMap<>();
 
@@ -38,6 +39,10 @@ public class HttpRequest {
 
     public String getUrl() {
         return url;
+    }
+
+    public HttpSession getSession() {
+        return session;
     }
 
     public String getHeader(String name) {
@@ -99,6 +104,7 @@ public class HttpRequest {
                     .map(Integer::parseInt)
                     .orElse(-1);
             contentType = getHeader("Content-Type");
+            session = SessionManager.getSession(cookieMap.getOrDefault("JSESSIONID", ""));
 
             String cookieToken = headerMap.getOrDefault("Cookie", "");
             Arrays.stream(cookieToken.split(","))

@@ -15,4 +15,8 @@ public class UserService {
     public static void saveUser(User newUser) {
         DataBase.addUser(newUser);
     }
+
+    public static User findUserById(String id) {
+        return DataBase.findUserById(id);
+    }
 }
