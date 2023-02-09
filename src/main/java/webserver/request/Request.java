@@ -2,7 +2,7 @@ package webserver.request;
 
 import org.springframework.http.HttpMethod;
 import utils.IOUtils;
-import webserver.StaticDirectory;
+import webserver.request.support.StaticDirectory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
