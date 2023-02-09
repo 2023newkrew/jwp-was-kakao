@@ -20,7 +20,14 @@ public abstract class ResponseUtils {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + mimeType + ";charset=utf-8 \r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static void response200Header(DataOutputStream dos){
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -30,7 +37,6 @@ public abstract class ResponseUtils {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: " + redirectPath + " \r\n");
-            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -39,7 +45,6 @@ public abstract class ResponseUtils {
     public static void response404Header(DataOutputStream dos){
         try {
             dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
-            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -48,7 +53,6 @@ public abstract class ResponseUtils {
     public static void response400Header(DataOutputStream dos){
         try {
             dos.writeBytes("HTTP/1.1 400 Bad Request \r\n");
-            dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -56,8 +60,17 @@ public abstract class ResponseUtils {
 
     public static void responseBody(DataOutputStream dos, byte[] body) {
         try {
+            dos.writeBytes("\r\n");
             dos.write(body, 0, body.length);
             dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static void setCookie(DataOutputStream dos, String key, String value){
+        try {
+            dos.writeBytes("Set-Cookie: "+ key + "=" + value + "; Path=/\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

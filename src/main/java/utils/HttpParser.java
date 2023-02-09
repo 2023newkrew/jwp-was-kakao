@@ -1,6 +1,7 @@
 package utils;
 
 import org.springframework.http.HttpMethod;
+import session.HttpCookie;
 
 import java.util.HashMap;
 
@@ -8,7 +9,7 @@ public class HttpParser {
     private final HashMap<String, String> httpHeaderInfo = new HashMap<>();
 
     public HttpParser(String httpRequest) {
-        //System.out.println(httpRequest);
+        System.out.println(httpRequest);
 
         String[] httpInfo = httpRequest.split("\n");
         String[] firstLine = httpInfo[0].split(" ");
@@ -34,5 +35,9 @@ public class HttpParser {
 
     public Integer getContentLength(){
         return Integer.parseInt(httpHeaderInfo.get("Content-Length"));
+    }
+
+    public HttpCookie getCookie(){
+        return new HttpCookie(httpHeaderInfo.getOrDefault("Cookie", ""));
     }
 }
