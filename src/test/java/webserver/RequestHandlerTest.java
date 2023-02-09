@@ -19,8 +19,8 @@ class RequestHandlerTest {
                 "\r\n";
 
         final var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 11 \r\n" +
+                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "\r\n" +
                 "Hello world";
 
@@ -37,8 +37,8 @@ class RequestHandlerTest {
 
         final var expectedBody = FileIoUtils.loadFileFromClasspath("templates/index.html");
         final var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: " + expectedBody.length + " \r\n" +
+                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "\r\n" +
                 new String(expectedBody);
 
@@ -56,8 +56,8 @@ class RequestHandlerTest {
 
         final var expectedBody = FileIoUtils.loadFileFromClasspath("static/css/styles.css");
         final var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/css \r\n" +
                 "Content-Length: " + expectedBody.length + " \r\n" +
+                "Content-Type: text/css \r\n" +
                 "\r\n" +
                 new String(expectedBody);
 

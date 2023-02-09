@@ -24,6 +24,7 @@ public class HttpRequest {
     private int contentLength;
     private String contentType;
     private Map<String, String> parameterMap = new HashMap<>();
+    private Map<String, String> cookieMap = new HashMap<>();
 
     public HttpRequest(InputStream inputStream) {
         this.inputStream = inputStream;
@@ -45,6 +46,10 @@ public class HttpRequest {
 
     public String getParameter(String name) {
         return parameterMap.getOrDefault(name, null);
+    }
+
+    public String getCookie(String name) {
+        return cookieMap.getOrDefault(name, null);
     }
 
     private class RequestParser {
@@ -94,6 +99,13 @@ public class HttpRequest {
                     .map(Integer::parseInt)
                     .orElse(-1);
             contentType = getHeader("Content-Type");
+
+            String cookieToken = headerMap.getOrDefault("Cookie", "");
+            Arrays.stream(cookieToken.split(","))
+                    .map(String::trim)
+                    .map(cookie -> cookie.split("="))
+                    .filter(split -> split.length >= 2)
+                    .forEach(split -> cookieMap.put(split[0], split[1]));
         }
 
         private String readBody() throws IOException {
