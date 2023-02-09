@@ -2,8 +2,10 @@ package model.http;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CustomHttpHeader extends CustomBaseHttpRequest {
 
@@ -38,7 +40,17 @@ public class CustomHttpHeader extends CustomBaseHttpRequest {
     }
 
     public boolean isLogined() {
-        return header.containsKey("Cookie");
+        if (!header.containsKey("Cookie")) {
+            return false;
+        }
+        Map<String, String> cookie = Arrays.stream(header.get("Cookie").split("; "))
+                .map(attribute -> attribute.split("="))
+                .collect(Collectors.toMap(a -> a[0], a-> a[1]));
+        if (!cookie.containsKey("JSESSIONID")) {
+            return false;
+        }
+        String id = cookie.get("JSESSIONID");
+        return SessionManager.getInstance().findSession(id).isPresent();
     }
 
 }
