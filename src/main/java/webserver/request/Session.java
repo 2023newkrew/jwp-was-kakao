@@ -13,16 +13,16 @@ public class Session {
         this.sessionId = String.valueOf(UUID.randomUUID());
     }
 
-    public Session(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
     public String getSessionId() {
         return sessionId;
     }
 
     public Object getAttribute(String name) {
         return values.get(name);
+    }
+
+    public boolean hasAttribute(String name) {
+        return values.containsKey(name);
     }
 
     public void setAttribute(String name, Object value) {

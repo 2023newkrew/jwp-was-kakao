@@ -4,6 +4,7 @@ import webserver.handler.HttpRequestHandler;
 import webserver.handler.NotFoundHandler;
 import webserver.handler.gethandler.impl.StaticResourceRequestHandler;
 import webserver.handler.gethandler.impl.TemplateResourceRequestHandler;
+import webserver.handler.gethandler.impl.UserListRequestHandler;
 import webserver.handler.posthandler.impl.LoginRequestHandler;
 import webserver.handler.posthandler.impl.UserCreateRequestHandler;
 import webserver.request.HttpRequest;
@@ -19,7 +20,8 @@ public class HandlerResolver {
                 TemplateResourceRequestHandler.getInstance(),
                 StaticResourceRequestHandler.getInstance(),
                 UserCreateRequestHandler.getInstance(),
-                LoginRequestHandler.getInstance()
+                LoginRequestHandler.getInstance(),
+                UserListRequestHandler.getInstance()
         );
     }
 
