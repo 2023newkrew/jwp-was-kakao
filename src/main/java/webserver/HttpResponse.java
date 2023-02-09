@@ -5,6 +5,10 @@ public class HttpResponse {
     private ResponseHeader responseHeader;
     private byte[] responseBody;
 
+    public HttpResponse() {
+        responseHeader = new ResponseHeader();
+    }
+
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }
