@@ -1,6 +1,11 @@
 package controller;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
 import controller.annotation.CustomRequestBody;
+import controller.annotation.CustomRequestHeader;
 import controller.annotation.CustomRequestMapping;
 import controller.annotation.CustomRequestParams;
 import db.DataBase;
@@ -8,7 +13,8 @@ import exception.UserNotFoundException;
 import model.User;
 import model.http.*;
 
-import model.http.CustomHttpStatus;
+import java.io.IOException;
+import java.util.Collection;
 
 public class UserController extends BaseController {
 
@@ -54,6 +60,35 @@ public class UserController extends BaseController {
         return new CustomHttpResponse.Builder()
                 .httpStatus(CustomHttpStatus.FOUND)
                 .headers(headers)
+                .build();
+    }
+
+    @CustomRequestMapping(url = "/user/list", httpMethod = CustomHttpMethod.GET)
+    public CustomHttpResponse list(@CustomRequestHeader CustomHttpHeader requestHeader) throws IOException {
+        CustomHttpHeader headers = new CustomHttpHeader();
+        if (!requestHeader.isLogined()) {
+            headers.put("Location", "/user/login.html");
+            return new CustomHttpResponse.Builder()
+                    .httpStatus(CustomHttpStatus.FOUND)
+                    .headers(headers)
+                    .body("")
+                    .build();
+        }
+        headers.put("Content-Type", "text/html;charset=utf-8");
+
+        TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setPrefix("/templates");
+        loader.setSuffix(".html");
+        Handlebars handlebars = new Handlebars(loader);
+
+        Template template = handlebars.compile("user/list");
+        Collection<User> users = DataBase.findAll();
+        String page = template.apply(users);
+
+        return new CustomHttpResponse.Builder()
+                .httpStatus(CustomHttpStatus.OK)
+                .headers(headers)
+                .body(page)
                 .build();
     }
 
