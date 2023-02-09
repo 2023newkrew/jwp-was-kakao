@@ -77,3 +77,38 @@ https://edu.nextstep.camp/s/GiKTqpMP/ls/CYcM3ljf
 - `createUserGet`, `createUserPost` 메서드의 반환값을 수정한다.
     - 302 FOUND Response를 생성하여 반환한다.
     - redirectURI는 /index.html 이다.
+
+---
+
+# 2단계 - 로그인 구현하기
+
+## 미션 설명
+
+- 서블릿을 도입하여, 동적 페이지(회원가입 등)를 만들 수 있게 되었다.
+- 로그인 기능을 추가하고, 쿠키와 세션을 구현해본다.
+
+## 기능 요구사항
+
+### 1. 로그인 기능 구현
+
+- /user/login.html 로의 POST 요청에 응답한다.
+- 요청에 따라 User 정보를 DB에 조회하므로 `UserController`에서 요청을 처리한다.
+- 로그인이 성공하면 `/index.html`로, 실패하면 `/user/login_failed.html`로 이동한다.
+    - 요청 헤더 쿠키에 `JSESSIONID`가 없다면 body 정보를 통해 로그인을 시도한 뒤 `Set-Cookie`를 반환한다.
+    - 요청 헤더 쿠키에 `JSESSIONID`가 존재한다면 Cookie 맵을 통해 세션을 조회하여 로그인을 시도한다.
+- HttpCookie 클래스 생성
+    - Cookie 정보를 담기 위한 객체이다.
+    - `JSESSIONID`와 `Path`를 Map 형식으로 저장한다.
+
+### 2. 템플릿 엔진 활용하기
+
+- Handlebars를 사용하여 template 패키지 내의 정적 파일을 읽어 동적으로 html을 생성한다.
+- /user/list.html 에 적용
+
+### 3. 세션 구현하기
+
+- Session 클래스 생성
+    - 세션에 setAttribute로 User 정보를 저장할 수 있다.
+- SessionManager 클래스 생성
+    - 싱글톤 객체로 관리되도록 구현
+- /user/login.html 로 접근시, 로그인 상태라면 /index.html로 리다이렉트
