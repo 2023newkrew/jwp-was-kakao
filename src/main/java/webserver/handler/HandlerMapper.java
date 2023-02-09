@@ -8,6 +8,7 @@ import java.util.List;
 public class HandlerMapper {
 
     private static final List<Controller> controllers = List.of(
+            new UserListController(),
             new HelloController(),
             new ResourceController(),
             new UserCreateController(),

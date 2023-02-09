@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
 import webserver.handler.HandlerMapper;
+import webserver.security.SecurityHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +16,7 @@ class RequestHandlerTest {
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, new HandlerMapper());
+        final var handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -39,7 +40,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -64,7 +65,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -97,7 +98,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -132,7 +133,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -160,7 +161,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -189,7 +190,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -218,7 +219,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper());
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();

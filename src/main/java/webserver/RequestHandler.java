@@ -7,6 +7,9 @@ import webserver.handler.HandlerMapper;
 import webserver.request.HttpRequest;
 import webserver.request.HttpRequestParser;
 import webserver.response.HttpResponse;
+import webserver.response.HttpResponseStatus;
+import webserver.security.SecurityHandler;
+import webserver.utils.ResponseUtil;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -20,10 +23,12 @@ public class RequestHandler implements Runnable {
 
     private final Socket connection;
     private final HandlerMapper handlerMapper;
+    private final SecurityHandler securityHandler;
 
-    public RequestHandler(Socket connectionSocket, HandlerMapper handlerMapper) {
+    public RequestHandler(Socket connectionSocket, HandlerMapper handlerMapper, SecurityHandler securityHandler) {
         this.connection = connectionSocket;
         this.handlerMapper = handlerMapper;
+        this.securityHandler = securityHandler;
     }
 
     public void run() {
@@ -34,8 +39,14 @@ public class RequestHandler implements Runnable {
             Controller controller = handlerMapper.getController(request);
             HttpResponse response = HttpResponse.of(new DataOutputStream(out), controller.getSuccessCode());
 
-            controller.service(request, response);
+            if (securityHandler.isNeedAuthentication(request.getUri().getPath()) && securityHandler.isNotAuthenticated(request)) {
+                response = HttpResponse.of(new DataOutputStream(out), HttpResponseStatus.REDIRECT);
+                ResponseUtil.response302(response, "/user/login.html");
+                response.send();
+                return;
+            }
 
+            controller.service(request, response);
             response.send();
         } catch (IOException e) {
             logger.error(e.getMessage());
