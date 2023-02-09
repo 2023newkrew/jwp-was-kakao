@@ -23,6 +23,8 @@ public class Request {
 
         this.header = new RequestHeader(headerLines);
         this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()));
+        System.out.println(header);
+        System.out.println(body);
     }
 
     public String getProtocol() {

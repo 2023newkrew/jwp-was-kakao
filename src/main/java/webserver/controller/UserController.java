@@ -39,4 +39,20 @@ public class UserController {
         res.setStatus(HttpStatus.FOUND);
         res.setLocation("http://localhost:8080/index.html");
     }
+
+    @Handler(method = HttpMethod.POST, value = "/user/login")
+    public void login(Request req, Response res) {
+        FormData formData = new FormData(req.getBody());
+        User user = DataBase.findUserById(formData.getValue("userId"));
+        System.out.println(user.getName()+ user.getPassword());
+        boolean matched = user.checkPasswordMatch(formData.getValue("password"));
+
+        if (matched) {
+            res.setStatus(HttpStatus.FOUND);
+            res.setLocation("http://localhost:8080/index.html");
+            return;
+        }
+        res.setStatus(HttpStatus.FOUND);
+        res.setLocation("http://localhost:8080/user/login_failed.html");
+    }
 }

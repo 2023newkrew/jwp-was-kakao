@@ -20,4 +20,10 @@ public class RequestBody {
         return body == null || body.length() == 0;
     }
 
+    @Override
+    public String toString() {
+        return "RequestBody{" +
+                "body='" + body + '\'' +
+                '}';
+    }
 }

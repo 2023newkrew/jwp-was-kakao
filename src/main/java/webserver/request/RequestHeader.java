@@ -82,4 +82,16 @@ public class RequestHeader {
     public String getAccept() {
         return accept;
     }
+
+    @Override
+    public String toString() {
+        return "RequestHeader{" +
+                "httpMethod=" + httpMethod +
+                ", url='" + url + '\'' +
+                ", protocol='" + protocol + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", contentLength=" + contentLength +
+                ", accept='" + accept + '\'' +
+                '}';
+    }
 }
