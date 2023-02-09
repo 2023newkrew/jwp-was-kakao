@@ -7,6 +7,7 @@ import com.github.jknack.handlebars.io.TemplateLoader;
 import java.io.IOException;
 import java.util.List;
 import model.User;
+import utils.RenderUtils;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 import webserver.service.UserService;
@@ -16,13 +17,8 @@ public class UserListController implements Controller {
     public HttpResponse response(HttpRequest httpRequest) {
         if (httpRequest.getHttpSession().getAttribute("user") != null) {
             try {
-                TemplateLoader loader = new ClassPathTemplateLoader();
-                loader.setPrefix("/templates");
-                loader.setSuffix(".html");
-                Handlebars handlebars = new Handlebars(loader);
-                Template template = handlebars.compile("user/list");
                 List<User> userList = UserService.getUserList();
-                String userListPage = template.apply(userList);
+                String userListPage = RenderUtils.renderData("/user/list", userList);
                 return HttpResponse.ok(httpRequest, userListPage.getBytes(), "text/html;charset=utf-8");
             } catch (IOException e) {
                 return HttpResponse.pageNotFound();
