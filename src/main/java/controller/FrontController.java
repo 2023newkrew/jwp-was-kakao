@@ -1,6 +1,7 @@
 package controller;
 
 import controller.annotation.CustomRequestBody;
+import controller.annotation.CustomRequestHeader;
 import controller.annotation.CustomRequestParams;
 import exception.UnsupportedRequestException;
 import exception.UnsupportedResponseException;
@@ -25,6 +26,7 @@ public class FrontController {
     private FrontController() {
         controllerMapping.put("/user/create", new UserController());
         controllerMapping.put("/user/login", new UserController());
+        controllerMapping.put("/user/list", new UserController());
     }
 
     public static FrontController getInstance() {
@@ -47,6 +49,9 @@ public class FrontController {
         }
         if (method.getParameterCount() == 1 && method.getParameters()[0].isAnnotationPresent(CustomRequestParams.class)) {
             return getResponseByRequest(method, request.getHttpRequestLine().getQuery(), controller);
+        }
+        if (method.getParameterCount() == 1 && method.getParameters()[0].isAnnotationPresent(CustomRequestHeader.class)) {
+            return (CustomHttpResponse) method.invoke(controller, request.getHeaders());
         }
         if (method.getName().equals("resource")) {
             return (CustomHttpResponse) method.invoke(controller, request);
