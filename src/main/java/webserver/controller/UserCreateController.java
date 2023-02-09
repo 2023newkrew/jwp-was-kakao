@@ -5,12 +5,14 @@ import model.User;
 import webserver.request.HttpRequest;
 import webserver.request.QueryStringParser;
 import webserver.response.HttpResponse;
+import webserver.response.HttpResponseStatus;
 import webserver.utils.ResponseUtil;
 
 import java.util.Map;
 
 import static webserver.request.HttpRequestMethod.GET;
 import static webserver.request.HttpRequestMethod.POST;
+import static webserver.response.HttpResponseStatus.REDIRECT;
 
 public class UserCreateController implements Controller {
 
@@ -45,5 +47,10 @@ public class UserCreateController implements Controller {
     public boolean isMatch(HttpRequest request) {
         return (request.getMethod() == GET || request.getMethod() == POST)
                 && request.getUri().getPath().equals("/user/create");
+    }
+
+    @Override
+    public HttpResponseStatus getSuccessCode() {
+        return REDIRECT;
     }
 }

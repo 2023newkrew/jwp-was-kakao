@@ -14,26 +14,19 @@ public class HttpResponse {
 
     private final Map<HttpResponseHeader, String> headers = new HashMap<>();
     private final DataOutputStream dos;
+    private final HttpVersion httpVersion;
+    private final HttpResponseStatus status;
 
-    private HttpVersion httpVersion;
-    private HttpResponseStatus status;
     private byte[] body;
 
-    private HttpResponse(DataOutputStream dos) {
+    private HttpResponse(DataOutputStream dos, HttpVersion httpVersion, HttpResponseStatus status) {
         this.dos = dos;
-    }
-
-    public static HttpResponse of(DataOutputStream dos) {
-        return new HttpResponse(dos);
-    }
-
-    public void setStatusLine(HttpResponseStatus status) {
-        setStatusLine(status, HttpVersion.HTTP1_1);
-    }
-
-    public void setStatusLine(HttpResponseStatus status, HttpVersion httpVersion) {
         this.httpVersion = httpVersion;
         this.status = status;
+    }
+
+    public static HttpResponse of(DataOutputStream dos, HttpResponseStatus status) {
+        return new HttpResponse(dos, HttpVersion.HTTP1_1, status);
     }
 
     public void addHeader(HttpResponseHeader header, String value) {

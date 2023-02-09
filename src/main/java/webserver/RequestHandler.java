@@ -31,9 +31,9 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             HttpRequest request = HttpRequestParser.parse(in);
-            HttpResponse response = HttpResponse.of(new DataOutputStream(out));
-
             Controller controller = handlerMapper.getController(request);
+            HttpResponse response = HttpResponse.of(new DataOutputStream(out), controller.getSuccessCode());
+
             controller.service(request, response);
 
             response.send();
