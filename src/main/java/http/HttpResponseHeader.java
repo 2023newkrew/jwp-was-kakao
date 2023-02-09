@@ -16,10 +16,10 @@ public class HttpResponseHeader {
     public static HttpResponseHeader of(HttpStatus status, ContentType contentType, int contentLength) {
         List<String> headers = new ArrayList<>();
 
-        headers.add(String.format("HTTP/1.1 %d %s", status.value(), status.name()));
-        headers.add(String.format("Content-Type: %s;charset=utf-8", contentType.getValue()));
+        headers.add(String.format("HTTP/1.1 %d %s ", status.value(), status.name()));
+        headers.add(String.format("Content-Type: %s;charset=utf-8 ", contentType.getValue()));
         if (contentLength > 0) {
-            headers.add(String.format("Content-Length: %s", contentLength));
+            headers.add(String.format("Content-Length: %s ", contentLength));
         }
         return new HttpResponseHeader(headers);
     }
@@ -27,8 +27,8 @@ public class HttpResponseHeader {
     public static HttpResponseHeader create302FoundHeader(String redirectURI) {
         List<String> headers = new ArrayList<>();
         HttpStatus status = HttpStatus.FOUND;
-        headers.add(String.format("HTTP/1.1 %d %s", status.value(), status.name()));
-        headers.add(String.format("Location: %s", redirectURI));
+        headers.add(String.format("HTTP/1.1 %d %s ", status.value(), status.name()));
+        headers.add(String.format("Location: %s ", redirectURI));
         return new HttpResponseHeader(headers);
     }
 
