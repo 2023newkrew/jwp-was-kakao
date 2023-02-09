@@ -41,7 +41,8 @@ public class RequestAdapter {
                 if (isLogin(request, response)) {
                     redirectToMainPage(response);
                     return;
-                };
+                }
+                ;
                 requestController.sendLoginPage(request, response);
                 return;
             }
@@ -50,7 +51,8 @@ public class RequestAdapter {
                 if (isLogin(request, response)) {
                     redirectToMainPage(response);
                     return;
-                };
+                }
+                ;
                 requestController.sendLoginFailedPage(request, response);
                 return;
             }
@@ -59,7 +61,8 @@ public class RequestAdapter {
                 if (isLogin(request, response)) {
                     redirectToMainPage(response);
                     return;
-                };
+                }
+                ;
                 requestController.sendSignupPage(request, response);
                 return;
             }
@@ -112,7 +115,8 @@ public class RequestAdapter {
                 if (isLogin(request, response)) {
                     redirectToMainPage(response);
                     return;
-                };
+                }
+                ;
                 requestController.login(request, response);
             }
         }

@@ -14,7 +14,6 @@ import java.util.Objects;
 import model.Request;
 import model.Response;
 import model.User;
-import model.Users;
 import utils.FileIoUtils;
 
 public class RequestController {
