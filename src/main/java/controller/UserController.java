@@ -13,12 +13,14 @@ import framework.request.HttpCookie;
 import framework.request.Request;
 import framework.response.ContentType;
 import framework.response.Response;
+import framework.utils.FileIoUtils;
 import model.User;
 import service.UserService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,37 +89,36 @@ public final class UserController implements Controller {
         return Response.found().location("/index.html").setCookie(cookie).build();
     }
 
+    @MyRequestMapping(uri = "/user/login.html")
+    public Response handleUserLoginPage(Request request) throws IOException, URISyntaxException {
+        if (userService.isUserLoggedIn(request.getCookie())) {
+            return Response.found().location("/index.html").build();
+        }
+        byte[] body = FileIoUtils.loadFileFromClasspath("templates/user/login.html");
+        return Response.ok().contentType(ContentType.HTML).body(body).build();
+    }
+
     @MyRequestMapping(uri = "/user/profile.html")
-    public Response handleUserProfile(Request request) {
+    public Response handleUserProfile(Request request) throws IOException {
         Handlebars handlebars = getHandlebars(TEMPLATE_PREFIX, TEMPLATE_SUFFIX);
         User user = userService.getUserFromCookie(request.getCookie());
 
-        try {
-            Template template = handlebars.compile("user/profile");
-            String profilePage = template.apply(user);
-            return Response.ok().body(profilePage).build();
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException();
+        Template template = handlebars.compile("user/profile");
+        String profilePage = template.apply(user);
+        return Response.ok().body(profilePage).build();
     }
 
     @MyRequestMapping(uri = "/user/list.html")
-    public Response handleUserList(Request request) {
+    public Response handleUserList(Request request) throws IOException {
         Handlebars handlebars = getHandlebars(TEMPLATE_PREFIX, TEMPLATE_SUFFIX);
         if (!userService.isUserLoggedIn(request.getCookie())) {
             throw new BusinessException(AuthErrorCode.UNAUTHORIZED);
         }
 
-        try {
-            List<User> users = new ArrayList<>(DataBase.findAll());
-            Template template = handlebars.compile("user/list");
-            String profilePage = template.apply(Map.of("users", users));
-            return Response.ok().body(profilePage).build();
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException();
+        List<User> users = new ArrayList<>(DataBase.findAll());
+        Template template = handlebars.compile("user/list");
+        String profilePage = template.apply(Map.of("users", users));
+        return Response.ok().body(profilePage).build();
     }
 
     private static Handlebars getHandlebars(String prefix, String suffix) {

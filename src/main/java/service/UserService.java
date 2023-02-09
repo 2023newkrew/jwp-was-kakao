@@ -43,13 +43,9 @@ public class UserService {
     }
 
     public User getUserFromCookie(HttpCookie cookie) {
-        try {
-            UUID uuid = UUID.fromString(cookie.get("JSESSIONID"));
-            Session session = SessionHandler.getInstance().getSession(uuid);
-            return (User) session.get("user");
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
-        }
+        UUID uuid = UUID.fromString(cookie.get("JSESSIONID"));
+        Session session = SessionHandler.getInstance().getSession(uuid);
+        return (User) session.get("user");
     }
 
     public boolean isUserLoggedIn(HttpCookie cookie) {
