@@ -22,21 +22,27 @@ public class FrontController {
     private static final String STATIC = "./static";
     private static final String TEMPLATES = "./templates";
 
-    public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException, URISyntaxException {
-        if (httpRequest.getMethod().equals(HttpMethod.POST)) {
-            PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
-            postMethodController.process(httpRequest, httpResponse);
-            return;
+    public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws NotFoundException, RedirectException {
+        try {
+            if (httpRequest.getMethod().equals(HttpMethod.POST)) {
+                PostMethodController postMethodController = controllerMap.get(httpRequest.getUrl());
+                postMethodController.process(httpRequest, httpResponse);
+                return;
+            }
+
+            String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
+                    .map(str -> str.split(",")[0])
+                    .orElse("text/html;charset=utf-8");
+
+            byte[] body = loadBody(httpRequest.getUrl());
+
+            httpResponse.setContentType(contentType);
+            httpResponse.setBody(body);
+        } catch (URISyntaxException e) {
+            throw new NotFoundException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
-                .map(str -> str.split(",")[0])
-                .orElse("text/html;charset=utf-8");
-
-        byte[] body = loadBody(httpRequest.getUrl());
-
-        httpResponse.setContentType(contentType);
-        httpResponse.setBody(body);
     }
 
     private byte[] loadBody(String requestUrl) throws IOException, URISyntaxException {

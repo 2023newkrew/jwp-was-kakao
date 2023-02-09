@@ -1,14 +1,14 @@
 package webserver;
 
-import controller.BreakException;
 import controller.FrontController;
+import controller.NotFoundException;
+import controller.RedirectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -37,11 +37,11 @@ public class RequestHandler implements Runnable {
             frontController.service(httpRequest, httpResponse);
 
             httpResponse.sendResponse();
-        } catch (URISyntaxException e) {
+        } catch (NotFoundException e) {
             logger.error(e.getMessage());
             httpResponse.sendNotFound();
-        } catch (BreakException e) {
-            logger.debug("redirect");
+        } catch (RedirectException e) {
+            logger.debug(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage());
             httpResponse.sendError(e);

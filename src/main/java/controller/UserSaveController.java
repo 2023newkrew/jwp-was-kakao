@@ -5,11 +5,9 @@ import model.User;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 
-import java.io.IOException;
-
 public class UserSaveController implements PostMethodController {
     @Override
-    public void process(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
+    public void process(HttpRequest httpRequest, HttpResponse httpResponse) throws RedirectException {
         DataBase.addUser(new User(
                 httpRequest.getParameter("userId"),
                 httpRequest.getParameter("password"),
@@ -17,7 +15,8 @@ public class UserSaveController implements PostMethodController {
                 httpRequest.getParameter("email")
         ));
 
-        httpResponse.sendRedirect("/index.html");
-        throw new BreakException();
+        String location = "/index.html";
+        httpResponse.sendRedirect(location);
+        throw new RedirectException(location);
     }
 }
