@@ -43,6 +43,7 @@ public class RequestHandler implements Runnable {
     private void checkOrCreateSession(Request request, Response response) {
         String sessionId = request.getCookie("JSESSIONID");
         if (Objects.nonNull(sessionId) && Objects.nonNull(SessionManager.findSession(sessionId))) {
+            request.setSession(SessionManager.findSession(sessionId));
             return;
         }
         Session newSession = new Session(UUID.randomUUID().toString());

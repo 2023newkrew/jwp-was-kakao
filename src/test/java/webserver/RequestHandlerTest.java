@@ -72,4 +72,35 @@ class RequestHandlerTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @Test
+    void login() throws IOException, URISyntaxException {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 \r\n" +
+                        "Host: localhost:8080 \r\n" +
+                        "Connection: keep-alive\n" +
+                        "Content-Length: 27\n" +
+                        "Content-Type: application/x-www-form-urlencoded\n" +
+                        "Accept: */*\n" +
+                        "Cookie: JSESSIONID=test\n" +
+                        "\r\n" +
+                        "userId=cu&password=password \r\n");
+
+        SessionManager.add("test", new Session("test"));
+        DataBase.addUser(new User("cu", "password", "이동규", "brainbackdoor%40gmail.com"));
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: /index.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(SessionManager.findSession("test").getAttributes("user")).isEqualTo(DataBase.findUserById("cu"));
+    }
 }
