@@ -6,7 +6,7 @@ import db.DataBase;
 import java.util.Map;
 import model.User;
 import webserver.request.HttpRequest;
-import webserver.HttpResponse;
+import webserver.response.HttpResponse;
 
 public class CreateUserHandler implements Handler {
 

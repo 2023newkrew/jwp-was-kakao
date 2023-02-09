@@ -5,7 +5,7 @@ import static org.springframework.http.HttpMethod.POST;
 
 import java.util.Arrays;
 import org.springframework.http.HttpMethod;
-import webserver.HttpResponse;
+import webserver.response.HttpResponse;
 import webserver.request.HttpRequest;
 
 public enum HandlerMapping {

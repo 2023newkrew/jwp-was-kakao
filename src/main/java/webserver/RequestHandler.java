@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import webserver.handler.HandlerMapping;
 import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
 

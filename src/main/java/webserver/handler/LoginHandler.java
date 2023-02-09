@@ -4,7 +4,7 @@ import db.DataBase;
 import java.util.Map;
 import java.util.UUID;
 import model.User;
-import webserver.HttpResponse;
+import webserver.response.HttpResponse;
 import webserver.request.HttpRequest;
 
 public class LoginHandler implements Handler {
