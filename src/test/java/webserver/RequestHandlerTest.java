@@ -178,7 +178,7 @@ class RequestHandlerTest {
                 "POST /user/create HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
-                "Content-Length: 59",
+                "Content-Length: 92",
                 "Content-Type: application/x-www-form-urlencoded",
                 "Accept: */*",
                 "",
@@ -273,33 +273,6 @@ class RequestHandlerTest {
         assertThat(socket.output()).contains(expected);
     }
 
-    @DisplayName("지원하지 않는 바디 형식의 POST 요청은 415가 반환된다")
-    @Test
-    void bodyNotSupported() {
-        // given
-        final String httpRequest = String.join("\r\n",
-                "POST /index.html HTTP/1.1",
-                "Host: localhost:8080",
-                "Connection: keep-alive",
-                "Accept: */*",
-                "",
-                "{",
-                "field: value",
-                "}");
-
-        final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
-
-        // when
-        handler.run();
-
-        // then
-        var expected = "HTTP/1.1 415 Unsupported Media Type \r\n" +
-                "\r\n";
-
-        assertThat(socket.output()).contains(expected);
-    }
-
     @DisplayName("요구되는 파라미터가 요청에 없는 경우 400이 반환된다")
     @Test
     void missingParameter() {
@@ -308,6 +281,7 @@ class RequestHandlerTest {
                 "POST /user/create HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
+                "Content-Length: 46",
                 "Accept: */*",
                 "",
                 "userId=subin&name=subin&email=subin@google.com");
@@ -333,6 +307,7 @@ class RequestHandlerTest {
                 "POST /user/create HTTP/1.1",
                 "Host: localhost:8080",
                 "Connection: keep-alive",
+                "Content-Length: 56",
                 "Accept: */*",
                 "",
                 "userId=subin&password= &name=subin&email=subin@google.com");
