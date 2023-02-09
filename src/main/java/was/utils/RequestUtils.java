@@ -28,17 +28,23 @@ public class RequestUtils {
             String requestLine = reader.readLine();
             String method = requestLine.split(" ")[0];
             PathParamsParser pathParamsParser = new PathParamsParser(requestLine.split(" ")[1]);
-            Map<String, String> header = getHeader(reader);
+            Map<String, String> headers = getHeaders(reader);
             String requestBody = getBody(reader);
 
-            return new Request(RequestMethod.valueOf(method), pathParamsParser.getPath(), pathParamsParser.getParams(), requestBody);
+            return Request.builder()
+                    .method(RequestMethod.valueOf(method))
+                    .path(pathParamsParser.getPath())
+                    .params(pathParamsParser.getParams())
+                    .headers(headers)
+                    .body(requestBody)
+                    .build();
         } catch(IOException e){
             logger.error(e.getMessage());
             return null;
         }
     }
 
-    private static Map<String, String> getHeader(BufferedReader reader) throws IOException {
+    private static Map<String, String> getHeaders(BufferedReader reader) throws IOException {
         return getLines(reader).stream()
                 .map(it -> it.split(": ", 2))
                 .collect(Collectors.toMap(it -> it[0], it -> it[1]));

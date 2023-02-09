@@ -3,12 +3,11 @@ package controller;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import service.UserService;
-import was.annotation.Controller;
-import was.annotation.Mapping;
-import was.annotation.RequestBody;
-import was.annotation.RequestMethod;
+import was.annotation.*;
 import was.domain.response.Response;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,5 +40,17 @@ public class UserController {
             return Response.redirection("/user/login_failed.html");
         }
         return Response.redirection("/index.html", "JSESSIONID=" + uuid);
+    }
+
+    @RequestHeader
+    @Mapping(method = RequestMethod.GET, path = "/user/list")
+    public static Optional<Response> list(Map<String, String> headers) throws IOException {
+        String body = UserService.list(headers).orElse(null);
+        if (body == null) {
+            return Response.redirection("/index.html");
+        }
+        return Optional.of(Response.htmlBuilder()
+                .body(body.getBytes())
+                .build());
     }
 }

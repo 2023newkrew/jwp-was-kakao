@@ -1,5 +1,9 @@
 package service;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -7,6 +11,7 @@ import model.User;
 import model.UserRequest;
 import was.utils.ParamsParser;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,5 +42,22 @@ public class UserService {
             return Optional.of(UUID.randomUUID());
         }
         return Optional.empty();
+    }
+
+    public static Optional<String> list(Map<String, String> headers) {
+        if (!headers.containsKey("Cookie")) {
+            return Optional.empty();
+        }
+
+        try {
+            TemplateLoader loader = new ClassPathTemplateLoader();
+            loader.setPrefix("/templates");
+            loader.setSuffix(".html");
+            Handlebars handlebars = new Handlebars(loader);
+            Template template = handlebars.compile("user/profile");
+            return Optional.of(template.apply(DataBase.findAll()));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 }

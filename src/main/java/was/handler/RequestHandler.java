@@ -2,10 +2,7 @@ package was.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import was.annotation.Controller;
-import was.annotation.Mapping;
-import was.annotation.QueryString;
-import was.annotation.RequestBody;
+import was.annotation.*;
 import was.domain.PathPattern;
 import was.domain.request.Request;
 import was.domain.response.Response;
@@ -31,7 +28,7 @@ public class RequestHandler implements Runnable {
     private static final Response RESPONSE_404 = Response.builder().version(Version.HTTP_1_1)
             .statusCode(StatusCode.NOT_FOUND).build();
 
-    private Socket connection;
+    private final Socket connection;
     private Map<PathPattern, Method> map;
 
     public RequestHandler(Socket connectionSocket) {
@@ -50,12 +47,16 @@ public class RequestHandler implements Runnable {
             if(map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)){
                 args.add(request.getParams());
             }
+            if(map.get(request.toPathPattern()).isAnnotationPresent(RequestHeader.class)){
+                args.add(request.getHeaders());
+            }
             if(map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class)){
                 args.add(request.getBody());
             }
+            Object object = map.get(request.toPathPattern()).invoke(null, args.toArray());
             return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, args.toArray());
         } catch (Exception e) {
-            return Optional.ofNullable(null);
+            return Optional.empty();
         }
     }
 
