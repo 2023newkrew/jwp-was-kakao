@@ -45,18 +45,19 @@ public class RequestHeader {
 
     private void extractInfoFromRemainLines(List<String> headerLines) {
         Map<String, String> headerInfoMap = new HashMap<>();
-        for (String line : headerLines) {
-            String[] tokens = line.split(":");
-            if (tokens.length < 2) continue;
-            headerInfoMap.put(tokens[0], tokens[1].trim());
-        }
+        headerLines.stream()
+                .map(line -> line.split(":"))
+                .filter((tokens) -> tokens.length == 2)
+                .forEach((tokens) -> {
+                    headerInfoMap.put(tokens[0], tokens[1].trim());
+                });
 
         String contentLengthString = headerInfoMap.get(CONTENT_LENGTH);
         if (contentLengthString != null) {
             contentLength = Integer.parseInt(contentLengthString);
         }
-        String acceptValue =  headerInfoMap.get(ACCEPT);
-        if(acceptValue != null) {
+        String acceptValue = headerInfoMap.get(ACCEPT);
+        if (acceptValue != null) {
             accept = acceptValue.split(",")[0];
         }
         contentType = headerInfoMap.get(CONTENT_TYPE);
