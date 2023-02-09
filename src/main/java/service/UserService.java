@@ -3,6 +3,8 @@ package service;
 import db.DataBase;
 import model.User;
 
+import java.util.Collection;
+
 public class UserService {
     public static boolean isValidAuthentication(String userId, String password) {
         User userById = DataBase.findUserById(userId);
@@ -18,5 +20,9 @@ public class UserService {
 
     public static User findUserById(String id) {
         return DataBase.findUserById(id);
+    }
+
+    public static Collection<User> findAllUsers() {
+        return DataBase.findAll();
     }
 }
