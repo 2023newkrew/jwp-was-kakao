@@ -74,7 +74,7 @@ public class UserLoginRequestTest {
 
     @Test
     @DisplayName("유저가 로그인된 상태에서 /user/login에 GET으로 접근하면 index.html로 리다이렉트 하는지 테스트")
-    void LoginedButUserLogin(){
+    void LoginedButUserLogin() {
         userRegisterRequest();
         String jSessionId = loginAndGetJSessionId();
 

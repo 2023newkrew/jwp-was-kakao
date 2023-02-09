@@ -9,7 +9,7 @@ import support.StubSocket;
 public class UserListRequestHandleTest {
     @Test
     @DisplayName("유저가 로그인 되어있을 때 유저 리스트를 잘 조회하는지 테스트")
-    void userListLogined(){
+    void userListLogined() {
         userRegisterRequest();
         String jSessionId = loginAndGetJSessionId();
 
@@ -38,7 +38,7 @@ public class UserListRequestHandleTest {
 
     @Test
     @DisplayName("유저가 로그인 되어있지 않을 때 /user/list를 요청하면 로그인 페이지로 리다이렉트하는지 테스트")
-    void userListNotLogined(){
+    void userListNotLogined() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /user/list HTTP/1.1",
@@ -64,7 +64,6 @@ public class UserListRequestHandleTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
-
 
 
     private void userRegisterRequest() {

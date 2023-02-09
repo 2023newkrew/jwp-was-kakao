@@ -65,7 +65,8 @@ public class HttpResponse {
     }
 
     private void writeHeader(DataOutputStream dos) throws IOException {
-        dos.writeBytes(HTTP_VERSION + " " + httpStatusCode.getStatusCode() + " " + httpStatusCode.getMessage() + " \r\n");
+        dos.writeBytes(
+                HTTP_VERSION + " " + httpStatusCode.getStatusCode() + " " + httpStatusCode.getMessage() + " \r\n");
         headers.forEach((key, value) -> {
             try {
                 dos.writeBytes(key + ": " + value + " \r\n");

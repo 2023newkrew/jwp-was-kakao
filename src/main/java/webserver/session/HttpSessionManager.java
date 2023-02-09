@@ -33,5 +33,6 @@ public class HttpSessionManager {
         SESSIONS.remove(id);
     }
 
-    private HttpSessionManager() {}
+    private HttpSessionManager() {
+    }
 }

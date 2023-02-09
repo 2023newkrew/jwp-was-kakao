@@ -40,7 +40,7 @@ public class UserRegisterRequestHandleTest {
 
     @Test
     @DisplayName("회원가입 시 존재하는 ID면 회원가입 실패 페이지로 리다이렉트하는지 테스트")
-    void userRegisterButAlreadyExistID(){
+    void userRegisterButAlreadyExistID() {
         userRegisterRequest();
 
         // given

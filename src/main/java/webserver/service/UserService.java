@@ -16,12 +16,12 @@ import webserver.request.HttpRequest;
 @NoArgsConstructor
 public class UserService {
     public static void registerUser(HttpRequest httpRequest) {
-        MultiValueMap<String,String> requestParams = getRequestParams(httpRequest);
+        MultiValueMap<String, String> requestParams = getRequestParams(httpRequest);
         addUser(requestParams);
     }
 
     public static User login(HttpRequest httpRequest) {
-        MultiValueMap<String,String> requestParams = getRequestParams(httpRequest);
+        MultiValueMap<String, String> requestParams = getRequestParams(httpRequest);
         return validateAndGetUser(requestParams);
     }
 
@@ -40,7 +40,7 @@ public class UserService {
                 .name(name)
                 .email(email)
                 .build();
-        if (DataBase.findUserById(userId) != null){
+        if (DataBase.findUserById(userId) != null) {
             throw new ExistUserException();
         }
         DataBase.addUser(user);
@@ -56,7 +56,7 @@ public class UserService {
         return user;
     }
 
-    private static MultiValueMap<String,String> getRequestParams(HttpRequest httpRequest) {
+    private static MultiValueMap<String, String> getRequestParams(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
         String requestBody = httpRequest.getBody();
         requestBody = URLDecoder.decode(requestBody, StandardCharsets.UTF_8);

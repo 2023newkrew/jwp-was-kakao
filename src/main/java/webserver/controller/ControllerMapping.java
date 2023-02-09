@@ -26,7 +26,8 @@ public enum ControllerMapping {
         HttpMethod httpMethod = httpRequest.getMethod();
         String path = httpRequest.getPath();
         return Arrays.stream(values())
-                .filter(controllerMapping -> controllerMapping.httpMethod == httpMethod && controllerMapping.path.equals(path))
+                .filter(controllerMapping -> controllerMapping.httpMethod == httpMethod
+                        && controllerMapping.path.equals(path))
                 .findAny()
                 .orElse(FILE_LOAD).controller;
     }

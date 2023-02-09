@@ -1,5 +1,5 @@
 package utils;
 
-public class ExistUserException extends RuntimeException{
+public class ExistUserException extends RuntimeException {
 
 }
