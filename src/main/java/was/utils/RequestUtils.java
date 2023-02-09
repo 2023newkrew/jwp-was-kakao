@@ -1,7 +1,10 @@
 package was.utils;
 
+import controller.CssController;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import was.annotation.RequestMethod;
 import was.domain.request.Request;
 
@@ -17,6 +20,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(RequestUtils.class);
+
     public static Request getRequest(InputStream inputStream){
         BufferedReader reader =  new BufferedReader(new InputStreamReader(inputStream));
 
@@ -28,10 +33,10 @@ public class RequestUtils {
             String requestBody = getBody(reader);
 
             return new Request(RequestMethod.valueOf(method), pathParamsParser.getPath(), pathParamsParser.getParams(), requestBody);
-        } catch(IOException ignored){
-
+        } catch(IOException e){
+            logger.error(e.getMessage());
+            return null;
         }
-        return null;
     }
 
     private static Map<String, String> getHeader(BufferedReader reader) throws IOException {
