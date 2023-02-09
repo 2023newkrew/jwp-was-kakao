@@ -38,6 +38,7 @@ public class HomeController implements MyController{
     }
 
     private ResponseEntity getResponseEntity(int status, String contentType, String cookie, byte[] body){
+        logger.info("HOME COOKIE : {}", cookie);
         return ResponseEntity.builder()
                 .status(status)
                 .contentType(contentType)

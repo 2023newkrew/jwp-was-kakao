@@ -34,7 +34,7 @@ public class UserController  implements MyController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private int status = 200;
     private String redirectUrl = "";
-    private String cookie = "";
+    private String cookie;
     private byte[] body = null;
 
     @Override
@@ -46,11 +46,12 @@ public class UserController  implements MyController {
     @Override
     public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
-        cookie = headers.get("cookie");
         String contentType = headers.get("contentType");
+        cookie = headers.get("cookie");
+        logger.info("??? : {}", cookie);
+        status = 200;
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
-            logger.info("USERFORM");
             createForm(path);
         }
 
@@ -71,14 +72,13 @@ public class UserController  implements MyController {
         }
 
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
-            logger.info("CREATE");
             createUser(params);
         }
 
         if(path.equals("/user/login") && headers.get("method").equals("POST")){
             login(params.get("userId"), params.get("password"), dataOutputStream);
         }
-logger.info("STATUS : {}", status);
+logger.info("USER COOKIE : {}", cookie);
         return ResponseEntity.builder()
                 .status(status)
                 .cookie(cookie)
@@ -98,15 +98,16 @@ logger.info("STATUS : {}", status);
 
     private void login(String userId, String password, DataOutputStream dataOutputStream) {
         if(isUser(userId, password)){
-            loginSuccess(userId, dataOutputStream);
+            loginSuccess(userId);
             return;
         }
         loginFail(dataOutputStream);
     }
 
-    private void loginSuccess(String userId, DataOutputStream dataOutputStream){
+    private void loginSuccess(String userId){
         // 쿠키 생성
         cookie = new Cookie().toString();
+        logger.info("LOGIN COOKIE : {}", cookie);
         // 세션 저장
         saveSession(cookie, userId);
         setRedirectResponse("/index.html");
@@ -136,6 +137,8 @@ logger.info("STATUS : {}", status);
     private void getUserList(String contentType, String cookie, DataOutputStream dataOutputStream){
         // login이 안되어있다면
         if(!cookie.startsWith("JSESSIONID")){
+            System.out.println("로그인이 안되어있음");
+            System.out.println(cookie);
             String path = "/user/login.html";
             loginForm(path);
             return;
@@ -169,7 +172,8 @@ logger.info("STATUS : {}", status);
     private void createUser(MyParams params){
         // Memory DB에 유저 데이터 저장
         addUser(UserFactory.createUser(params));
-        setRedirectResponse("/index.html");
+        // 회원가입 시 자동 로그인이 되어야 되기 때문에, login 설정
+        loginSuccess(params.get("userId"));
     }
 
     private void createForm(String path){

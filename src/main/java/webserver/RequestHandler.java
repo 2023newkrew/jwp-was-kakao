@@ -55,7 +55,7 @@ public class RequestHandler implements Runnable {
 
                 line = br.readLine();
             }
-logger.info("COOKIE : {}", headers.get("cookie"));
+logger.info("PATH : {}, COOKIE : {}", headers.get("path"), headers.get("cookie"));
             DataOutputStream dos = new DataOutputStream(out);
 
             // [POST] Request Body (추후 다른 메서드로 확장 가능)

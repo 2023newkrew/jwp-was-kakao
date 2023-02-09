@@ -8,11 +8,6 @@ import model.dto.MyParams;
 import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static webserver.response.ResponseBodies.responseBody;
-import static webserver.response.ResponseHeaders.response200Header;
 
 public class StaticController implements MyController{
 
@@ -27,13 +22,12 @@ public class StaticController implements MyController{
     @Override
     public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
-        String cookie = headers.get("cookie");
         String contentType = headers.get("contentType");
 
-        return handleStatic(path, 200, contentType, cookie);
+        return handleStatic(path, 200, contentType);
     }
 
-    private ResponseEntity handleStatic(String path, int status, String contentType, String cookie){
+    private ResponseEntity handleStatic(String path, int status, String contentType){
 
         try {
             body = FileIoUtils.loadFileFromClasspath("static" + path);
@@ -42,9 +36,8 @@ public class StaticController implements MyController{
         }
 
         return ResponseEntity.builder()
-                .status(200)
+                .status(status)
                 .contentType(contentType)
-                .cookie(cookie)
                 .body(body)
                 .build();
     }
