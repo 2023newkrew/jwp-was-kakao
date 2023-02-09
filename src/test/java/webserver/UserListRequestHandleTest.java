@@ -15,7 +15,7 @@ public class UserListRequestHandleTest {
 
         // given
         final String httpRequest = String.join("\r\n",
-                "GET /user/list HTTP/1.1",
+                "GET /user/list.html HTTP/1.1",
                 "Host: localhost:8080",
                 "Cookie: JSESSIONID=" + jSessionId + "; Path=/",
                 "Connection: keep-alive",
@@ -41,7 +41,7 @@ public class UserListRequestHandleTest {
     void userListNotLogined() {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET /user/list HTTP/1.1",
+                "GET /user/list.html HTTP/1.1",
                 "Host: localhost:8080",
                 "Cookie: JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46; Path=/",
                 "Connection: keep-alive",
@@ -49,7 +49,7 @@ public class UserListRequestHandleTest {
                 "Content-Type: application/x-www-form-urlencoded",
                 "Accept: */*",
                 "",
-                "userId=id&password=password");
+                "");
 
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);

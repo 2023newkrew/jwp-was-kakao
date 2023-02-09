@@ -8,7 +8,7 @@ public enum ControllerMapping {
     BASE(HttpMethod.GET, "/", new DefaultController()),
     CREATE_USER(HttpMethod.POST, "/user/create", new UserRegisterController()),
     USER_LOGIN(HttpMethod.POST, "/user/login", new UserLoginController()),
-    USER_LIST(HttpMethod.GET, "/user/list", new UserListController()),
+    USER_LIST(HttpMethod.GET, "/user/list.html", new UserListController()),
     FILE_LOAD(HttpMethod.GET, "", new FileLoadController()),
     USER_LOGIN_PAGE(HttpMethod.GET, "/user/login.html", new UserLoginPageController());
 
