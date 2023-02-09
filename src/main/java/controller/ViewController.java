@@ -4,7 +4,19 @@ import controller.annotation.CustomRequestMapping;
 import model.http.*;
 import utils.FileIoUtils;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 public class ViewController extends BaseController {
+
+    @Override
+    public Method getProperMethod(CustomHttpRequest request) throws NoSuchMethodException {
+        return Arrays.stream(this.getClass().getDeclaredMethods())
+                .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getUrl())
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpMethod())
+                ).findFirst().orElse(this.getClass().getMethod("resource", CustomHttpRequest.class));
+    }
 
     @CustomRequestMapping(url = "/", httpMethod = CustomHttpMethod.GET)
     public CustomHttpResponse main() {

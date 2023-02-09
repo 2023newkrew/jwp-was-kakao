@@ -27,6 +27,10 @@ public class CustomHttpHeader extends CustomBaseHttpRequest {
         header.put(key, value);
     }
 
+    public String getOrDefault(String key, String value) {
+        return header.getOrDefault(key, value);
+    }
+
     public void respond(DataOutputStream dos) throws IOException {
         for (Map.Entry<String, String> entry : header.entrySet()) {
             dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");
