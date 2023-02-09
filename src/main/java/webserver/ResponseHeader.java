@@ -10,38 +10,43 @@ public class ResponseHeader {
     private ContentType contentType;
     private Integer contentLength;
     private String location;
+    private String cookie;
 
     public ResponseHeader(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
-                          String location) {
+                          String location, String cookie) {
         this.httpStatusCode = httpStatusCode;
         this.contentType = contentType;
         this.contentLength = contentLength;
         this.location = location;
+        this.cookie = cookie;
     }
 
     public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
                                     String location) {
-        return new ResponseHeader(httpStatusCode, contentType, contentLength, location);
+        return new ResponseHeader(httpStatusCode, contentType, contentLength, location, null);
     }
 
     public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength) {
-        return new ResponseHeader(httpStatusCode, contentType, contentLength, null);
+        return new ResponseHeader(httpStatusCode, contentType, contentLength, null, null);
     }
 
     public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType) {
-        return new ResponseHeader(httpStatusCode, contentType, null, null);
+        return new ResponseHeader(httpStatusCode, contentType, null, null, null);
     }
 
     public static ResponseHeader of(HttpStatusCode httpStatusCode, String location) {
-        return new ResponseHeader(httpStatusCode, null, null, location);
+        return new ResponseHeader(httpStatusCode, null, null, location, null);
     }
 
     public static ResponseHeader of(HttpStatusCode httpStatusCode) {
-        return new ResponseHeader(httpStatusCode, null, null, null);
+        return new ResponseHeader(httpStatusCode, null, null, null, null);
     }
 
     public String getValue() {
         String result = writeRequestLine(httpStatusCode);
+        if (cookie != null) {
+            result += "Set-Cookie: " + cookie + " \r\n";
+        }
         if (contentType != null) {
             result += "Content-Type: " + contentType.getToResponseText() + " \r\n";
         }
@@ -54,6 +59,10 @@ public class ResponseHeader {
         result += "\r\n"; // header의 끝은 줄바꿈으로 표시한다
 
         return result;
+    }
+
+    public void setCookie(String cookie) {
+        this.cookie = cookie;
     }
 
     private String writeRequestLine(HttpStatusCode httpStatusCode) {

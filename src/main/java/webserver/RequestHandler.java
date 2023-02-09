@@ -42,7 +42,7 @@ public class RequestHandler implements Runnable {
                 controller = new MainController();
             }
 
-            controller.process(httpRequest, new DataOutputStream(out));
+            controller.process(httpRequest, new HttpResponse(), new DataOutputStream(out));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

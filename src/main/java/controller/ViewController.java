@@ -4,6 +4,7 @@ import type.ContentType;
 import type.HttpStatusCode;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
+import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
 import java.io.DataOutputStream;
@@ -23,25 +24,17 @@ public class ViewController extends Controller {
     }
 
     @Override
-    protected void doGet(HttpRequest request, DataOutputStream dos) {
-        super.doGet(request, dos);
+    protected void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+        super.doGet(request, response, dos);
         try {
-            byte[] returnBody = FileIoUtils.loadFileFromClasspath(ROOT_PATH + path);
+            byte[] body = FileIoUtils.loadFileFromClasspath(ROOT_PATH + path);
 
-            if (returnBody == null) {
-                dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
-                dos.flush();
+            if (body == null) {
+                response.setResponseHeader(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML));
                 return;
             }
-
-            dos.writeBytes(
-                    ResponseHeader.of(HttpStatusCode.OK,
-                                    ContentType.HTML,
-                                    returnBody.length)
-                            .getValue()
-            );
-
-            dos.write(returnBody);
+            response.setResponseHeader(ResponseHeader.of(HttpStatusCode.OK, ContentType.HTML, body.length));
+            response.setResponseBody(body);
         } catch (URISyntaxException | IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

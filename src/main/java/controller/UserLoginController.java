@@ -6,14 +6,13 @@ import model.User;
 import type.HttpStatusCode;
 import utils.IOUtils;
 import webserver.HttpRequest;
+import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import static exception.ErrorCode.CAN_NOT_READ_DATA;
 import static exception.ErrorCode.USER_NOT_EXIST;
 
 public class UserLoginController extends Controller {
@@ -25,8 +24,8 @@ public class UserLoginController extends Controller {
     }
 
     @Override
-    protected void doPost(HttpRequest request, DataOutputStream dos) {
-        super.doPost(request, dos);
+    protected void doPost(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+        super.doPost(request, response, dos);
         String requestBody = request.getRequestBody();
         Map<String, String> params = IOUtils.extractParams(requestBody);
 
@@ -36,15 +35,10 @@ public class UserLoginController extends Controller {
         User user = Optional.ofNullable(db.findUserById(userId))
                 .orElseThrow(() -> new WasException(USER_NOT_EXIST));
 
-        try {
-            if (user.checkPassword(password)) {
-                dos.writeBytes(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html").getValue());
-                return;
-            }
-            dos.writeBytes(ResponseHeader.of(HttpStatusCode.REDIRECT, "/login_failed.html").getValue());
-        } catch (IOException e) {
-            // TODO: 적절한 에러코드로 변경 필요
-            throw new WasException(CAN_NOT_READ_DATA);
+        if (user.checkPassword(password)) {
+            response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html"));
+            return;
         }
+        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/login_failed.html"));
     }
 }

@@ -4,6 +4,7 @@ import type.ContentType;
 import type.HttpStatusCode;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
+import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
 import java.io.DataOutputStream;
@@ -16,7 +17,7 @@ import java.net.URISyntaxException;
  */
 public class MainController extends Controller {
     @Override
-    public void doGet(HttpRequest request, DataOutputStream dos) {
+    public void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         String root = "static";
         String uri = request.getRequestHeader().get("URI").orElseThrow(IllegalArgumentException::new);
         String[] split = uri.split("\\.");
@@ -27,22 +28,17 @@ public class MainController extends Controller {
         }
 
         try {
-            byte[] returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
+            byte[] body = FileIoUtils.loadFileFromClasspath(root + uri);
 
-            if (returnBody == null) {
-                dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
-                dos.flush();
-                return;
-            }
-
-            dos.writeBytes(
-                    ResponseHeader.of(HttpStatusCode.OK,
-                                    ContentType.valueOf(fileType.toUpperCase()),
-                                    returnBody.length)
-                            .getValue()
+            response.setResponseHeader(
+                    ResponseHeader.of(HttpStatusCode.OK, ContentType.valueOf(fileType.toUpperCase()), body.length)
             );
 
-            dos.write(returnBody);
+            if (body == null) {
+                response.setResponseHeader(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML));
+            }
+
+            response.setResponseBody(body);
         } catch (URISyntaxException | IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

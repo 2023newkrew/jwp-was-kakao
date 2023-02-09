@@ -5,10 +5,10 @@ import model.User;
 import type.HttpStatusCode;
 import utils.IOUtils;
 import webserver.HttpRequest;
+import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -24,7 +24,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doGet(HttpRequest request, DataOutputStream dos) {
+    public void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         db.addUser(new User(
                 request.getParam("userId"),
                 request.getParam("password"),
@@ -34,7 +34,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doPost(HttpRequest request, DataOutputStream dos) {
+    public void doPost(HttpRequest request, HttpResponse response, DataOutputStream dos) {
         Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
         db.addUser(new User(
                 createUserReqMap.get("userId"),
@@ -45,13 +45,8 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doFinally(HttpRequest request, DataOutputStream dos) {
-        try {
-            dos.writeBytes(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html").getValue());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        }
+    public void doFinally(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+        response.setResponseHeader(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html"));
     }
 
 }
