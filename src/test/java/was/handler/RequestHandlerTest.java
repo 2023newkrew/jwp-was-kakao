@@ -1,8 +1,7 @@
-package webserver;
+package was.handler;
 
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import was.handler.RequestHandler;
 import was.utils.FileIoUtils;
 
 import java.io.IOException;
