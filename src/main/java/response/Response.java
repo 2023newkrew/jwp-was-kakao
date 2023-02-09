@@ -2,6 +2,7 @@ package response;
 
 import request.HttpCookie;
 
+import java.io.ByteArrayOutputStream;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -9,9 +10,9 @@ public class Response {
 
     private final String header;
 
-    private final String body;
+    private final byte[] body;
 
-    private Response(String header, String body) {
+    private Response(String header, byte[] body) {
         this.header = header;
         this.body = body;
     }
@@ -27,7 +28,7 @@ public class Response {
         private String contentType;
         private String location;
         private String setCookie;
-        private String body;
+        private byte[] body;
 
         public ResponseBuilder(String status) {
             this.status = status;
@@ -48,8 +49,14 @@ public class Response {
         }
 
         public ResponseBuilder body(String body) {
+            this.body = body.getBytes();
+            contentLength(this.body.length);
+            return this;
+        }
+
+        public ResponseBuilder body(byte[] body) {
             this.body = body;
-            contentLength(this.body.getBytes().length);
+            contentLength(this.body.length);
             return this;
         }
 
@@ -89,11 +96,14 @@ public class Response {
         return new ResponseBuilder("HTTP/1.1 401 Unauthorized");
     }
 
-    @Override
-    public String toString() {
+    public byte[] getBytes() {
         if (body == null) {
-            return header;
+            return header.getBytes();
         }
-        return header + "\r\n\r\n" + body;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String tempHeader = this.header + "\r\n\r\n";
+        outputStream.write(tempHeader.getBytes(), 0, tempHeader.getBytes().length);
+        outputStream.write(body, 0, body.length);
+        return outputStream.toByteArray();
     }
 }

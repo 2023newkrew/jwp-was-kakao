@@ -1,12 +1,11 @@
 package requestmapper;
 
-import response.Response;
 import response.ContentType;
+import response.Response;
 import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ResourceMapper {
@@ -33,7 +32,7 @@ public class ResourceMapper {
                 String extension = split[split.length - 1];
                 return Response.ok()
                         .contentType(ContentType.valueOf(extension.toUpperCase()))
-                        .body(new String(returnBody, StandardCharsets.UTF_8))
+                        .body(returnBody)
                         .build();
             }
         }

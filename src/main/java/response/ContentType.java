@@ -2,12 +2,13 @@ package response;
 
 public enum ContentType {
     HTML("text/html;charset=utf-8"),
-    CSS("text/css;charset=utf-8"),
+    CSS("text/css"),
     JS("application/javascript;charset=utf-8"),
-    WOFF("font/woff"),
-    WOFF2("font/woff2"),
+    WOFF("font/*"),
+    WOFF2("font/*"),
     TTF("application/x-font-ttf"),
-    ICO("image/x-icon");
+    ICO("image/x-icon"),
+    PNG("image/apng");
 
     private final String string;
 

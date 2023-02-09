@@ -43,7 +43,7 @@ public class RequestHandler implements Runnable {
             } else {
                 response = ResourceMapper.getInstance().handle(uri);
             }
-            writeResponse(dataOutputStream, response.toString());
+            writeResponse(dataOutputStream, response.getBytes());
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }

@@ -3,7 +3,6 @@ package utils;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class IOUtils {
     /**
@@ -22,8 +21,8 @@ public class IOUtils {
         return String.copyValueOf(body);
     }
 
-    public static void writeResponse(DataOutputStream dos, String response) throws IOException {
-        dos.write(response.getBytes(StandardCharsets.UTF_8));
+    public static void writeResponse(DataOutputStream dos, byte[] response) throws IOException {
+        dos.write(response);
         dos.flush();
     }
 }
