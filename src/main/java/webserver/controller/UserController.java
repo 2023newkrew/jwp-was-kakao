@@ -9,7 +9,6 @@ import webserver.controller.annotation.RequestController;
 import webserver.controller.support.TemplateView;
 import webserver.controller.support.TemplateViewResolver;
 import webserver.http.Session;
-import webserver.http.SessionManager;
 import webserver.http.request.Request;
 import webserver.http.request.support.FormData;
 import webserver.http.request.support.QueryParameters;

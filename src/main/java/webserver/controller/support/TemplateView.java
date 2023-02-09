@@ -1,8 +1,6 @@
 package webserver.controller.support;
 
 import com.github.jknack.handlebars.Template;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
 
