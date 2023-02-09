@@ -15,5 +15,5 @@ public abstract class BaseController {
                         && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpRequestLine().getHttpMethod())
                 ).findFirst().orElseThrow(NoSuchMethodException::new);
     }
-
+    
 }

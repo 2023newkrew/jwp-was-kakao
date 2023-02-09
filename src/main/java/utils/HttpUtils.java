@@ -50,7 +50,7 @@ public class HttpUtils {
             logger.error(e.getMessage());
         }
     }
-
+    
     private static CustomHttpRequestBody getBody(String requestBody) {
         return new CustomHttpRequestBody(Arrays.stream(requestBody.split(QUERY_DELIMITER))
                 .map(field -> field.split(KEY_VALUE_DELIMITER))
