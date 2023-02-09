@@ -1,12 +1,12 @@
-package controller;
+package web.controller;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import db.DataBase;
-import exception.AuthErrorCode;
-import exception.BusinessException;
+import web.db.DataBase;
+import web.exception.AuthErrorCode;
+import web.exception.BusinessException;
 import framework.annotation.MyRequestMapping;
 import framework.controller.Controller;
 import framework.request.HttpCookie;
@@ -14,8 +14,8 @@ import framework.request.Request;
 import framework.response.ContentType;
 import framework.response.Response;
 import framework.utils.FileIoUtils;
-import model.User;
-import service.UserService;
+import web.model.User;
+import web.service.UserService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

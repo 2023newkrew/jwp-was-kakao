@@ -1,4 +1,4 @@
-package model;
+package web.model;
 
 import java.util.Map;
 
@@ -21,14 +21,6 @@ public class User {
 
     public String getName() {
         return name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public static User from(Map<String, String> map) {

@@ -1,4 +1,4 @@
-package service;
+package web.service;
 
 import java.util.Map;
 import java.util.UUID;

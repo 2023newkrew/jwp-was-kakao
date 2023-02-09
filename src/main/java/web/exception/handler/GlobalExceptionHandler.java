@@ -1,7 +1,7 @@
-package exception.handler;
+package web.exception.handler;
 
-import exception.AuthErrorCode;
-import exception.BusinessException;
+import web.exception.AuthErrorCode;
+import web.exception.BusinessException;
 import framework.annotation.MyExceptionHandler;
 import framework.controller.ExceptionController;
 import framework.response.Response;

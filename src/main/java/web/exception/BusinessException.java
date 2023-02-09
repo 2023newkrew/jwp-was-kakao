@@ -1,4 +1,4 @@
-package exception;
+package web.exception;
 
 public class BusinessException extends RuntimeException {
 

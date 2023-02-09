@@ -1,5 +1,5 @@
-import controller.UserController;
-import exception.handler.GlobalExceptionHandler;
+import web.controller.UserController;
+import web.exception.handler.GlobalExceptionHandler;
 import framework.WebServer;
 import framework.requestmapper.ExceptionHandlerMapper;
 import framework.requestmapper.HandlerMapper;

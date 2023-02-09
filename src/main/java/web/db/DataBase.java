@@ -1,6 +1,6 @@
-package db;
+package web.db;
 
-import model.User;
+import web.model.User;
 
 import java.util.Collection;
 import java.util.Map;

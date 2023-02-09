@@ -1,11 +1,11 @@
-package service;
+package web.service;
 
-import db.DataBase;
-import exception.AuthErrorCode;
-import exception.BusinessException;
-import exception.CommonErrorCode;
+import web.db.DataBase;
+import web.exception.AuthErrorCode;
+import web.exception.BusinessException;
+import web.exception.CommonErrorCode;
 import framework.request.HttpCookie;
-import model.User;
+import web.model.User;
 
 import java.util.Map;
 import java.util.UUID;
