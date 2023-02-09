@@ -1,12 +1,12 @@
 package model;
 
+import db.SessionStorage;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
+import java.util.UUID;
 import org.springframework.http.HttpMethod;
 
-@Getter
 public class MyHttpRequest {
 
     private final HttpMethod httpMethod;
@@ -15,6 +15,7 @@ public class MyHttpRequest {
     private final Map<String, String> headers;
     private final Map<String, String> body;
     private final Map<String, String> cookies;
+    public static final String JSESSIONID = "JSESSIONID";
 
     public MyHttpRequest(String httpMethod, String url, Map<String, String> queryParams, Map<String, String> headers,
             Map<String, String> cookies, Map<String, String> body) {
@@ -40,7 +41,26 @@ public class MyHttpRequest {
         return this.headers.getOrDefault("Accept", "text/html,").split(",")[0];
     }
 
+    public String getUrl() {
+        return this.url;
+    }
+
     public Map<String, String> getBody() {
         return new HashMap<>(body);
+    }
+
+    public boolean hasSession() {
+        return this.cookies.containsKey(JSESSIONID);
+    }
+
+    public String getSession() {
+        return this.cookies.get(JSESSIONID);
+    }
+
+    public String createSession() {
+        String sessionId = UUID.randomUUID().toString();
+        this.cookies.put(JSESSIONID, sessionId);
+        SessionStorage.add(sessionId, new Session(sessionId));
+        return sessionId;
     }
 }

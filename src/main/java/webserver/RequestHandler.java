@@ -1,5 +1,7 @@
 package webserver;
 
+import static model.MyHttpRequest.JSESSIONID;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,6 +26,7 @@ public class RequestHandler implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+
     private final Socket connection;
     private final Map<String, Controller> controllerMap = new HashMap<>();
     private final Controller viewController = ViewController.getInstance();
@@ -44,9 +47,10 @@ public class RequestHandler implements Runnable {
             RequestParser requestParser = new RequestParser(br);
 
             MyHttpRequest httpRequest = requestParser.buildHttpRequest();
+            MyHttpResponse httpResponse = new MyHttpResponse();
+            preHandleSession(httpRequest, httpResponse);
 
             Controller controller = handleControllerMapping(httpRequest);
-            MyHttpResponse httpResponse = new MyHttpResponse();
             String viewName = controller.process(httpRequest, httpResponse);
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -54,6 +58,15 @@ public class RequestHandler implements Runnable {
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void preHandleSession(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
+        if (httpRequest.hasSession()) {
+            return;
+        }
+
+        String sessionId = httpRequest.createSession();
+        httpResponse.setCookie(new MyHttpCookie(JSESSIONID, sessionId));
     }
 
     private Controller handleControllerMapping(MyHttpRequest httpRequest) {

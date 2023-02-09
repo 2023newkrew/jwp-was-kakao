@@ -24,7 +24,9 @@ public class MyHttpResponse {
     }
 
     public void setCookie(MyHttpCookie cookie) {
-        this.cookies.put(cookie.getName(), cookie);
+        if (!cookies.containsKey(cookie.getName())) {
+            this.cookies.put(cookie.getName(), cookie);
+        }
     }
 
     public void setContentType(String contentType) {

@@ -1,11 +1,8 @@
 package webserver.controller;
 
-import static model.MyHttpRequest.JSESSIONID;
-
 import db.SessionStorage;
 import db.UserStorage;
 import java.util.Map;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.MyHttpRequest;
@@ -14,7 +11,6 @@ import model.Session;
 import model.User;
 import org.springframework.http.HttpStatus;
 import webserver.Controller;
-import webserver.MyHttpCookie;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserLoginController implements Controller {
@@ -43,23 +39,16 @@ public class UserLoginController implements Controller {
             return "";
         }
 
-        String uuid = UUID.randomUUID().toString();
-        createSession(user, uuid);
-        createCookie(httpResponse, uuid);
+        String sessionId = httpRequest.getSession();
+        createSession(user, sessionId);
         httpResponse.setLocation(REDIRECTION_SUCCESS);
 
         return "";
     }
 
-    private void createSession(User user, String uuid) {
-        Session session = new Session(uuid);
+    private void createSession(User user, String sessionId) {
+        Session session = SessionStorage.findSession(sessionId);
         session.setAttribute("user", user);
-        SessionStorage.add(uuid, session);
-    }
-
-    private void createCookie(MyHttpResponse httpResponse, String uuid) {
-        MyHttpCookie cookie = new MyHttpCookie(JSESSIONID, uuid);
-        cookie.setPath("/");
-        httpResponse.setCookie(cookie);
+        SessionStorage.add(sessionId, session);
     }
 }
