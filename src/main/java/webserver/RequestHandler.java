@@ -83,7 +83,7 @@ public class RequestHandler implements Runnable {
         if (requestPath.startsWith("/user/login") && "POST".equals(request.getRequestMethod())) {
             return userController.loginUserPost(request);
         }
-        if (requestPath.startsWith("/user/list.html")) {
+        if (requestPath.startsWith("/user/list")) {
             return userController.userListGet(request);
         }
         if (requestPath.equals("/")) {
