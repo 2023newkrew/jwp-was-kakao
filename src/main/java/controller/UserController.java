@@ -61,6 +61,10 @@ public class UserController  implements MyController {
             loginFailForm(path, contentType, cookie, dataOutputStream);
         }
 
+        if(path.equals("/user/login") && headers.get("method").equals("GET")){
+            alreadyLogin(cookie, dataOutputStream);
+        }
+
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
             createUser(params, cookie, dataOutputStream);
         }
@@ -68,6 +72,10 @@ public class UserController  implements MyController {
         if(path.equals("/user/login") && headers.get("method").equals("POST")){
             login(params.get("userId"), params.get("password"), dataOutputStream);
         }
+    }
+
+    private void alreadyLogin(String cookie, DataOutputStream dataOutputStream) {
+        response302Header(dataOutputStream, cookie, "/index.html");
     }
 
     private void login(String userId, String password, DataOutputStream dataOutputStream) {
