@@ -28,11 +28,11 @@ public class UserCreateServlet implements Servlet {
 
     @Override
     public Response doGet(Request request) {
-        RequestParams params = request.getUri().getParams().orElseThrow(BadRequestException::new);
+        RequestParams params = request.getStartLine().getUri().getParams().orElseThrow(BadRequestException::new);
         User newUser = createNewUser(params);
         DataBase.addUser(newUser);
         return Response.builder()
-                .httpVersion(request.getVersion())
+                .httpVersion(request.getStartLine().getVersion())
                 .httpStatus(HttpStatus.FOUND)
                 .location("/index.html")
                 .build();
@@ -44,7 +44,7 @@ public class UserCreateServlet implements Servlet {
         User newUser = createNewUser(body);
         DataBase.addUser(newUser);
         return Response.builder()
-                .httpVersion(request.getVersion())
+                .httpVersion(request.getStartLine().getVersion())
                 .httpStatus(HttpStatus.FOUND)
                 .location("/index.html")
                 .build();

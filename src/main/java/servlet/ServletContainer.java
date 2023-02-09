@@ -53,7 +53,7 @@ public class ServletContainer {
     }
 
     private Servlet getServlet(Request request) {
-        Servlet servlet = servlets.getOrDefault(request.getUri().getPath(), null);
+        Servlet servlet = servlets.getOrDefault(request.getStartLine().getUri().getPath(), null);
         if (Objects.isNull(servlet)) {
             throw new NotFoundException();
         }
@@ -61,18 +61,27 @@ public class ServletContainer {
     }
 
     private boolean isStaticResourceRequest(Request request) {
-        Optional<String> extension = request.getUri().getExtension();
+        Optional<String> extension = request.getStartLine().getUri().getExtension();
         return extension.isPresent() && ContentType.isFileExtension(extension.get());
     }
 
     private Response handleException(Request request, RuntimeException e) {
         if (e instanceof BadRequestException) {
-            return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.BAD_REQUEST).build();
+            return Response.builder()
+                    .httpVersion(request.getStartLine().getVersion())
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .build();
         }
         if (e instanceof NotFoundException) {
-            return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.NOT_FOUND).build();
+            return Response.builder()
+                    .httpVersion(request.getStartLine().getVersion())
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
         }
         logger.error("InternalServerError : {}", e.getMessage());
-        return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return Response.builder()
+                .httpVersion(request.getStartLine().getVersion())
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
     }
 }

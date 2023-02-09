@@ -1,7 +1,7 @@
 package http.request;
 
 import http.HttpRequestHeader;
-import utils.ParsingUtils;
+import utils.RequestParsingUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +15,7 @@ public class RequestHeaders {
     }
 
     public static RequestHeaders fromRawHeaders(List<String> rawHeaders) {
-        return new RequestHeaders(
-                ParsingUtils.parseRequestHeader(rawHeaders)
-        );
+        return RequestParsingUtils.parseRequestHeader(rawHeaders);
     }
 
     public Optional<String> get(HttpRequestHeader key) {

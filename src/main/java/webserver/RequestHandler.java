@@ -7,12 +7,13 @@ import http.Uri;
 import http.request.Request;
 import http.request.RequestBody;
 import http.request.RequestHeaders;
+import http.request.RequestStartLine;
 import http.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import servlet.ServletContainer;
 import utils.IOUtils;
-import utils.ParsingUtils;
+import utils.RequestParsingUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -48,10 +49,8 @@ public class RequestHandler implements Runnable {
     private Request createRequest(InputStream in) throws IOException {
         BufferedReader bufferReader = new BufferedReader(new InputStreamReader(in));
 
-        Map<HttpStartLine, String> startLine = ParsingUtils.parseStartLine(IOUtils.readStartLine(bufferReader));
-        HttpMethod method = HttpMethod.valueOf(startLine.get(HttpStartLine.METHOD));
-        Uri uri = new Uri(startLine.get(HttpStartLine.URI));
-        String version = startLine.get(HttpStartLine.VERSION);
+        String rawStartLine = IOUtils.readStartLine(bufferReader);
+        RequestStartLine startLine = RequestStartLine.fromRawStartLine(rawStartLine);
 
         List<String> rawHeaders = IOUtils.readRequestHeader(bufferReader);
         RequestHeaders requestHeaders = RequestHeaders.fromRawHeaders(rawHeaders);
@@ -62,7 +61,7 @@ public class RequestHandler implements Runnable {
             requestBody = RequestBody.fromQueryString(body);
         }
 
-        return new Request(method, uri, version, requestHeaders, requestBody);
+        return new Request(startLine, requestHeaders, requestBody);
     }
 
     private void sendResponse(OutputStream out, Response response) {

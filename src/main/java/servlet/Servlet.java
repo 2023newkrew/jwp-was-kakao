@@ -6,7 +6,7 @@ import http.response.Response;
 
 public interface Servlet {
     default Response handle(Request request) {
-        if (request.getMethod().isGet()) {
+        if (request.getStartLine().getMethod().isGet()) {
             return doGet(request);
         }
         return doPost(request);

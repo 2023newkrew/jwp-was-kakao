@@ -22,7 +22,7 @@ public class HomeServlet implements Servlet {
     public Response doGet(Request request) {
         byte[] body = "Hello world".getBytes();
         return Response.builder()
-                .httpVersion(request.getVersion())
+                .httpVersion(request.getStartLine().getVersion())
                 .httpStatus(HttpStatus.OK)
                 .contentType(ContentType.HTML)
                 .contentLength(body.length)

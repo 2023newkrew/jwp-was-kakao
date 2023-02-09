@@ -5,6 +5,7 @@ import http.ContentType;
 import http.HttpStatus;
 import http.Uri;
 import http.request.Request;
+import http.request.RequestStartLine;
 import http.response.Response;
 import utils.FileIoUtils;
 
@@ -26,11 +27,12 @@ public class ResourceServlet implements Servlet {
 
     @Override
     public Response doGet(Request request) {
-        ContentType contentType = ContentType.of(request.getUri().getExtension().orElseThrow(BadRequestException::new));
+        RequestStartLine startLine = request.getStartLine();
+        ContentType contentType = ContentType.of(startLine.getUri().getExtension().orElseThrow(BadRequestException::new));
         try {
-            byte[] body = getResource(request.getUri(), contentType);
+            byte[] body = getResource(startLine.getUri(), contentType);
             return Response.builder()
-                    .httpVersion(request.getVersion())
+                    .httpVersion(startLine.getVersion())
                     .httpStatus(HttpStatus.OK)
                     .contentType(contentType)
                     .contentLength(body.length)
