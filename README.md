@@ -31,10 +31,10 @@
 
 ---
 ### 리팩토링 목록
-- [ ] QueryParameters 클래스명 오타 수정
-- [ ] RequestHandler의 mapRequest 메서드 하나의 기능만 처리하도록 리팩토링
-- [ ] static 리소스 판별 메서드 Request 내부로 이동
-- [ ] StaticDirectory enum 리팩토링
+- [x] QueryParameters 클래스명 오타 수정
+- [x] RequestHandler의 mapRequest 메서드 하나의 기능만 처리하도록 리팩토링
+- [x] static 리소스 판별 메서드 Request 내부로 이동
+- [x] StaticDirectory enum 리팩토링
   - capacity 수정 및 상수 선언
   - resolve() 파라미터 이름 수정
   - 삼항연산자 제거

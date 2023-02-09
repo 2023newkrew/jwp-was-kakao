@@ -8,7 +8,8 @@ import java.util.Map;
 public enum StaticDirectory {
     CSS, FONTS, IMAGES, JS;
 
-    private static final Map<String, StaticDirectory> mappings = new HashMap<>(16);
+    private static final int DIR_SIZE = 4;
+    private static final Map<String, StaticDirectory> mappings = new HashMap<>(DIR_SIZE);
 
     static {
         for (StaticDirectory directory : values()) {
@@ -17,8 +18,11 @@ public enum StaticDirectory {
     }
 
     @Nullable
-    public static StaticDirectory resolve(@Nullable String method) {
-        return (method != null ? mappings.get(method) : null);
+    public static StaticDirectory resolve(@Nullable String dir) {
+        if (dir != null) {
+            return mappings.get(dir);
+        }
+        return null;
     }
 
 }
