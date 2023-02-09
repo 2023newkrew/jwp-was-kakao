@@ -1,7 +1,5 @@
 package webserver;
 
-import static model.MyHttpRequest.JSESSIONID;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -51,7 +49,8 @@ public class RequestHandler implements Runnable {
 
             MyHttpRequest httpRequest = requestParser.buildHttpRequest();
             MyHttpResponse httpResponse = new MyHttpResponse();
-            preHandleSession(httpRequest, httpResponse);
+
+            new MyFilterChain().doChain(httpRequest, httpResponse);
 
             Controller controller = handleControllerMapping(httpRequest);
             MyModelAndView mav = controller.process(httpRequest, httpResponse);
@@ -63,14 +62,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void preHandleSession(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
-        if (httpRequest.hasSession()) {
-            return;
-        }
 
-        String sessionId = httpRequest.createSession();
-        httpResponse.setCookie(new MyHttpCookie(JSESSIONID, sessionId));
-    }
 
     private Controller handleControllerMapping(MyHttpRequest httpRequest) {
         if (httpRequest.isStaticRequest()) {
