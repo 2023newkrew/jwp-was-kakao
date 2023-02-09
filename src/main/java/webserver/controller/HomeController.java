@@ -4,8 +4,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.controller.annotation.Handler;
 import webserver.controller.annotation.RequestController;
-import webserver.request.Request;
-import webserver.response.Response;
+import webserver.http.request.Request;
+import webserver.http.response.Response;
 
 @RequestController
 public class HomeController {

@@ -1,7 +1,8 @@
-package webserver.request;
+package webserver.http.request;
 
 import org.springframework.http.HttpMethod;
 import webserver.exception.InvalidRequestHeaderException;
+import webserver.http.Cookie;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,7 @@ public class RequestHeader {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String ACCEPT = "Accept";
+    private static final String COOKIE = "Cookie";
 
     private HttpMethod httpMethod;
     private String url;
@@ -20,6 +22,7 @@ public class RequestHeader {
     private String contentType;
     private int contentLength;
     private String accept = "text/html";
+    private Cookie cookie;
 
     public RequestHeader(List<String> headerLines) {
         if (headerLines == null || headerLines.size() < 1) {
@@ -61,6 +64,8 @@ public class RequestHeader {
             accept = acceptValue.split(",")[0];
         }
         contentType = headerInfoMap.get(CONTENT_TYPE);
+        String cookieString = headerInfoMap.get(COOKIE);
+        cookie = new Cookie(cookieString);
     }
 
     public HttpMethod getHttpMethod() {
@@ -81,6 +86,10 @@ public class RequestHeader {
 
     public String getAccept() {
         return accept;
+    }
+
+    public Cookie getCookie() {
+        return cookie;
     }
 
     @Override

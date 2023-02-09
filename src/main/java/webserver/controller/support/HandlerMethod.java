@@ -1,7 +1,7 @@
 package webserver.controller.support;
 
-import webserver.request.Request;
-import webserver.response.Response;
+import webserver.http.request.Request;
+import webserver.http.response.Response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

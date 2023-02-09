@@ -1,4 +1,4 @@
-package webserver.request.support;
+package webserver.http.request.support;
 
 import org.springframework.lang.Nullable;
 

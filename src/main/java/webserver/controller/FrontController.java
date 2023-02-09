@@ -4,7 +4,7 @@ import webserver.controller.annotation.Handler;
 import webserver.controller.support.HandlerMethod;
 import webserver.controller.support.PathMapKey;
 import webserver.controller.annotation.RequestController;
-import webserver.request.Request;
+import webserver.http.request.Request;
 
 import java.lang.reflect.Method;
 import java.util.*;

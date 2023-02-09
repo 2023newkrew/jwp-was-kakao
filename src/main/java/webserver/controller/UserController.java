@@ -6,10 +6,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.controller.annotation.Handler;
 import webserver.controller.annotation.RequestController;
-import webserver.request.Request;
-import webserver.request.support.FormData;
-import webserver.request.support.QueryParameters;
-import webserver.response.Response;
+import webserver.http.request.Request;
+import webserver.http.request.support.FormData;
+import webserver.http.request.support.QueryParameters;
+import webserver.http.response.Response;
+
+import java.util.UUID;
 
 @RequestController
 public class UserController {
@@ -36,8 +38,7 @@ public class UserController {
                 formData.getValue("email")
         );
         DataBase.addUser(user);
-        res.setStatus(HttpStatus.FOUND);
-        res.setLocation("http://localhost:8080/index.html");
+        res.setRedirection("http://localhost:8080/index.html");
     }
 
     @Handler(method = HttpMethod.POST, value = "/user/login")
@@ -48,11 +49,10 @@ public class UserController {
         boolean matched = user.checkPasswordMatch(formData.getValue("password"));
 
         if (matched) {
-            res.setStatus(HttpStatus.FOUND);
-            res.setLocation("http://localhost:8080/index.html");
+            res.setRedirection("http://localhost:8080/index.html");
+            res.getCookie().setCookie("JSESSIONID", UUID.randomUUID().toString());
             return;
         }
-        res.setStatus(HttpStatus.FOUND);
-        res.setLocation("http://localhost:8080/user/login_failed.html");
+        res.setRedirection("http://localhost:8080/user/login_failed.html");
     }
 }
