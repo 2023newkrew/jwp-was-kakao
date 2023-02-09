@@ -35,7 +35,7 @@ public class UserListHandler extends AbstractHandler {
             throw new RuntimeException(e);
         }
 
-        List<User> users = new UserService().showList();
+        List<User> users = UserService.showUserList();
         try {
             String content = template.apply(users);
             response.setBody(content.getBytes());

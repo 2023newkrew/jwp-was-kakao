@@ -1,5 +1,10 @@
 package webserver.http;
 
+import webserver.http.cookie.HttpCookie;
+import webserver.http.cookie.HttpCookies;
+import webserver.http.header.HttpHeader;
+import webserver.http.header.HttpHeaders;
+
 import java.util.Map;
 
 public class HttpRequest {

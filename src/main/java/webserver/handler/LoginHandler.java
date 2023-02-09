@@ -22,12 +22,15 @@ public class LoginHandler extends AbstractHandler {
     protected void doPost(final HttpRequest request, final HttpResponse response) {
         String userId = request.getParameter("userId");
         String password = request.getParameter("password");
-        boolean isAuthenticated = new UserService().login(userId, password);
+
+        boolean isAuthenticated = UserService.login(userId, password);
         if (isAuthenticated) {
             String jsessionId = request.getCookie("JSESSIONID").getValue();
             Session session = SessionManager.findSession(jsessionId);
+
             Optional<User> user = DataBase.findByUserId(userId);
             user.ifPresent(value -> session.setAttribute("user", value));
+
             response.setHeader("Location", "/index.html");
             response.setHeader("Set-Cookie", "logined=true");
         } else {

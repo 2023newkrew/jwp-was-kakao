@@ -17,7 +17,7 @@ public class UserHandler extends AbstractHandler {
     }
 
     private static void addUser(final HttpRequest request, final HttpResponse response) {
-        new UserService().addUser(
+        UserService.addUser(
                 request.getParameter("userId"),
                 request.getParameter("password"),
                 request.getParameter("name"),

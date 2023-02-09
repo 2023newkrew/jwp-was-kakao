@@ -1,5 +1,8 @@
 package webserver.http;
 
+import webserver.http.header.HttpHeader;
+import webserver.http.header.HttpHeaders;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,10 +1,10 @@
-package webserver.http;
+package webserver.http.header;
 
-public class HttpCookie {
+public class HttpHeader {
     private final String name;
     private final String value;
 
-    public HttpCookie(final String name, final String value) {
+    public HttpHeader(final String name, final String value) {
         this.name = name;
         this.value = value;
     }
