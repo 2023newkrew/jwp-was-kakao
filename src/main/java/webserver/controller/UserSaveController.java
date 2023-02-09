@@ -2,15 +2,24 @@ package webserver.controller;
 
 import db.UserStorage;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import model.MyHttpRequest;
 import model.MyHttpResponse;
 import model.User;
 import org.springframework.http.HttpStatus;
 import webserver.Controller;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSaveController implements Controller {
 
     public static final String URL = "/user/create";
+
+    private static final UserSaveController INSTANCE = new UserSaveController();
+
+    public static UserSaveController getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public String process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {

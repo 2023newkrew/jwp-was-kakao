@@ -26,13 +26,13 @@ public class RequestHandler implements Runnable {
 
     private final Socket connection;
     private final Map<String, Controller> controllerMap = new HashMap<>();
-    private final Controller viewController = new ViewController();
-    private final Controller staticController = new StaticController();
+    private final Controller viewController = ViewController.getInstance();
+    private final Controller staticController = StaticController.getInstance();
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        controllerMap.put(UserSaveController.URL, new UserSaveController());
-        controllerMap.put(UserLoginController.URL, new UserLoginController());
+        controllerMap.put(UserSaveController.URL, UserSaveController.getInstance());
+        controllerMap.put(UserLoginController.URL, UserLoginController.getInstance());
     }
 
     public void run() {

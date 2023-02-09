@@ -4,6 +4,8 @@ import db.SessionStorage;
 import db.UserStorage;
 import java.util.Map;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import model.MyHttpRequest;
 import model.MyHttpResponse;
 import model.Session;
@@ -12,9 +14,16 @@ import org.springframework.http.HttpStatus;
 import webserver.Controller;
 import webserver.MyHttpCookie;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserLoginController implements Controller {
 
     public static final String URL = "/user/login";
+
+    private static final UserLoginController INSTANCE = new UserLoginController();
+
+    public static UserLoginController getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public String process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
