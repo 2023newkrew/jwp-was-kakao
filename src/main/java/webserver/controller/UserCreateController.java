@@ -19,7 +19,7 @@ public class UserCreateController implements Controller {
     @Override
     public void service(HttpRequest request, HttpResponse response) {
         String query = getQuery(request);
-        Map<String, String> attributes = QueryStringParser.parseQueryString(query);
+        Map<String, String> attributes = QueryStringParser.parseQueryString(query, "&");
 
         User user = new User(
                 attributes.get("userId"),

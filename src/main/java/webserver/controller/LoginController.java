@@ -21,7 +21,7 @@ public class LoginController implements Controller {
     @Override
     public void service(HttpRequest request, HttpResponse response) {
         String query = getQuery(request);
-        Map<String, String> attributes = QueryStringParser.parseQueryString(query);
+        Map<String, String> attributes = QueryStringParser.parseQueryString(query, "&");
 
         User user = DataBase.findUserById(attributes.get("userId"));
         if (user == null || user.isWrongPassword(attributes.get("password"))) {

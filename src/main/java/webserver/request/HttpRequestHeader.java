@@ -8,6 +8,7 @@ import java.util.Optional;
 public class HttpRequestHeader {
 
     private final Map<String, String> headers = new HashMap<>();
+    private final Map<String, String> cookies = new HashMap<>();
     private final HttpEndPoint httpEndPoint;
     private final String httpVersion;
 
@@ -26,6 +27,14 @@ public class HttpRequestHeader {
 
     public void addAttribute(String key, String value) {
         headers.put(key, value);
+    }
+
+    public Optional<String> getCookie(String name) {
+        return Optional.ofNullable(cookies.get(name));
+    }
+
+    public void setCookies(Map<String, String> cookies) {
+        this.cookies.putAll(cookies);
     }
 
     public HttpRequestMethod getMethod() {

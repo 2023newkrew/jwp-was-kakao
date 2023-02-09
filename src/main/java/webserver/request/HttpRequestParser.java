@@ -33,6 +33,11 @@ public class HttpRequestParser {
             String key = header[0];
             String value = header[1].trim();
 
+            if (key.equals("Cookie")) {
+                httpRequestHeader.setCookies(QueryStringParser.parseQueryString(value, "; "));
+                continue;
+            }
+
             httpRequestHeader.addAttribute(key, value);
         }
     }
