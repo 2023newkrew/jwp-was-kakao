@@ -5,7 +5,7 @@ import model.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.request.support.FormData;
-import webserver.request.support.QueryParamters;
+import webserver.request.support.QueryParameters;
 import webserver.request.Request;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class RequestController {
         });
 
         pathMap.put(PathMapKey.of(HttpMethod.GET, "/user/create"), (req, res) -> {
-            QueryParamters parameters = new QueryParamters(req.getURL());
+            QueryParameters parameters = new QueryParameters(req.getURL());
             User user = new User(
                     parameters.getValue("userId"),
                     parameters.getValue("password"),

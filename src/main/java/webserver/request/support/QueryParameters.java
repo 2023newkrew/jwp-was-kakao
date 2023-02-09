@@ -5,11 +5,11 @@ import webserver.exception.InvalidQueryStringException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryParamters {
+public class QueryParameters {
 
     private final Map<String, String> parameters = new HashMap<>();
 
-    public QueryParamters(String url) {
+    public QueryParameters(String url) {
         String[] pathToken = url.split("\\?");
         if (pathToken.length > 1) {
             setQueryParameters(pathToken[1]);
