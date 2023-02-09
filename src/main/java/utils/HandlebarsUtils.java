@@ -19,7 +19,9 @@ public class HandlebarsUtils {
         TemplateLoader loader = new ClassPathTemplateLoader(PREFIX, SUFFIX);
         H = new Handlebars(loader);
     }
-    private HandlebarsUtils() {}
+
+    private HandlebarsUtils() {
+    }
 
     public static String getView(String path, Object model) {
         try {

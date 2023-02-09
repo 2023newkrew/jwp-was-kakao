@@ -1,6 +1,8 @@
 package http;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Cookies {
@@ -11,7 +13,8 @@ public class Cookies {
 
     private final Map<String, String> cookies = new HashMap<>();
 
-    public Cookies() {}
+    public Cookies() {
+    }
 
     public Cookies(String cookie) {
         if (cookie == null || cookie.isBlank()) {

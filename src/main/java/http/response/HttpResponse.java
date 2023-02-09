@@ -1,7 +1,6 @@
 package http.response;
 
 import http.Cookies;
-import http.HttpHeader;
 import http.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import utils.HandlebarsUtils;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HttpResponse {

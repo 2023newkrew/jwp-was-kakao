@@ -7,7 +7,8 @@ public class HttpSessions {
     public static final String SESSION_KEY = "JSESSIONID";
     private static final Map<String, HttpSession> sessions = new ConcurrentHashMap<>();
 
-    private HttpSessions() {}
+    private HttpSessions() {
+    }
 
     public static HttpSession getSession(String id) {
         if (!sessions.containsKey(id)) {
