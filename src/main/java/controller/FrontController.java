@@ -1,7 +1,6 @@
 package controller;
 
 import controller.annotation.CustomRequestBody;
-import controller.annotation.CustomRequestMapping;
 import controller.annotation.CustomRequestParams;
 import exception.UnsupportedRequestException;
 import exception.UnsupportedResponseException;
@@ -32,18 +31,15 @@ public class FrontController {
 
     public CustomHttpResponse getHttpResponse(CustomHttpRequest request) throws NoSuchMethodException {
         BaseController controller = controllerMapping.getOrDefault(request.getUrl(), new ViewController());
-        Method foundMethod = Arrays.stream(controller.getClass().getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
-                        && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getUrl())
-                        && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpMethod())
-                ).findFirst().orElseThrow(NoSuchMethodException::new);
-
+        Method foundMethod = controller.getProperMethod(request);
         CustomHttpResponse response;
         try {
             if (foundMethod.getParameterCount() == 1 && foundMethod.getParameters()[0].isAnnotationPresent(CustomRequestBody.class)) {
                 response = getResponseByRequest(foundMethod, request.getBody(), controller);
             } else if (foundMethod.getParameterCount() == 1 && foundMethod.getParameters()[0].isAnnotationPresent(CustomRequestParams.class)) {
                 response = getResponseByRequest(foundMethod, request.getQuery(), controller);
+            } else if (foundMethod.getName().equals("resource")) {
+                response = (CustomHttpResponse) foundMethod.invoke(controller, request);
             } else {
                 response = (CustomHttpResponse) foundMethod.invoke(controller);
             }
