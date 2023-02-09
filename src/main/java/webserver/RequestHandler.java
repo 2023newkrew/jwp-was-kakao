@@ -21,21 +21,13 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final Map<String, UrlMappingHandler> urlMappingHandlerMappings;
-    private final Handler defaultHandler;
+    private final HandlerMappings handlerMappings;
     private final GlobalExceptionHandler globalExceptionHandler;
 
-    public RequestHandler(Socket connectionSocket,
-                          Map<String, UrlMappingHandler> urlMappingHandlerMappings,
-                          Handler defaultHandler) {
+    public RequestHandler(Socket connectionSocket, HandlerMappings handlerMappings) {
         this.connection = connectionSocket;
-        this.urlMappingHandlerMappings = urlMappingHandlerMappings;
-        this.defaultHandler = defaultHandler;
+        this.handlerMappings = handlerMappings;
         this.globalExceptionHandler = new GlobalExceptionHandler(connection);
-    }
-
-    public RequestHandler(Socket connection, Map<String, UrlMappingHandler> urlMappingHandlerMappings) {
-        this(connection, urlMappingHandlerMappings, new StaticResourceRequestHandler());
     }
 
     public void run() {
@@ -77,20 +69,8 @@ public class RequestHandler implements Runnable {
     }
 
     private HttpResponse handle(HttpRequest httpRequest) {
-        Handler handler = findUrlHandler(httpRequest);
-        if (handler != null) {
-            return handler.handle(httpRequest);
-        }
-        return defaultHandler.handle(httpRequest);
-    }
-
-    private Handler findUrlHandler(HttpRequest httpRequest) {
-        return urlMappingHandlerMappings.keySet().stream()
-                .filter(urlMapping -> Pattern.compile(urlMapping).matcher(httpRequest.getURL()).matches())
-                .map(urlMappingHandlerMappings::get)
-                .filter(handler -> handler.support(httpRequest))
-                .findFirst()
-                .orElse(null);
+        Handler handler = handlerMappings.findHandler(httpRequest);
+        return handler.handle(httpRequest);
     }
 
     private void close(HttpRequestReader reader, OutputStream os, Socket connection) {

@@ -1,5 +1,6 @@
 package webserver;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -7,13 +8,18 @@ import webserver.handler.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    HandlerMappings handlerMappings;
+
+    @BeforeEach
+    void setUp() {
+        initHandlerMappings();
+    }
 
     @Test
     void index() throws IOException, URISyntaxException {
@@ -26,14 +32,12 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket, initUrlMappingHandlerMappings());
+        final RequestHandler handler = new RequestHandler(socket, handlerMappings);
 
         // when
         handler.run();
 
         // then
-
-
         var expected = "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: text/html;charset=utf-8\r\n" +
                 "Content-Length: " +  FileIoUtils.loadFileFromClasspath("templates/index.html").length + "\r\n" +
@@ -43,17 +47,18 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
-    private static Map<String, UrlMappingHandler> initUrlMappingHandlerMappings() {
-        HashMap<String, UrlMappingHandler> urlHandlerMappings = new HashMap<>();
+    private void initHandlerMappings() {
+        handlerMappings = new HandlerMappings();
 
-        List<UrlMappingHandler> handlers = List.of(
+        List<UrlMappingHandler> urlMappingHandlers = List.of(
                 new HomeRequestHandler(),
                 new QnaRequestHandler(),
                 new UserCreateRequestHandler(),
-                new UserRequestHandler());
+                new UserRequestHandler(),
+                new UserLoginRequestHandler()
+        );
 
-        handlers.forEach(handler -> urlHandlerMappings.put(handler.getUrlMappingRegex(), handler));
-
-        return urlHandlerMappings;
+        urlMappingHandlers.forEach(
+                handler -> handlerMappings.addUrlMappingHandler(handler));
     }
 }

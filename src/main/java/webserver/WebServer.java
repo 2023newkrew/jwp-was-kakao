@@ -13,6 +13,7 @@ import java.util.Map;
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080;
+    private static HandlerMappings handlerMappings = initHandlerMappings();
 
     public static void main(String args[]) throws Exception {
         int port = 0;
@@ -22,8 +23,6 @@ public class WebServer {
             port = Integer.parseInt(args[0]);
         }
 
-        Map<String, UrlMappingHandler> urlMappingHandlerMappings = initUrlMappingHandlerMappings();
-
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
@@ -31,16 +30,16 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection, urlMappingHandlerMappings));
+                Thread thread = new Thread(new RequestHandler(connection, handlerMappings));
                 thread.start();
             }
         }
     }
 
-    private static Map<String, UrlMappingHandler> initUrlMappingHandlerMappings() {
-        HashMap<String, UrlMappingHandler> urlHandlerMappings = new HashMap<>();
+    private static HandlerMappings initHandlerMappings() {
+        handlerMappings = new HandlerMappings();
 
-        List<UrlMappingHandler> handlers = List.of(
+        List<UrlMappingHandler> urlMappingHandlers = List.of(
                 new HomeRequestHandler(),
                 new QnaRequestHandler(),
                 new UserCreateRequestHandler(),
@@ -48,8 +47,9 @@ public class WebServer {
                 new UserLoginRequestHandler()
         );
 
-        handlers.forEach(handler -> urlHandlerMappings.put(handler.getUrlMappingRegex(), handler));
+        urlMappingHandlers.forEach(
+                handler -> handlerMappings.addUrlMappingHandler(handler));
 
-        return urlHandlerMappings;
+        return handlerMappings;
     }
 }
