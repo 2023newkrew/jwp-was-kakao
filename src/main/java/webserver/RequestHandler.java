@@ -27,10 +27,8 @@ public class RequestHandler implements Runnable {
             String httpRequest = IOUtils.getHttpRequest(br);
 
             HttpParser httpParser = new HttpParser(httpRequest);
-            String path = httpParser.getPath();
-
             PathBinder pathBinder = new PathBinder();
-            pathBinder.bind(path, out, br, httpParser);
+            pathBinder.bind(out, br, httpParser);
 
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());

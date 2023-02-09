@@ -14,6 +14,8 @@ public class HttpParser {
     private final HashMap<String, String> httpHeaderInfo = new HashMap<>();
 
     public HttpParser(String httpRequest) {
+        System.out.println(httpRequest);
+
         LogicValidatorUtils.checkNull(httpRequest);
         String[] httpInfo = httpRequest.split(NEW_LINE);
         LogicValidatorUtils.checkNull(httpInfo[0]);
@@ -29,6 +31,10 @@ public class HttpParser {
             String value = httpInfo[i].split(COLON + SPACE)[1];
             httpHeaderInfo.put(key, value);
         }
+    }
+
+    public String getMethod() {
+        return httpHeaderInfo.get("Http-Method");
     }
 
     public String getPath() {

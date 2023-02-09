@@ -1,5 +1,7 @@
 package utils;
 
+import auth.HttpCookie;
+import org.springframework.boot.web.servlet.server.Session;
 import webserver.RequestHandler;
 
 import java.io.DataOutputStream;
@@ -9,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ResponseUtils {
+    public static final String LENGTH_OF_INDEX_PAGE = "6902";
 
     public static void responseOkHeader(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
@@ -28,6 +31,18 @@ public class ResponseUtils {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: " + redirectPath + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            RequestHandler.logger.error(e.getMessage());
+        }
+    }
+
+    public static void responseLoginHeader(DataOutputStream dos, HttpCookie httpCookie) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 OK \r\n");
+            RequestHandler.logger.error(httpCookie.toString());
+            dos.writeBytes("Set-Cookie: " + httpCookie + " \r\n");
+            dos.writeBytes("Location: /index.html \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             RequestHandler.logger.error(e.getMessage());

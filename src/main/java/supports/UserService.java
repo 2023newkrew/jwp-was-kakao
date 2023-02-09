@@ -6,10 +6,13 @@ import utils.IOUtils;
 import utils.LogicValidatorUtils;
 import webserver.RequestHandler;
 
+import javax.xml.crypto.Data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public class UserService {
 
@@ -46,5 +49,24 @@ public class UserService {
         }
 
         return result;
+    }
+
+    public Optional<UUID> loginUser(BufferedReader br, HttpParser httpParser) throws IOException {
+        Integer contentLength = httpParser.getContentLength();
+        String userBody = IOUtils.readData(br, contentLength);
+        HashMap<String, String> queryParam = parseQueryParameter(userBody);
+
+        User actualUser = DataBase.findUserById(queryParam.get("userId"));
+        if (actualUser == null){
+            RequestHandler.logger.error("아이디가 잘못되었습니다.");
+            return Optional.empty();
+        }
+
+        if(!actualUser.matchPassword(queryParam.get("password"))){
+            RequestHandler.logger.error("비밀번호가 잘못되었습니다.");
+            return Optional.empty();
+        }
+
+        return Optional.of(UUID.randomUUID());
     }
 }
