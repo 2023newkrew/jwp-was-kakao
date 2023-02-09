@@ -54,6 +54,5 @@ public class UserLoginController implements Controller {
     private void createUserSession(User user, String sessionId) {
         Session session = SessionStorage.findSession(sessionId);
         session.setAttribute("user", user);
-        SessionStorage.add(sessionId, session);
     }
 }
