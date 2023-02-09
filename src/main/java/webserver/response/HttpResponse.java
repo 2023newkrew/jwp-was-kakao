@@ -1,18 +1,17 @@
-package webserver;
+package webserver.response;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import org.springframework.http.HttpStatus;
+import webserver.FilenameExtension;
 
 public class HttpResponse {
     private final HttpStatus status;
-    private final Map<String, String> header;
+    private final HttpResponseHeader header;
     private final byte[] body;
 
-    public HttpResponse(HttpStatus status, Map<String, String> header, byte[] body) {
+    public HttpResponse(HttpStatus status, HttpResponseHeader header, byte[] body) {
         this.status = status;
         this.header = header;
         this.body = body;
@@ -22,17 +21,15 @@ public class HttpResponse {
         return new HttpResponse(HttpStatus.OK, createHeader(body, extension), body);
     }
     public static HttpResponse found(byte[] body, FilenameExtension extension, String location) {
-        Map<String, String> header = createHeader(body, extension);
-        header.put("Location", location);
+        HttpResponseHeader header = createHeader(body, extension);
+        header.setLocation(location);
         return new HttpResponse(HttpStatus.FOUND, header, body);
     }
 
-    private static Map<String, String> createHeader(byte[] body, FilenameExtension extension) {
-        Map<String, String> header = new LinkedHashMap<>();
-        header.put("Content-Type", extension.getContentType() + ";charset=utf-8");
-        if (body.length > 0) {
-            header.put("Content-Length", String.valueOf(body.length));
-        }
+    private static HttpResponseHeader createHeader(byte[] body, FilenameExtension extension) {
+        HttpResponseHeader header = new HttpResponseHeader();
+        header.setContentType(extension.getContentType());
+        header.setContentLength(body.length);
         return header;
     }
 
@@ -50,7 +47,7 @@ public class HttpResponse {
         return "HTTP/1.1 " + status.value() + " " + status.name() + " \r\n";
     }
 
-    public void setCookie(String cookie) {
-        header.put("Set-Cookie", cookie);
+    public void setCookie(String key, String value) {
+        header.setCookie(key, value);
     }
 }

@@ -17,7 +17,9 @@ public class LoginHandler implements Handler {
             return HttpResponse.found(new byte[0], request.getFilenameExtension(), "/user/login_failed.html");
         }
         HttpResponse response = HttpResponse.found(new byte[0], request.getFilenameExtension(), "/index.html");
-        response.setCookie(UUID.randomUUID().toString());
-        return HttpResponse.found(new byte[0], request.getFilenameExtension(), "/index.html");
+        if (request.getHeaders().getCookie().get("JSESSIONID").isEmpty()) {
+            response.setCookie("JSESSIONID", UUID.randomUUID().toString());
+        }
+        return response;
     }
 }
