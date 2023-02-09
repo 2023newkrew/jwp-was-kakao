@@ -48,10 +48,7 @@ public class ResponseHeader {
         StringBuilder sb = new StringBuilder();
         sb.append(writeRequestLine(httpStatusCode));
         if (httpCookie != null) {
-            Set<String> keys = httpCookie.keySet();
-            for (String key : keys) {
-                sb.append("Set-Cookie: ").append(key).append("=").append(httpCookie.get(key)).append(" \r\n");
-            }
+            sb.append(httpCookie.parseString());
         }
         if (contentType != null) {
             sb.append("Content-Type: ").append(contentType.getToResponseText()).append(" \r\n");

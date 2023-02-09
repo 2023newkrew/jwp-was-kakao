@@ -22,19 +22,14 @@ public class HttpCookie {
         }
     }
 
-    public Set<String> keySet() {
-        return cookieMap.keySet();
-    }
-
     public Optional<String> get(String key) {
         return Optional.ofNullable(cookieMap.get(key));
     }
 
     public String parseString() {
         StringBuilder sb = new StringBuilder();
-        Set<String> keys = cookieMap.keySet();
-        for (String key : keys) {
-            sb.append(key).append("=").append(cookieMap.get(key)).append("; ");
+        for (String key : cookieMap.keySet()) {
+            sb.append("Set-Cookie: ").append(key).append("=").append(cookieMap.get(key)).append(" \r\n");
         }
         return sb.toString();
     }
