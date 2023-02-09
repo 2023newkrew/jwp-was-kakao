@@ -8,10 +8,12 @@ import java.util.Map;
 public class Request {
     private final RequestHeader requestHeader;
     private final Map<String, String> requestParams;
+    private final HttpCookie cookie;
 
-    public Request(RequestHeader requestHeader, Map<String, String> requestParams) {
+    public Request(RequestHeader requestHeader, Map<String, String> requestParams, HttpCookie cookie) {
         this.requestHeader = requestHeader;
         this.requestParams = requestParams;
+        this.cookie = cookie;
     }
 
     public Map<String, String> getRequestParams() {
@@ -24,6 +26,10 @@ public class Request {
 
     public String getMethod() {
         return requestHeader.getMethod();
+    }
+
+    public HttpCookie getCookie() {
+        return cookie;
     }
 
 }

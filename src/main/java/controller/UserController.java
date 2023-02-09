@@ -84,7 +84,7 @@ public final class UserController implements Controller {
         }
         if (user.checkPassword(params.get("password"))) {
             UUID uuid = UUID.randomUUID();
-            Session session = new Session(Map.of("userId", user.getUserId()));
+            Session session = new Session(Map.of("userId", user));
             SessionHandler.getInstance().saveSession(uuid, session);
             HttpCookie httpCookie = HttpCookie.from(Map.of("JSESSIONID", uuid.toString()));
             return Response.found().location("/index.html").setCookie(httpCookie).build();

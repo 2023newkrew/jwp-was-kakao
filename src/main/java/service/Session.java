@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Session {
-    private final Map<String, String> session;
+    private final Map<String, Object> session;
 
-    public Session(Map<String, String> session) {
+    public Session(Map<String, Object> session) {
         this.session = session;
     }
 
@@ -14,11 +14,11 @@ public class Session {
         this.session = new HashMap<>();
     }
 
-    public String put(String key, String value) {
+    public Object put(String key, Object value) {
         return session.put(key, value);
     }
 
-    public String get(String key) {
+    public Object get(String key) {
         return session.get(key);
     }
 }

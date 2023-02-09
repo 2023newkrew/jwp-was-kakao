@@ -15,8 +15,9 @@ public class RequestParser {
     public static Request getRequestFrom(BufferedReader bufferedReader) throws IOException {
         RequestHeader requestHeader = parseHeader(bufferedReader);
         Map<String, String> requestParams = parseParams(getParamsFromRequest(bufferedReader, requestHeader));
+        HttpCookie cookie = HttpCookie.from(requestHeader.get("Cookie").orElse(""));
 
-        return new Request(requestHeader, requestParams);
+        return new Request(requestHeader, requestParams, cookie);
     }
 
     private static RequestHeader parseHeader(BufferedReader bufferedReader) throws IOException {

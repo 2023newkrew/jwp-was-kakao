@@ -15,6 +15,9 @@ public class HttpCookie {
     }
 
     public static HttpCookie from(String cookies) {
+        if (cookies == null || cookies.trim().equals("")) {
+            return null;
+        }
         Map<String, String> cookieMap = new HashMap<>();
         for (String cookie: cookies.split(";")) {
             String[] split = cookie.trim().split("=");
