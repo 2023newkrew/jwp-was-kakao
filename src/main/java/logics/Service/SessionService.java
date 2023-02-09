@@ -14,7 +14,14 @@ public class SessionService {
     public static final SessionService instance = new SessionService();
     private SessionService(){}
     private final UserService userService = UserService.instance;
-    public Session login(String body){
+
+    /**
+     * Procced login with given body received from login-form.
+     * @throws IllegalArgumentException if given body is not valid or userID and password not match.
+     * @param body should be submitted from login form.
+     * @return Session if login success.
+     */
+    public Session proceedLogin(String body){
         try{
             Map<String, String> bodyMap = parseBody(body);
             if (userService.verifyLogin(bodyMap)){
@@ -28,13 +35,18 @@ public class SessionService {
 
     private Session makeSession(){
         Session newSession = new Session.Builder().setRandomId().build();
-        SessionManager.getManager.add(newSession);
+        SessionManager.instance.add(newSession);
         return newSession;
     }
 
-    public String parseSessionKey(String value){
+    /**
+     * Parse session ID from header value.
+     * @param headerParameter to be headerParameter from header, parameter "Cookie"
+     * @return Session ID parsed from input. if cannot parse, return null.
+     */
+    public String parseSessionId (String headerParameter){
         try {
-            String[] parsedValue = value.split(";");
+            String[] parsedValue = headerParameter.split(";");
             for (String v : parsedValue){
                 if (v.trim().startsWith("JSESSIONID") && v.trim().split("=").length == 2){
                     return v.trim().split("=")[1];
@@ -46,8 +58,13 @@ public class SessionService {
         }
     }
 
-    public boolean isValidSessionKey(String sessionId){
-        if (Objects.isNull(sessionId) || Objects.isNull(SessionManager.getManager.findSession(sessionId))) {
+    /**
+     * Check validity of given sessionId.
+     * @param sessionId to be judged whether valid or not.
+     * @return true if valid, else false.
+     */
+    public boolean isValidSessionId (String sessionId){
+        if (Objects.isNull(sessionId) || Objects.isNull(SessionManager.instance.findSession(sessionId))) {
             return false;
         }
         return true;

@@ -15,6 +15,12 @@ public enum HttpResponseCode {
         this.response = response;
     }
 
+    /**
+     * find HttpResponseCode by statusCode such as 200, 404.
+     * @param statusCode to be matched with HttpResponseCode.
+     * @throws IllegalArgumentException when status code is not supported.
+     * @return correspondent HttpResponseCode.
+     */
     public static HttpResponseCode findByStatusCode(int statusCode){
         for (HttpResponseCode code : HttpResponseCode.values()){
             if (code.statusCode == statusCode){

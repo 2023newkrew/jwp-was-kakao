@@ -19,8 +19,8 @@ public class LoginPageController implements Controller {
     private LoginPageController(){}
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
-        String sessionId = sessionService.parseSessionKey(httpRequest.getHeaderParameter("Cookie"));
-        if (sessionService.isValidSessionKey(sessionId)) {
+        String sessionId = sessionService.parseSessionId(httpRequest.getHeaderParameter("Cookie"));
+        if (sessionService.isValidSessionId(sessionId)) {
             return new HttpResponseVersion1().setResponseCode(302)
                     .setHeader("Location", "/index.html");
         }

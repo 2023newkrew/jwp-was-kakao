@@ -2,7 +2,7 @@ package logics.Service;
 
 import db.DataBase;
 import model.User;
-import model.UserDto;
+import model.UserListDto;
 
 import java.util.*;
 
@@ -39,22 +39,30 @@ public class UserService {
         return bodyMap;
     }
 
-
-    public List<UserDto> getUserInformation(){
-        List<UserDto> result = new ArrayList<>();
+    /**
+     * Get user information list, excluding secret information such as password.
+     * @return List of UserListDto
+     */
+    public List<UserListDto> getUserInformation(){
+        List<UserListDto> result = new ArrayList<>();
         int index = 1;
         for (User user : DataBase.findAll()){
-            result.add(UserDto.of(user, index));
+            result.add(UserListDto.of(user, index));
             index++;
         }
         return result;
     }
 
+    /**
+     * Verify whether login is valid or not.
+     * @param bodyMap should contain value of key "userId" and "password".
+     * @return true if given login information is valid, else return false.
+     */
     public boolean verifyLogin(final Map<String, String> bodyMap){
         String userId = bodyMap.get("userId");
-        String password = bodyMap.get("password");
+        String password = Optional.of(bodyMap.get("password")).orElse("");
         if (Objects.isNull(DataBase.findUserById(userId)) ||
-                !DataBase.findUserById(userId).getPassword().equals(password)){
+                !password.equals(DataBase.findUserById(userId).getPassword())){
             return false;
         }
         return true;

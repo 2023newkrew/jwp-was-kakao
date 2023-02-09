@@ -22,7 +22,7 @@ public class LoginController implements Controller {
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
         try {
-            Session session = sessionService.login(httpRequest.getBody());
+            Session session = sessionService.proceedLogin(httpRequest.getBody());
             return loginSuccess.setHeader("Set-Cookie", session.toCookieHeader());
         } catch(IllegalArgumentException e){
             return loginFail;

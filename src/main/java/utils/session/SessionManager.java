@@ -5,8 +5,11 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
-    public static final SessionManager getManager = new SessionManager();
+    public static final SessionManager instance = new SessionManager();
     private final Map<String, Session> SESSIONS = new ConcurrentHashMap<>();
+
+    // Singleton
+    private SessionManager(){}
 
     public void add(final Session session){
         SESSIONS.put(session.getId(), session);
@@ -25,8 +28,4 @@ public class SessionManager {
     public void remove(final String id){
         SESSIONS.remove(id);
     }
-
-    // Singleton
-    private SessionManager(){}
-
 }

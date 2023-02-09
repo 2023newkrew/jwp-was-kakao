@@ -27,7 +27,7 @@ public class UserListController implements Controller {
     private UserListController(){}
     @Override
     public HttpResponse makeResponse(HttpRequest httpRequest) {
-        if (!sessionService.isValidSessionKey(sessionService.parseSessionKey(httpRequest.getHeaderParameter("Cookie")))){
+        if (!sessionService.isValidSessionId(sessionService.parseSessionId(httpRequest.getHeaderParameter("Cookie")))){
             return new HttpResponseVersion1().setResponseCode(302).setHeader("Location", "/user/login.html");
         }
         try {
