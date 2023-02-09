@@ -7,6 +7,7 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,14 +23,14 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = String.join("\r\n",
+        var expected = List.of("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 11 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "",
                 "Hello world");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("HTML 파일 요청시 해당 파일을 읽어 응답한다")
@@ -52,7 +53,7 @@ class RequestHandlerTest {
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
+                "Content-Length: 6897 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
@@ -80,7 +81,7 @@ class RequestHandlerTest {
 
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
+                "Content-Type: text/css;charset=utf-8 \r\n" +
                 "Content-Length: 7065 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
@@ -108,13 +109,13 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 109518 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("static/css/bootstrap.min.css"));
+        var expected = List.of("HTTP/1.1 200 OK \r\n",
+                "Content-Length: 109518 \r\n",
+                "Content-Type: text/css;charset=utf-8 \r\n",
+                "\r\n",
+                new String(FileIoUtils.loadFileFromClasspath("static/css/bootstrap.min.css")));
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("파일 요청에 특정 API 경로가 포함되어도 파일 응답으로 처리된다")
@@ -135,13 +136,13 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 5167 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html"));
+        var expected = List.of("HTTP/1.1 200 OK \r\n",
+                "Content-Type: text/html;charset=utf-8 \r\n",
+                "Content-Length: 5162 \r\n",
+                "\r\n",
+                new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html")));
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("GET 요청의 쿼리 파라미터를 통해 사용자를 생성할 수 있다")

@@ -3,6 +3,9 @@ package service;
 import db.DataBase;
 import model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserService {
 
     public void addUser(String userId, String password, String name, String email) {
@@ -16,5 +19,9 @@ public class UserService {
             return false;
         }
         return user.getPassword().equals(password);
+    }
+
+    public List<User> getUsers() {
+        return new ArrayList<>(DataBase.findAll());
     }
 }

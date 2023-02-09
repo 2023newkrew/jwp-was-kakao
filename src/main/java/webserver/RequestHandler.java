@@ -43,7 +43,6 @@ public class RequestHandler implements Runnable {
            sendResponse(dos, new HttpResponse(e.getStatusCode(), e.getMessage()));
            logger.error("[" + e.getStatusCode() + "] " + e.getMessage());
        } catch (Exception e) {
-           e.printStackTrace();
            sendResponse(dos, new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR));
            logger.error("[" + HttpStatus.INTERNAL_SERVER_ERROR + "] " + e.getMessage());
        }
