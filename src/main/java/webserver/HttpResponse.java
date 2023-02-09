@@ -49,4 +49,8 @@ public class HttpResponse {
     private String getResponseLine() {
         return "HTTP/1.1 " + status.value() + " " + status.name() + " \r\n";
     }
+
+    public void setCookie(String cookie) {
+        header.put("Set-Cookie", cookie);
+    }
 }

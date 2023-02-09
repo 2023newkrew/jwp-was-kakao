@@ -32,20 +32,23 @@ public class HttpRequestLine {
         }
         String requestUri = tokens[1].trim();
         path = requestUri.split("\\?")[0];
-        queryParams = parseQueryParams(requestUri);
+        queryParams = getQueryParams(requestUri);
         httpVersion = tokens[2].trim();
     }
 
-    public static Map<String, String> parseQueryParams(String requestTarget) {
-        Map<String, String> queryParams = new HashMap<>();
-        if (requestTarget.contains("?")) {
-            String parameters = requestTarget.split("\\?")[1];
-            Arrays.stream(parameters.split("&"))
-                    .forEach((x) -> queryParams.put(x.split("=")[0], x.split("=")[1]));
+    public static Map<String, String> getQueryParams(String requestTarget) {
+        if (!requestTarget.contains("?")) {
+            return new HashMap<>();
         }
-        return queryParams;
+        return parseQueryParams(requestTarget);
     }
 
+    public static Map<String, String> parseQueryParams(String queryString) {
+        Map<String, String> queryParams = new HashMap<>();
+        Arrays.stream(queryString.split("&"))
+                .forEach((x) -> queryParams.put(x.split("=")[0], x.split("=")[1]));
+        return queryParams;
+    }
 
     public HttpMethod getHttpMethod() {
         return httpMethod;

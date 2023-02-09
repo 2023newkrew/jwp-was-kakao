@@ -8,14 +8,17 @@ public class HttpRequest {
     private final HttpRequestLine httpRequestLine;
     private final Map<String, String> headers;
     private final String body;
+    private final Cookie cookie;
 
-    public HttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers) {
-        this(httpRequestLine, headers, null);
+    public HttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers, Cookie cookie) {
+
+        this(httpRequestLine, headers, cookie, null);
     }
 
-    public HttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers, String body) {
+    public HttpRequest(HttpRequestLine httpRequestLine, Map<String, String> headers, Cookie cookie, String body) {
         this.httpRequestLine = httpRequestLine;
         this.headers = headers;
+        this.cookie = cookie;
         this.body = body;
     }
 
@@ -33,6 +36,10 @@ public class HttpRequest {
 
     public String getBody() {
         return body;
+    }
+
+    public Map<String, String> getBodyLikeQueryParams() {
+        return HttpRequestLine.parseQueryParams(body);
     }
 
     public HttpMethod getHttpMethod() {

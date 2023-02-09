@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import webserver.request.Cookie;
 import webserver.request.HttpRequestLine;
 import webserver.request.HttpRequest;
 
@@ -18,11 +19,12 @@ public class IOUtils {
         String line = bufferedReader.readLine();
         HttpRequestLine httpRequestLine = new HttpRequestLine(line);
         Map<String, String> headers = parseHttpHeaders(bufferedReader);
+        Cookie cookie = new Cookie(headers.get("Cookie"));  // Todo : Request 안으로 전부 집어넣기
         if (headers.containsKey("Content-Length")) {
             int length = Integer.parseInt(headers.get("Content-Length"));
-            return new HttpRequest(httpRequestLine, headers, readData(bufferedReader, length));
+            return new HttpRequest(httpRequestLine, headers, cookie, readData(bufferedReader, length));
         }
-        return new HttpRequest(httpRequestLine, headers);
+        return new HttpRequest(httpRequestLine, headers, cookie);
     }
 
     private static Map<String, String> parseHttpHeaders(BufferedReader bufferedReader) throws IOException {
