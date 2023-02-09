@@ -51,7 +51,7 @@ public class UserController  implements MyController {
         }
 
         if(path.equals("/user/list") && headers.get("method").equals("GET")){
-            isLogin(contentType, cookie, dataOutputStream);
+            getUserList(contentType, cookie, dataOutputStream);
         }
 
         if(path.equals("/user/login_failed.html") && headers.get("method").equals("GET")){
@@ -102,13 +102,14 @@ public class UserController  implements MyController {
         return true;
     }
 
-    private void isLogin(String contentType, String cookie, DataOutputStream dataOutputStream){
+    private void getUserList(String contentType, String cookie, DataOutputStream dataOutputStream){
         // login이 안되어있다면
-        if(Objects.isNull(cookie)){
+        if(!cookie.startsWith("JSESSIONID")){
             String path = "/user/login.html";
             loginForm(path, contentType, dataOutputStream);
+            return;
         }
-        getUserList(contentType, cookie, dataOutputStream);
+        userList(contentType, cookie, dataOutputStream);
     }
 
     private void loginForm(String path, String contentType, DataOutputStream dataOutputStream){
@@ -121,7 +122,7 @@ public class UserController  implements MyController {
         }
     }
 
-    private void getUserList(String contentType, String cookie, DataOutputStream dataOutputStream) {
+    private void userList(String contentType, String cookie, DataOutputStream dataOutputStream) {
         try{
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/templates");
