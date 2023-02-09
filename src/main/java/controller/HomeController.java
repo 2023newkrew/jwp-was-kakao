@@ -5,16 +5,13 @@ import model.dto.MyParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.*;
+import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static model.dto.ResponseBodies.responseBody;
-import static model.dto.ResponseHeaders.*;
 
 public class HomeController implements MyController{
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private byte[] body;
     @Override
     public boolean canHandle(MyHeaders headers, MyParams params) {
         String path = headers.get("path");
@@ -22,52 +19,30 @@ public class HomeController implements MyController{
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
+    public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
         String cookie = headers.get("cookie");
         String contentType = headers.get("contentType");
 
-        if(path.equals("/favicon.ico") && headers.get("method").equals("GET")){
-            getIco(path, contentType, cookie, dataOutputStream);
-            return;
-        }
-
-        if(path.equals("/")){
-            helloWorld(contentType, cookie, dataOutputStream);
-            return;
-        }
-
-        if(path.equals("/index.html")){
-            index(path, contentType, cookie, dataOutputStream);
-        }
-    }
-
-    private void getIco(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, contentType, cookie, body.length);
-            responseBody(dataOutputStream, body);
-        } catch (IOException e) {
+        try{
+            body = FileIoUtils.loadFileFromClasspath("templates" + path);
+        } catch (Exception e){
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
-    }
-    private void helloWorld(String contentType, String cookie, DataOutputStream dataOutputStream){;
-        byte[] body = "Hello world".getBytes();
-        response200Header(dataOutputStream, contentType, cookie, body.length);
-        responseBody(dataOutputStream, body);
+
+        if(path.equals("/")) {
+            body = "Hello world".getBytes();
+        }
+
+        return getResponseEntity(200, contentType, cookie, body);
     }
 
-    private void index(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, contentType, cookie, body.length);
-            responseBody(dataOutputStream, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+    private ResponseEntity getResponseEntity(int status, String contentType, String cookie, byte[] body){
+        return ResponseEntity.builder()
+                .status(status)
+                .contentType(contentType)
+                .cookie(cookie)
+                .body(body)
+                .build();
     }
 }

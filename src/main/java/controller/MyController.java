@@ -2,6 +2,7 @@ package controller;
 
 import model.dto.MyHeaders;
 import model.dto.MyParams;
+import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
 
@@ -9,5 +10,5 @@ public interface MyController {
 
     boolean canHandle(MyHeaders headers, MyParams params);
 
-    void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream);
+    ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream);
 }

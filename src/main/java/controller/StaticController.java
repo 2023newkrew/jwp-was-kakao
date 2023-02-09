@@ -5,17 +5,19 @@ import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import model.dto.MyHeaders;
 import model.dto.MyParams;
+import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static model.dto.ResponseBodies.responseBody;
-import static model.dto.ResponseHeaders.response200Header;
+import static webserver.response.ResponseBodies.responseBody;
+import static webserver.response.ResponseHeaders.response200Header;
 
 public class StaticController implements MyController{
 
     private final Logger logger = LoggerFactory.getLogger(StaticController.class);
+    private byte[] body;
 
     @Override
     public boolean canHandle(MyHeaders headers, MyParams params) {
@@ -23,24 +25,28 @@ public class StaticController implements MyController{
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
+    public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
         String cookie = headers.get("cookie");
         String contentType = headers.get("contentType");
 
-        handleStatic(path, contentType, cookie, dataOutputStream);
+        return handleStatic(path, 200, contentType, cookie);
     }
 
-    private void handleStatic(String path, String cookie, String contentType, DataOutputStream dataOutputStream){
+    private ResponseEntity handleStatic(String path, int status, String contentType, String cookie){
+
         try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("static" + path);
-            response200Header(dataOutputStream, contentType, cookie, body.length);
-            responseBody(dataOutputStream, body);
-        } catch (IOException e) {
+            body = FileIoUtils.loadFileFromClasspath("static" + path);
+        } catch (Exception e){
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
+
+        return ResponseEntity.builder()
+                .status(200)
+                .contentType(contentType)
+                .cookie(cookie)
+                .body(body)
+                .build();
     }
 
     private boolean isStatic(String extension){

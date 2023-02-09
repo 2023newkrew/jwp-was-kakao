@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import model.dto.MyHeaders;
 import model.dto.MyParams;
+import webserver.response.ResponseEntity;
 
 import java.io.*;
 import java.net.Socket;
@@ -54,7 +55,7 @@ public class RequestHandler implements Runnable {
 
                 line = br.readLine();
             }
-
+logger.info("COOKIE : {}", headers.get("cookie"));
             DataOutputStream dos = new DataOutputStream(out);
 
             // [POST] Request Body (추후 다른 메서드로 확장 가능)
@@ -64,7 +65,8 @@ public class RequestHandler implements Runnable {
 
             // Handler Mapping (FrontController는 Dispatcher Servlet의 역할을 수행)
             MyController myController = dispatcherServlet.handlerMapping(headers, params, dos);
-            myController.handle(headers, params, dos);
+            ResponseEntity responseEntity = myController.handle(headers, params, dos);
+            responseEntity.response(dos);
 
         } catch (IOException e) {
             logger.error(e.getMessage());

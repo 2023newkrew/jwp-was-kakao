@@ -7,14 +7,15 @@ import com.github.jknack.handlebars.io.TemplateLoader;
 import model.User;
 import model.dto.Cookie;
 import model.dto.Users;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import model.dto.MyHeaders;
 import model.dto.MyParams;
 import utils.UserFactory;
+import webserver.response.ResponseEntity;
 import webserver.session.Session;
-import webserver.session.SessionManager;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,15 +24,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static db.DataBase.*;
-import static model.dto.ResponseBodies.responseBody;
-import static model.dto.ResponseHeaders.response200Header;
-import static model.dto.ResponseHeaders.response302Header;
+import static webserver.response.ResponseBodies.responseBody;
+import static webserver.response.ResponseHeaders.response200Header;
+import static webserver.response.ResponseHeaders.response302Header;
 import static webserver.session.SessionManager.*;
 
 public class UserController  implements MyController {
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
-
+    private int status = 200;
+    private String redirectUrl = "";
+    private String cookie = "";
+    private byte[] body = null;
 
     @Override
     public boolean canHandle(MyHeaders headers, MyParams params) {
@@ -40,17 +44,18 @@ public class UserController  implements MyController {
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
+    public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
-        String cookie = headers.get("cookie");
+        cookie = headers.get("cookie");
         String contentType = headers.get("contentType");
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
-            createForm(path, contentType, cookie, dataOutputStream);
+            logger.info("USERFORM");
+            createForm(path);
         }
 
         if(path.equals("/user/login.html") && headers.get("method").equals("GET")){
-            loginForm(path, contentType, dataOutputStream);
+            loginForm(path);
         }
 
         if(path.equals("/user/list") && headers.get("method").equals("GET")){
@@ -58,7 +63,7 @@ public class UserController  implements MyController {
         }
 
         if(path.equals("/user/login_failed.html") && headers.get("method").equals("GET")){
-            loginFailForm(path, contentType, cookie, dataOutputStream);
+            loginFailForm(path);
         }
 
         if(path.equals("/user/login") && headers.get("method").equals("GET")){
@@ -66,16 +71,29 @@ public class UserController  implements MyController {
         }
 
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
-            createUser(params, cookie, dataOutputStream);
+            logger.info("CREATE");
+            createUser(params);
         }
 
         if(path.equals("/user/login") && headers.get("method").equals("POST")){
             login(params.get("userId"), params.get("password"), dataOutputStream);
         }
+logger.info("STATUS : {}", status);
+        return ResponseEntity.builder()
+                .status(status)
+                .cookie(cookie)
+                .contentType(contentType)
+                .redirectUrl(redirectUrl)
+                .body(body)
+                .build();
     }
 
+    private void setRedirectResponse(String redirectUrl){
+        this.status = 302;
+        this.redirectUrl = redirectUrl;
+    }
     private void alreadyLogin(String cookie, DataOutputStream dataOutputStream) {
-        response302Header(dataOutputStream, cookie, "/index.html");
+        setRedirectResponse("/index.html");
     }
 
     private void login(String userId, String password, DataOutputStream dataOutputStream) {
@@ -88,10 +106,10 @@ public class UserController  implements MyController {
 
     private void loginSuccess(String userId, DataOutputStream dataOutputStream){
         // 쿠키 생성
-        Cookie cookie = new Cookie();
+        cookie = new Cookie().toString();
         // 세션 저장
-        saveSession(cookie.toString(), userId);
-        response302Header(dataOutputStream, cookie.toString(), "/index.html");
+        saveSession(cookie, userId);
+        setRedirectResponse("/index.html");
     }
 
     private void saveSession(String sessionId, String userId){
@@ -101,17 +119,11 @@ public class UserController  implements MyController {
     }
 
     private void loginFail(DataOutputStream dataOutputStream){
-        response302Header(dataOutputStream, "", "/user/login_failed.html");
+        setRedirectResponse("/user/login_failed.html");
     }
 
-    private void loginFailForm(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, contentType, cookie, body.length);
-            responseBody(dataOutputStream, body);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+    private void loginFailForm(String path){
+        setTemplatePathToBody(path);
     }
 
     // 로그인 검증 로직
@@ -125,20 +137,14 @@ public class UserController  implements MyController {
         // login이 안되어있다면
         if(!cookie.startsWith("JSESSIONID")){
             String path = "/user/login.html";
-            loginForm(path, contentType, dataOutputStream);
+            loginForm(path);
             return;
         }
         userList(contentType, cookie, dataOutputStream);
     }
 
-    private void loginForm(String path, String contentType, DataOutputStream dataOutputStream){
-        try{
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, contentType, "", body.length);
-            responseBody(dataOutputStream, body);
-        } catch(Exception e){
-            logger.error(e.getMessage());
-        }
+    private void loginForm(String path){
+        setTemplatePathToBody(path);
     }
 
     private void userList(String contentType, String cookie, DataOutputStream dataOutputStream) {
@@ -154,26 +160,25 @@ public class UserController  implements MyController {
             Users users = new Users(findAll().stream().collect(Collectors.toList()));
 
             String userList = template.apply(users);
-            byte[] body = userList.getBytes();
-
-            response200Header(dataOutputStream, contentType, cookie, body.length);
-            responseBody(dataOutputStream, userList.getBytes());
+            body = userList.getBytes();
         } catch(IOException e){
             logger.error(e.getMessage());
         }
     }
 
-    private void createUser(MyParams params, String cookie, DataOutputStream dataOutputStream){
+    private void createUser(MyParams params){
         // Memory DB에 유저 데이터 저장
         addUser(UserFactory.createUser(params));
-        response302Header(dataOutputStream, cookie, "/index.html");
+        setRedirectResponse("/index.html");
     }
 
-    private void createForm(String path, String contentType, String cookie, DataOutputStream dataOutputStream){
+    private void createForm(String path){
+        setTemplatePathToBody(path);
+    }
+
+    private void setTemplatePathToBody(String path){
         try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("templates" + path);
-            response200Header(dataOutputStream, contentType, cookie, body.length);
-            responseBody(dataOutputStream, body);
+            body = FileIoUtils.loadFileFromClasspath("templates" + path);
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (URISyntaxException e) {
