@@ -5,6 +5,7 @@ import support.StubSocket;
 import utils.FileIoUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RequestHandlerTest {
     @Test
@@ -127,5 +128,77 @@ class RequestHandlerTest {
                 "\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void loginSuccess() {
+        // given
+        join();
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                        "Host: localhost:8080",
+                        "Connection: keep-alive",
+                        "Content-Length: 27",
+                        "Content-Type: application/x-www-form-urlencoded",
+                        "Accept: */*",
+                        "",
+                        "userId=cu&password=password");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var output = socket.output();
+        var prefix = "HTTP/1.1 302 FOUND \r\n" +
+                "Set-Cookie: JSESSIONID=";
+        var suffix = "; Path=/ \r\n" +
+                "Location: /index.html \r\n" +
+                "\r\n";
+
+        assertTrue(output.startsWith(prefix) && output.endsWith(suffix));
+    }
+
+    @Test
+    void loginFail() {
+        // given
+        join();
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                        "Host: localhost:8080",
+                        "Connection: keep-alive",
+                        "Content-Length: 28",
+                        "Content-Type: application/x-www-form-urlencoded",
+                        "Accept: */*",
+                        "",
+                        "userId=cu&password=password2");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: /user/login_failed.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    void join() {
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 59",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+        handler.run();
     }
 }
