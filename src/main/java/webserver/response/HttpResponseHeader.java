@@ -39,7 +39,7 @@ public class HttpResponseHeader {
         if (header.containsKey(SET_COOKIE)) {
             header.put(SET_COOKIE, String.format("%s; %s=%s", header.get(SET_COOKIE), key, value));
         }
-        header.put(SET_COOKIE, String.format("%s=%s", key, value));
+        header.put(SET_COOKIE, String.format("%s=%s; Path=/", key, value));
     }
 
     public Set<Entry<String, String>> entrySet() {
