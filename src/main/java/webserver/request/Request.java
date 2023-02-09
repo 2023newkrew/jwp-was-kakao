@@ -60,7 +60,7 @@ public class Request {
     private static Map<String, String> parseQueryString(String firstLine) {
         String[] splitUrl = firstLine.split(WHITE_SPACE_REGEX)[URL_INDEX].split(QUERY_STRING_IDENTIFIER);
         if (splitUrl.length == 1) {
-            return new HashMap<>();
+            return Map.of();
         }
         return parseQueryStringFormat(splitUrl[QUERY_STRING_INDEX]);
     }
@@ -76,7 +76,7 @@ public class Request {
             String[] headerInformation = header.split(HEADER_KEY_SEPARATOR);
             requestHeader.put(headerInformation[KEY_INDEX].trim(), headerInformation[VALUE_INDEX].trim());
         }
-        return requestHeader;
+        return Collections.unmodifiableMap(requestHeader);
     }
 
     private static Cookie parseCookie(Map<String, String> requestHeader) {

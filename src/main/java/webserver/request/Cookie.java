@@ -1,14 +1,17 @@
 package webserver.request;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode
 public class Cookie {
     private final Map<String, String> values;
 
@@ -22,13 +25,9 @@ public class Cookie {
     }
 
     private static Map<String, String> extractTokenValues(String cookieString) {
-        Map<String, String> values = new HashMap<>();
-        String[] split = cookieString.split(COOKIE_STRING_CONNECTOR);
-        Arrays.stream(split).forEach(value -> {
-            String[] pair = value.split(COOKIE_SEPARATOR);
-            values.put(pair[0], pair[1]);
-        });
-        return values;
+        return Arrays.stream(cookieString.split(COOKIE_STRING_CONNECTOR))
+                .map(s -> s.split(COOKIE_SEPARATOR))
+                .collect(Collectors.toMap(pair -> pair[0], pair -> pair[1], (a, b) -> b));
     }
 
     public static Cookie empty() {
