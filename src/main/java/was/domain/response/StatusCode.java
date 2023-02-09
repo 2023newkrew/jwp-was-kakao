@@ -6,8 +6,8 @@ public enum StatusCode {
     NOT_FOUND(404, "NOT_FOUND"),
     FOUND(302, "FOUND");
 
-    private int code;
-    private String description;
+    private final int code;
+    private final String description;
 
     StatusCode(int code, String description) {
         this.code = code;

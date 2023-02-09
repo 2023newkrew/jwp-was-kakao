@@ -47,17 +47,26 @@ public class Response {
                 .contentType("text/html;charset=utf-8");
     }
 
-    public static Optional<Response> html(String filePath) {
+    public static Optional<Response> htmlFromFile(String filePath) {
         try {
-            return Optional.of(Response.htmlBuilder()
-                    .body(FileIoUtils.loadFileFromClasspath(filePath)).build());
+            return html(FileIoUtils.loadFileFromClasspath(filePath));
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
-    public static Optional<Response> css(String filePath) {
+    public static Optional<Response> html(String body) {
+        return html(body.getBytes());
+    }
+
+    public static Optional<Response> html(byte[] body) {
+        return Optional.of(Response.htmlBuilder()
+                .body(body)
+                .build());
+    }
+
+    public static Optional<Response> cssFromFile(String filePath) {
         try {
             return Optional.of(Response.builder()
                     .version(Version.HTTP_1_1)
@@ -67,8 +76,8 @@ public class Response {
                     .build());
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     public static Optional<Response> redirection(String location) {

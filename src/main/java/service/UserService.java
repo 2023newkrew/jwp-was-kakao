@@ -18,18 +18,18 @@ import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserService {
-    public static Long createUser(String body) {
-        return createUser(ParamsParser.from(body).getParams());
+    public static void createUser(String body) {
+        createUser(ParamsParser.from(body).getParams());
     }
 
-    public static Long createUser(Map<String,String> params){
+    public static void createUser(Map<String,String> params){
         UserRequest userRequest = UserRequest.builder()
                 .userId(params.get("userId"))
                 .password(params.get("password"))
                 .name(params.get("name"))
                 .email(params.get("email"))
                 .build();
-        return DataBase.addUser(userRequest).orElseThrow(RuntimeException::new);
+        DataBase.addUser(userRequest).orElseThrow(RuntimeException::new);
     }
 
     public static Optional<UUID> login(String body) {
@@ -48,16 +48,18 @@ public class UserService {
         if (!headers.containsKey("Cookie")) {
             return Optional.empty();
         }
-
         try {
-            TemplateLoader loader = new ClassPathTemplateLoader();
-            loader.setPrefix("/templates");
-            loader.setSuffix(".html");
-            Handlebars handlebars = new Handlebars(loader);
-            Template template = handlebars.compile("user/profile");
+            Template template = getHtmlHandlebars().compile("user/profile");
             return Optional.of(template.apply(DataBase.findAll()));
         } catch (IOException e) {
             return Optional.empty();
         }
+    }
+
+    private static Handlebars getHtmlHandlebars() {
+        TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setPrefix("/templates");
+        loader.setSuffix(".html");
+        return new Handlebars(loader);
     }
 }

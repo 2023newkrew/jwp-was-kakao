@@ -13,16 +13,17 @@ import java.util.Optional;
 
 @Controller
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("unused")
 public class CssController {
     private static final Logger logger = LoggerFactory.getLogger(CssController.class);
 
     @Mapping(method = RequestMethod.GET, path = "/css/styles.css")
     public static Optional<Response> css() {
-        return Response.css("./static/css/styles.css");
+        return Response.cssFromFile("./static/css/styles.css");
     }
 
     @Mapping(method = RequestMethod.GET, path = "/css/bootstrap.min.css")
     public static Optional<Response> bootstrapCss() {
-        return Response.css("./static/css/bootstrap.min.css");
+        return Response.cssFromFile("./static/css/bootstrap.min.css");
     }
 }

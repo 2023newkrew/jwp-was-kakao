@@ -13,11 +13,12 @@ import java.util.UUID;
 
 @Controller
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("unused")
 public class UserController {
 
     @Mapping(method = RequestMethod.GET, path = "/user/form.html")
     public static Optional<Response> form() {
-        return Response.html("./templates/user/form.html");
+        return Response.htmlFromFile("./templates/user/form.html");
     }
 
     @RequestBody
@@ -29,7 +30,7 @@ public class UserController {
 
     @Mapping(method = RequestMethod.GET, path = "/user/login.html")
     public static Optional<Response> login() {
-        return Response.html("./templates/user/login.html");
+        return Response.htmlFromFile("./templates/user/login.html");
     }
 
     @RequestBody
@@ -49,8 +50,6 @@ public class UserController {
         if (body == null) {
             return Response.redirection("/index.html");
         }
-        return Optional.of(Response.htmlBuilder()
-                .body(body.getBytes())
-                .build());
+        return Response.html(body);
     }
 }
