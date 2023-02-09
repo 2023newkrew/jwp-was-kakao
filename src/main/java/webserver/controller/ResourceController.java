@@ -8,7 +8,7 @@ import utils.FileIoUtils;
 import webserver.RequestHandler;
 import webserver.controller.annotation.Handler;
 import webserver.controller.support.PathMapKey;
-import webserver.controller.support.RequestController;
+import webserver.controller.annotation.RequestController;
 import webserver.request.Request;
 import webserver.response.Response;
 

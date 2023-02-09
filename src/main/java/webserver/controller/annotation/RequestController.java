@@ -1,4 +1,4 @@
-package webserver.controller.support;
+package webserver.controller.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
