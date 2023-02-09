@@ -19,6 +19,6 @@ public class StaticController implements Controller {
     @Override
     public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
         httpResponse.setContentType(httpRequest.getContentType());
-        return new MyModelAndView("./static" + httpRequest.getUrl());
+        return new MyModelAndView("./static", httpRequest.getUrl());
     }
 }

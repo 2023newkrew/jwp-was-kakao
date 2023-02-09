@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import webserver.controller.StaticController;
+import webserver.controller.UserListController;
 import webserver.controller.UserLoginController;
 import webserver.controller.UserSaveController;
 import webserver.controller.ViewController;
@@ -37,6 +38,7 @@ public class RequestHandler implements Runnable {
         this.connection = connectionSocket;
         controllerMap.put(UserSaveController.URL, UserSaveController.getInstance());
         controllerMap.put(UserLoginController.URL, UserLoginController.getInstance());
+        controllerMap.put(UserListController.URL, UserListController.getInstance());
     }
 
     public void run() {
@@ -55,7 +57,7 @@ public class RequestHandler implements Runnable {
             MyModelAndView mav = controller.process(httpRequest, httpResponse);
 
             DataOutputStream dos = new DataOutputStream(out);
-            sendResponse(dos, httpResponse, mav.getViewName());
+            sendResponse(dos, httpResponse, mav);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
@@ -77,15 +79,15 @@ public class RequestHandler implements Runnable {
         return this.controllerMap.getOrDefault(httpRequest.getUrl(), this.viewController);
     }
 
-    private void sendResponse(DataOutputStream dos, MyHttpResponse httpResponse, String viewName)
+    private void sendResponse(DataOutputStream dos, MyHttpResponse httpResponse, MyModelAndView mav)
             throws IOException, URISyntaxException {
         dos.writeBytes(httpResponse.toString());
 
         if (!httpResponse.isRedirectRequired()) {
-            byte[] body = FileIoUtils.loadFileFromClasspath(viewName);
+            byte[] body = FileIoUtils.loadTemplate(mav);
             dos.writeBytes(String.format("Content-Length: %d\r%n", body.length));
             dos.writeBytes("\r\n");
-            dos.write(body, 0, body.length);
+            dos.write(body);
         }
         dos.flush();
     }

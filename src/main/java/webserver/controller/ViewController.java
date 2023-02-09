@@ -19,6 +19,6 @@ public class ViewController implements Controller {
     @Override
     public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
         httpResponse.setContentType(httpRequest.getContentType());
-        return new MyModelAndView("./templates" + httpRequest.getUrl());
+        return new MyModelAndView("./templates", httpRequest.getUrl());
     }
 }
