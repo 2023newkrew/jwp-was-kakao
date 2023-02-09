@@ -2,6 +2,7 @@ package model;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,10 +22,6 @@ public class Response {
         this.dos = dos;
     }
 
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
-
     public void setHeader(String key, String value) {
         headers.put(key, value);
     }
@@ -37,6 +34,11 @@ public class Response {
         this.body = body;
         headers.put("Content-Type", type + ";charset=utf-8");
         headers.put("Content-Length", String.valueOf(body.length));
+    }
+
+    public void found(URI location) {
+        this.status = HttpStatus.FOUND;
+        headers.put("Location", location.toString());
     }
 
     public void send() throws IOException {

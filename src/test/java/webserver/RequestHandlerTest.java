@@ -19,9 +19,11 @@ class RequestHandlerTest {
                 "GET /index.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
+                "Cookie: JSESSIONID=test",
                 "",
                 "");
 
+        SessionManager.add("test", new Session("test"));
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
@@ -48,9 +50,11 @@ class RequestHandlerTest {
                         "Content-Length: 92\n" +
                         "Content-Type: application/x-www-form-urlencoded\n" +
                         "Accept: */*\n" +
+                        "Cookie: JSESSIONID=test\n" +
                         "\n" +
                         "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com\n");
 
+        SessionManager.add("test", new Session("test"));
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 

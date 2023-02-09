@@ -33,22 +33,22 @@ public class RequestHandler implements Runnable {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             Request request = getRequest(bufferedReader);
             Response response = new Response(new DataOutputStream(out));
-            checkOrCreateSessionId(request, response);
+            checkOrCreateSession(request, response);
             requestAdapter.mapHandler(request, response);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void checkOrCreateSessionId(Request request, Response response) {
+    private void checkOrCreateSession(Request request, Response response) {
         String sessionId = request.getCookie("JSESSIONID");
         if (Objects.nonNull(sessionId) && Objects.nonNull(SessionManager.findSession(sessionId))) {
             return;
         }
-        String newSessionId = UUID.randomUUID().toString();
-        request.setCookie("JSESSIONID", newSessionId);
-        SessionManager.add(newSessionId, new Session(newSessionId));
-        response.setCookie("JSESSIONID", newSessionId + "; Path=/");
+        Session newSession = new Session(UUID.randomUUID().toString());
+        SessionManager.add(newSession.getId(), newSession);
+        request.setSession(newSession);
+        response.setCookie("JSESSIONID", newSession.getId() + "; Path=/");
     }
 
     private Request getRequest(BufferedReader bufferedReader) throws IOException {

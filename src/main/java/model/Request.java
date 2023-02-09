@@ -10,6 +10,7 @@ import java.util.Objects;
 import org.springframework.http.HttpMethod;
 import utils.FileIoUtils;
 import webserver.HttpCookies;
+import webserver.Session;
 
 public class Request {
     private final HttpMethod method;
@@ -20,6 +21,7 @@ public class Request {
     private final Map<String, String> queryMappings = new HashMap<>();
     private final Map<String, String> bodyMappings = new HashMap<>();
     private final HttpCookies cookies = new HttpCookies();
+    private Session session;
 
     public Request(String firstLine) {
         System.out.println(firstLine);
@@ -79,8 +81,16 @@ public class Request {
         return cookies.getCookie(key);
     }
 
+    public Session getSession() {
+        return session;
+    }
+
     public void setCookie(String key, String value) {
         cookies.setCookie(key, value);
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     public void readNextLine(String line) {
@@ -91,6 +101,7 @@ public class Request {
         }
         if (tokens[0].equals("Cookie")) {
             setCookies(tokens[1]);
+            return;
         }
         mappings.put(tokens[0], tokens[1]);
     }
