@@ -5,7 +5,7 @@ public enum HeaderType {
     CONTENT_TYPE("Content-Type"),
     LOCATION("Location"),
     COOKIE("Cookie"),
-
+    SET_COOKIE("Set-Cookie"),
     ;
 
 

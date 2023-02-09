@@ -76,8 +76,8 @@
 ### step2
 
 * 쿠키 기능
-    * [ ] request 쿠키 파싱
-    * [ ] response 쿠키 추가
+    * [*] request 쿠키 파싱
+    * [*] response 쿠키 추가
 
 * /user/login 요청 처리
     * [ ] 로그인 성공 시 index.html 로 이동
