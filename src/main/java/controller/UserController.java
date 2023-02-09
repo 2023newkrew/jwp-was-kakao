@@ -49,7 +49,10 @@ public class UserController extends BaseController {
         CustomHttpHeader headers = new CustomHttpHeader();
         User loginUser = DataBase.findUserById(user.getUserId()).orElseThrow(() -> new UserNotFoundException("아이디와 비밀번호가 일치하지 않습니다."));
         if (loginUser.hasSamePassword(user.getPassword())) {
-            headers.put("Set-Cookie", new CustomHttpCookie().getCookie());
+            CustomHttpCookie cookie = new CustomHttpCookie();
+            headers.put("Set-Cookie", cookie.getCookie());
+            CustomHttpSession session = new CustomHttpSession(cookie.getjSessionId());
+            session.setAttribute("loginUser", loginUser);
             headers.put("Location", "/index.html");
             return new CustomHttpResponse.Builder()
                     .httpStatus(CustomHttpStatus.FOUND)
