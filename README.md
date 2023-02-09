@@ -80,8 +80,8 @@
     * [*] response 쿠키 추가
 
 * /user/login 요청 처리
-    * [ ] 로그인 성공 시 index.html 로 이동
+    * [*] 로그인 성공 시 index.html 로 이동
         * JSESSIONID 추가
-    * [ ] 로그인 실패 시 /user/login_failed.html로 이동
-    * [ ] 가입된 사용자인지 확인
+    * [*] 로그인 실패 시 /user/login_failed.html로 이동
+    * [*] 가입된 사용자인지 확인
 * 

@@ -1,4 +1,4 @@
-package webserver.handler.resource.resolver.statics;
+package webserver.handler.resolver.statics;
 
 import webserver.http.content.ContentType;
 

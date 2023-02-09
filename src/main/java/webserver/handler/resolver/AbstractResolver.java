@@ -1,4 +1,4 @@
-package webserver.handler.resource.resolver;
+package webserver.handler.resolver;
 
 import utils.FileIoUtils;
 import webserver.http.content.ContentData;

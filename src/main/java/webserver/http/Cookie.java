@@ -3,6 +3,7 @@ package webserver.http;
 import webserver.collection.StringValues;
 import webserver.collection.Values;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Cookie {
@@ -13,18 +14,18 @@ public class Cookie {
 
     private final Values values;
 
-    public Cookie(String jSessionId, String path) {
+    public Cookie(UUID jSessionId, String path) {
         values = new StringValues();
         putJSessionId(jSessionId);
         putPath(path);
     }
 
     public Cookie(String cookie) {
-        values = new StringValues(cookie, DELIMITER, "=");
+        values = new StringValues(cookie, DELIMITER, KEY_VALUE_DELIMITER);
     }
 
-    public void putJSessionId(String jSessionId) {
-        values.put("JSESSIONID", jSessionId);
+    public void putJSessionId(UUID jSessionId) {
+        values.put("JSESSIONID", jSessionId.toString());
     }
 
     public void putPath(String path) {
@@ -36,6 +37,6 @@ public class Cookie {
         return values.keySet()
                 .stream()
                 .map(key -> key + KEY_VALUE_DELIMITER + values.get(key))
-                .collect(Collectors.joining(DELIMITER + " "));
+                .collect(Collectors.joining(DELIMITER));
     }
 }

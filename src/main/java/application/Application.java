@@ -2,14 +2,16 @@ package application;
 
 import application.controller.RootController;
 import application.controller.UserController;
+import application.db.DataBase;
 import application.enums.ApplicationContentType;
+import application.model.User;
 import webserver.WebServer;
 import webserver.handler.Handlers;
+import webserver.handler.resolver.statics.StaticResolver;
+import webserver.handler.resolver.statics.StaticType;
+import webserver.handler.resolver.statics.StaticTypes;
+import webserver.handler.resolver.view.ViewResolver;
 import webserver.handler.resource.ResourceHandler;
-import webserver.handler.resource.resolver.statics.StaticResolver;
-import webserver.handler.resource.resolver.statics.StaticType;
-import webserver.handler.resource.resolver.statics.StaticTypes;
-import webserver.handler.resource.resolver.view.ViewResolver;
 
 public class Application {
 
@@ -34,12 +36,13 @@ public class Application {
     );
 
     private static final Handlers HANDLERS = new Handlers(
-            new RootController(),
-            new UserController(),
+            new RootController(VIEW_RESOLVER),
+            new UserController(VIEW_RESOLVER),
             new ResourceHandler(STATIC_RESOLVER, VIEW_RESOLVER)
     );
 
     public static void main(String[] args) {
+        DataBase.addUser(new User("admin", "admin", "admin", "admin@localhost"));
         new WebServer(HANDLERS).listen(DEFAULT_PORT);
     }
 }

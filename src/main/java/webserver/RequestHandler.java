@@ -26,6 +26,7 @@ public class RequestHandler implements Runnable {
                 RequestReader requestReader = new RequestReader(connection.getInputStream());
                 ResponseWriter responseWriter = new ResponseWriter(connection.getOutputStream())
         ) {
+
             Request request = requestReader.read();
             Response response = handlers.handle(request);
             responseWriter.write(response);

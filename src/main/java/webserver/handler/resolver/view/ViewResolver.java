@@ -1,6 +1,6 @@
-package webserver.handler.resource.resolver.view;
+package webserver.handler.resolver.view;
 
-import webserver.handler.resource.resolver.AbstractResolver;
+import webserver.handler.resolver.AbstractResolver;
 import webserver.http.content.ContentType;
 import webserver.response.ResponseBody;
 

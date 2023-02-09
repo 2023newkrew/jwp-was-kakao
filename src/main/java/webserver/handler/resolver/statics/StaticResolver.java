@@ -1,6 +1,6 @@
-package webserver.handler.resource.resolver.statics;
+package webserver.handler.resolver.statics;
 
-import webserver.handler.resource.resolver.AbstractResolver;
+import webserver.handler.resolver.AbstractResolver;
 import webserver.http.content.ContentType;
 import webserver.response.ResponseBody;
 

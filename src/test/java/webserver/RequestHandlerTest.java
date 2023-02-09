@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
 import webserver.handler.Handlers;
+import webserver.handler.resolver.statics.StaticResolver;
+import webserver.handler.resolver.statics.StaticType;
+import webserver.handler.resolver.statics.StaticTypes;
+import webserver.handler.resolver.view.ViewResolver;
 import webserver.handler.resource.ResourceHandler;
-import webserver.handler.resource.resolver.statics.StaticResolver;
-import webserver.handler.resource.resolver.statics.StaticType;
-import webserver.handler.resource.resolver.statics.StaticTypes;
-import webserver.handler.resource.resolver.view.ViewResolver;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -42,27 +42,10 @@ class RequestHandlerTest {
     );
 
     private static final Handlers HANDLERS = new Handlers(
-            new RootController(),
-            new UserController(),
+            new RootController(VIEW_RESOLVER),
+            new UserController(VIEW_RESOLVER),
             new ResourceHandler(STATIC_RESOLVER, VIEW_RESOLVER)
     );
-
-    @Test
-    void socket_out() {
-        // given
-        final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, HANDLERS);
-
-        // when
-        handler.run();
-
-        // then
-        assertThat(socket.output())
-                .contains("HTTP/1.1 200 OK")
-                .contains("Content-Type: text/html;charset=utf-8")
-                .contains("Content-Length: 11")
-                .contains("Hello world");
-    }
 
     @Test
     void index() throws IOException, URISyntaxException {
@@ -85,7 +68,7 @@ class RequestHandlerTest {
         assertThat(socket.output())
                 .contains("HTTP/1.1 200 OK")
                 .contains("Content-Type: text/html;charset=utf-8")
-                .contains("Content-Length: 6902")
+                .contains("Content-Length: 7162")
                 .contains(new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
     }
 

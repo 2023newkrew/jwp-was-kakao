@@ -21,6 +21,9 @@ public class ResponseHeader {
     }
 
     public ResponseHeader(HttpStatus httpStatus, Headers headers, ResponseBody responseBody) {
+        if (Objects.isNull(headers)) {
+            headers = new Headers();
+        }
         this.head = new ResponseHead(httpStatus);
         this.headers = headers;
         putContentHeader(responseBody);
