@@ -1,10 +1,7 @@
 package controller;
 
 import controller.annotation.CustomRequestMapping;
-import model.http.CustomHttpHeader;
-import model.http.CustomHttpMethod;
-import model.http.CustomHttpResponse;
-import model.http.CustomHttpStatus;
+import model.http.*;
 import utils.FileIoUtils;
 
 public class ViewController extends BaseController {
@@ -19,6 +16,32 @@ public class ViewController extends BaseController {
                 .headers(headers)
                 .body("Hello world")
                 .build();
+    }
+
+    @CustomRequestMapping(url = "", httpMethod = CustomHttpMethod.GET)
+    public CustomHttpResponse resource(CustomHttpRequest request) {
+        CustomHttpHeader headers = new CustomHttpHeader();
+        String url = request.getUrl();
+        String[] fileWithExt = url.split("\\.");
+        String ext = fileWithExt[fileWithExt.length - 1];
+        String filePath = "static";
+        if (ext.equals("html")) {
+            filePath = "templates";
+        }
+        headers.put("Content-Type", request.getHeaders().getOrDefault("Accept", "*/*").split(",")[0]);
+        try {
+            return new CustomHttpResponse.Builder()
+                    .httpStatus(CustomHttpStatus.OK)
+                    .headers(headers)
+                    .body(new String(FileIoUtils.loadFileFromClasspath(filePath + url)))
+                    .build();
+        } catch (Exception e) {
+            return new CustomHttpResponse.Builder()
+                    .httpStatus(CustomHttpStatus.OK)
+                    .headers(headers)
+                    .body("404 NOT FOUND")
+                    .build();
+        }
     }
 
     @CustomRequestMapping(url = "/index.html", httpMethod = CustomHttpMethod.GET)
