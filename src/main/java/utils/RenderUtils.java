@@ -9,6 +9,7 @@ import java.io.IOException;
 public class RenderUtils {
     private static final String DEFAULT_PREFIX = "/templates";
     private static final String DEFAULT_SUFFIX = ".html";
+
     public static String renderData(String path, Object data) throws IOException {
         TemplateLoader loader = new ClassPathTemplateLoader();
         loader.setPrefix(DEFAULT_PREFIX);
