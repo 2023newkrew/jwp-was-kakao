@@ -2,6 +2,7 @@ package webserver.request;
 
 import org.springframework.http.HttpMethod;
 import utils.IOUtils;
+import webserver.StaticDirectory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,5 +47,12 @@ public class Request {
 
     public String getBody() {
         return body.getBody();
+    }
+
+    public boolean hasStaticPath() {
+        if (getPath() == null) return false;
+        String[] pathTokens = getPath().split("/");
+        if (pathTokens.length < 2) return false;
+        return StaticDirectory.resolve(pathTokens[1].toUpperCase()) != null;
     }
 }

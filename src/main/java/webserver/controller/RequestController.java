@@ -4,6 +4,7 @@ import db.DataBase;
 import model.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import utils.FileIoUtils;
 import webserver.request.support.FormData;
 import webserver.request.support.QueryParameters;
 import webserver.request.Request;
@@ -12,9 +13,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestController {
+    private static final PathMapKey RESOURCE_KEY = PathMapKey.of(HttpMethod.GET, "RESOURCE");
     private static final Map<PathMapKey, ControllerMethod> pathMap = new HashMap<>();
 
     static {
+        pathMap.put(RESOURCE_KEY, (req, res) -> {
+            // resource 응답
+            String rootPath = "./templates";
+            if (req.hasStaticPath()){
+                rootPath = "./static";
+            }
+            try {
+                res.setBody(FileIoUtils.loadFileFromClasspath(rootPath + req.getPath()));
+                res.setStatus(HttpStatus.OK);
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.setBody("404 Not Found - 요청한 페이지를 찾을 수 없습니다.".getBytes());
+                res.setStatus(HttpStatus.NOT_FOUND);
+            }
+        });
+
         pathMap.put(PathMapKey.of(HttpMethod.GET, "/"), (req, res) -> {
             byte[] body = "Hello world".getBytes();
             res.setBody(body);
@@ -48,6 +66,10 @@ public class RequestController {
     }
 
     public static ControllerMethod getMappedMethod(Request request) {
-        return pathMap.get(PathMapKey.of(request.getHttpMethod(), request.getPath()));
+        ControllerMethod method = pathMap.get(PathMapKey.of(request.getHttpMethod(), request.getPath()));
+        if (method == null) {
+            method = pathMap.get(RESOURCE_KEY);
+        }
+        return method;
     }
 }

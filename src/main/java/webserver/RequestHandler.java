@@ -33,7 +33,7 @@ public class RequestHandler implements Runnable {
             Request request = new Request(br);
             Response response = new Response(request);
 
-            mapRequest(request, response);
+            handleRequest(request, response);
             sendResponse(dos, response);
 
         } catch (IOException e) {
@@ -41,29 +41,8 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void mapRequest(Request request, Response response) {
-        ControllerMethod method = RequestController.getMappedMethod(request);
-        if (method != null) {
-            method.handle(request, response);
-            return;
-        }
-        // resource 응답
-        String rootPath = "./templates";
-        if (hasStaticPath(request)){
-            rootPath = "./static";
-        }
-        setResource(rootPath + request.getPath(), response);
-    }
-
-    private void setResource(String path, Response response) {
-        try {
-            response.setBody(FileIoUtils.loadFileFromClasspath(path));
-            response.setStatus(HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setBody("404 Not Found - 요청한 페이지를 찾을 수 없습니다.".getBytes());
-            response.setStatus(HttpStatus.NOT_FOUND);
-        }
+    private void handleRequest(Request request, Response response) {
+        RequestController.getMappedMethod(request).handle(request, response);
     }
 
     private void sendResponse(DataOutputStream dos, Response response) {
@@ -76,12 +55,5 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private boolean hasStaticPath(Request request) {
-        String path = request.getPath();
-        if (path == null) return false;
-        String[] pathTokens = path.split("/");
-        if (pathTokens.length < 2) return false;
-        return StaticDirectory.resolve(pathTokens[1].toUpperCase()) != null;
-    }
 }
 
