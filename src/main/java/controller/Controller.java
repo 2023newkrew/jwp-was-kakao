@@ -15,11 +15,9 @@ public abstract class Controller {
         String method = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
         if (method.equals("GET")) {
             doGet(request, dos);
-            return;
         }
         if (method.equals("POST")) {
             doPost(request, dos);
-            return;
         }
         doFinally(request, dos);
     };
