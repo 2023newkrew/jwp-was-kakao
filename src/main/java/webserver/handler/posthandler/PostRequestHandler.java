@@ -14,5 +14,5 @@ public abstract class PostRequestHandler implements HttpRequestHandler {
     }
 
     @Override
-    public abstract HttpResponse handle(HttpRequest request);
+    public abstract void handle(HttpRequest request, HttpResponse.Builder responseBuilder);
 }

@@ -24,9 +24,8 @@ public class NotFoundHandler implements HttpRequestHandler {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
-        return new HttpResponse.Builder()
-                .setStatus(HttpStatus.NOT_FOUND)
+    public void handle(HttpRequest request, HttpResponse.Builder responseBuilder) {
+        responseBuilder.setStatus(HttpStatus.NOT_FOUND)
                 .build();
     }
 }

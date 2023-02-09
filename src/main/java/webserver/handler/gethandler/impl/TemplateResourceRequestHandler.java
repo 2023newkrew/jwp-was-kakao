@@ -31,14 +31,13 @@ public class TemplateResourceRequestHandler extends GetRequestHandler {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
+    public void handle(HttpRequest request, HttpResponse.Builder responseBuilder) {
         String requestPath = request.getTarget()
                 .getPath();
         byte[] body = FileIoUtils.loadFileFromClasspath(TEMPLATES_FILE_PREFIX + requestPath);
 
         String contentType = FileIoUtils.getContentType(TEMPLATES_FILE_PREFIX + requestPath);
-        return new HttpResponse.Builder()
-                .setStatus(HttpStatus.OK)
+        responseBuilder.setStatus(HttpStatus.OK)
                 .addHeader(HttpHeaderProperties.CONTENT_TYPE.getKey(), contentType)
                 .setBody(body)
                 .build();

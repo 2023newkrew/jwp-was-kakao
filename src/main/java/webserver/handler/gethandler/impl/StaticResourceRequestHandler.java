@@ -31,14 +31,13 @@ public class StaticResourceRequestHandler extends GetRequestHandler {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
+    public void handle(HttpRequest request, HttpResponse.Builder responseBuilder) {
         String requestPath = request.getTarget()
                 .getPath();
         byte[] body = FileIoUtils.loadFileFromClasspath(STATIC_FILES_PREFIX + requestPath);
 
         String contentType = FileIoUtils.getContentType(STATIC_FILES_PREFIX + requestPath);
-        return new HttpResponse.Builder()
-                .setStatus(HttpStatus.OK)
+        responseBuilder.setStatus(HttpStatus.OK)
                 .addHeader(HttpHeaderProperties.CONTENT_TYPE.getKey(), contentType)
                 .setBody(body)
                 .build();
