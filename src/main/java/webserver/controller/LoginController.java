@@ -48,7 +48,7 @@ public class LoginController {
     }
 
     @Api(method = HttpMethod.POST, url = "/user/login", consumes = ContentType.APPLICATION_URL_ENCODED)
-    public HttpResponse login(HttpRequest request) throws IOException {
+    public HttpResponse login(HttpRequest request) {
         Optional<User> loginUser = loginService.login(request);
 
         if (loginUser.isEmpty()) {
