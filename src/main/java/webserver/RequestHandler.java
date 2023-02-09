@@ -1,7 +1,6 @@
 package webserver;
 
 import static utils.FileIoUtils.loadFileFromClasspath;
-import static utils.IOUtils.parseHttpRequest;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,7 +32,7 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            HttpRequest httpRequest = parseHttpRequest(bufferedReader);
+            HttpRequest httpRequest = HttpRequest.parse(bufferedReader);
 
             DataOutputStream dos = new DataOutputStream(out);
 
