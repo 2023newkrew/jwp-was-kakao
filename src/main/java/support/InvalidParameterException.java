@@ -1,7 +1,9 @@
 package support;
 
-public class InvalidParameterException extends RuntimeException {
+import common.HttpStatus;
+
+public class InvalidParameterException extends CustomException {
     public InvalidParameterException(String key) {
-        super("파라미터 " + key + "가 유효하지 않은 값입니다.");
+        super(HttpStatus.BAD_REQUEST, "파라미터 " + key + "가 유효하지 않은 값입니다.");
     }
 }

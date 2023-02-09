@@ -220,7 +220,7 @@ class RequestHandlerTest {
         var expected = "HTTP/1.1 404 Not Found \r\n" +
                 "\r\n";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("존재하지 않는 메서드로 요청할 경우 400가 응답된다")
@@ -245,7 +245,7 @@ class RequestHandlerTest {
         var expected = "HTTP/1.1 400 Bad Request \r\n" +
                 "\r\n";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("해당 경로에 존재하지 않는 메서드로 요청할 경우 405가 응답된다")
@@ -270,7 +270,7 @@ class RequestHandlerTest {
         var expected = "HTTP/1.1 405 Method Not Allowed \r\n" +
                 "\r\n";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("지원하지 않는 바디 형식의 POST 요청은 415가 반환된다")
@@ -297,7 +297,7 @@ class RequestHandlerTest {
         var expected = "HTTP/1.1 415 Unsupported Media Type \r\n" +
                 "\r\n";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("요구되는 파라미터가 요청에 없는 경우 400이 반환된다")
@@ -322,7 +322,7 @@ class RequestHandlerTest {
         var expected = "HTTP/1.1 400 Bad Request \r\n" +
                 "\r\n";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("요구되는 파라미터가 빈 문자열이나 공백의 문자열일 경우 400이 반환된다")
@@ -347,6 +347,6 @@ class RequestHandlerTest {
         var expected = "HTTP/1.1 400 Bad Request \r\n" +
                 "\r\n";
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 }

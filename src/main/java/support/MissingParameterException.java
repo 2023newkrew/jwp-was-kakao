@@ -1,7 +1,9 @@
 package support;
 
-public class MissingParameterException extends RuntimeException {
+import common.HttpStatus;
+
+public class MissingParameterException extends CustomException {
     public MissingParameterException(String key) {
-        super("요구되는 파라미터 " + key+ "가 없습니다.");
+        super(HttpStatus.BAD_REQUEST, "요구되는 파라미터 " + key+ "가 없습니다.");
     }
 }

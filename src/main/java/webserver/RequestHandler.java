@@ -39,16 +39,12 @@ public class RequestHandler implements Runnable {
     private void handleWithException(BufferedReader reader, DataOutputStream dos, DispatcherServlet servlet) throws IOException {
        try {
            handle(reader, dos, servlet);
-       } catch (IllegalMethodException | MissingParameterException | InvalidParameterException e) {
-           sendResponse(dos, new HttpResponse(HttpStatus.BAD_REQUEST));
-       } catch (PathNotFoundException e) {
-           sendResponse(dos, new HttpResponse(HttpStatus.NOT_FOUND));
-       } catch (MethodNotAllowedException e) {
-           sendResponse(dos, new HttpResponse(HttpStatus.METHOD_NOT_ALLOWED));
-       } catch (UnsupportedContentTypeException e) {
-           sendResponse(dos, new HttpResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+       } catch (CustomException e) {
+           sendResponse(dos, new HttpResponse(e.getStatusCode(), e.getMessage()));
+           logger.error("[" + e.getStatusCode() + "] " + e.getMessage());
        } catch (Exception e) {
            sendResponse(dos, new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR));
+           logger.error("[" + HttpStatus.INTERNAL_SERVER_ERROR + "] " + e.getMessage());
        }
     }
 
