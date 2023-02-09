@@ -21,7 +21,7 @@ public class FrontController {
 
     public HttpResponse handleRequest(HttpRequest request) {
         try {
-            Optional<Class> controller = RequestMapping.get(request.getURL());
+            Optional<Class<?>> controller = RequestMapping.get(request.getURL());
 
             if (controller.isEmpty()) {
                 return ViewResolver.resolve(request);
@@ -34,7 +34,7 @@ public class FrontController {
         }
     }
 
-    private Object getInstance(Class controller) throws Exception {
+    private Object getInstance(Class<?> controller) throws Exception {
         return controller.getMethod(INSTANTIATE_METHOD_NAME)
                 .invoke(controller);
     }

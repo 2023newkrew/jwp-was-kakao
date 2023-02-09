@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public class RequestMapping {
-    private static final Map<Object, Class> requestMappingMap = new HashMap<>();
+    private static final Map<Object, Class<?>> requestMappingMap = new HashMap<>();
 
-    public static Optional<Class> get(Object key) {
+    public static Optional<Class<?>> get(Object key) {
         return Optional.ofNullable(requestMappingMap.getOrDefault(key, null));
     }
 

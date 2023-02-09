@@ -10,7 +10,7 @@ public class HttpRequestKeyValue {
     String value;
 
     public HttpRequestKeyValue(String line) {
-        this.key = getKeyWithOutColumn(line);
+        this.key = getKey(line);
         this.value = getValue(line);
     }
 
@@ -18,7 +18,7 @@ public class HttpRequestKeyValue {
         return line.split(" ")[1];
     }
 
-    private String getKeyWithOutColumn(String line) {
+    private String getKey(String line) {
         return line.split(" ")[0].substring(0, line.split(" ")[0].length() - 1);
     }
 }
