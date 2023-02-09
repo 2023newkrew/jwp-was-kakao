@@ -1,10 +1,9 @@
-package webserver;
+package webserver.session;
 
 import java.util.Map;
 import utils.HttpRequestUtils;
 
 public class HttpCookie {
-    public static final String SESSION_ID_NAME = "JSESSIONID";
     private final Map<String, String> cookies;
 
     public HttpCookie(String cookieString) {

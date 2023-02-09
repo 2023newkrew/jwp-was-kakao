@@ -5,13 +5,11 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.NoArgsConstructor;
 import model.User;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import utils.LoginFailException;
-import webserver.HttpCookie;
 import webserver.request.HttpRequest;
 
 @NoArgsConstructor
@@ -21,9 +19,9 @@ public class UserService {
         addUser(requestParams);
     }
 
-    public static void login(HttpRequest httpRequest) {
+    public static User login(HttpRequest httpRequest) {
         MultiValueMap<String,String> requestParams = getRequestParams(httpRequest);
-        validateUser(requestParams);
+        return validateAndGetUser(requestParams);
     }
 
     public static List<User> getUserList() {
@@ -44,7 +42,7 @@ public class UserService {
         DataBase.addUser(user);
     }
 
-    private static void validateUser(MultiValueMap<String, String> requestParams) {
+    private static User validateAndGetUser(MultiValueMap<String, String> requestParams) {
         String userId = requestParams.getFirst("userId");
         String password = requestParams.getFirst("password");
         User user;
@@ -56,6 +54,7 @@ public class UserService {
         if (!user.comparePassword(password)) {
             throw new LoginFailException();
         }
+        return user;
     }
 
     private static MultiValueMap<String,String> getRequestParams(HttpRequest httpRequest) {

@@ -3,7 +3,8 @@ package utils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import webserver.HttpCookie;
+import webserver.session.HttpCookie;
+import webserver.session.HttpSession;
 
 public class HttpRequestUtils {
     private static final String COOKIE_SPLIT_DELIMITER = ";";
@@ -22,7 +23,7 @@ public class HttpRequestUtils {
         return results;
     }
 
-    public static String generateRandomCookieString() {
-        return HttpCookie.SESSION_ID_NAME + "=" + UUID.randomUUID();
+    public static String convertSessionIdToString(String sessionId) {
+        return HttpSession.SESSION_ID_NAME + "=" + sessionId;
     }
 }
