@@ -1,6 +1,6 @@
 package webserver.response;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,7 +14,7 @@ public class HttpResponseHeader {
     private final Map<String, String> header;
 
     public HttpResponseHeader() {
-        this(new HashMap<>());
+        this(new LinkedHashMap<>());
     }
 
     public HttpResponseHeader(Map<String, String> header) {

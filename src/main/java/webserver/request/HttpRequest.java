@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.springframework.http.HttpMethod;
 import webserver.FilenameExtension;
+import webserver.session.Session;
+import webserver.session.SessionManager;
 
 public class HttpRequest {
     private final HttpRequestLine requestLine;
@@ -63,5 +65,17 @@ public class HttpRequest {
 
     public String getHttpVersion() {
         return requestLine.getHttpVersion();
+    }
+
+    public Cookie getCookie() {
+        return headers.getCookie();
+    }
+
+    public Session getSession() {
+        String sessionId = headers.getCookie().get("JSESSIONID");
+        if (sessionId == null) {
+            return SessionManager.create();
+        }
+        return SessionManager.findSession(sessionId);
     }
 }

@@ -80,7 +80,7 @@ public class HttpResponse {
         return new HttpResponseBuilder();
     }
 
-    public static class HttpResponseBuilder{
+    private static class HttpResponseBuilder {
 
         private HttpStatus status;
         private HttpResponseHeader header;
