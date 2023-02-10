@@ -48,11 +48,11 @@ public class Response {
         );
     }
 
-    public static Response notFound() {
-        byte[] body = "404 NOT FOUND".getBytes();
+    public static Response of(StatusCode statusCode) {
+        byte[] body = statusCode.getMessage().getBytes();
         Map<String, String> responseHeader = generateResponseHeader(body, FileType.HTML);
         return new Response(
-                StatusCode.NOT_FOUND,
+                statusCode,
                 responseHeader,
                 body
         );

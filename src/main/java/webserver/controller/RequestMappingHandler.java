@@ -3,6 +3,7 @@ package webserver.controller;
 import lombok.RequiredArgsConstructor;
 import webserver.request.Request;
 import webserver.response.Response;
+import webserver.response.StatusCode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +25,7 @@ public class RequestMappingHandler {
                 .findAny();
 
         if (invokeMethod.isEmpty()) {
-            return Response.notFound();
+            return Response.of(StatusCode.NOT_FOUND);
         }
         return (Response) invokeMethod.get().invoke(controller, request);
     }

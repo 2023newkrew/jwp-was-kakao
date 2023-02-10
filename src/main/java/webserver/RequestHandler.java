@@ -7,6 +7,7 @@ import utils.FileIoUtils;
 import webserver.controller.RequestMappingHandler;
 import webserver.request.Request;
 import webserver.response.Response;
+import webserver.response.StatusCode;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -26,13 +27,21 @@ public class RequestHandler implements Runnable {
 
         try (
                 InputStream in = connection.getInputStream();
-                OutputStream out = connection.getOutputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                OutputStream out = connection.getOutputStream()
         ) {
-            Request request = Request.parse(reader);
-            Response response = getResponseByPath(request);
+            Response response;
+            try {
+                Request request = Request.parse(reader);
+                response = getResponseByPath(request);
+            } catch (IllegalArgumentException | URISyntaxException | InvocationTargetException e) {
+                response = Response.of(StatusCode.BAD_REQUEST);
+            } catch (Exception e) {
+                response = Response.of(StatusCode.INTERNAL_SERVER_ERROR);
+                logger.error(e.getMessage());
+            }
             response.flush(new DataOutputStream(out));
-        } catch (IOException | URISyntaxException | InvocationTargetException | IllegalAccessException e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
