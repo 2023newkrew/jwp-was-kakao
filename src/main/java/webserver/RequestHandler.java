@@ -30,20 +30,25 @@ public class RequestHandler implements Runnable {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                 OutputStream out = connection.getOutputStream()
         ) {
-            Response response;
-            try {
-                Request request = Request.parse(reader);
-                response = getResponseByPath(request);
-            } catch (IllegalArgumentException | URISyntaxException | InvocationTargetException e) {
-                response = Response.of(StatusCode.BAD_REQUEST);
-            } catch (Exception e) {
-                response = Response.of(StatusCode.INTERNAL_SERVER_ERROR);
-                logger.error(e.getMessage());
-            }
+            Response response = processRequest(reader);
             response.flush(new DataOutputStream(out));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private Response processRequest(BufferedReader reader) {
+        Response response;
+        try {
+            Request request = Request.parse(reader);
+            response = getResponseByPath(request);
+        } catch (IllegalArgumentException | URISyntaxException | InvocationTargetException e) {
+            response = Response.of(StatusCode.BAD_REQUEST);
+        } catch (Exception e) {
+            response = Response.of(StatusCode.INTERNAL_SERVER_ERROR);
+            logger.error(e.getMessage());
+        }
+        return response;
     }
 
     private Response getResponseByPath(Request request) throws IOException, URISyntaxException, InvocationTargetException, IllegalAccessException {
