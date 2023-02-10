@@ -22,6 +22,6 @@ public class CreateUserHandler implements Handler {
                         queryParams.get("name"),
                         queryParams.get("email"))
         );
-        return HttpResponse.found(new byte[0], request.getFilenameExtension(), "/index.html");
+        return HttpResponse.found("/index.html");
     }
 }

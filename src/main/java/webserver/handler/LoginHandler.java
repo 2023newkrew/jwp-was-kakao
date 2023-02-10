@@ -14,7 +14,7 @@ public class LoginHandler implements Handler {
         Map<String, String> body = request.getBodyLikeQueryParams();
         User user = DataBase.findUserById(body.get("userId"));
         if (verifyUser(user, body.get("password"))) {
-            return getLoginFailResponse(request);
+            return HttpResponse.found("/user/login_failed.html");
         }
         return getLoginSuccessResponse(request, user);
     }
@@ -24,23 +24,11 @@ public class LoginHandler implements Handler {
     }
 
     private static HttpResponse getLoginSuccessResponse(HttpRequest request, User user) {
-        Session session = request.getSession();
+        Session session = request.getOrCreateSession();
         session.setAttribute("user", user);
-        HttpResponse response = HttpResponse.found(
-                new byte[0],
-                request.getFilenameExtension(),
-                "/index.html"
-        );
+        HttpResponse response = HttpResponse.found("/index.html");
         response.setCookie("JSESSIONID", session.getId());
         return response;
-    }
-
-    private static HttpResponse getLoginFailResponse(HttpRequest request) {
-        return HttpResponse.found(
-                new byte[0],
-                request.getFilenameExtension(),
-                "/user/login_failed.html"
-        );
     }
 
 }

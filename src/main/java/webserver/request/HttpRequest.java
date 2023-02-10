@@ -67,15 +67,20 @@ public class HttpRequest {
         return requestLine.getHttpVersion();
     }
 
-    public Cookie getCookie() {
-        return headers.getCookie();
-    }
 
-    public Session getSession() {
-        String sessionId = headers.getCookie().get("JSESSIONID");
+    public Session getOrCreateSession() {
+        String sessionId = getSessionId();
         if (sessionId == null) {
             return SessionManager.create();
         }
         return SessionManager.findSession(sessionId);
+    }
+
+    public String getSessionId() {
+        return getCookie().getSessionId();
+    }
+
+    public Cookie getCookie() {
+        return headers.getCookie();
     }
 }

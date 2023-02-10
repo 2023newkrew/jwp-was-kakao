@@ -13,7 +13,6 @@ public class LoginListHandler implements Handler {
             return TemplateEngine
                     .getTemplateResponse("/user/list", DataBase.findAll());
         }
-        return HttpResponse
-                .found(new byte[0], request.getFilenameExtension(), "/user/login.html");
+        return HttpResponse.found("/user/login.html");
     }
 }

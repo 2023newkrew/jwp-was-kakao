@@ -34,13 +34,11 @@ public class HttpResponse {
                 .build();
 
     }
-    public static HttpResponse found(byte[] body, FilenameExtension extension, String location) {
+    public static HttpResponse found(String location) {
         return HttpResponse.builder()
                 .status(HttpStatus.FOUND)
-                .contentType(extension.getContentType())
-                .contentLength(body.length)
+                .contentType(FilenameExtension.HTML.getContentType())
                 .location(location)
-                .body(body)
                 .build();
     }
 
@@ -64,7 +62,9 @@ public class HttpResponse {
             dos.writeBytes(entry.getKey() + ": " + entry.getValue() + " \r\n");
         }
         dos.writeBytes("\r\n");
-        dos.write(body, 0, body.length);
+        if (body != null) {
+            dos.write(body, 0, body.length);
+        }
         dos.flush();
     }
 
@@ -80,7 +80,7 @@ public class HttpResponse {
         return new HttpResponseBuilder();
     }
 
-    private static class HttpResponseBuilder {
+    public static class HttpResponseBuilder {
 
         private HttpStatus status;
         private HttpResponseHeader header;
