@@ -1,8 +1,8 @@
 package webserver;
 
 import controller.FrontController;
-import controller.NotFoundException;
-import controller.RedirectException;
+import exception.NotFoundException;
+import exception.RedirectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

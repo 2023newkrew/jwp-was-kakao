@@ -1,4 +1,4 @@
-package controller;
+package exception;
 
 public class RedirectException extends RuntimeException {
     public RedirectException(String location) {

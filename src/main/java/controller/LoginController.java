@@ -1,5 +1,6 @@
 package controller;
 
+import exception.RedirectException;
 import service.UserService;
 import webserver.HttpRequest;
 import webserver.HttpResponse;

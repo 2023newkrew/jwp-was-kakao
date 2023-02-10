@@ -1,7 +1,10 @@
 package controller;
 
-import org.springframework.util.AntPathMatcher;
-import utils.FileIoUtils;
+import exception.NotFoundException;
+import exception.RedirectException;
+import view.StaticViewRenderer;
+import view.TemplateViewRenderer;
+import view.ViewRenderer;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 import webserver.HttpSession;
@@ -9,63 +12,40 @@ import webserver.SessionManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 
 public class FrontController {
     private static final Map<String, Controller> controllerMap = Map.of(
             "POST /user/create", new UserSaveController(),
             "POST /user/login", new LoginController(),
             "GET /user/list", new UserListController(),
-            "GET /user/login", new LoginPageController()
+            "GET /user/login", new LoginPageController(),
+            "GET /", new RootController()
     );
-
-    private static final String ROOT_PATH = "/";
-    private static final String[] STATIC_PATH_PATTERNS = {"/css/*", "/fonts/*", "/images/*", "/js/*"};
-    private static final String STATIC = "./static";
-    private static final String TEMPLATES = "./templates";
 
     public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws NotFoundException, RedirectException {
         try {
-            String contentType = Optional.ofNullable(httpRequest.getHeader("Accept"))
-                    .map(str -> str.split(",")[0])
-                    .orElse("text/html;charset=utf-8");
-            httpResponse.addHeader("Content-Type", contentType);
-
             if (httpRequest.getSession() == null) {
                 HttpSession session = SessionManager.createSession();
                 httpResponse.setJSessionId(session.getId());
             }
 
-            String requestSignature = httpRequest.getMethod().name() + " " + httpRequest.getUrl();
+            String url = httpRequest.getUrl();
+
+            String requestSignature = httpRequest.getMethod().name() + " " + url;
             if (controllerMap.containsKey(requestSignature)) {
                 Controller controller = controllerMap.get(requestSignature);
                 controller.process(httpRequest, httpResponse);
                 return;
             }
 
-            byte[] body = loadBody(httpRequest.getUrl());
-            httpResponse.changeBody(body);
+            ViewRenderer viewRenderer = StaticViewRenderer.isStaticUrl(url) ?
+                    new StaticViewRenderer(url) : new TemplateViewRenderer(url);
+            viewRenderer.render(httpResponse);
         } catch (FileNotFoundException e) {
             throw new NotFoundException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private byte[] loadBody(String requestUrl) throws IOException {
-        if (requestUrl.equals(ROOT_PATH)) {
-            return "Hello world".getBytes();
-        }
-
-        String pathPrefix = isStaticPath(requestUrl) ? STATIC : TEMPLATES;
-        return FileIoUtils.loadFileFromClasspath(pathPrefix + requestUrl);
-    }
-
-    private boolean isStaticPath(String path) {
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        return Arrays.stream(STATIC_PATH_PATTERNS)
-                .anyMatch(pattern -> antPathMatcher.match(pattern, path));
     }
 }
