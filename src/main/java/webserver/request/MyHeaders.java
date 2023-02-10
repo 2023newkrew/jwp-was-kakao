@@ -1,6 +1,7 @@
-package model.dto;
+package webserver.request;
 
 import lombok.Getter;
+import model.dto.Cookie;
 
 import java.util.HashMap;
 import java.util.Map;

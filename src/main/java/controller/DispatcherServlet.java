@@ -1,7 +1,8 @@
 package controller;
 
-import model.dto.MyHeaders;
-import model.dto.MyParams;
+import webserver.request.HttpRequest;
+import webserver.request.MyHeaders;
+import webserver.request.MyParams;
 
 import java.io.DataOutputStream;
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class DispatcherServlet {
         controllers.addAll(List.of(myControllers));
     }
 
-    public MyController handlerMapping(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream){
+    public MyController handlerMapping(HttpRequest httpRequest, DataOutputStream dataOutputStream){
         return controllers.stream()
-                .filter((con) -> con.canHandle(headers, params))
+                .filter((con) -> con.canHandle(httpRequest))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("매핑된 컨트롤러가 존재하지 않습니다."));
     }

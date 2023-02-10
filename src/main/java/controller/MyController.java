@@ -1,14 +1,15 @@
 package controller;
 
-import model.dto.MyHeaders;
-import model.dto.MyParams;
+import webserver.request.HttpRequest;
+import webserver.request.MyHeaders;
+import webserver.request.MyParams;
 import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
 
 public interface MyController {
 
-    boolean canHandle(MyHeaders headers, MyParams params);
+    boolean canHandle(HttpRequest httpRequest);
 
-    ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream);
+    ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream);
 }

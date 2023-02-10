@@ -10,8 +10,9 @@ import model.dto.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import model.dto.MyHeaders;
-import model.dto.MyParams;
+import webserver.request.HttpRequest;
+import webserver.request.MyHeaders;
+import webserver.request.MyParams;
 import utils.UserFactory;
 import webserver.response.ResponseEntity;
 import webserver.session.Session;
@@ -34,44 +35,44 @@ public class UserController  implements MyController {
     private byte[] body = null;
 
     @Override
-    public boolean canHandle(MyHeaders headers, MyParams params) {
-        String path = headers.get("path");
+    public boolean canHandle(HttpRequest httpRequest) {
+        String path = httpRequest.getPath();
         return path.startsWith("/user");
     }
 
     @Override
-    public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
-        String path = headers.get("path");
-        String contentType = headers.get("contentType");
-        cookie = headers.getCookie().toString();
+    public ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream) {
+        String path = httpRequest.getPath();
+        String contentType = httpRequest.getContentType();
+        cookie = httpRequest.getCookie().toString();
         status = 200;
 
-        if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
+        if(path.equals("/user/form.html") && httpRequest.compareMethod("GET")){
             createForm(path);
         }
 
-        if(path.equals("/user/login.html") && headers.get("method").equals("GET")){
+        if(path.equals("/user/login.html") && httpRequest.compareMethod("GET")){
             loginForm(path);
         }
 
-        if(path.equals("/user/list") && headers.get("method").equals("GET")){
+        if(path.equals("/user/list") && httpRequest.compareMethod("GET")){
             getUserList(contentType, cookie, dataOutputStream);
         }
 
-        if(path.equals("/user/login_failed.html") && headers.get("method").equals("GET")){
+        if(path.equals("/user/login_failed.html") && httpRequest.compareMethod("GET")){
             loginFailForm(path);
         }
 
-        if(path.equals("/user/login") && headers.get("method").equals("GET")){
+        if(path.equals("/user/login") && httpRequest.compareMethod("GET")){
             alreadyLogin();
         }
 
-        if(path.equals("/user/create") && headers.get("method").equals("POST")){
-            createUser(params);
+        if(path.equals("/user/create") && httpRequest.compareMethod("POST")){
+            createUser(httpRequest.getParams());
         }
 
-        if(path.equals("/user/login") && headers.get("method").equals("POST")){
-            login(params.get("userId"), params.get("password"), dataOutputStream);
+        if(path.equals("/user/login") && httpRequest.compareMethod("POST")){
+            login(httpRequest.getParams());
         }
 
         return ResponseEntity.builder()
@@ -100,7 +101,10 @@ public class UserController  implements MyController {
         setRedirectResponse("/index.html");
     }
 
-    private void login(String userId, String password, DataOutputStream dataOutputStream) {
+    private void login(MyParams params) {
+        String userId = params.get("userId");
+        String password = params.get("password");
+
         if(isUser(userId, password)){
             loginSuccess(userId);
             return;

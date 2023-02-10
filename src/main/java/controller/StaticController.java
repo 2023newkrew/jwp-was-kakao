@@ -3,8 +3,9 @@ package controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import model.dto.MyHeaders;
-import model.dto.MyParams;
+import webserver.request.HttpRequest;
+import webserver.request.MyHeaders;
+import webserver.request.MyParams;
 import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
@@ -15,15 +16,15 @@ public class StaticController implements MyController{
     private byte[] body;
 
     @Override
-    public boolean canHandle(MyHeaders headers, MyParams params) {
-        String extension = getExtensionFromPath(params.get("path"));
+    public boolean canHandle(HttpRequest httpRequest) {
+        String extension = getExtensionFromPath(httpRequest.getPath());
         return isStatic(extension);
     }
 
     @Override
-    public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
-        String path = headers.get("path");
-        String contentType = headers.get("contentType");
+    public ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream) {
+        String path = httpRequest.getPath();
+        String contentType = httpRequest.getContentType();
 
         return handleStatic(path, 200, contentType);
     }
