@@ -60,9 +60,8 @@ public class HttpHeader {
         return headers;
     }
 
-    public String getCookie() {
-        // TODO: Cookie 객체 생성
-        return headers.getOrDefault(GET_COOKIE, "");
+    public Cookies getCookies() {
+        return new Cookies(headers.get(GET_COOKIE));
     }
 
     public int getContentLength() {

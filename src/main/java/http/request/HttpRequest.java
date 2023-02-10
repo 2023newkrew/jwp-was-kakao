@@ -1,6 +1,8 @@
 package http.request;
 
 import http.HttpHeader;
+import http.HttpSession;
+import http.HttpSessions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.IOUtils;
@@ -39,6 +41,18 @@ public class HttpRequest {
 
     public RequestParam getRequestBodyParam() {
         return requestBody.getRequestParam();
+    }
+
+    public String getCookie(String key) {
+        return httpHeader.getCookies().getCookie(key);
+    }
+
+    public String getSessionId() {
+        return getCookie(HttpSessions.SESSION_KEY);
+    }
+
+    public HttpSession getHttpSession() {
+        return HttpSessions.getSession(getSessionId());
     }
 
     public HttpHeader getRequestHeader() {
