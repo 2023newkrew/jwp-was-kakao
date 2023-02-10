@@ -13,7 +13,7 @@ public class SessionManager {
     private SessionManager() {}
 
     public static void add(Session session) {
-        sessions.put((String) session.getAttribute(SESSION_ID_NAME), session);
+        sessions.put(session.getId(), session);
     }
 
     public static Optional<Session> findSession(String sessionId) {
