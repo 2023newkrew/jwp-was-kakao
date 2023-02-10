@@ -34,22 +34,4 @@ public enum FilenameExtension {
         return contentType;
     }
 
-    private boolean isFont() {
-        return this == FilenameExtension.EOT ||
-                this == FilenameExtension.SVG ||
-                this == FilenameExtension.TTF ||
-                this == FilenameExtension.WOFF ||
-                this == FilenameExtension.WOFF2;
-    }
-
-    public boolean isExistStaticFolder() {
-        return this == FilenameExtension.CSS ||
-                this == FilenameExtension.PNG ||
-                this == FilenameExtension.JS ||
-                this.isFont();
-    }
-
-    public boolean isExistTemplateFolder() {
-        return this == FilenameExtension.HTML || this == FilenameExtension.ICO;
-    }
 }
