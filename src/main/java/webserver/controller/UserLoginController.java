@@ -1,7 +1,7 @@
 package webserver.controller;
 
 import model.User;
-import utils.LoginFailException;
+import exception.LoginFailException;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 import webserver.service.UserService;

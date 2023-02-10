@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import model.User;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
-import utils.ExistUserException;
-import utils.LoginFailException;
+import exception.ExistUserException;
+import exception.LoginFailException;
 import webserver.request.HttpRequest;
 
 @NoArgsConstructor

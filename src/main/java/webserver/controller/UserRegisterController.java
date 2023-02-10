@@ -1,6 +1,6 @@
 package webserver.controller;
 
-import utils.ExistUserException;
+import exception.ExistUserException;
 import webserver.service.UserService;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
