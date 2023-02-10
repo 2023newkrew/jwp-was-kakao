@@ -102,11 +102,17 @@ public class UserListRequestHandleTest {
 
         var output = socket.output();
         String[] splitOutput = output.split("\r\n");
+        StringBuilder sessionId = new StringBuilder();
         for (int i = 1; i < splitOutput.length; i++) {
-            if (splitOutput[i].startsWith("Set-Cookie")) {
-                return splitOutput[i].split(";")[0].split("=")[1];
-            }
+            sessionId.append(getSetCookieString(splitOutput[i]));
         }
-        return null;
+        return sessionId.toString();
+    }
+
+    private String getSetCookieString(String outputLine) {
+        if (outputLine.startsWith("Set-Cookie")) {
+            return outputLine.split(";")[0].split("=")[1];
+        }
+        return "";
     }
 }

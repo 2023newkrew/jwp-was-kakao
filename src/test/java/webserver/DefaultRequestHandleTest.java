@@ -57,13 +57,18 @@ class DefaultRequestHandleTest {
         // then
         var output = socket.output();
         String[] splitOutput = output.split("\r\n");
-        boolean existSetCookie = false;
+
+        StringBuilder sessionId = new StringBuilder();
         for (int i = 1; i < splitOutput.length; i++) {
-            if (splitOutput[i].startsWith("Set-Cookie")) {
-                existSetCookie = true;
-                break;
-            }
+            sessionId.append(getSetCookieString(splitOutput[i]));
         }
-        assertThat(existSetCookie).isEqualTo(true);
+
+        assertThat(!sessionId.toString().equals("")).isEqualTo(true);
+    }
+    private String getSetCookieString(String outputLine) {
+        if (outputLine.startsWith("Set-Cookie")) {
+            return outputLine.split(";")[0].split("=")[1];
+        }
+        return "";
     }
 }
