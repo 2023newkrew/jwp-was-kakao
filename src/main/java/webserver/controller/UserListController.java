@@ -13,6 +13,17 @@ import java.util.List;
 
 public class UserListController implements Controller {
 
+    private static List<UserDto> getUserDtoList() {
+        Collection<User> users = DataBase.findAll();
+        long index = 1L;
+        List<UserDto> userDtoList = new ArrayList<>();
+        for (User user : users) {
+            System.out.println(user.getEmail());
+            userDtoList.add(UserDto.from(index++, user));
+        }
+        return userDtoList;
+    }
+
     @Override
     public String process(HttpRequest request, HttpResponse response) {
 
@@ -21,13 +32,7 @@ public class UserListController implements Controller {
             return "/user/login.html";
         }
 
-        Collection<User> users = DataBase.findAll();
-        long index = 1L;
-        List<UserDto> userDtoList = new ArrayList<>();
-        for (User user : users) {
-            System.out.println(user.getEmail());
-            userDtoList.add(UserDto.from(index++, user));
-        }
+        List<UserDto> userDtoList = getUserDtoList();
         response.setModel(userDtoList);
 
         return "/user/list.html";

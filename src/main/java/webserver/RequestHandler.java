@@ -13,6 +13,7 @@ public class RequestHandler implements Runnable {
 
     private final Socket connection;
     private final FrontController frontController = new FrontController();
+    private final HttpResponse response = new HttpResponse();
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -20,19 +21,26 @@ public class RequestHandler implements Runnable {
 
     public void run() {
         logger.info("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
-
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-            HttpRequest request = new HttpRequest(bufferedReader);
-
-            DataOutputStream dos = new DataOutputStream(out);
-            HttpResponse response = new HttpResponse();
-            frontController.service(request, response);
-
-            ResponseSender responseSender = new ResponseSender(dos, response);
-            responseSender.forward();
-
+            handleRequest(bufferedReader);
+            sendResponse(out);
             bufferedReader.close();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void handleRequest(BufferedReader bufferedReader) {
+        HttpRequest request = new HttpRequest(bufferedReader);
+        frontController.service(request, response);
+    }
+
+    private void sendResponse(OutputStream out) {
+        DataOutputStream dos = new DataOutputStream(out);
+        ResponseSender responseSender = new ResponseSender(dos, response);
+        responseSender.forward();
+        try {
             dos.close();
         } catch (IOException e) {
             logger.error(e.getMessage());
