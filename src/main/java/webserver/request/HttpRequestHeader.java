@@ -22,7 +22,7 @@ public class HttpRequestHeader {
         String line = bufferedReader.readLine();
         Map<String, String> headers = new HashMap<>();
         while (!isNullOrEmpty(line)) {
-            String[] tokens = line.split(":");
+            String[] tokens = line.split(":", 2);
             headers.put(tokens[0], tokens[1].trim());
             line = bufferedReader.readLine();
         }
