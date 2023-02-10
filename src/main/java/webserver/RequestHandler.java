@@ -9,6 +9,13 @@ import webserver.response.ResponseEntity;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.Objects;
+
+import static db.DataBase.addUser;
+import static utils.IOUtils.readData;
+import static model.dto.ResponseHeaders.response302Header;
+import static utils.UserFactory.createUser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -30,7 +37,7 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream();
              BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-
+             
             httpRequest.parsingRequest(br);
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -42,6 +49,13 @@ public class RequestHandler implements Runnable {
 
         } catch (IOException e) {
             logger.error(e.getMessage());
+
         }
+
+        headers.put("method", method);
+        headers.put("path", path);
+        params.put("extension", getExtensionFromPath(path));
+
+        return true;
     }
 }

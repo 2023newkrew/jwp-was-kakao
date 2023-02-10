@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 public class StaticController implements MyController{
 
     private final Logger logger = LoggerFactory.getLogger(StaticController.class);
+
     private byte[] body;
 
     @Override

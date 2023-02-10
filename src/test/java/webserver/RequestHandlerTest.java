@@ -68,6 +68,18 @@ class RequestHandlerTest {
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
+        var output = socket.output().split("\n");
+        var expectedOutput = expected.split("\n");
+
+        for(int i=0; i<output.length; i++){
+            if(output[i].equals(expectedOutput[i])){
+                continue;
+            }
+            System.out.println("actual: "+output[i]);
+            System.out.println("expected: "+ expectedOutput[i]);
+        }
+
+
         assertThat(socket.output()).isEqualTo(expected);
     }
 }
