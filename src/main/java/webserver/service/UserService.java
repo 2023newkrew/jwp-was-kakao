@@ -13,7 +13,6 @@ import exception.ExistUserException;
 import exception.LoginFailException;
 import webserver.request.HttpRequest;
 
-@NoArgsConstructor
 public class UserService {
     public static void registerUser(HttpRequest httpRequest) {
         MultiValueMap<String, String> requestParams = getRequestParams(httpRequest);

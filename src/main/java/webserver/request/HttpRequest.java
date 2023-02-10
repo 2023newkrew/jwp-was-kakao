@@ -31,9 +31,6 @@ public class HttpRequest {
     }
 
     public String getHeaders(String headerKey) {
-        if (!headers.containsKey(headerKey)) {
-            return null;
-        }
         return headers.get(headerKey);
     }
 
