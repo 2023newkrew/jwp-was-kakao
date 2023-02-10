@@ -12,6 +12,8 @@ import webserver.request.Request;
 import webserver.response.Response;
 import webserver.response.ResponseBody;
 import webserver.response.ResponseHeader;
+import webserver.session.Session;
+import webserver.session.SessionManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -107,5 +109,17 @@ public abstract class AbstractController implements Handler {
         ResponseHeader header = new ResponseHeader(httpStatus, headers, body);
 
         return new Response(header, body);
+    }
+
+    protected Session createSession() {
+        return SessionManager.getInstance().create();
+    }
+
+    protected Session getSession(String sessionId) {
+        return SessionManager.getInstance().get(sessionId);
+    }
+
+    protected void deleteSession(String sessionId) {
+        SessionManager.getInstance().delete(sessionId);
     }
 }

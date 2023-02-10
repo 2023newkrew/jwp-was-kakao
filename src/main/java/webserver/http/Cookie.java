@@ -3,8 +3,6 @@ package webserver.http;
 import webserver.collection.StringValues;
 import webserver.collection.Values;
 
-import java.util.UUID;
-
 public class Cookie {
 
     private static final String DELIMITER = ";";
@@ -15,8 +13,8 @@ public class Cookie {
 
     private final String path;
 
-    public Cookie(UUID jSessionId, String path) {
-        this.value = jSessionId.toString();
+    public Cookie(String jSessionId, String path) {
+        this.value = jSessionId;
         this.path = path;
     }
 
@@ -24,6 +22,10 @@ public class Cookie {
         Values values = new StringValues(cookie, DELIMITER, KEY_VALUE_DELIMITER);
         this.value = values.get("JSESSIONID");
         this.path = values.get("Path");
+    }
+
+    public String getJSessionId() {
+        return value;
     }
 
     @Override

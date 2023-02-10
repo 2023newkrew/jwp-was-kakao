@@ -11,9 +11,9 @@ import webserver.http.header.HeaderType;
 import webserver.http.header.Headers;
 import webserver.request.Request;
 import webserver.response.Response;
+import webserver.session.Session;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class UserController extends AbstractController {
 
@@ -57,21 +57,20 @@ public class UserController extends AbstractController {
     }
 
     private Response login(Request request) {
-        var headers = new Headers();
-        if (loginSuccess(request)) {
-            headers.put(HeaderType.LOCATION, ROOT_PATH);
-            headers.put(HeaderType.SET_COOKIE, new Cookie(UUID.randomUUID(), ROOT_PATH));
+        String userId = request.getBody("userId");
+        String password = request.getBody("password");
+        if (loginSuccess(userId, password)) {
+            Session session = createSession();
+            session.setUserId(userId);
 
-            return createResponse(HttpStatus.FOUND, headers);
+            return createLoginResponse(session);
         }
 
-        return createResponse(HttpStatus.FOUND, headers, resolve(LOGIN_FAILED_PATH));
+        return createResponse(HttpStatus.OK, resolve(LOGIN_FAILED_PATH));
     }
 
-    private boolean loginSuccess(Request request) {
+    private boolean loginSuccess(String userId, String password) {
         try {
-            String userId = request.getBody("userId");
-            String password = request.getBody("password");
             User user = DataBase.findUserById(userId);
 
             return password.equals(user.getPassword());
@@ -79,6 +78,14 @@ public class UserController extends AbstractController {
         catch (Exception ignore) {
             return false;
         }
+    }
+
+    private Response createLoginResponse(Session session) {
+        var headers = new Headers();
+        headers.put(HeaderType.LOCATION, ROOT_PATH);
+        headers.put(HeaderType.SET_COOKIE, new Cookie(session.getId(), ROOT_PATH));
+
+        return createResponse(HttpStatus.FOUND, headers);
     }
 
     private Response list(Request request) {
@@ -94,8 +101,14 @@ public class UserController extends AbstractController {
     }
 
     private boolean loggedIn(Request request) {
-        Cookie cookie = request.getCookie();
+        try {
+            Cookie cookie = request.getCookie();
+            Session session = getSession(cookie.getJSessionId());
 
-        return Objects.nonNull(cookie);
+            return Objects.nonNull(session);
+        }
+        catch (Exception ignore) {
+            return false;
+        }
     }
 }

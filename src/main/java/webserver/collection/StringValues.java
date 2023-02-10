@@ -31,7 +31,7 @@ public class StringValues implements Values {
 
     @Override
     public void put(String key, String value) {
-        values.put(key, value.trim());
+        values.put(key.trim(), value.trim());
     }
 
     @Override
