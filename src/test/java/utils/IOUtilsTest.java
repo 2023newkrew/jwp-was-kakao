@@ -25,7 +25,7 @@ class IOUtilsTest {
     void extractUserTest() {
         String path = "/user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com";
         Map<String, String> expected = Map.of("userId", "cu", "password", "password", "name", "이동규", "email", "brainbackdoor@gmail.com");
-        Map<String, String> actual = IOUtils.extractUserFromPath(path);
+        Map<String, String> actual = IOUtils.extractParamMapFromPath(path);
         Assertions.assertThat(actual)
                 .isEqualTo(expected);
     }

@@ -4,14 +4,14 @@ import controller.HomeController;
 import controller.StaticFileController;
 import controller.UserController;
 import enums.ContentType;
-import exceptions.InvalidQueryParameterException;
-import exceptions.ResourceNotFoundException;
+import exceptions.*;
 import http.HttpRequest;
 import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import utils.FileIoUtils;
+import utils.HttpUtils;
 import utils.IOUtils;
 
 import java.io.DataOutputStream;
@@ -41,11 +41,11 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            HttpRequest request = IOUtils.parseReqeust(in);
+            HttpRequest request = HttpUtils.parseRequest(in);
             HttpResponse response = handleHttpRequest(request);
 
             DataOutputStream dos = new DataOutputStream(out);
-            response.writeToOutputStream(dos);
+            IOUtils.writeToOutputStream(dos, response);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -63,6 +63,10 @@ public class RequestHandler implements Runnable {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Wrong URI Format".getBytes());
         } catch (InvalidQueryParameterException e) {
             return HttpResponse.of(HttpStatus.BAD_REQUEST, ContentType.JSON, "Invalid Query Parameter".getBytes());
+        } catch (AuthenticationException | InvalidSessionException e) {
+            return HttpResponse.create302FoundResponse("/user/login_failed.html");
+        } catch (AuthorizationException e) {
+            return HttpResponse.create302FoundResponse("/user/login.html");
         } catch (Exception e) {
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "Internal Server Error".getBytes());
         }
@@ -76,6 +80,15 @@ public class RequestHandler implements Runnable {
         }
         if (requestPath.startsWith("/user/create") && "POST".equals(request.getRequestMethod())) {
             return userController.createUserPost(request);
+        }
+        if (requestPath.startsWith("/user/login") && "POST".equals(request.getRequestMethod())) {
+            return userController.loginUserPost(request);
+        }
+        if (requestPath.startsWith("/user/list")) {
+            return userController.userListGet(request);
+        }
+        if (requestPath.startsWith("/user/login.html") && "GET".equals(request.getRequestMethod())) {
+            return staticFileController.loginFileGet(request);
         }
         if (requestPath.equals("/")) {
             return homeController.rootPathGet();

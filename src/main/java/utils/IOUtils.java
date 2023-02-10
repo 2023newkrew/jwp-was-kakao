@@ -1,17 +1,20 @@
 package utils;
 
 import exceptions.InvalidQueryParameterException;
-import http.HttpRequest;
-import http.HttpRequestHeader;
+import http.HttpResponse;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IOUtils {
     public static String readData(BufferedReader br, int contentLength) throws IOException {
         char[] body = new char[contentLength];
@@ -19,52 +22,47 @@ public class IOUtils {
         return String.copyValueOf(body);
     }
 
-    public static HttpRequest parseReqeust(InputStream inputStream) throws IOException {
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-        HttpRequestHeader header = extractRequestHeader(bufferedReader);
-        String body = IOUtils.readData(bufferedReader, header.getContentLength()
-                .orElse(0));
-        return new HttpRequest(header, body);
-    }
-
-    public static HttpRequestHeader extractRequestHeader(BufferedReader bufferedReader) {
-        try {
-            List<String> headers = new ArrayList<>();
-            String line;
-            while (!"".equals(line = bufferedReader.readLine())) {
-                headers.add(line);
-                if (line == null) break;
-            }
-            return new HttpRequestHeader(headers);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Map<String, String> extractUserFromPath(String path) {
+    public static Map<String, String> extractParamMapFromPath(String path) {
         String[] token = path.split("\\?");
         try {
-            return extractUser(token[1]);
+            return IOUtils.extractParamsMap(token[1]);
         } catch (IndexOutOfBoundsException e) {
             throw new InvalidQueryParameterException();
         }
     }
 
-    public static Map<String, String> extractUser(String params) throws IndexOutOfBoundsException {
+    public static Map<String, String> extractParamsMap(String params) throws IndexOutOfBoundsException {
         String[] queryParams = params.split("&");
         return Arrays.stream(queryParams)
                 .map(s -> s.split("="))
                 .collect(Collectors.toMap(
                         a -> a[0],
-                        a -> {
-                            try {
-                                return URLDecoder.decode(a[1], "UTF-8");
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
+                        a -> URLDecoder.decode(a[1], StandardCharsets.UTF_8)
                 ));
+    }
+
+    public static void writeToOutputStream(DataOutputStream dos, HttpResponse response) throws IOException {
+        writeHeaderToOutputStream(dos, response);
+        writeBodyToOutputStream(dos, response);
+    }
+
+    private static void writeHeaderToOutputStream(DataOutputStream dos, HttpResponse response) throws IOException {
+        response.getHeaders()
+                .getHeaders()
+                .stream()
+                .forEach(header -> {
+                    try {
+                        dos.writeBytes(header + "\r\n");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        dos.writeBytes("\r\n");
+    }
+
+    private static void writeBodyToOutputStream(DataOutputStream dos, HttpResponse response) throws IOException {
+        byte[] body = response.getBody();
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 }

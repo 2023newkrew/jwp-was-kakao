@@ -18,4 +18,8 @@ public class User {
     public static User from(Map<String, String> userInfo) {
         return new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
     }
+
+    public Boolean isPasswordValid(String password) {
+        return password.equals(this.password);
+    }
 }
