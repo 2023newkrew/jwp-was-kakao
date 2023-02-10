@@ -12,7 +12,7 @@ public class CustomHttpCookie {
         this.path = "/";
     }
 
-    public String createJSessionId() {
+    private String createJSessionId() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
