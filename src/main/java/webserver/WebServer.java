@@ -11,13 +11,23 @@ import webserver.service.UserService;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class WebServer {
     private static final int DEFAULT_PORT = 8080;
-    private static final int THREAD_NUMS = 50;
-    private static final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMS);
+    private static final int CORE_THREAD_NUMS = 10;
+    private static final int MAX_THREAD_NUMS = 200;
+    private static final long KEEP_ALIVE_SECONDS = 60L;
+    private static final ExecutorService threadPool = new ThreadPoolExecutor(
+            CORE_THREAD_NUMS,
+            MAX_THREAD_NUMS,
+            KEEP_ALIVE_SECONDS,
+            TimeUnit.SECONDS,
+            new SynchronousQueue<>()
+    );
 
     public static void main(String[] args) throws Exception {
 
