@@ -1,6 +1,7 @@
 package webserver.request;
 
 import org.springframework.http.HttpMethod;
+import webserver.http.Cookie;
 
 public class Request {
 
@@ -19,6 +20,10 @@ public class Request {
 
     public String getPath() {
         return header.getPath();
+    }
+
+    public Cookie getCookie() {
+        return header.getCookie();
     }
 
     public String getBody(String key) {

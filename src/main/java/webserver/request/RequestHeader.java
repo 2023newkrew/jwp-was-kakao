@@ -1,6 +1,7 @@
 package webserver.request;
 
 import org.springframework.http.HttpMethod;
+import webserver.http.Cookie;
 import webserver.http.header.HeaderType;
 import webserver.http.header.Headers;
 
@@ -33,5 +34,14 @@ public class RequestHeader {
         }
 
         return Integer.parseInt(contentLength);
+    }
+
+    public Cookie getCookie() {
+        String cookie = headers.get(HeaderType.COOKIE);
+        if (Objects.isNull(cookie)) {
+            return null;
+        }
+
+        return new Cookie(cookie);
     }
 }

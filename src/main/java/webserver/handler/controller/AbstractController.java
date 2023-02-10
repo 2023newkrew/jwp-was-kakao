@@ -1,15 +1,19 @@
 package webserver.handler.controller;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import webserver.handler.Handler;
 import webserver.handler.resolver.Resolver;
+import webserver.http.content.ContentData;
 import webserver.http.header.Headers;
 import webserver.request.Request;
 import webserver.response.Response;
 import webserver.response.ResponseBody;
 import webserver.response.ResponseHeader;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -65,6 +69,26 @@ public abstract class AbstractController implements Handler {
 
     protected ResponseBody resolve(String path) {
         return viewResolver.resolve(path);
+    }
+
+    protected ResponseBody resolveTemplate(String path, Object context) {
+        ResponseBody body = viewResolver.resolve(path);
+        ContentData compiledData = compileWith(body.toString(), context);
+
+        return new ResponseBody(body.getContentType(), compiledData);
+    }
+
+    private ContentData compileWith(
+            String page, Object context) {
+        try {
+            Handlebars handlebars = new Handlebars();
+            Template template = handlebars.compileInline(page);
+
+            return new ContentData(template.apply(context));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected Response createResponse(HttpStatus httpStatus) {

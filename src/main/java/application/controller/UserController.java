@@ -2,6 +2,7 @@ package application.controller;
 
 import application.db.DataBase;
 import application.model.User;
+import application.model.Users;
 import org.springframework.http.HttpStatus;
 import webserver.handler.controller.AbstractController;
 import webserver.handler.resolver.Resolver;
@@ -11,6 +12,7 @@ import webserver.http.header.Headers;
 import webserver.request.Request;
 import webserver.response.Response;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserController extends AbstractController {
@@ -22,12 +24,14 @@ public class UserController extends AbstractController {
     private static final String LOGIN_PATH = "/user/login.html";
 
     private static final String LOGIN_FAILED_PATH = "/user/login_failed.html";
+    private static final String LIST_PATH = "/user/list.html";
 
     public UserController(Resolver viewResolver) {
         super(viewResolver);
         addPostHandler("/user/create", this::createUser);
         addGetHandler("/user/login", this::loginPage);
         addPostHandler("/user/login", this::login);
+        addGetHandler("/user/list", this::list);
     }
 
     private Response loginPage(Request request) {
@@ -52,7 +56,7 @@ public class UserController extends AbstractController {
         );
     }
 
-    public Response login(Request request) {
+    private Response login(Request request) {
         var headers = new Headers();
         if (loginSuccess(request)) {
             headers.put(HeaderType.LOCATION, ROOT_PATH);
@@ -61,10 +65,10 @@ public class UserController extends AbstractController {
             return createResponse(HttpStatus.FOUND, headers);
         }
 
-        return createResponse(HttpStatus.OK, headers, resolve(LOGIN_FAILED_PATH));
+        return createResponse(HttpStatus.FOUND, headers, resolve(LOGIN_FAILED_PATH));
     }
 
-    private static boolean loginSuccess(Request request) {
+    private boolean loginSuccess(Request request) {
         try {
             String userId = request.getBody("userId");
             String password = request.getBody("password");
@@ -77,4 +81,21 @@ public class UserController extends AbstractController {
         }
     }
 
+    private Response list(Request request) {
+        if (loggedIn(request)) {
+            var body = resolveTemplate(
+                    LIST_PATH,
+                    new Users(DataBase.findAll())
+            );
+            return createResponse(HttpStatus.OK, body);
+        }
+
+        return createResponse(HttpStatus.FOUND, resolve(LOGIN_PATH));
+    }
+
+    private boolean loggedIn(Request request) {
+        Cookie cookie = request.getCookie();
+
+        return Objects.nonNull(cookie);
+    }
 }

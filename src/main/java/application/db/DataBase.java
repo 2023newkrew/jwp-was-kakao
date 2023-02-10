@@ -2,8 +2,8 @@ package application.db;
 
 import application.model.User;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataBase {
@@ -17,7 +17,7 @@ public class DataBase {
         return users.get(userId);
     }
 
-    public static Collection<User> findAll() {
-        return users.values();
+    public static List<User> findAll() {
+        return List.copyOf(users.values());
     }
 }

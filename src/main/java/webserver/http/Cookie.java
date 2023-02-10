@@ -4,7 +4,6 @@ import webserver.collection.StringValues;
 import webserver.collection.Values;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class Cookie {
 
@@ -12,31 +11,23 @@ public class Cookie {
 
     private static final String KEY_VALUE_DELIMITER = "=";
 
-    private final Values values;
+    private final String value;
+
+    private final String path;
 
     public Cookie(UUID jSessionId, String path) {
-        values = new StringValues();
-        putJSessionId(jSessionId);
-        putPath(path);
+        this.value = jSessionId.toString();
+        this.path = path;
     }
 
     public Cookie(String cookie) {
-        values = new StringValues(cookie, DELIMITER, KEY_VALUE_DELIMITER);
-    }
-
-    public void putJSessionId(UUID jSessionId) {
-        values.put("JSESSIONID", jSessionId.toString());
-    }
-
-    public void putPath(String path) {
-        values.put("Path", path);
+        Values values = new StringValues(cookie, DELIMITER, KEY_VALUE_DELIMITER);
+        this.value = values.get("JSESSIONID");
+        this.path = values.get("Path");
     }
 
     @Override
     public String toString() {
-        return values.keySet()
-                .stream()
-                .map(key -> key + KEY_VALUE_DELIMITER + values.get(key))
-                .collect(Collectors.joining(DELIMITER));
+        return "JSESSIONID=" + value + "; Path=" + path;
     }
 }
