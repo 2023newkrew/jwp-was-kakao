@@ -10,12 +10,11 @@ public class HttpParser {
     public static final String NEW_LINE = "\n";
     public static final String SPACE = " ";
     public static final String COLON = ":";
+    public static final String EQUAL = "=";
 
     private final HashMap<String, String> httpHeaderInfo = new HashMap<>();
 
     public HttpParser(String httpRequest) {
-        System.out.println(httpRequest);
-
         LogicValidatorUtils.checkNull(httpRequest);
         String[] httpInfo = httpRequest.split(NEW_LINE);
         LogicValidatorUtils.checkNull(httpInfo[0]);
@@ -27,14 +26,17 @@ public class HttpParser {
 
         for (int i = 1; i < httpInfo.length; i++) {
             LogicValidatorUtils.checkNull(httpInfo[i]);
-            String key = httpInfo[i].split(COLON + SPACE)[0];
-            String value = httpInfo[i].split(COLON + SPACE)[1];
-            httpHeaderInfo.put(key, value);
+            String[] splittedLine = httpInfo[i].split(COLON + SPACE);
+            httpHeaderInfo.put(splittedLine[0], splittedLine[1]);
         }
     }
 
     public String getCookie() {
-        return httpHeaderInfo.get("Cookie");
+        String cookieHeader = httpHeaderInfo.get("Cookie");
+        if (cookieHeader == null){
+            return null;
+        }
+        return cookieHeader.split(EQUAL)[1];
     }
 
     public String getMethod() {

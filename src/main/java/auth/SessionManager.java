@@ -22,8 +22,4 @@ public class SessionManager {
     public static Set keySet(){
         return sessions.keySet();
     }
-
-    public static Integer size(){
-        return sessions.size();
-    }
 }

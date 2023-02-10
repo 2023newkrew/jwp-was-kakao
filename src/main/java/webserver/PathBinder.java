@@ -23,7 +23,6 @@ import java.util.UUID;
 
 public class PathBinder {
     public final Logger logger = LoggerFactory.getLogger(PathBinder.class);
-    private static final String TEMPLATE_ROOT_PATH = "./templates";
     private static final String STATIC_ROOT_PATH = "./static";
     private static final String HTML = "html";
     private static final String CSS = "/css";
@@ -98,7 +97,7 @@ public class PathBinder {
             if (user != null){
                 HttpCookie httpCookie = new HttpCookie(UUID.randomUUID());
                 Session session = new Session(httpCookie.getCookie());
-                session.setAttribute(user.getUserId(), user);
+                session.setAttribute("userObject", user);
                 SessionManager.add(httpCookie, session);
                 ResponseUtils.responseLoginHeader(dos, httpCookie);
             } else{

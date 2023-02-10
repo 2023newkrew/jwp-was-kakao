@@ -133,7 +133,7 @@ class RequestHandlerTest {
         // then
         Set set = SessionManager.keySet();
         Iterator iterator = set.iterator();
-        User expected = SessionManager.findSession((String) iterator.next()).getAttribute("cu");
+        User expected = SessionManager.findSession((String) iterator.next()).getAttribute("userObject");
 
         assertThat(DataBase.findAll().toArray()[0].toString()).isEqualTo(expected.toString());
     }

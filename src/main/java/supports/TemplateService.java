@@ -1,18 +1,18 @@
 package supports;
 
+import auth.AuthUtils;
+import auth.SessionManager;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Objects;
 
 public class TemplateService {
     private static final Logger log = LoggerFactory.getLogger(TemplateService.class);
@@ -26,37 +26,36 @@ public class TemplateService {
 
     public byte[] createHtmlBody(HttpParser httpParser) throws IOException, URISyntaxException {
         TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix(TEMPLATE_ROOT_PATH);
+        loader.setPrefix("/templates");
         loader.setSuffix(HTML);
         Handlebars handlebars = new Handlebars(loader);
 
         String path = httpParser.getPath();
         if(path.startsWith(USER_LIST_URL)){
-            if(httpParser.getCookie() == null){
+            if(AuthUtils.checkInvalidSession(httpParser.getCookie())){
                 return FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + USER_LOGIN_PATH);
             }
+
             Template template = handlebars.compile(USER_LIST_URL);
+            if(template == null){
+                throw new RuntimeException("경로에 템플릿이 없습니다.");
+            }
 
             String listHtml = template.apply(DataBase.findAll());
-
-            if(listHtml == null){
-                throw new RuntimeException("템플릿이 비어있습니다.");
-            }
 
             return listHtml.getBytes();
         }
 
         if(path.startsWith(USER_PROFILE_URL)){
-            if(httpParser.getCookie() == null){
+            if(AuthUtils.checkInvalidSession(httpParser.getCookie())){
                 return FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + USER_LOGIN_PATH);
             }
             Template template = handlebars.compile(USER_PROFILE_URL);
-
-            String profileHtml = template.apply(new User("asd", "asd", "asd", "asd@asd.asd"));
-
-            if(profileHtml == null){
-                throw new RuntimeException("템플릿이 비어있습니다.");
+            if(template == null){
+                throw new RuntimeException("경로에 템플릿이 없습니다.");
             }
+
+            String profileHtml = template.apply(SessionManager.findSession(httpParser.getCookie()).getAttribute("userObject"));
 
             return profileHtml.getBytes();
         }

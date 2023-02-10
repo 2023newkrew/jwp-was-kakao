@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 
 public class ResponseUtils {
     public static final Logger logger = LoggerFactory.getLogger(ResponseUtils.class);
-    public static final String LENGTH_OF_INDEX_PAGE = "6902";
 
     public static void responseOkHeader(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
