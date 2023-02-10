@@ -9,7 +9,7 @@ import support.StubSocket;
 class DefaultRequestHandleTest {
     @Test
     @DisplayName("주소가 '/'일때 Hello world를 출력하는지 테스트")
-    void socket_out() {
+    void defaultRequest() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET / HTTP/1.1 ",
