@@ -2,6 +2,7 @@ package http;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CookieList {
@@ -34,6 +35,10 @@ public class CookieList {
 
     public void addCookie(Cookie cookie) {
         this.cookies.add(cookie);
+    }
+
+    public boolean hasCookie(String name) {
+        return this.cookies.stream().anyMatch(cookie -> Objects.equals(cookie.getName(), name));
     }
 
     @Override

@@ -20,6 +20,7 @@ public class FrontController {
         handlerMappingMap.put("/", new HomeController());
         handlerMappingMap.put("/user/create", new UserSaveController());
         handlerMappingMap.put("/user/login", new UserLoginController());
+        handlerMappingMap.put("/user/list", new UserListController());
     }
 
     public void service(HttpRequest request, HttpResponse response) {

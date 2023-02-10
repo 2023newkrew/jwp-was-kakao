@@ -21,4 +21,8 @@ public class DataBase {
     public static Collection<User> findAll() {
         return users.values();
     }
+
+    static {
+        users.put("userId", new User("userId", "password", "name", "user@daum.net"));
+    }
 }
