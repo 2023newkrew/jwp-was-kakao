@@ -21,13 +21,27 @@ public class HttpResponse {
         this(status, new HttpResponseHeader(), status.getReasonPhrase().getBytes());
     }
 
+    private HttpResponse(HttpResponseBuilder builder) {
+        this(builder.status, builder.header, builder.body);
+    }
+
     public static HttpResponse ok(byte[] body, FilenameExtension extension) {
-        return new HttpResponse(HttpStatus.OK, createHeader(body, extension), body);
+        return HttpResponse.builder()
+                .status(HttpStatus.OK)
+                .contentType(extension.getContentType())
+                .contentLength(body.length)
+                .body(body)
+                .build();
+
     }
     public static HttpResponse found(byte[] body, FilenameExtension extension, String location) {
-        HttpResponseHeader header = createHeader(body, extension);
-        header.setLocation(location);
-        return new HttpResponse(HttpStatus.FOUND, header, body);
+        return HttpResponse.builder()
+                .status(HttpStatus.FOUND)
+                .contentType(extension.getContentType())
+                .contentLength(body.length)
+                .location(location)
+                .body(body)
+                .build();
     }
 
     private static HttpResponseHeader createHeader(byte[] body, FilenameExtension extension) {
@@ -38,7 +52,10 @@ public class HttpResponse {
     }
 
     public static HttpResponse internalServerError() {
-        return new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+        return HttpResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase().getBytes())
+                .build();
     }
 
     public void writeResponse(DataOutputStream dos) throws IOException{
@@ -57,5 +74,68 @@ public class HttpResponse {
 
     public void setCookie(String key, String value) {
         header.setCookie(key, value);
+    }
+
+    public static HttpResponseBuilder builder() {
+        return new HttpResponseBuilder();
+    }
+
+    public static class HttpResponseBuilder{
+
+        private HttpStatus status;
+        private HttpResponseHeader header;
+        private byte[] body;
+
+        private HttpResponseBuilder(HttpStatus status, HttpResponseHeader header, byte[] body) {
+            this.status = status;
+            this.header = header;
+            this.body = body;
+        }
+
+        public HttpResponseBuilder() {
+            this.header = new HttpResponseHeader();
+        }
+
+        public HttpResponseBuilder status(HttpStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public HttpResponseBuilder body(byte[] body){
+            this.body = body;
+            return this;
+        }
+
+        public HttpResponseBuilder header(HttpResponseHeader header) {
+            this.header = header;
+            return this;
+        }
+
+        public HttpResponseBuilder setCookie(String key, String value) {
+            this.header.setCookie(key, value);
+            return this;
+        }
+
+        public HttpResponseBuilder contentType(String contentType) {
+            this.header.setContentType(contentType);
+            return this;
+        }
+
+        public HttpResponseBuilder location(String location) {
+            this.header.setLocation(location);
+            return this;
+        }
+
+        public HttpResponseBuilder contentLength(int contentLength) {
+            this.header.setContentLength(contentLength);
+            return this;
+        }
+
+        public HttpResponse build() {
+            if (this.body == null) {
+                this.body = new byte[0];
+            }
+            return new HttpResponse(this);
+        }
     }
 }
