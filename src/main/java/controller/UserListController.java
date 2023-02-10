@@ -7,12 +7,20 @@ import com.github.jknack.handlebars.io.TemplateLoader;
 import service.UserService;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
+import webserver.HttpSession;
 
 import java.io.IOException;
 
 public class UserListController implements Controller {
     @Override
     public void process(HttpRequest httpRequest, HttpResponse httpResponse) throws RedirectException {
+        HttpSession session = httpRequest.getSession();
+        if (session == null || session.getAttribute("user") == null) {
+            String location = "/user/login.html";
+            httpResponse.sendRedirect(location);
+            throw new RedirectException(location);
+        }
+
         String sourcePath = httpRequest.getUrl();
         Object context = UserService.findAllUsers();
 
