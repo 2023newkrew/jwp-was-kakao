@@ -75,7 +75,7 @@ public class RequestHandler implements Runnable {
             throws IOException, URISyntaxException {
         dos.writeBytes(httpResponse.toString());
 
-        if (!httpResponse.isRedirectRequired()) {
+        if (!mav.hasView()) {
             byte[] body = FileIoUtils.loadTemplate(mav);
             dos.writeBytes(String.format("Content-Length: %d\r%n", body.length));
             dos.writeBytes("\r\n");

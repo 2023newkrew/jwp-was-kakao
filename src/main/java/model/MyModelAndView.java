@@ -27,4 +27,8 @@ public class MyModelAndView {
     public String getFullViewName() {
         return prefix + viewName;
     }
+
+    public boolean hasView() {
+        return this.viewName.isEmpty();
+    }
 }

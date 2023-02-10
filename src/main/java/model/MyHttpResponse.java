@@ -33,10 +33,6 @@ public class MyHttpResponse {
         this.headers.put("Content-Type", contentType + "; charset=utf-8");
     }
 
-    public boolean isRedirectRequired() {
-        return this.status >= 300 && this.status < 400;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
