@@ -16,7 +16,8 @@ public class StaticController implements MyController{
 
     @Override
     public boolean canHandle(MyHeaders headers, MyParams params) {
-        return isStatic(params.get("extension"));
+        String extension = getExtensionFromPath(params.get("path"));
+        return isStatic(extension);
     }
 
     @Override
@@ -47,5 +48,11 @@ public class StaticController implements MyController{
             return false;
         }
         return true;
+    }
+
+    private String getExtensionFromPath(String path){
+        String[] tokens = path.split("\\.");
+        if(tokens.length == 0) return "";
+        return tokens[tokens.length - 1];
     }
 }
