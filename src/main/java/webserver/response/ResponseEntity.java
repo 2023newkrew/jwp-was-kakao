@@ -14,11 +14,6 @@ import java.io.DataOutputStream;
 
 import static webserver.response.ResponseHeaders.*;
 
-// fluent : 모든 식별자에 대한 setter 동일한 이름으로 생성
-// chain : set 메서드를 chain 형식으로
-//@Accessors(fluent = true, chain = true)
-//@Setter
-//@RequiredArgsConstructor(staticName = "of")
 @Builder
 public class ResponseEntity {
 

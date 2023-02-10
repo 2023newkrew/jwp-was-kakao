@@ -2,6 +2,7 @@ package webserver;
 
 import controller.DispatcherServlet;
 import controller.MyController;
+import model.dto.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import model.dto.MyHeaders;
@@ -55,7 +56,7 @@ public class RequestHandler implements Runnable {
 
                 line = br.readLine();
             }
-logger.info("PATH : {}, COOKIE : {}", headers.get("path"), headers.get("cookie"));
+
             DataOutputStream dos = new DataOutputStream(out);
 
             // [POST] Request Body (추후 다른 메서드로 확장 가능)
@@ -93,8 +94,9 @@ logger.info("PATH : {}, COOKIE : {}", headers.get("path"), headers.get("cookie")
     // Cookie 추출
     private void getCookie(String line) {
         if(!line.startsWith("Cookie: ")) return;
-        String cookie = line.split(" ")[1] + ";";
-        headers.put("cookie", cookie);
+        Cookie cookie = new Cookie();
+        cookie.parseCookie(line);
+        headers.setCookie(cookie);
     }
 
     // ContentLength 추출
@@ -152,6 +154,6 @@ logger.info("PATH : {}, COOKIE : {}", headers.get("path"), headers.get("cookie")
     }
 
     public String getCookie(){
-        return headers.get("cookie");
+        return headers.getCookie().toString();
     }
 }

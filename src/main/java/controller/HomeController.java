@@ -21,7 +21,7 @@ public class HomeController implements MyController{
     @Override
     public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
-        String cookie = headers.get("cookie");
+        String cookie = headers.getCookie().toString();
         String contentType = headers.get("contentType");
 
         try{

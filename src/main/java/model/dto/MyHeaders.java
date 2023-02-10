@@ -9,9 +9,11 @@ import java.util.Map;
 public class MyHeaders {
 
     private final Map<String, String> headers;
+    private Cookie cookie;
 
     public MyHeaders(){
         headers = new HashMap<>();
+        cookie = new Cookie();
     }
 
     public void put(String key, String value){
@@ -22,4 +24,7 @@ public class MyHeaders {
         return headers.get(key);
     }
 
+    public void setCookie(Cookie cookie) {
+        this.cookie = cookie;
+    }
 }

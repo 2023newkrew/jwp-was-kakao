@@ -7,7 +7,6 @@ import com.github.jknack.handlebars.io.TemplateLoader;
 import model.User;
 import model.dto.Cookie;
 import model.dto.Users;
-import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
@@ -24,9 +23,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static db.DataBase.*;
-import static webserver.response.ResponseBodies.responseBody;
-import static webserver.response.ResponseHeaders.response200Header;
-import static webserver.response.ResponseHeaders.response302Header;
 import static webserver.session.SessionManager.*;
 
 public class UserController  implements MyController {
@@ -47,8 +43,7 @@ public class UserController  implements MyController {
     public ResponseEntity handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
         String path = headers.get("path");
         String contentType = headers.get("contentType");
-        cookie = headers.get("cookie");
-        logger.info("??? : {}", cookie);
+        cookie = headers.getCookie().toString();
         status = 200;
 
         if(path.equals("/user/form.html") && headers.get("method").equals("GET")){
@@ -68,7 +63,7 @@ public class UserController  implements MyController {
         }
 
         if(path.equals("/user/login") && headers.get("method").equals("GET")){
-            alreadyLogin(cookie, dataOutputStream);
+            alreadyLogin();
         }
 
         if(path.equals("/user/create") && headers.get("method").equals("POST")){
@@ -78,7 +73,7 @@ public class UserController  implements MyController {
         if(path.equals("/user/login") && headers.get("method").equals("POST")){
             login(params.get("userId"), params.get("password"), dataOutputStream);
         }
-logger.info("USER COOKIE : {}", cookie);
+
         return ResponseEntity.builder()
                 .status(status)
                 .cookie(cookie)
@@ -88,11 +83,20 @@ logger.info("USER COOKIE : {}", cookie);
                 .build();
     }
 
+    // Cookie가 없다면, Session에서 찾아서 넣어주기
+    private void findCookieInSession(String userId){
+        if(Objects.isNull(cookie) || cookie.startsWith("JSESSIONID")) return;
+        Session session = findSession(cookie);
+        if(!Objects.isNull(session)){
+            this.cookie = session.getId();
+        }
+    }
+
     private void setRedirectResponse(String redirectUrl){
         this.status = 302;
         this.redirectUrl = redirectUrl;
     }
-    private void alreadyLogin(String cookie, DataOutputStream dataOutputStream) {
+    private void alreadyLogin() {
         setRedirectResponse("/index.html");
     }
 
@@ -101,15 +105,16 @@ logger.info("USER COOKIE : {}", cookie);
             loginSuccess(userId);
             return;
         }
-        loginFail(dataOutputStream);
+        loginFail();
     }
 
     private void loginSuccess(String userId){
         // 쿠키 생성
-        cookie = new Cookie().toString();
-        logger.info("LOGIN COOKIE : {}", cookie);
+        Cookie cookie = new Cookie();
+        cookie.generateUUID();
+        this.cookie = cookie.toString();
         // 세션 저장
-        saveSession(cookie, userId);
+        saveSession(cookie.toString(), userId);
         setRedirectResponse("/index.html");
     }
 
@@ -119,7 +124,7 @@ logger.info("USER COOKIE : {}", cookie);
         add(session);
     }
 
-    private void loginFail(DataOutputStream dataOutputStream){
+    private void loginFail(){
         setRedirectResponse("/user/login_failed.html");
     }
 
@@ -137,20 +142,23 @@ logger.info("USER COOKIE : {}", cookie);
     private void getUserList(String contentType, String cookie, DataOutputStream dataOutputStream){
         // login이 안되어있다면
         if(!cookie.startsWith("JSESSIONID")){
-            System.out.println("로그인이 안되어있음");
-            System.out.println(cookie);
             String path = "/user/login.html";
             loginForm(path);
             return;
         }
-        userList(contentType, cookie, dataOutputStream);
+        userList();
     }
 
     private void loginForm(String path){
-        setTemplatePathToBody(path);
+        if(!cookie.startsWith("JSESSIONID")) {
+            setTemplatePathToBody(path);
+            return;
+        }
+        // 로그인이 되어 있다면, index.html로 redirect
+        setRedirectResponse("/index.html");
     }
 
-    private void userList(String contentType, String cookie, DataOutputStream dataOutputStream) {
+    private void userList() {
         try{
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/templates");
