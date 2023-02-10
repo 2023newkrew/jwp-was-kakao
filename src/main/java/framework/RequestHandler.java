@@ -19,6 +19,9 @@ import static framework.utils.IOUtils.writeResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private final HandlerMapper handlerMapper = HandlerMapper.getInstance();
+    private final ResourceMapper resourceMapper = ResourceMapper.getInstance();
+    private final ExceptionHandlerMapper exceptionHandlerMapper = ExceptionHandlerMapper.getInstance();
 
     private final Socket connection;
 
@@ -41,17 +44,17 @@ public class RequestHandler implements Runnable {
             try {
                 Controller handler;
                 Response response;
-                if ((handler = HandlerMapper.getInstance().findHandler(uri)) != null) {
-                    response = HandlerMapper.getInstance().handle(request, handler);
+                if ((handler = handlerMapper.findHandler(uri)) != null) {
+                    response = handlerMapper.handle(request, handler);
                 } else {
-                    response = ResourceMapper.getInstance().handle(uri);
+                    response = resourceMapper.handle(uri);
                 }
                 writeResponse(dataOutputStream, response.getBytes());
             } catch (Exception e) {
                 ExceptionController handler;
                 Response response;
-                if ((handler = ExceptionHandlerMapper.getInstance().findHandler(e)) != null) {
-                    response = ExceptionHandlerMapper.getInstance().handle(e, handler);
+                if ((handler = exceptionHandlerMapper.findHandler(e)) != null) {
+                    response = exceptionHandlerMapper.handle(e, handler);
                 } else {
                     response = Response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body("500 Internal Server Error")

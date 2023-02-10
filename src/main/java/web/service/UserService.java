@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public class UserService {
 
+    private final SessionHandler sessionHandler = SessionHandler.getInstance();
+
     private static class LazyHolder {
         public static final UserService INSTANCE = new UserService();
     }
@@ -36,7 +38,7 @@ public class UserService {
         if (user.checkPassword(params.get("password"))) {
             UUID uuid = UUID.randomUUID();
             Session session = new Session(Map.of("user", user));
-            SessionHandler.getInstance().saveSession(uuid, session);
+            sessionHandler.saveSession(uuid, session);
             return HttpCookie.from(Map.of("JSESSIONID", uuid.toString()));
         }
         throw new BusinessException(CommonErrorCode.SERVER_ERROR);
@@ -44,7 +46,7 @@ public class UserService {
 
     public User getUserFromCookie(HttpCookie cookie) {
         UUID uuid = UUID.fromString(cookie.get("JSESSIONID"));
-        Session session = SessionHandler.getInstance().getSession(uuid);
+        Session session = sessionHandler.getSession(uuid);
         return (User) session.get("user");
     }
 
@@ -53,7 +55,7 @@ public class UserService {
             return false;
         }
         UUID uuid = UUID.fromString(cookie.get("JSESSIONID"));
-        Session session = SessionHandler.getInstance().getSession(uuid);
+        Session session = sessionHandler.getSession(uuid);
         return session != null && session.get("user") != null;
     }
 }
