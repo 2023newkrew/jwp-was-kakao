@@ -15,7 +15,7 @@ public class HomeController implements MyController{
     @Override
     public boolean canHandle(MyHeaders headers, MyParams params) {
         String path = headers.get("path");
-        return path.equals("/") || path.equals("/index.html") || path.equals("/favicon.ico");
+        return parsePath(path);
     }
 
     @Override
@@ -35,6 +35,13 @@ public class HomeController implements MyController{
         }
 
         return getResponseEntity(200, contentType, cookie, body);
+    }
+
+    private boolean parsePath(String path){
+        if(path.equals("/") || path.equals("/index.html") || path.equals("/favicon.ico")){
+            return true;
+        }
+        return false;
     }
 
     private ResponseEntity getResponseEntity(int status, String contentType, String cookie, byte[] body){
