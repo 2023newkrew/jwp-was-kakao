@@ -20,7 +20,7 @@ public class SessionManager {
     }
 
     public Optional<CustomHttpSession> findSession(final String id) {
-        return Optional.of(SESSIONS.getOrDefault(id, null));
+        return Optional.of(SESSIONS.get(id));
     }
 
     public void remove(final String id) {
