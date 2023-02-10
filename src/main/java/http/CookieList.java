@@ -41,6 +41,13 @@ public class CookieList {
         return this.cookies.stream().anyMatch(cookie -> Objects.equals(cookie.getName(), name));
     }
 
+    public Object getCookie(String name) {
+        return this.cookies.stream()
+                .filter(cookie -> Objects.equals(cookie.getName(), name))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     @Override
     public String toString() {
         return cookies.stream().map(Cookie::toString)

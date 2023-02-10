@@ -2,6 +2,7 @@ package http.request;
 
 import http.HttpHeader;
 import http.HttpMethod;
+import http.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.IOUtils;
@@ -55,5 +56,9 @@ public class HttpRequest {
 
     public String getPath() {
         return getRequestLine().getRequestURI().getPath();
+    }
+
+    public boolean isLoggedIn() {
+        return httpHeader.getCookieList().hasCookie(SessionManager.SESSION_ID_NAME);
     }
 }

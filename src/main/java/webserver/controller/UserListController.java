@@ -2,8 +2,8 @@ package webserver.controller;
 
 import db.DataBase;
 import dto.UserDto;
-import http.Cookie;
 import http.HttpResponse;
+import http.ResponseStatus;
 import http.request.HttpRequest;
 import model.User;
 
@@ -15,8 +15,9 @@ public class UserListController implements Controller {
 
     @Override
     public String process(HttpRequest request, HttpResponse response) {
-        boolean isLoggedIn = request.getRequestHeader().getCookie().hasCookie(Cookie.SESSION_ID_NAME);
-        if (!isLoggedIn) {
+
+        if (!request.isLoggedIn()) {
+            response.setResponseStatus(ResponseStatus.FOUND);
             return "/user/login.html";
         }
 

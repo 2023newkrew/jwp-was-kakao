@@ -28,7 +28,7 @@ public class HttpHeader {
         }
     }
 
-    public CookieList getCookie() {
+    public CookieList getCookieList() {
         String cookieString = headers.getOrDefault(COOKIE, "");
         return CookieList.parse(cookieString);
     }

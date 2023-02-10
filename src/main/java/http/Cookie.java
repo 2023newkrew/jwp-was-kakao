@@ -2,7 +2,6 @@ package http;
 
 public class Cookie {
 
-    public static final String SESSION_ID_NAME = "JSESSIONID";
     public static final String PATH_NAME = "Path";
 
     private final String name;
@@ -21,9 +20,9 @@ public class Cookie {
         return value;
     }
 
-
     @Override
     public String toString() {
         return this.name + "=" + this.value;
     }
+
 }
