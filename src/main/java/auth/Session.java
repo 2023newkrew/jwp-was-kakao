@@ -1,11 +1,13 @@
 package auth;
 
+import model.User;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Session {
 
     private final String id;
-    private final ConcurrentHashMap<String, Object> values = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, User> values = new ConcurrentHashMap<>();
 
     public Session(String id) {
         this.id = id;
@@ -15,11 +17,11 @@ public class Session {
         return id;
     }
 
-    public Object getAttribute(String name) {
+    public User getAttribute(String name) {
         return values.get(name);
     }
 
-    public void setAttribute(String name, Object value) {
+    public void setAttribute(String name, User value) {
         values.put(name, value);
     }
 

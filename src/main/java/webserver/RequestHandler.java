@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
-    public static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    public final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
 

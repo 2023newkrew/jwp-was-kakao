@@ -1,5 +1,6 @@
 package webserver;
 
+import auth.SessionManager;
 import db.DataBase;
 import model.User;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,7 +69,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUser() throws IOException, URISyntaxException {
+    void createUser() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
@@ -96,7 +99,47 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserRedirect() throws IOException, URISyntaxException {
+    void createUserSession() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 92",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+        final String httpRequest2 = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 27",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        final var socket2 = new StubSocket(httpRequest2);
+        final RequestHandler handler2 = new RequestHandler(socket2);
+
+        // when
+        handler.run();
+        handler2.run();
+
+        // then
+        Set set = SessionManager.keySet();
+        Iterator iterator = set.iterator();
+        User expected = SessionManager.findSession((String) iterator.next()).getAttribute("cu");
+
+        assertThat(DataBase.findAll().toArray()[0].toString()).isEqualTo(expected.toString());
+    }
+
+    @Test
+    void createUserRedirect() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",

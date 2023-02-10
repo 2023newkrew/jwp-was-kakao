@@ -1,6 +1,11 @@
 package webserver;
 
 import auth.HttpCookie;
+import auth.Session;
+import auth.SessionManager;
+import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import supports.HttpParser;
 import supports.TemplateService;
 import supports.UserService;
@@ -17,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class PathBinder {
+    public final Logger logger = LoggerFactory.getLogger(PathBinder.class);
     private static final String TEMPLATE_ROOT_PATH = "./templates";
     private static final String STATIC_ROOT_PATH = "./static";
     private static final String HTML = "html";
@@ -87,10 +93,13 @@ public class PathBinder {
         String method = httpParser.getMethod();
         String path = httpParser.getPath();
         if (Objects.equals(method, "POST") && path.startsWith(USER_LOGIN_URL)) {
-            Optional<UUID> cookie = userService.loginUser(br, httpParser);
+            User user = userService.findAuthorizedUser(br, httpParser);
 
-            if (cookie.isPresent()){
-                HttpCookie httpCookie = new HttpCookie(cookie.get());
+            if (user != null){
+                HttpCookie httpCookie = new HttpCookie(UUID.randomUUID());
+                Session session = new Session(httpCookie.getCookie());
+                session.setAttribute(user.getUserId(), user);
+                SessionManager.add(httpCookie, session);
                 ResponseUtils.responseLoginHeader(dos, httpCookie);
             } else{
                 ResponseUtils.responseRedirectHeader(dos, USER_LOGIN_FAIL_PATH);
