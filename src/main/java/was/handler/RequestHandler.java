@@ -2,10 +2,7 @@ package was.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import was.annotation.Controller;
-import was.annotation.Mapping;
-import was.annotation.QueryString;
-import was.annotation.RequestBody;
+import was.annotation.*;
 import was.domain.PathPattern;
 import was.domain.request.Request;
 import was.domain.response.Response;
@@ -20,7 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +29,7 @@ public class RequestHandler implements Runnable {
 
     private Socket connection;
     private Map<PathPattern, Method> map;
+    private Map<String, Method> staticMap;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -42,6 +39,12 @@ public class RequestHandler implements Runnable {
     private void initMap() {
         map = MethodAnnotationScanner.getInstance().getMethods(Controller.class, Mapping.class).stream()
                 .collect(Collectors.toMap(it -> PathPattern.from(it.getAnnotation(Mapping.class)), it -> it));
+        staticMap = MethodAnnotationScanner.getInstance().getMethods(Controller.class, StaticMapping.class).stream()
+                .collect(Collectors.toMap(it -> getFileType(it.getAnnotation(StaticMapping.class)), it -> it));
+    }
+
+    private String getFileType(StaticMapping staticMapping) {
+        return staticMapping.fileType();
     }
 
     public void run() {
@@ -60,14 +63,24 @@ public class RequestHandler implements Runnable {
 
     private Optional<Response> body(Request request) {
         try {
-            List<Object> args = new ArrayList<>();
-            if(map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)){
-                args.add(request.getParams());
+            List<Method> methods = staticMap.keySet().stream()
+                    .filter(it -> request.getPath().endsWith("." + it))
+                    .map(it -> staticMap.get(it))
+                    .collect(Collectors.toList());
+
+            if (!methods.isEmpty()) {
+                return (Optional<Response>) methods.get(0).invoke(null, request);
             }
-            if(map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class)){
-                args.add(request.getBody());
+
+            if (map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class) &&
+                    request.getParams() == null || request.getParams().isEmpty()) {
+                return Optional.ofNullable(null);
             }
-            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, args.toArray());
+            if (map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class) &&
+                    request.getBody() == null || request.getBody().length() == 0) {
+                return Optional.ofNullable(null);
+            }
+            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, request);
         } catch (Exception e) {
             return Optional.ofNullable(null);
         }

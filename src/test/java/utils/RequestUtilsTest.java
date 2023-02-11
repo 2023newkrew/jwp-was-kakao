@@ -14,12 +14,14 @@ class RequestUtilsTest {
     @DisplayName("요청으로 받는 http요청 메시지를 Request 객체로 반환한다")
     @Test
     void getRequestTest() {
+        String body = "userId=cu&password=password";
         String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
+                "Content-Length: " + body.length(),
                 "",
-                "");
+                body);
 
         InputStream in = new ByteArrayInputStream(httpRequest.getBytes());
 
@@ -27,6 +29,6 @@ class RequestUtilsTest {
 
         Assertions.assertThat(request.getMethod()).isEqualTo(RequestMethod.GET);
         Assertions.assertThat(request.getPath()).isEqualTo("/index.html");
-        Assertions.assertThat(request.getBody()).isEqualTo("");
+        Assertions.assertThat(request.getBody()).isEqualTo("userId=cu&password=password");
     }
 }

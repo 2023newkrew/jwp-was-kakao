@@ -13,4 +13,9 @@ public class User {
     private final String password;
     private final String name;
     private final String email;
+
+
+    public boolean isMatchPassword(String password) {
+        return this.password.equals(password);
+    }
 }

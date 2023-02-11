@@ -3,6 +3,8 @@ package was.utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import was.annotation.RequestMethod;
+import was.domain.Cookie;
+import was.domain.Cookies;
 import was.domain.request.Request;
 
 import java.io.BufferedReader;
@@ -17,18 +19,25 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestUtils {
 
-    public static Request getRequest(InputStream inputStream){
-        BufferedReader reader =  new BufferedReader(new InputStreamReader(inputStream));
+    public static Request getRequest(InputStream inputStream) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        try{
+        try {
             String requestLine = reader.readLine();
             String method = requestLine.split(" ")[0];
             PathParamsParser pathParamsParser = new PathParamsParser(requestLine.split(" ")[1]);
             Map<String, String> header = getHeader(reader);
-            String requestBody = getBody(reader);
+            String requestBody = getBody(reader, Integer.parseInt(header.getOrDefault("Content-Length", "0")));
+            Cookie cookie = getCookie(header.getOrDefault("Cookie", ""));
 
-            return new Request(RequestMethod.valueOf(method), pathParamsParser.getPath(), pathParamsParser.getParams(), requestBody);
-        } catch(IOException ignored){
+            return Request.builder()
+                    .method(RequestMethod.valueOf(method))
+                    .path(pathParamsParser.getPath())
+                    .params(pathParamsParser.getParams())
+                    .body(requestBody)
+                    .cookie(cookie)
+                    .build();
+        } catch (IOException ignored) {
 
         }
         return null;
@@ -43,14 +52,24 @@ public class RequestUtils {
     private static List<String> getLines(BufferedReader reader) throws IOException {
         List<String> lines = new ArrayList<>();
         String line = reader.readLine();
-        while (line != null && line.equals("")) {
+        while (line != null && !"".equals(line)) {
             lines.add(line);
             line = reader.readLine();
         }
         return lines;
     }
 
-    private static String getBody(BufferedReader reader) throws IOException {
-        return String.join("\r\n", getLines(reader));
+    private static String getBody(BufferedReader reader, Integer contentLength) throws IOException {
+        return String.join("\r\n", IOUtils.readData(reader, contentLength));
+    }
+
+    private static Cookie getCookie(String cookieHeader) {
+        if (cookieHeader.isEmpty()) return null;
+
+        String[] values = cookieHeader.split("; ");
+
+        String uuid = values[0].split("=", 2)[1];
+
+        return Cookies.getCookie(uuid);
     }
 }

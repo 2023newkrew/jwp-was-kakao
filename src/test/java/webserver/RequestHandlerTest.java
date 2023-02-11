@@ -89,14 +89,16 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUser(){
+    void createUser() {
+        String body = "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com";
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Accept: */* ",
                 "Connection: keep-alive ",
+                "Content-Length: " + body.length(),
                 "",
-                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+                body);
 
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
@@ -105,8 +107,34 @@ class RequestHandlerTest {
         handler.run();
 
         var expected = "HTTP/1.1 302 FOUND \r\n" +
-                "Location: /index.html\r\n";
+                "Location: /index.html \r\n" +
+                "\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void login() {
+        createUser();
+        String body = "userId=cu&password=password";
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Accept: */* ",
+                "Connection: keep-alive ",
+                "Content-Length: " + body.length(),
+                "",
+                body);
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        handler.run();
+
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: /index.html \r\n" +
+                "Set-Cookie: ";
+
+        assertThat(socket.output().startsWith(expected)).isTrue();
     }
 }
