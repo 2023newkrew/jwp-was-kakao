@@ -73,11 +73,11 @@ public class RequestHandler implements Runnable {
             }
 
             if (map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class) &&
-                    request.getParams() == null || request.getParams().isEmpty()) {
+                    (request.getParams() == null || request.getParams().isEmpty())) {
                 return Optional.ofNullable(null);
             }
             if (map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class) &&
-                    request.getBody() == null || request.getBody().length() == 0) {
+                    (request.getBody() == null || request.getBody().length() == 0)) {
                 return Optional.ofNullable(null);
             }
             return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, request);

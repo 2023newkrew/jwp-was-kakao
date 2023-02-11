@@ -1,5 +1,9 @@
 package controller;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.User;
@@ -16,6 +20,7 @@ import was.domain.response.ResponseHeader;
 import was.domain.response.StatusCode;
 import was.domain.response.Version;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Controller
@@ -49,5 +54,46 @@ public class UserController {
                         .cookie(cookie)
                         .build())
                 .build());
+    }
+
+    @Mapping(method = RequestMethod.GET, path = "/user/list")
+    public static Optional<Response> list(Request request) {
+        if (request.getCookie() == null || !UserService.isValidUser(request.getCookie().getUser())) {
+            return Optional.of(Response.builder()
+                    .version(Version.HTTP_1_1)
+                    .statusCode(StatusCode.FOUND)
+                    .responseHeader(ResponseHeader.builder()
+                            .location("/user/login.html")
+                            .build())
+                    .build());
+        }
+
+        String list = getUserListFile();
+        if (list.equals(""))
+            return Optional.ofNullable(null);
+
+        return Optional.of(Response.builder()
+                .version(Version.HTTP_1_1)
+                .statusCode(StatusCode.OK)
+                .responseHeader(ResponseHeader.builder()
+                        .contentLength(list.length())
+                        .contentType("text/html")
+                        .build())
+                .body(list.getBytes())
+                .build());
+    }
+
+    private static String getUserListFile() {
+        TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setPrefix("/templates");
+        loader.setSuffix(".html");
+        Handlebars handlebars = new Handlebars(loader);
+
+        try {
+            Template template = handlebars.compile("user/list");
+            return template.apply(UserService.findAllUser());
+        } catch (IOException e) {
+            return "";
+        }
     }
 }

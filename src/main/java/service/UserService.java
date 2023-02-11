@@ -7,6 +7,7 @@ import model.User;
 import model.UserRequest;
 import was.utils.ParamsParser;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,5 +37,13 @@ public class UserService {
             return Optional.of(user);
 
         return Optional.ofNullable(null);
+    }
+
+    public static boolean isValidUser(User user) {
+        return DataBase.findUserByUserId(user.getUserId()).isPresent();
+    }
+
+    public static Collection<User> findAllUser() {
+        return DataBase.findAll();
     }
 }
