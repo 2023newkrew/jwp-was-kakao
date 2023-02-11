@@ -1,4 +1,4 @@
-package controller;
+package was.presentation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +34,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
         return Optional.ofNullable(null);
@@ -54,9 +52,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 
@@ -64,7 +60,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "png")
-    public static Optional<Response> getImage(Request request) {
+    public static Optional<Response> getPng(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/image/" + request.getPath());
             return Optional.of(Response.builder()
@@ -75,9 +71,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 
@@ -85,7 +79,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "js")
-    public static Optional<Response> getJS(Request request) {
+    public static Optional<Response> getJs(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
             return Optional.of(Response.builder()
@@ -96,9 +90,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 
@@ -106,7 +98,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "ttf")
-    public static Optional<Response> getTTF(Request request) {
+    public static Optional<Response> getTtf(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
             return Optional.of(Response.builder()
@@ -117,9 +109,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 
@@ -138,9 +128,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 
@@ -159,9 +147,7 @@ public class StaticController {
                             .contentLength(body.length)
                             .build())
                     .body(body).build());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 
