@@ -4,7 +4,6 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import model.User;
 import service.UserService;
@@ -25,18 +24,18 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Controller
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class UserController {
     @RequestBody
     @Mapping(method = RequestMethod.POST, path = "/user/create")
-    public static Optional<Response> createUser(Request request) {
+    public Optional<Response> createUser(Request request) {
         UserService.createUser(request.getBody());
         return redirectToIndexResponse();
     }
 
     @RequestBody
     @Mapping(method = RequestMethod.POST, path = "/user/login")
-    public static Optional<Response> login(Request request) {
+    public Optional<Response> login(Request request) {
         if (request.getCookie() != null && UserService.isValidUser(getUserFormRequest(request))) {
             return redirectToIndexResponse();
         }
@@ -62,7 +61,7 @@ public class UserController {
     }
 
     @Mapping(method = RequestMethod.GET, path = "/user/list")
-    public static Optional<Response> list(Request request) {
+    public Optional<Response> list(Request request) {
         if (request.getCookie() == null || !UserService.isValidUser(getUserFormRequest(request))) {
             return Optional.of(Response.builder()
                     .version(Version.HTTP_1_1)
@@ -88,7 +87,7 @@ public class UserController {
                 .build());
     }
 
-    private static String getUserListFile() {
+    private String getUserListFile() {
         TemplateLoader loader = new ClassPathTemplateLoader();
         loader.setPrefix("/templates");
         loader.setSuffix(".html");
@@ -102,7 +101,7 @@ public class UserController {
         }
     }
 
-    private static Optional<Response> redirectToIndexResponse() {
+    private Optional<Response> redirectToIndexResponse() {
         return Optional.of(Response.builder()
                 .version(Version.HTTP_1_1)
                 .statusCode(StatusCode.FOUND)
@@ -112,7 +111,7 @@ public class UserController {
                 .build());
     }
 
-    private static Optional<Response> redirectToLoginFailedResponse() {
+    private Optional<Response> redirectToLoginFailedResponse() {
         return Optional.of(Response.builder()
                 .version(Version.HTTP_1_1)
                 .statusCode(StatusCode.FOUND)
@@ -122,7 +121,7 @@ public class UserController {
                 .build());
     }
 
-    private static User getUserFormRequest(Request request) {
+    private User getUserFormRequest(Request request) {
         return (User) SessionManager.getSession(request.getCookie().getUuid()).getAttribute("user");
     }
 }

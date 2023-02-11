@@ -3,11 +3,13 @@ package was.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import was.annotation.*;
+import was.domain.Controllers;
 import was.domain.PathPattern;
 import was.domain.request.Request;
 import was.domain.response.Response;
 import was.domain.response.StatusCode;
 import was.domain.response.Version;
+import was.scanner.ClassAnnotationScanner;
 import was.scanner.MethodAnnotationScanner;
 import was.utils.RequestUtils;
 
@@ -30,6 +32,7 @@ public class RequestHandler implements Runnable {
     private Socket connection;
     private Map<PathPattern, Method> map;
     private Map<String, Method> staticMap;
+    private Controllers controllers = new Controllers(ClassAnnotationScanner.getInstance().getClasses(Controller.class));
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -69,18 +72,19 @@ public class RequestHandler implements Runnable {
                     .collect(Collectors.toList());
 
             if (!methods.isEmpty()) {
-                return (Optional<Response>) methods.get(0).invoke(null, request);
+                return (Optional<Response>) methods.get(0).invoke(controllers.getController(methods.get(0).getDeclaringClass()), request);
             }
 
-            if (map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class) &&
+            Method method = map.get(request.toPathPattern());
+            if (method.isAnnotationPresent(QueryString.class) &&
                     (request.getParams() == null || request.getParams().isEmpty())) {
                 return Optional.ofNullable(null);
             }
-            if (map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class) &&
+            if (method.isAnnotationPresent(RequestBody.class) &&
                     (request.getBody() == null || request.getBody().length() == 0)) {
                 return Optional.ofNullable(null);
             }
-            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, request);
+            return (Optional<Response>) method.invoke(controllers.getController(method.getDeclaringClass()), request);
         } catch (Exception e) {
             return Optional.ofNullable(null);
         }

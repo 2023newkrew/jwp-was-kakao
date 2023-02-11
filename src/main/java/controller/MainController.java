@@ -1,6 +1,5 @@
 package controller;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +15,12 @@ import was.domain.response.Version;
 import java.util.Optional;
 
 @Controller
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @Mapping(method = RequestMethod.GET, path = "/")
-    public static Optional<Response> socket_out(Request request) {
+    public Optional<Response> socket_out(Request request) {
         return Optional.of(Response.builder()
                 .version(Version.HTTP_1_1)
                 .statusCode(StatusCode.OK)

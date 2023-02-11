@@ -1,5 +1,6 @@
 package was.presentation;
 
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import was.annotation.Controller;
@@ -16,14 +17,12 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 @Controller
+@NoArgsConstructor
 public class StaticController {
     private static final Logger logger = LoggerFactory.getLogger(StaticController.class);
-
-    private StaticController() {
-    }
-
+    
     @StaticMapping(fileType = "html")
-    public static Optional<Response> getHtml(Request request) {
+    public Optional<Response> getHtml(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./templates/" + request.getPath());
             return Optional.of(Response.builder()
@@ -41,7 +40,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "css")
-    public static Optional<Response> getCss(Request request) {
+    public Optional<Response> getCss(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
             return Optional.of(Response.builder()
@@ -60,7 +59,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "png")
-    public static Optional<Response> getPng(Request request) {
+    public Optional<Response> getPng(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/image/" + request.getPath());
             return Optional.of(Response.builder()
@@ -79,7 +78,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "js")
-    public static Optional<Response> getJs(Request request) {
+    public Optional<Response> getJs(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
             return Optional.of(Response.builder()
@@ -98,7 +97,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "ttf")
-    public static Optional<Response> getTtf(Request request) {
+    public Optional<Response> getTtf(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
             return Optional.of(Response.builder()
@@ -117,7 +116,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "woff")
-    public static Optional<Response> getWoff(Request request) {
+    public Optional<Response> getWoff(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
             return Optional.of(Response.builder()
@@ -136,7 +135,7 @@ public class StaticController {
     }
 
     @StaticMapping(fileType = "ico")
-    public static Optional<Response> getIco(Request request) {
+    public Optional<Response> getIco(Request request) {
         try {
             byte[] body = FileIoUtils.loadFileFromClasspath("./templates/" + request.getPath());
             return Optional.of(Response.builder()
