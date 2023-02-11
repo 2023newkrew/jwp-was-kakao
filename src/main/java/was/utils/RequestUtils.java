@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import was.annotation.RequestMethod;
 import was.domain.Cookie;
-import was.domain.Cookies;
 import was.domain.request.Request;
 
 import java.io.BufferedReader;
@@ -69,7 +68,8 @@ public class RequestUtils {
         String[] values = cookieHeader.split("; ");
 
         String uuid = values[0].split("=", 2)[1];
+        String path = values[1].split("=", 2)[1];
 
-        return Cookies.getCookie(uuid);
+        return new Cookie(uuid, path);
     }
 }

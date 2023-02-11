@@ -140,6 +140,32 @@ class RequestHandlerTest {
     }
 
     @Test
+    void tryLoginWithSession() {
+        String sessionId = loginForTest();
+        String body = "userId=cu&password=password";
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Accept: */* ",
+                "Connection: keep-alive ",
+                "Content-Length: " + body.length(),
+                "Cookie: " + sessionId + "; Path=/ ",
+                "",
+                body);
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        handler.run();
+
+        var expected = "HTTP/1.1 302 FOUND \r\n" +
+                "Location: /index.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
     void userList() throws IOException, URISyntaxException {
         createUser();
         String sessionId = loginForTest();
