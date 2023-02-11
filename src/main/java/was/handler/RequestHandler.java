@@ -53,7 +53,7 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             DataOutputStream dos = new DataOutputStream(out);
-            Response response = body(RequestUtils.getRequest(in)).orElse(RESPONSE_404);
+            Response response = createResponse(RequestUtils.getRequest(in)).orElse(RESPONSE_404);
             responseHeader(dos, response);
             responseBody(dos, response);
         } catch (IOException e) {
@@ -61,7 +61,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private Optional<Response> body(Request request) {
+    private Optional<Response> createResponse(Request request) {
         try {
             List<Method> methods = staticMap.keySet().stream()
                     .filter(it -> request.getPath().endsWith("." + it))
