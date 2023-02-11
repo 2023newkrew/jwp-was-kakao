@@ -1,13 +1,13 @@
-package webserver;
+package webserver.controller;
 
 import lombok.RequiredArgsConstructor;
+import webserver.model.request.FileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
-import webserver.controller.RequestMappingHandler;
-import webserver.request.Request;
-import webserver.response.Response;
-import webserver.response.StatusCode;
+import webserver.utils.FileIoUtils;
+import webserver.model.request.Request;
+import webserver.model.response.Response;
+import webserver.model.response.StatusCode;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;

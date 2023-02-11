@@ -1,10 +1,11 @@
 package webserver;
 
+import webserver.controller.RequestHandler;
 import org.junit.jupiter.api.Test;
-import repository.MemorySessionRepository;
-import repository.MemoryUserRepository;
+import webserver.repository.MemorySessionRepository;
+import webserver.repository.MemoryUserRepository;
 import support.StubSocket;
-import utils.FileIoUtils;
+import webserver.utils.FileIoUtils;
 import webserver.controller.GlobalController;
 import webserver.controller.RequestMappingHandler;
 import webserver.service.SessionService;

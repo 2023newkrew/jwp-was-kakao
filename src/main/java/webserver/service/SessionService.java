@@ -1,9 +1,9 @@
 package webserver.service;
 
 import lombok.RequiredArgsConstructor;
-import model.Session;
-import model.User;
-import repository.SessionRepository;
+import webserver.model.Session;
+import webserver.model.User;
+import webserver.repository.SessionRepository;
 
 import java.util.Optional;
 

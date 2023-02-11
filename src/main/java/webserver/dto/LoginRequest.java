@@ -1,4 +1,4 @@
-package dto;
+package webserver.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

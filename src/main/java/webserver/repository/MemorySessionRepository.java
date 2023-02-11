@@ -1,6 +1,6 @@
-package repository;
+package webserver.repository;
 
-import model.Session;
+import webserver.model.Session;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

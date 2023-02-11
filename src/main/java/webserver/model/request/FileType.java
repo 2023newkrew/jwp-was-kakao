@@ -1,4 +1,4 @@
-package webserver;
+package webserver.model.request;
 
 import lombok.RequiredArgsConstructor;
 

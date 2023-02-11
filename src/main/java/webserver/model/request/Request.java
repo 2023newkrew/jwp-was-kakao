@@ -1,18 +1,15 @@
-package webserver.request;
+package webserver.model.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import utils.IOUtils;
-import webserver.FileType;
+import webserver.utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static webserver.request.RequestConstant.*;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -50,54 +47,54 @@ public class Request {
     }
 
     private static Method parseMethod(String firstLine) {
-        return Method.of(firstLine.split(WHITE_SPACE_REGEX)[METHOD_INDEX]);
+        return Method.of(firstLine.split(RequestConstant.WHITE_SPACE_REGEX)[RequestConstant.METHOD_INDEX]);
     }
 
     private static String parsePath(String firstLine) {
-        return firstLine.split(WHITE_SPACE_REGEX)[URL_INDEX].split(QUERY_STRING_IDENTIFIER)[PATH_INDEX];
+        return firstLine.split(RequestConstant.WHITE_SPACE_REGEX)[RequestConstant.URL_INDEX].split(RequestConstant.QUERY_STRING_IDENTIFIER)[RequestConstant.PATH_INDEX];
     }
 
     private static Map<String, String> parseQueryString(String firstLine) {
-        String[] splitUrl = firstLine.split(WHITE_SPACE_REGEX)[URL_INDEX].split(QUERY_STRING_IDENTIFIER);
+        String[] splitUrl = firstLine.split(RequestConstant.WHITE_SPACE_REGEX)[RequestConstant.URL_INDEX].split(RequestConstant.QUERY_STRING_IDENTIFIER);
         if (splitUrl.length == 1) {
             return Map.of();
         }
-        return parseQueryStringFormat(splitUrl[QUERY_STRING_INDEX]);
+        return parseQueryStringFormat(splitUrl[RequestConstant.QUERY_STRING_INDEX]);
     }
 
     private static String parseProtocol(String firstLine) {
-        return firstLine.split(WHITE_SPACE_REGEX)[PROTOCOL_INDEX];
+        return firstLine.split(RequestConstant.WHITE_SPACE_REGEX)[RequestConstant.PROTOCOL_INDEX];
     }
 
     private static Map<String, String> parseHeader(BufferedReader reader) throws IOException {
         Map<String, String> requestHeader = new HashMap<>();
         String header;
         while (!Objects.equals(header = reader.readLine(), "")) {
-            String[] headerInformation = header.split(HEADER_KEY_SEPARATOR);
-            requestHeader.put(headerInformation[KEY_INDEX].trim(), headerInformation[VALUE_INDEX].trim());
+            String[] headerInformation = header.split(RequestConstant.HEADER_KEY_SEPARATOR);
+            requestHeader.put(headerInformation[RequestConstant.KEY_INDEX].trim(), headerInformation[RequestConstant.VALUE_INDEX].trim());
         }
         return Collections.unmodifiableMap(requestHeader);
     }
 
     private static Cookie parseCookie(Map<String, String> requestHeader) {
-        if (requestHeader.containsKey(COOKIE)) {
-            return Cookie.of(requestHeader.get(COOKIE));
+        if (requestHeader.containsKey(RequestConstant.COOKIE)) {
+            return Cookie.of(requestHeader.get(RequestConstant.COOKIE));
         }
         return Cookie.empty();
     }
 
     private static String parseBody(BufferedReader reader, Map<String, String> requestHeader) throws IOException {
-        if (requestHeader.containsKey(CONTENT_LENGTH)) {
-            int contentLength = Integer.parseInt(requestHeader.get(CONTENT_LENGTH));
+        if (requestHeader.containsKey(RequestConstant.CONTENT_LENGTH)) {
+            int contentLength = Integer.parseInt(requestHeader.get(RequestConstant.CONTENT_LENGTH));
             return IOUtils.readData(reader, contentLength);
         }
         return "";
     }
 
     private static Map<String, String> parseQueryStringFormat(String input) {
-        return Arrays.stream(input.split(QUERY_STRING_CONNECTOR))
-                .map(s -> s.split(QUERY_STRING_SEPARATOR))
-                .collect(Collectors.toMap(keyValuePair -> keyValuePair[KEY_INDEX], keyValuePair -> keyValuePair[VALUE_INDEX], (a, b) -> b));
+        return Arrays.stream(input.split(RequestConstant.QUERY_STRING_CONNECTOR))
+                .map(s -> s.split(RequestConstant.QUERY_STRING_SEPARATOR))
+                .collect(Collectors.toMap(keyValuePair -> keyValuePair[RequestConstant.KEY_INDEX], keyValuePair -> keyValuePair[RequestConstant.VALUE_INDEX], (a, b) -> b));
     }
 
     public Map<String, String> getRequestBodyAsQueryString() {
@@ -105,12 +102,12 @@ public class Request {
     }
 
     public FileType getRequestFileType() {
-        String[] split = path.split(PERIOD_REGEX);
+        String[] split = path.split(RequestConstant.PERIOD_REGEX);
         String fileExtension = split[split.length - 1];
         return FileType.findType(fileExtension);
     }
 
     public Optional<String> getSession() {
-        return cookie.getAttribute(SESSION_KEY);
+        return cookie.getAttribute(RequestConstant.SESSION_KEY);
     }
 }

@@ -1,4 +1,4 @@
-package webserver.request;
+package webserver.model.request;
 
 public class RequestConstant {
     // String Constant

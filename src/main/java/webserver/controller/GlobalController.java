@@ -1,15 +1,15 @@
 package webserver.controller;
 
 import lombok.RequiredArgsConstructor;
-import dto.LoginRequest;
-import model.User;
-import dto.UserRequest;
-import utils.DynamicTemplateLoader;
-import utils.FileIoUtils;
-import webserver.FileType;
-import webserver.request.Method;
-import webserver.request.Request;
-import webserver.response.Response;
+import webserver.dto.LoginRequest;
+import webserver.model.User;
+import webserver.dto.UserRequest;
+import webserver.utils.DynamicTemplateLoader;
+import webserver.utils.FileIoUtils;
+import webserver.model.request.FileType;
+import webserver.model.request.Method;
+import webserver.model.request.Request;
+import webserver.model.response.Response;
 import webserver.service.SessionService;
 import webserver.service.UserService;
 

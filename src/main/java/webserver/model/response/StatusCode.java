@@ -1,4 +1,4 @@
-package webserver.response;
+package webserver.model.response;
 
 import lombok.RequiredArgsConstructor;
 

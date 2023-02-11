@@ -1,6 +1,6 @@
-package repository;
+package webserver.repository;
 
-import model.User;
+import webserver.model.User;
 
 import java.util.Collection;
 import java.util.Optional;

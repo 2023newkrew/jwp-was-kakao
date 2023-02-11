@@ -1,9 +1,9 @@
-package dto;
+package webserver.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import model.User;
+import webserver.model.User;
 
 import java.util.Map;
 

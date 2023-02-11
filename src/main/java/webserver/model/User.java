@@ -1,4 +1,4 @@
-package model;
+package webserver.model;
 
 import lombok.AccessLevel;
 import lombok.Builder;

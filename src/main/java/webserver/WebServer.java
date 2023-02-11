@@ -1,8 +1,9 @@
 package webserver;
 
+import webserver.controller.RequestHandler;
 import lombok.extern.slf4j.Slf4j;
-import repository.MemorySessionRepository;
-import repository.MemoryUserRepository;
+import webserver.repository.MemorySessionRepository;
+import webserver.repository.MemoryUserRepository;
 import webserver.controller.GlobalController;
 import webserver.controller.RequestMappingHandler;
 import webserver.service.SessionService;

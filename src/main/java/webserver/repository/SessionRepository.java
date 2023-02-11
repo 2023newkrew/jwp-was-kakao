@@ -1,6 +1,6 @@
-package repository;
+package webserver.repository;
 
-import model.Session;
+import webserver.model.Session;
 
 public interface SessionRepository {
     void save(Session session);

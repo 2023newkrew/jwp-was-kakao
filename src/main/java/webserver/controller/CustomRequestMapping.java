@@ -1,6 +1,6 @@
 package webserver.controller;
 
-import webserver.request.Method;
+import webserver.model.request.Method;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

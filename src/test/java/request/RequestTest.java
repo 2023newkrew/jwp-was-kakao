@@ -4,9 +4,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import webserver.request.Cookie;
-import webserver.request.Method;
-import webserver.request.Request;
+import webserver.model.request.Cookie;
+import webserver.model.request.Method;
+import webserver.model.request.Request;
 
 import java.io.BufferedReader;
 import java.io.IOException;

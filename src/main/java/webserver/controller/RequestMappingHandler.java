@@ -1,9 +1,9 @@
 package webserver.controller;
 
 import lombok.RequiredArgsConstructor;
-import webserver.request.Request;
-import webserver.response.Response;
-import webserver.response.StatusCode;
+import webserver.model.request.Request;
+import webserver.model.response.Response;
+import webserver.model.response.StatusCode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

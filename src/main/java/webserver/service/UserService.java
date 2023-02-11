@@ -1,10 +1,10 @@
 package webserver.service;
 
 import lombok.RequiredArgsConstructor;
-import dto.LoginRequest;
-import model.User;
-import dto.UserRequest;
-import repository.UserRepository;
+import webserver.dto.LoginRequest;
+import webserver.model.User;
+import webserver.dto.UserRequest;
+import webserver.repository.UserRepository;
 
 import java.util.Collection;
 import java.util.Optional;

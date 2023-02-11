@@ -1,8 +1,8 @@
-package webserver.response;
+package webserver.model.response;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import webserver.FileType;
+import webserver.model.request.FileType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

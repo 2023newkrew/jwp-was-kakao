@@ -1,8 +1,8 @@
-package repository;
+package webserver.repository;
 
 
 import lombok.extern.slf4j.Slf4j;
-import model.User;
+import webserver.model.User;
 
 import java.util.Collection;
 import java.util.Optional;
