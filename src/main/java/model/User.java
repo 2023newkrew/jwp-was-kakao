@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class User {
     private final String userId;
     private final String password;
@@ -17,14 +19,22 @@ public class User {
         return userId;
     }
 
-    /* 2단계에서 사용 예정 */
-    @SuppressWarnings("unused")
     public String getPassword() {
         return password;
     }
 
     public String getName() {
         return name;
+    }
+
+    /* HandleBars에서 사용 */
+    @SuppressWarnings("unused")
+    public String getEmail() {
+        return email;
+    }
+
+    public boolean isCorrectPassword(String password) {
+        return Objects.nonNull(password) && password.equals(getPassword());
     }
 
     @Override

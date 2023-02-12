@@ -5,7 +5,7 @@ import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
 
-public class UserHandler extends AbstractHandler{
+public class UserHandler extends AbstractHandler {
     @Override
     protected void doGet(final HttpRequest request, final HttpResponse response) {
         addUser(request, response);
@@ -17,7 +17,7 @@ public class UserHandler extends AbstractHandler{
     }
 
     private static void addUser(final HttpRequest request, final HttpResponse response) {
-        new UserService().addUser(
+        UserService.addUser(
                 request.getParameter("userId"),
                 request.getParameter("password"),
                 request.getParameter("name"),

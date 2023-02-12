@@ -1,18 +1,25 @@
 package webserver.http;
 
+import webserver.http.cookie.HttpCookie;
+import webserver.http.cookie.HttpCookies;
+import webserver.http.header.HttpHeader;
+import webserver.http.header.HttpHeaders;
+
 import java.util.Map;
 
 public class HttpRequest {
     private final String path;
     private final HttpMethod method;
     private final HttpHeaders headers;
-    private final Map<String, String> parameter;
+    private final Map<String, String> parameters;
+    private final HttpCookies cookies;
 
-    public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter) {
+    public HttpRequest(final String path, final HttpMethod method, final HttpHeaders headers, final Map<String, String> parameter, final HttpCookies cookies) {
         this.path = path;
         this.method = method;
         this.headers = headers;
-        this.parameter = parameter;
+        this.parameters = parameter;
+        this.cookies = cookies;
     }
 
     public String getPath() {
@@ -24,12 +31,16 @@ public class HttpRequest {
     }
 
     public String getParameter(String parameterName) {
-        return parameter.get(parameterName);
+        return parameters.get(parameterName);
     }
 
-    /* 2단계에서 사용 예정 */
+    /* 기능 확장 시 사용 예정 */
     @SuppressWarnings("unused")
-    public String getHeader(String headerName) {
-        return headers.getHeaders().get(headerName);
+    public HttpHeader getHeader(String headerName) {
+        return headers.getHeader(headerName);
+    }
+
+    public HttpCookie getCookie(String cookieName) {
+        return cookies.getCookie(cookieName);
     }
 }

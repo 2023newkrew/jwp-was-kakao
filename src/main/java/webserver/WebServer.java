@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -24,7 +25,7 @@ public class WebServer {
 
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
-            while ((connection = listenSocket.accept()) != null) {
+            while (Objects.nonNull(connection = listenSocket.accept())) {
                 Thread thread = new Thread(new RequestHandler(connection));
                 thread.start();
             }
