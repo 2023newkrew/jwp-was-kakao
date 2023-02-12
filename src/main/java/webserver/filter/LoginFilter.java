@@ -5,6 +5,7 @@ import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
 import webserver.http.cookie.HttpCookie;
+import webserver.http.session.Session;
 import webserver.http.session.SessionManager;
 
 import java.util.Objects;
@@ -17,10 +18,13 @@ public class LoginFilter implements Filter {
         if (request.getPath().equals("/user/login.html")) {
             HttpCookie cookie = request.getCookie("JSESSIONID");
             if (Objects.nonNull(cookie)) {
-                User user = (User) SessionManager.findSession(cookie.getValue()).getAttribute("user");
-                if (Objects.nonNull(user)) {
-                    response.setHeader("Location", "/index.html");
-                    response.setStatus(HttpStatus.FOUND);
+                Session session = SessionManager.findSession(cookie.getValue());
+                if (Objects.nonNull(session)) {
+                    User user = (User) session.getAttribute("user");
+                    if (Objects.nonNull(user)) {
+                        response.setHeader("Location", "/index.html");
+                        response.setStatus(HttpStatus.FOUND);
+                    }
                 }
             }
         }
