@@ -59,7 +59,6 @@ public class UserController {
     @Handler(method = HttpMethod.GET, value = "/user/logout")
     public void logout(Request req, Response res) {
         req.getSession().invalidate();
-        System.out.println("SESSION DELETE!!!");
         res.setRedirection("/user/login.html");
     }
 

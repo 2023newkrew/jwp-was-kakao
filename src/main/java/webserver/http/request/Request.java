@@ -28,7 +28,6 @@ public class Request {
 
         this.header = new RequestHeader(headerLines);
         this.body = new RequestBody(IOUtils.readData(br, header.getContentLength()));
-        System.out.println(header + "\n" + body + "\n" + header.getCookies());
     }
 
     public String getProtocol() {

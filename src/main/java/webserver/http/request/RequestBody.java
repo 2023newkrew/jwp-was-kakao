@@ -16,10 +16,6 @@ public class RequestBody {
         return body;
     }
 
-    public boolean isEmpty() {
-        return body == null || body.length() == 0;
-    }
-
     @Override
     public String toString() {
         return "RequestBody{" +
