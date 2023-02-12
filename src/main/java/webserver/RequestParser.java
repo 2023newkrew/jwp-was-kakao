@@ -95,9 +95,9 @@ public class RequestParser {
     private static HttpHeaders getHttpHeaders(final List<String> headerLines, final HttpResponse response) {
         Map<String, HttpHeader> headers = new HashMap<>();
         headerLines.forEach(line -> {
-            String[] headerKeyAndValue = line.split(": ");
+            String[] headerKeyAndValue = line.split(":", 2);
             if (headerKeyAndValue.length == 2) {
-                headers.put(headerKeyAndValue[0], new HttpHeader(headerKeyAndValue[0], headerKeyAndValue[1]));
+                headers.put(headerKeyAndValue[0], new HttpHeader(headerKeyAndValue[0], headerKeyAndValue[1].strip()));
             } else {
                 response.setStatus(HttpStatus.BAD_REQUEST);
             }
