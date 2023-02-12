@@ -1,4 +1,4 @@
-package supports;
+package exception;
 
 public class SplitMethodException extends RuntimeException{
     public SplitMethodException(){

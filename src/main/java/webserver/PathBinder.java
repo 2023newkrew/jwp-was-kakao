@@ -6,6 +6,7 @@ import auth.SessionManager;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import supports.AuthService;
 import supports.HttpParser;
 import supports.TemplateService;
 import supports.UserService;
@@ -36,10 +37,12 @@ public class PathBinder {
 
     private final UserService userService;
     private final TemplateService templateService;
+    private final AuthService authService;
 
     public PathBinder() {
         userService = new UserService();
         templateService = new TemplateService();
+        authService = new AuthService();
     }
 
     public void bind(OutputStream out, BufferedReader br, HttpParser httpParser) throws IOException, URISyntaxException {
@@ -95,10 +98,7 @@ public class PathBinder {
             User user = userService.findAuthorizedUser(br, httpParser);
 
             if (user != null){
-                HttpCookie httpCookie = new HttpCookie(UUID.randomUUID());
-                Session session = new Session(httpCookie.getCookie());
-                session.setAttribute("userObject", user);
-                SessionManager.add(httpCookie, session);
+                HttpCookie httpCookie = authService.makeHttpCookie(user);
                 ResponseUtils.responseLoginHeader(dos, httpCookie);
             } else{
                 ResponseUtils.responseRedirectHeader(dos, USER_LOGIN_FAIL_PATH);

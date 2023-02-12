@@ -1,4 +1,6 @@
-package auth;
+package utils;
+
+import auth.SessionManager;
 
 public class AuthUtils {
 
