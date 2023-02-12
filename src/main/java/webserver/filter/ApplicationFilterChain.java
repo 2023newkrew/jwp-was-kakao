@@ -17,7 +17,9 @@ public class ApplicationFilterChain implements FilterChain {
     @Override
     public void doFilter(final HttpRequest request, final HttpResponse response) {
         if (nextFilterIdx < filters.size()) {
-            filters.get(nextFilterIdx++).doFilter(request, response, this);
+            Filter filter = filters.get(nextFilterIdx);
+            nextFilterIdx++;
+            filter.doFilter(request, response, this);
         }
     }
 }
