@@ -1,5 +1,6 @@
 package supports;
 
+import exception.NoSuchTemplateException;
 import utils.AuthUtils;
 import auth.SessionManager;
 import com.github.jknack.handlebars.Handlebars;
@@ -83,7 +84,7 @@ public class TemplateService {
 
     private void checkTemplatePath(Template template) {
         if (template == null) {
-            throw new RuntimeException("경로에 템플릿이 없습니다.");
+            throw new NoSuchTemplateException();
         }
     }
 }
