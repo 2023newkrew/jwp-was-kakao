@@ -3,6 +3,7 @@ package webserver;
 import auth.SessionManager;
 import db.DataBase;
 import model.User;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
 
+    @DisplayName("인덱스 페이지에 잘 접근되는지 확인한다.")
     @Test
     void index() throws IOException, URISyntaxException {
         // given
@@ -42,6 +44,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("css파일이 잘 로드되는지 확인한다.")
     @Test
     void css() throws IOException, URISyntaxException {
         // given
@@ -68,6 +71,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("회원가입이 정상적으로 되는지 확인한다.")
     @Test
     void createUser() {
         // given
@@ -98,6 +102,34 @@ class RequestHandlerTest {
         assertThat(DataBase.findAll().toArray()[0].toString()).isEqualTo(expected.toString());
     }
 
+    @DisplayName("회원가입 이후 인덱스페이지로 리다이렉트되는지 확인한다.")
+    @Test
+    void createUserRedirect() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 92",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+        // then
+        var expected = "HTTP/1.1 302 Found \r\n" +
+                "Location: " + "/index.html" + " \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("로그인했을 때 세션이 정상적으로 생성되는지 확인한다.")
     @Test
     void createUserSession() {
         // given
@@ -138,8 +170,9 @@ class RequestHandlerTest {
         assertThat(DataBase.findAll().toArray()[0].toString()).isEqualTo(expected.toString());
     }
 
+    @DisplayName("로그인한 상태에서 로그인버튼을 누르면 인덱스페이지로 리다이렉트되는지 확인한다.")
     @Test
-    void createUserRedirect() {
+    void loginRedirect() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
@@ -150,17 +183,45 @@ class RequestHandlerTest {
                 "Accept: */* ",
                 "",
                 "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+        final String httpRequest2 = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 27",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password");
 
         final var socket = new StubSocket(httpRequest);
         final RequestHandler handler = new RequestHandler(socket);
 
-        // when
+        final var socket2 = new StubSocket(httpRequest2);
+        final RequestHandler handler2 = new RequestHandler(socket2);
+
         handler.run();
-        // then
+        handler2.run();
+
+        Set set = SessionManager.keySet();
+        Iterator iterator = set.iterator(); // 쿠키 값
+
+        final String httpRequest3 = String.join("\r\n",
+                "GET /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + iterator.next());
+
+        final var socket3 = new StubSocket(httpRequest3);
+        final RequestHandler handler3 = new RequestHandler(socket3);
+
+        // when
+        handler3.run();
+
         var expected = "HTTP/1.1 302 Found \r\n" +
                 "Location: " + "/index.html" + " \r\n" +
                 "\r\n";
 
+        // then
         assertThat(socket.output()).isEqualTo(expected);
     }
 }
