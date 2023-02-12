@@ -10,6 +10,7 @@ import supports.AuthService;
 import supports.HttpParser;
 import supports.TemplateService;
 import supports.UserService;
+import utils.AuthUtils;
 import utils.FileIoUtils;
 import utils.ResponseUtils;
 
@@ -37,12 +38,10 @@ public class PathBinder {
 
     private final UserService userService;
     private final TemplateService templateService;
-    private final AuthService authService;
 
     public PathBinder() {
         userService = new UserService();
         templateService = new TemplateService();
-        authService = new AuthService();
     }
 
     public void bind(OutputStream out, BufferedReader br, HttpParser httpParser) throws IOException, URISyntaxException {
@@ -92,7 +91,7 @@ public class PathBinder {
         User user = userService.findAuthorizedUser(br, httpParser);
 
         if (user != null){
-            HttpCookie httpCookie = authService.makeHttpCookie(user);
+            HttpCookie httpCookie = AuthUtils.makeHttpCookie(user);
             ResponseUtils.responseLoginHeader(dos, httpCookie);
         } else{
             ResponseUtils.responseRedirectHeader(dos, USER_LOGIN_FAIL_PATH);
