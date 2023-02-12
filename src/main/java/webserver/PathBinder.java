@@ -1,12 +1,7 @@
 package webserver;
 
 import auth.HttpCookie;
-import auth.Session;
-import auth.SessionManager;
 import model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import supports.AuthService;
 import supports.HttpParser;
 import supports.TemplateService;
 import supports.UserService;
@@ -19,12 +14,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 
 public class PathBinder {
-    public final Logger logger = LoggerFactory.getLogger(PathBinder.class);
     private static final String STATIC_ROOT_PATH = "./static";
     private static final String HTML = "html";
     private static final String CSS = "/css";
@@ -78,7 +71,11 @@ public class PathBinder {
 
     private byte[] bindTemplates(HttpParser httpParser, DataOutputStream dos) throws IOException, URISyntaxException {
         byte[] body = templateService.createHtmlBody(httpParser);
-        ResponseUtils.responseOkHeader(dos, body.length, httpParser.getPath());
+        if (Arrays.equals(body, "index".getBytes())) {
+            ResponseUtils.responseRedirectHeader(dos, INDEX_PATH);
+        } else {
+            ResponseUtils.responseOkHeader(dos, body.length, httpParser.getPath());
+        }
         return body;
     }
 
@@ -90,10 +87,10 @@ public class PathBinder {
     private void bindLoginUser(HttpParser httpParser, DataOutputStream dos, BufferedReader br) throws IOException {
         User user = userService.findAuthorizedUser(br, httpParser);
 
-        if (user != null){
+        if (user != null) {
             HttpCookie httpCookie = AuthUtils.makeHttpCookie(user);
             ResponseUtils.responseLoginHeader(dos, httpCookie);
-        } else{
+        } else {
             ResponseUtils.responseRedirectHeader(dos, USER_LOGIN_FAIL_PATH);
         }
     }

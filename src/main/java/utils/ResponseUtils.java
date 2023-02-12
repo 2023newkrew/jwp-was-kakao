@@ -3,9 +3,6 @@ package utils;
 import auth.HttpCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.servlet.server.Session;
-import webserver.PathBinder;
-import webserver.RequestHandler;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,7 +40,6 @@ public class ResponseUtils {
     public static void responseLoginHeader(DataOutputStream dos, HttpCookie httpCookie) {
         try {
             dos.writeBytes("HTTP/1.1 302 OK \r\n");
-            logger.error(httpCookie.toString());
             dos.writeBytes("Set-Cookie: " + httpCookie + " \r\n");
             dos.writeBytes("Location: /index.html \r\n");
             dos.writeBytes("\r\n");
