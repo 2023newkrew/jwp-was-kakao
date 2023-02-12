@@ -46,29 +46,9 @@ public class PathBinder {
     }
 
     public void bind(OutputStream out, BufferedReader br, HttpParser httpParser) throws IOException, URISyntaxException {
-
         byte[] body = new byte[0];
         DataOutputStream dos = new DataOutputStream(out);
 
-        body = bindStatics(body, httpParser, dos);
-        body = bindTemplates(body, httpParser, dos);
-        bindCreateUser(br, httpParser, dos);
-        bindLoginUser(br, httpParser, dos);
-
-        ResponseUtils.responseBody(dos, body);
-    }
-
-    private byte[] bindTemplates(byte[] body, HttpParser httpParser, DataOutputStream dos) throws IOException, URISyntaxException {
-        String method = httpParser.getMethod();
-        String path = httpParser.getPath();
-        if (Objects.equals(method, "GET") && path.endsWith(HTML)) {
-            body = templateService.createHtmlBody(httpParser);
-            ResponseUtils.responseOkHeader(dos, body.length, path);
-        }
-        return body;
-    }
-
-    private static byte[] bindStatics(byte[] body, HttpParser httpParser, DataOutputStream dos) throws IOException, URISyntaxException {
         String method = httpParser.getMethod();
         String path = httpParser.getPath();
         if (Objects.equals(method, "GET") &&
@@ -76,33 +56,46 @@ public class PathBinder {
                 path.startsWith(FONTS) ||
                 path.startsWith(IMAGES) ||
                 path.startsWith(JS)) {
-            body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + path);
-            ResponseUtils.responseOkHeader(dos, body.length, path);
+            body = bindStatics(httpParser, dos);
         }
+        if (Objects.equals(method, "GET") && path.endsWith(HTML)) {
+            body = bindTemplates(httpParser, dos);
+        }
+        if (Objects.equals(method, "POST") && path.startsWith(USER_CREATE_URL)) {
+            bindCreateUser(httpParser, dos, br);
+        }
+        if (Objects.equals(method, "POST") && path.startsWith(USER_LOGIN_URL)) {
+            bindLoginUser(httpParser, dos, br);
+        }
+
+        ResponseUtils.responseBody(dos, body);
+    }
+
+    private static byte[] bindStatics(HttpParser httpParser, DataOutputStream dos) throws IOException, URISyntaxException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + httpParser.getPath());
+        ResponseUtils.responseOkHeader(dos, body.length, httpParser.getPath());
         return body;
     }
 
-    private void bindCreateUser(BufferedReader br, HttpParser httpParser, DataOutputStream dos) throws IOException {
-        String method = httpParser.getMethod();
-        String path = httpParser.getPath();
-        if (Objects.equals(method, "POST") && path.startsWith(USER_CREATE_URL)) {
-            userService.saveUser(br, httpParser);
-            ResponseUtils.responseRedirectHeader(dos, INDEX_PATH);
-        }
+    private byte[] bindTemplates(HttpParser httpParser, DataOutputStream dos) throws IOException, URISyntaxException {
+        byte[] body = templateService.createHtmlBody(httpParser);
+        ResponseUtils.responseOkHeader(dos, body.length, httpParser.getPath());
+        return body;
     }
 
-    private void bindLoginUser(BufferedReader br, HttpParser httpParser, DataOutputStream dos) throws IOException {
-        String method = httpParser.getMethod();
-        String path = httpParser.getPath();
-        if (Objects.equals(method, "POST") && path.startsWith(USER_LOGIN_URL)) {
-            User user = userService.findAuthorizedUser(br, httpParser);
+    private void bindCreateUser(HttpParser httpParser, DataOutputStream dos, BufferedReader br) throws IOException {
+        userService.saveUser(br, httpParser);
+        ResponseUtils.responseRedirectHeader(dos, INDEX_PATH);
+    }
 
-            if (user != null){
-                HttpCookie httpCookie = authService.makeHttpCookie(user);
-                ResponseUtils.responseLoginHeader(dos, httpCookie);
-            } else{
-                ResponseUtils.responseRedirectHeader(dos, USER_LOGIN_FAIL_PATH);
-            }
+    private void bindLoginUser(HttpParser httpParser, DataOutputStream dos, BufferedReader br) throws IOException {
+        User user = userService.findAuthorizedUser(br, httpParser);
+
+        if (user != null){
+            HttpCookie httpCookie = authService.makeHttpCookie(user);
+            ResponseUtils.responseLoginHeader(dos, httpCookie);
+        } else{
+            ResponseUtils.responseRedirectHeader(dos, USER_LOGIN_FAIL_PATH);
         }
     }
 }
