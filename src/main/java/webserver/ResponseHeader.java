@@ -23,27 +23,6 @@ public class ResponseHeader {
         this.httpCookie = httpCookie;
     }
 
-    public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
-                                    String location) {
-        return new ResponseHeader(httpStatusCode, contentType, contentLength, location, null);
-    }
-
-    public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength) {
-        return new ResponseHeader(httpStatusCode, contentType, contentLength, null, null);
-    }
-
-    public static ResponseHeader of(HttpStatusCode httpStatusCode, ContentType contentType) {
-        return new ResponseHeader(httpStatusCode, contentType, null, null, null);
-    }
-
-    public static ResponseHeader of(HttpStatusCode httpStatusCode, String location) {
-        return new ResponseHeader(httpStatusCode, null, null, location, null);
-    }
-
-    public static ResponseHeader of(HttpStatusCode httpStatusCode) {
-        return new ResponseHeader(httpStatusCode, null, null, null, null);
-    }
-
     public String getValue() {
         StringBuilder sb = new StringBuilder();
         sb.append(writeRequestLine(httpStatusCode));
