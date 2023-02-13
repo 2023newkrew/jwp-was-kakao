@@ -25,8 +25,8 @@ public class LoginRequest {
 
     public static LoginRequest of(Map<String, String> queryString) {
         return LoginRequest.builder()
-                .userId(queryString.get("userId"))
-                .password(queryString.get("password"))
+                .userId(queryString.get(USER_ID))
+                .password(queryString.get(PASSWORD))
                 .build();
     }
 
