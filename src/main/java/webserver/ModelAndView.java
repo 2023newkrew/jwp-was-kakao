@@ -8,9 +8,9 @@ public class ModelAndView {
     private final String view;
     private final Map<String, Object> model;
 
-    public ModelAndView(String view, Map<String, Object> model) {
+    public ModelAndView(String view) {
         this.view = view;
-        this.model = model;
+        this.model = new HashMap<>();
     }
 
     public void addAttribute(String name, Object value) {
