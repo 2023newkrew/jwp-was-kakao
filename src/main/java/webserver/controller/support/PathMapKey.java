@@ -1,10 +1,12 @@
-package webserver.controller;
+package webserver.controller.support;
 
 import org.springframework.http.HttpMethod;
 
 import java.util.Objects;
 
 public class PathMapKey {
+    public static final String RESOURCE_PATH = "RESOURCE";
+
     private HttpMethod httpMethod;
     private String path;
 
@@ -15,6 +17,10 @@ public class PathMapKey {
 
     public static PathMapKey of(HttpMethod httpMethod, String path) {
         return new PathMapKey(httpMethod, path);
+    }
+
+    public static PathMapKey RESOURCE_KEY() {
+        return of(HttpMethod.GET, RESOURCE_PATH);
     }
 
     @Override

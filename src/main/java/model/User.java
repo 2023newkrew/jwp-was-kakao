@@ -29,6 +29,13 @@ public class User {
         return email;
     }
 
+    public boolean checkPasswordMatch(String password) {
+        if (password == null) {
+            return false;
+        }
+        return this.password.equals(password);
+    }
+
     @Override
     public String toString() {
         return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";

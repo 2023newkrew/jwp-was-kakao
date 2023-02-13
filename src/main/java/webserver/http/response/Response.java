@@ -1,9 +1,8 @@
-package webserver.response;
+package webserver.http.response;
 
 import org.springframework.http.HttpStatus;
-import webserver.request.Request;
-
-import java.nio.charset.StandardCharsets;
+import webserver.http.Cookie;
+import webserver.http.request.Request;
 
 public class Response {
 
@@ -11,16 +10,22 @@ public class Response {
     private String contentType;
     private String protocol;
     private String location;
+    private Cookie cookies;
     private byte[] body;
 
     public Response(Request request) {
         protocol = request.getProtocol();
         contentType = request.getAccept();
         body = new byte[]{};
+        cookies = new Cookie();
     }
 
     public byte[] getBody() {
         return body;
+    }
+
+    public Cookie getCookies() {
+        return this.cookies;
     }
 
     public void setStatus(HttpStatus status) {
@@ -31,8 +36,13 @@ public class Response {
         this.body = body;
     }
 
-    public void setLocation(String location) {
+    public void setRedirection(String location) {
         this.location = location;
+        this.status = HttpStatus.FOUND;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public String getHeader() {
@@ -49,6 +59,10 @@ public class Response {
         if(location != null) {
             header += String.format("Location: %s \r\n", location);
         }
+        if(!cookies.isEmpty()) {
+            header += String.format("%s \r\n", cookies.toResponseHeaderLine());
+        }
         return header += "\r\n";
     }
+
 }
