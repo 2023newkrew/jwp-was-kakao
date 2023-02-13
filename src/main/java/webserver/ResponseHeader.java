@@ -12,15 +12,8 @@ public class ResponseHeader {
     private String location;
     private HttpCookie httpCookie = new HttpCookie();
 
-    public ResponseHeader() {}
-
-    public ResponseHeader(HttpStatusCode httpStatusCode, ContentType contentType, Integer contentLength,
-                          String location, HttpCookie httpCookie) {
-        this.httpStatusCode = httpStatusCode;
-        this.contentType = contentType;
-        this.contentLength = contentLength;
-        this.location = location;
-        this.httpCookie = httpCookie;
+    public ResponseHeader() {
+        httpStatusCode = HttpStatusCode.OK;
     }
 
     public String getValue() {
