@@ -4,12 +4,13 @@ import type.ContentType;
 import type.HttpStatusCode;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
+import webserver.ModelAndView;
 import webserver.ResponseHeader;
 
 public class HelloController extends Controller {
 
     @Override
-    public void doGet(HttpRequest request, HttpResponse response) {
+    protected ModelAndView run(HttpRequest request, HttpResponse response) {
         String data = "Hello world";
         Integer contentLength = data.length();
 
@@ -20,5 +21,6 @@ public class HelloController extends Controller {
 
         response.setResponseHeader(header);
         response.setResponseBody(data.getBytes());
+        return null;
     }
 }
