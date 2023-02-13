@@ -1,12 +1,15 @@
 package webserver;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class HttpCookie {
 
     private final Map<String, String> cookieMap = new HashMap<>();
 
-    public HttpCookie() {}
+    public HttpCookie() {
+    }
 
     public HttpCookie(String cookie) {
         String[] datas = cookie.split(";");

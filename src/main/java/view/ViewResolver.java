@@ -1,9 +1,5 @@
 package view;
 
-import view.HandleBarView;
-import view.RedirectView;
-import view.View;
-
 public class ViewResolver {
 
     private static final String REDIRECT_PREFIX = "redirect:";
