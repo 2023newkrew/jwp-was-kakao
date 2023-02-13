@@ -11,9 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ClassAnnotationScanner {
-    private List<Class<?>> classes = new ArrayList<>();
-
-    private static final ClassAnnotationScanner CLASS_ANNOTATION_SCANNER = new ClassAnnotationScanner();
+    private final List<Class<?>> classes = new ArrayList<>();
 
     private ClassAnnotationScanner() {
         scan();
@@ -102,7 +100,7 @@ public class ClassAnnotationScanner {
     }
 
     public static ClassAnnotationScanner getInstance() {
-        return CLASS_ANNOTATION_SCANNER;
+        return new ClassAnnotationScanner();
     }
 
     public List<Class<?>> getClasses(Class<? extends Annotation> annotation) {

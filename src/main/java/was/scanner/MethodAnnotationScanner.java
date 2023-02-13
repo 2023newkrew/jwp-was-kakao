@@ -22,7 +22,7 @@ public class MethodAnnotationScanner {
                 .collect(Collectors.toList());
     }
 
-    public static MethodAnnotationScanner getInstance(){
+    public static MethodAnnotationScanner getInstance() {
         return METHOD_ANNOTATION_SCANNER;
     }
 }
