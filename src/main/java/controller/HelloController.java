@@ -7,10 +7,10 @@ import webserver.HttpResponse;
 import webserver.ModelAndView;
 import webserver.ResponseHeader;
 
-public class HelloController extends Controller {
+public class HelloController implements Controller {
 
     @Override
-    protected ModelAndView run(HttpRequest request, HttpResponse response) {
+    public ModelAndView run(HttpRequest request, HttpResponse response) {
         String data = "Hello world";
         Integer contentLength = data.length();
 

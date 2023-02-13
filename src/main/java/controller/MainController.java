@@ -3,10 +3,7 @@ package controller;
 import type.ContentType;
 import type.HttpStatusCode;
 import utils.FileIoUtils;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
-import webserver.ModelAndView;
-import webserver.ResponseHeader;
+import webserver.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,10 +12,18 @@ import java.net.URISyntaxException;
  * 관련 URI: -
  * 미리 정의된 URI들을 제외한 모든 요청들(static 파일 등)을 처리하는 컨트롤러
  */
-public class MainController extends Controller {
+public class MainController implements Controller {
+    private final SessionManager sessionManager;
+
+    public MainController(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
 
     @Override
-    protected ModelAndView run(HttpRequest request, HttpResponse response) {
+    public ModelAndView run(HttpRequest request, HttpResponse response) {
+
+        HttpSession session = sessionManager.getSession(request, response);
+
         String root = "static";
         String uri = request.getRequestHeader().get("URI").orElseThrow(IllegalArgumentException::new);
         String[] split = uri.split("\\.");
@@ -26,6 +31,14 @@ public class MainController extends Controller {
 
         if (fileType.equals("html")) {
             root = "templates";
+        }
+
+        // 로그인 상태로 /user/login.html 접근시 redirect
+        Object logined = session.getAttribute("logined");
+        if (uri.equals("/user/login.html")) {
+            if (logined != null && logined.equals(true)) {
+                return new ModelAndView("redirect:/index.html");
+            }
         }
 
         try {
@@ -43,7 +56,6 @@ public class MainController extends Controller {
             response.setResponseHeader(responseHeader);
             response.setResponseBody(body);
         } catch (URISyntaxException | IOException e) {
-            logger.error(e.getMessage());
             e.printStackTrace();
         }
         return null;

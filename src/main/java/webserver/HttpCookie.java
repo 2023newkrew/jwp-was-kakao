@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class HttpCookie {
-
     private final Map<String, String> cookieMap = new HashMap<>();
 
     public HttpCookie() {

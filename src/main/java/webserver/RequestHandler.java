@@ -17,12 +17,14 @@ public class RequestHandler implements Runnable {
 
     private final Socket connection;
     private final Database db;
+    private final SessionManager sessionManager;
     Map<RequestInfo, Controller> controllerMap = new HashMap<>();
     private final ViewResolver viewResolver = new ViewResolver();
 
-    public RequestHandler(Socket connectionSocket, Database db) {
+    public RequestHandler(Socket connectionSocket, Database db, SessionManager sessionManager) {
         this.connection = connectionSocket;
         this.db = db;
+        this.sessionManager = sessionManager;
         setControllerMap();
     }
 
@@ -54,10 +56,10 @@ public class RequestHandler implements Runnable {
 
         // URI와 매핑된 컨트롤러를 찾을 수 없음. 정적 파일 연결 도와주는 컨트롤러를 할당.
         if (controller == null) {
-            controller = new MainController();
+            controller = new MainController(sessionManager);
         }
 
-        ModelAndView modelAndView = controller.process(httpRequest, httpResponse);
+        ModelAndView modelAndView = controller.run(httpRequest, httpResponse);
 
         if (modelAndView == null) {
             return;
@@ -73,8 +75,8 @@ public class RequestHandler implements Runnable {
 
     private void setControllerMap() {
         controllerMap.put(new RequestInfo("/", HttpMethod.GET), new HelloController());
-        controllerMap.put(new RequestInfo("/user/list", HttpMethod.GET), new UserListController(db));
+        controllerMap.put(new RequestInfo("/user/list", HttpMethod.GET), new UserListController(db, sessionManager));
         controllerMap.put(new RequestInfo("/user/create", HttpMethod.POST), new UserCreateController(db));
-        controllerMap.put(new RequestInfo("/user/login", HttpMethod.POST), new UserLoginController(db));
+        controllerMap.put(new RequestInfo("/user/login", HttpMethod.POST), new UserLoginController(db, sessionManager));
     }
 }

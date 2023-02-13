@@ -1,33 +1,29 @@
 package controller;
 
 import db.Database;
-import webserver.HttpCookie;
-import webserver.HttpRequest;
-import webserver.HttpResponse;
-import webserver.ModelAndView;
+import webserver.*;
 
-import java.util.Optional;
-
-public class UserListController extends Controller {
+public class UserListController implements Controller {
 
     private final Database db;
+    private final SessionManager sessionManager;
 
-    public UserListController(Database db) {
+    public UserListController(Database db, SessionManager sessionManager) {
         this.db = db;
+        this.sessionManager = sessionManager;
     }
 
     @Override
-    protected ModelAndView run(HttpRequest request, HttpResponse response) {
-        Optional<HttpCookie> cookieOpt = request.getRequestHeader().get("Cookie").map(HttpCookie::new);
-        //TODO: 더 나은 Optional 활용법?
-        if (cookieOpt.isPresent()) {
-            Boolean logined = Boolean.valueOf(cookieOpt.get().get("logined").orElse("false"));
-            if (logined) {
-                ModelAndView modelAndView = new ModelAndView("/user/list");
-                modelAndView.addAttribute("users", db.findAll());
-                return modelAndView;
-            }
+    public ModelAndView run(HttpRequest request, HttpResponse response) {
+        HttpSession session = sessionManager.getSession(request, response);
+        Object logined = session.getAttribute("logined");
+
+        if (logined != null && logined.equals(true)) {
+            ModelAndView modelAndView = new ModelAndView("/user/list");
+            modelAndView.addAttribute("users", db.findAll());
+            return modelAndView;
         }
+
         return new ModelAndView("redirect:/user/login.html");
     }
 }

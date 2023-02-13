@@ -13,7 +13,7 @@ import java.util.Map;
  * 관련 URI: /user/create
  * 유저 생성 후 index.html로 리다이렉트
  */
-public class UserCreateController extends Controller {
+public class UserCreateController implements Controller {
 
     private final Database db;
 
@@ -22,7 +22,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    protected ModelAndView run(HttpRequest request, HttpResponse response) {
+    public ModelAndView run(HttpRequest request, HttpResponse response) {
         Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
         db.addUser(new User(
                 createUserReqMap.get("userId"),
