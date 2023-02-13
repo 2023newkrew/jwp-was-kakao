@@ -6,6 +6,7 @@ import controller.Controller;
 import controller.FileController;
 import controller.RootController;
 import controller.UserController;
+import service.AuthService;
 import service.UserService;
 import support.MethodNotAllowedException;
 import support.PathNotFoundException;
@@ -19,7 +20,7 @@ public class DispatcherServlet {
 
     public DispatcherServlet() {
         this.fileController = new FileController();
-        this.userController = new UserController(new UserService());
+        this.userController = new UserController(new UserService(), new AuthService(new SessionManager()));
         this.rootController = new RootController();
     }
 

@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RequestHandlerTest {
     @DisplayName("루트 요청시 Hello world를 응답한다")
@@ -52,8 +53,8 @@ class RequestHandlerTest {
 
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 6897 \r\n" +
+                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
@@ -81,8 +82,8 @@ class RequestHandlerTest {
 
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/css;charset=utf-8 \r\n" +
                 "Content-Length: 7065 \r\n" +
+                "Content-Type: text/css;charset=utf-8 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
 
@@ -383,11 +384,7 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 302 Found \r\n" +
-                "Location: /index.html \r\n" +
-                "Set-Cookie: ";
-
-        assertThat(socket.output()).contains(expected);
+        assertThat(socket.output()).contains("HTTP/1.1 302 Found \r\n", "Location: /index.html \r\n", "Set-Cookie: JSESSIONID=");
     }
 
     private void createUserForTest(String userId, String password) {

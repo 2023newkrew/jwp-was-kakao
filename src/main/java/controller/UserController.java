@@ -8,8 +8,11 @@ import common.*;
 import controller.dto.LoginRequest;
 import controller.dto.UserRequest;
 import model.User;
+import service.AuthService;
 import service.UserService;
+import support.LoginFailedException;
 import support.PathNotFoundException;
+import support.UserNotFoundException;
 
 import java.io.IOException;
 import java.util.*;
@@ -19,34 +22,34 @@ public class UserController implements Controller {
     private static final String HOME_PATH = "/index.html";
     private static final String LOGIN_PATH = "/user/login.html";
     private static final String LOGIN_FAILED_PATH = "/user/login_failed.html";
-    private static final String SESSION_COOKIE = "JSESSIONID";
+    private static final Map<String, BiConsumer<HttpRequest, HttpResponse>> mapping = new HashMap<>();
 
-    private static Map<String, BiConsumer<HttpRequest, HttpResponse>> mapping = new HashMap<>();
+    private final UserService userService;
+    private final AuthService authService;
 
-    private UserService userService;
-
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
 
         // 요청 url -> method 매핑
         mapping.put("/user/create", this::createUser);
         mapping.put("/user/login", (req, res) -> {
-            if (authenticated(req, res)) {
-                redirectToPath(res, HOME_PATH);
+            if (authService.isAuthenticated(req)) {
+                setRedirectionResponse(res, HOME_PATH);
                 return;
             }
             loginUser(req, res);
         });
         mapping.put("/user/list", (req, res) ->  {
-            if (!authenticated(req, res)) {
-                redirectToPath(res, LOGIN_PATH);
+            if (!authService.isAuthenticated(req)) {
+                setRedirectionResponse(res, LOGIN_PATH);
                 return;
             }
-            getUsers(req, res);
+            getUserListPage(req, res);
         });
     }
-
-    public void redirectToPath(HttpResponse response, String path) {
+    
+    public void setRedirectionResponse(HttpResponse response, String path) {
         response.setHttpStatus(HttpStatus.FOUND);
         response.setHeader(HttpHeader.LOCATION, path);
     }
@@ -67,27 +70,29 @@ public class UserController implements Controller {
                     userRequest.getName(),
                     userRequest.getEmail()
             );
-            redirectToPath(response, HOME_PATH);
+            setRedirectionResponse(response, HOME_PATH);
         }
     }
 
     public void loginUser(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.POST)) {
             LoginRequest loginRequest = LoginRequest.from(request.getParameters());
-            boolean success = userService.loginUser(loginRequest.getUserId(), loginRequest.getPassword());
-
-            if (success && request.getCookie(SESSION_COOKIE).isEmpty()) {
-                response.setHeader(HttpHeader.SET_COOKIE, SESSION_COOKIE+"="+UUID.randomUUID()+"; path= /;");
+            try {
+                User user = userService.getUser(loginRequest.getUserId());
+                String sessionId = authService.login(user, loginRequest.getPassword());
+                response.setHeader(HttpHeader.SET_COOKIE, AuthService.SESSION_COOKIE+"="+sessionId+"; path= /;");
+                setRedirectionResponse(response, HOME_PATH);
+            } catch (UserNotFoundException | LoginFailedException e) {
+                setRedirectionResponse(response, LOGIN_FAILED_PATH);
             }
-            redirectToPath(response, success ? HOME_PATH : LOGIN_FAILED_PATH);
         }
     }
 
-    public void getUsers(HttpRequest request, HttpResponse response) {
+    public void getUserListPage(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.GET)) {
             try {
                 response.setHttpStatus(HttpStatus.OK);
-                response.setBody(getUserListPage().getBytes());
+                response.setBody(createUserListPage(userService.getUsers()).getBytes());
             } catch (IOException e) {
                 response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                 response.setBody(e.getMessage().getBytes());
@@ -95,17 +100,10 @@ public class UserController implements Controller {
         }
     }
 
-    public boolean authenticated(HttpRequest request, HttpResponse response) {
-        if (request.getCookie(SESSION_COOKIE).isPresent()) return true;
-        return false;
-    }
-
-    public String getUserListPage() throws IOException {
+    private String createUserListPage(List<User> users) throws IOException {
         TemplateLoader loader = new ClassPathTemplateLoader("/templates", ".html");
         Handlebars handlebars = new Handlebars(loader);
         Template template = handlebars.compile("/user/list");
-
-        List<User> users = userService.getUsers();
         return template.apply(Map.of("users", users));
     }
 }
