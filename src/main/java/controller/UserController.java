@@ -30,8 +30,25 @@ public class UserController implements Controller {
 
         // 요청 url -> method 매핑
         mapping.put("/user/create", this::createUser);
-        mapping.put("/user/login", this::loginUser);
-        mapping.put("/user/list", (req, res) ->  { if (authenticated(req, res)) getUsers(req, res); });
+        mapping.put("/user/login", (req, res) -> {
+            if (authenticated(req, res)) {
+                redirectToPath(res, HOME_PATH);
+                return;
+            }
+            loginUser(req, res);
+        });
+        mapping.put("/user/list", (req, res) ->  {
+            if (!authenticated(req, res)) {
+                redirectToPath(res, LOGIN_PATH);
+                return;
+            }
+            getUsers(req, res);
+        });
+    }
+
+    public void redirectToPath(HttpResponse response, String path) {
+        response.setHttpStatus(HttpStatus.FOUND);
+        response.setHeader(HttpHeader.LOCATION, path);
     }
 
     public void process(HttpRequest request, HttpResponse response) {
@@ -50,8 +67,7 @@ public class UserController implements Controller {
                     userRequest.getName(),
                     userRequest.getEmail()
             );
-            response.setHeader(HttpHeader.LOCATION, HOME_PATH);
-            response.setHttpStatus(HttpStatus.FOUND);
+            redirectToPath(response, HOME_PATH);
         }
     }
 
@@ -63,8 +79,7 @@ public class UserController implements Controller {
             if (success && request.getCookie(SESSION_COOKIE).isEmpty()) {
                 response.setHeader(HttpHeader.SET_COOKIE, SESSION_COOKIE+"="+UUID.randomUUID()+"; path= /;");
             }
-            response.setHttpStatus(HttpStatus.FOUND);
-            response.setHeader(HttpHeader.LOCATION,  success ? HOME_PATH : LOGIN_FAILED_PATH);
+            redirectToPath(response, success ? HOME_PATH : LOGIN_FAILED_PATH);
         }
     }
 
@@ -82,9 +97,6 @@ public class UserController implements Controller {
 
     public boolean authenticated(HttpRequest request, HttpResponse response) {
         if (request.getCookie(SESSION_COOKIE).isPresent()) return true;
-
-        response.setHttpStatus(HttpStatus.FOUND);
-        response.setHeader(HttpHeader.LOCATION, LOGIN_PATH);
         return false;
     }
 
