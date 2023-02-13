@@ -9,7 +9,6 @@ import webserver.HttpRequest;
 import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
-import java.io.DataOutputStream;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,8 +23,8 @@ public class UserLoginController extends Controller {
     }
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response, DataOutputStream dos) {
-        super.doPost(request, response, dos);
+    protected void doPost(HttpRequest request, HttpResponse response) {
+        super.doPost(request, response);
         String requestBody = request.getRequestBody();
         Map<String, String> params = IOUtils.extractParams(requestBody);
 

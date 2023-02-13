@@ -8,7 +8,6 @@ import webserver.HttpRequest;
 import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
-import java.io.DataOutputStream;
 import java.util.Map;
 
 /**
@@ -24,7 +23,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public void doGet(HttpRequest request, HttpResponse response) {
         db.addUser(new User(
                 request.getParam("userId"),
                 request.getParam("password"),
@@ -34,7 +33,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doPost(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public void doPost(HttpRequest request, HttpResponse response) {
         Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
         db.addUser(new User(
                 createUserReqMap.get("userId"),
@@ -45,7 +44,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doFinally(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public void doFinally(HttpRequest request, HttpResponse response) {
         ResponseHeader responseHeader = response.getResponseHeader();
 
         responseHeader.setHttpStatusCode(HttpStatusCode.REDIRECT);

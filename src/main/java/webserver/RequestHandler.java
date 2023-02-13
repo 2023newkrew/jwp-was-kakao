@@ -33,6 +33,8 @@ public class RequestHandler implements Runnable {
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
             RequestHeader header = httpRequest.getRequestHeader();
 
+            HttpResponse httpResponse = new HttpResponse(out);
+
             String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
             String uriWithOutParams = uri.split("\\?")[0];
             Controller controller = controllerMap.get(uriWithOutParams);
@@ -42,7 +44,8 @@ public class RequestHandler implements Runnable {
                 controller = new MainController();
             }
 
-            controller.process(httpRequest, new HttpResponse(), new DataOutputStream(out));
+//            controller.process(httpRequest, new HttpResponse(), new DataOutputStream(out));
+            controller.process(httpRequest, httpResponse);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

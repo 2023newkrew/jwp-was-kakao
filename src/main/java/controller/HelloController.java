@@ -6,13 +6,10 @@ import webserver.HttpRequest;
 import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 public class HelloController extends Controller {
 
     @Override
-    public void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos){
+    public void doGet(HttpRequest request, HttpResponse response) {
         String data = "Hello world";
         Integer contentLength = data.length();
 
@@ -20,7 +17,7 @@ public class HelloController extends Controller {
         header.setHttpStatusCode(HttpStatusCode.OK);
         header.setContentType(ContentType.HTML);
         header.setContentLength(contentLength);
-        
+
         response.setResponseHeader(header);
         response.setResponseBody(data.getBytes());
     }

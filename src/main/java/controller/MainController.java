@@ -7,7 +7,6 @@ import webserver.HttpRequest;
 import webserver.HttpResponse;
 import webserver.ResponseHeader;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -17,7 +16,7 @@ import java.net.URISyntaxException;
  */
 public class MainController extends Controller {
     @Override
-    public void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
+    public void doGet(HttpRequest request, HttpResponse response) {
         String root = "static";
         String uri = request.getRequestHeader().get("URI").orElseThrow(IllegalArgumentException::new);
         String[] split = uri.split("\\.");

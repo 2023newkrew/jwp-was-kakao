@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.*;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -12,7 +11,7 @@ public abstract class Controller {
 
     static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-    public void process(HttpRequest request, HttpResponse response, DataOutputStream dos) throws IOException {
+    public void process(HttpRequest request, HttpResponse response) throws IOException {
         RequestHeader requestHeader = request.getRequestHeader();
 
         // 요청 헤더에 쿠키가 없다면 생성하여 응답 전송
@@ -32,27 +31,17 @@ public abstract class Controller {
 
         String method = requestHeader.get("method").orElseThrow(IllegalArgumentException::new);
         if (method.equals("GET")) {
-            doGet(request, response, dos);
+            doGet(request, response);
         }
         if (method.equals("POST")) {
-            doPost(request, response, dos);
+            doPost(request, response);
         }
-        doFinally(request, response, dos);
+        doFinally(request, response);
 
-        sendResponse(response, dos);
+        response.send();
     }
 
-    protected void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {}
-    protected void doPost(HttpRequest request, HttpResponse response, DataOutputStream dos) {}
-    protected void doFinally(HttpRequest request, HttpResponse response, DataOutputStream dos) {}
-
-    private static void sendResponse(HttpResponse response, DataOutputStream dos) throws IOException {
-        if (response.getResponseHeader() != null) {
-            dos.writeBytes(response.getResponseHeader().getValue());
-        }
-        if (response.getResponseBody() != null) {
-            dos.write(response.getResponseBody());
-        }
-        dos.flush();
-    }
+    protected void doGet(HttpRequest request, HttpResponse response) {}
+    protected void doPost(HttpRequest request, HttpResponse response) {}
+    protected void doFinally(HttpRequest request, HttpResponse response) {}
 }

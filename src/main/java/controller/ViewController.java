@@ -5,7 +5,6 @@ import type.HttpStatusCode;
 import utils.FileIoUtils;
 import webserver.*;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -22,8 +21,8 @@ public class ViewController extends Controller {
     }
 
     @Override
-    protected void doGet(HttpRequest request, HttpResponse response, DataOutputStream dos) {
-        super.doGet(request, response, dos);
+    protected void doGet(HttpRequest request, HttpResponse response) {
+        super.doGet(request, response);
         ResponseHeader responseHeader = response.getResponseHeader();
         RequestHeader requestHeader = request.getRequestHeader();
 
