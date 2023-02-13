@@ -31,13 +31,13 @@ public class FileController implements Controller {
 
     public byte[] getFileContent(final String uri) throws IOException, URISyntaxException {
         if (uri.endsWith(".html")) {
-            return FileIoUtils.loadFileFromClasspath(HTML_FILE_PATH + uri.replaceFirst("^\\.+", ""));
+            return FileIoUtils.loadFileFromClasspath(HTML_FILE_PATH + uri.replaceFirst("^\\.+", "").replaceAll("\\.\\.\\/", ""));
         }
         else if (uri.endsWith(".css")) {
-            return FileIoUtils.loadFileFromClasspath(STATIC_FILE_PATH + uri.replaceFirst("^\\.+", ""));
+            return FileIoUtils.loadFileFromClasspath(STATIC_FILE_PATH + uri.replaceFirst("^\\.+", "").replaceAll("\\.\\.\\/", ""));
         }
         else if (uri.endsWith(".js")) {
-            return FileIoUtils.loadFileFromClasspath(STATIC_FILE_PATH + uri.replaceFirst("^\\.+", ""));
+            return FileIoUtils.loadFileFromClasspath(STATIC_FILE_PATH + uri.replaceFirst("^\\.+", "").replaceAll("\\.\\.\\/", ""));
         }
         else {
             return "".getBytes();
