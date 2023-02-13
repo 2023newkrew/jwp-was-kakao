@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import was.annotation.Controller;
 import was.annotation.StaticMapping;
+import was.domain.StaticType;
 import was.domain.request.Request;
 import was.domain.response.Response;
 import was.domain.response.ResponseHeader;
@@ -20,136 +21,24 @@ import java.util.Optional;
 @NoArgsConstructor
 public class StaticController {
     private static final Logger logger = LoggerFactory.getLogger(StaticController.class);
-    
-    @StaticMapping(fileType = "html")
-    public Optional<Response> getHtml(Request request) {
+
+    @StaticMapping()
+    public Optional<Response> getStatic(Request request, StaticType type) {
         try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./templates/" + request.getPath());
+            byte[] body = FileIoUtils.loadFileFromClasspath("./" + type.getBasePath() + "/" + request.getPath());
             return Optional.of(Response.builder()
                     .version(Version.HTTP_1_1)
                     .statusCode(StatusCode.OK)
                     .responseHeader(ResponseHeader.builder()
-                            .contentType("text/html;charset=utf-8")
+                            .contentType(type.getContentType())
                             .contentLength(body.length)
                             .build())
-                    .body(body).build());
+                    .body(body)
+                    .build());
+
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
-        return Optional.ofNullable(null);
-    }
-
-    @StaticMapping(fileType = "css")
-    public Optional<Response> getCss(Request request) {
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .responseHeader(ResponseHeader.builder()
-                            .contentType("text/css")
-                            .contentLength(body.length)
-                            .build())
-                    .body(body).build());
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-
-        return Optional.ofNullable(null);
-    }
-
-    @StaticMapping(fileType = "png")
-    public Optional<Response> getPng(Request request) {
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./static/image/" + request.getPath());
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .responseHeader(ResponseHeader.builder()
-                            .contentType("image/png")
-                            .contentLength(body.length)
-                            .build())
-                    .body(body).build());
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-
-        return Optional.ofNullable(null);
-    }
-
-    @StaticMapping(fileType = "js")
-    public Optional<Response> getJs(Request request) {
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .responseHeader(ResponseHeader.builder()
-                            .contentType("text/javascript")
-                            .contentLength(body.length)
-                            .build())
-                    .body(body).build());
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-
-        return Optional.ofNullable(null);
-    }
-
-    @StaticMapping(fileType = "ttf")
-    public Optional<Response> getTtf(Request request) {
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .responseHeader(ResponseHeader.builder()
-                            .contentType("font/ttf")
-                            .contentLength(body.length)
-                            .build())
-                    .body(body).build());
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-
-        return Optional.ofNullable(null);
-    }
-
-    @StaticMapping(fileType = "woff")
-    public Optional<Response> getWoff(Request request) {
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./static/" + request.getPath());
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .responseHeader(ResponseHeader.builder()
-                            .contentType("font/woff")
-                            .contentLength(body.length)
-                            .build())
-                    .body(body).build());
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-
-        return Optional.ofNullable(null);
-    }
-
-    @StaticMapping(fileType = "ico")
-    public Optional<Response> getIco(Request request) {
-        try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("./templates/" + request.getPath());
-            return Optional.of(Response.builder()
-                    .version(Version.HTTP_1_1)
-                    .statusCode(StatusCode.OK)
-                    .responseHeader(ResponseHeader.builder()
-                            .contentType("image/vnd.microsoft.icon")
-                            .contentLength(body.length)
-                            .build())
-                    .body(body).build());
-        } catch (IOException | URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-
         return Optional.ofNullable(null);
     }
 }
