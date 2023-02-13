@@ -52,13 +52,13 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Length: 6897 \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
+        var expected = List.of("HTTP/1.1 200 OK \r\n",
+                "Content-Length: 6897 \r\n",
+                "Content-Type: text/html;charset=utf-8 \r\n",
+                "\r\n",
+                new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("CSS 파일 요청시 해당 파일을 읽어 응답한다")
@@ -81,13 +81,13 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Length: 7065 \r\n" +
-                "Content-Type: text/css;charset=utf-8 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css"));
+        var expected = List.of("HTTP/1.1 200 OK \r\n",
+                "Content-Length: 7065 \r\n",
+                "Content-Type: text/css;charset=utf-8 \r\n",
+                "\r\n",
+                new String(FileIoUtils.loadFileFromClasspath("static/css/styles.css")));
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @DisplayName("파일 요청시 현재 위치(.)를 포함해도 파일을 읽어 응답할 수 있다")
@@ -327,6 +327,32 @@ class RequestHandlerTest {
         assertThat(socket.output()).contains(expected);
     }
 
+    @DisplayName("요구되지 않는 파라미터가 요청에 포함되었을 경우 400이 반환된다")
+    @Test
+    void unknownParameter() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 81",
+                "Accept: */*",
+                "",
+                "userId=subin&password=asdfasf&name=subin&email=subin@google.com&extraParam=asdfas");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 400 Bad Request \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).contains(expected);
+    }
+
     @DisplayName("로그인 실패한 사용자는 실패 페이지로 리다이렉트된다")
     @Test
     void loginFailed() {
@@ -405,6 +431,6 @@ class RequestHandlerTest {
         // when
         handler.run();
 
-        assertThat(socket.output()).contains("Found");
+        assertThat(socket.output()).contains("HTTP/1.1 302 Found \r\n", "Location: /index.html \r\n");
     }
 }

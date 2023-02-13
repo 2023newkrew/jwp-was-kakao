@@ -25,6 +25,7 @@ public class UserRequest {
         ValidationUtils.checkNotNullAndBlank(params, "password");
         ValidationUtils.checkNotNullAndBlank(params, "name");
         ValidationUtils.checkNotNullAndBlank(params, "email");
+        ValidationUtils.checkSize(params, 4);
     }
 
     private UserRequest(String userId, String password, String name, String email) {

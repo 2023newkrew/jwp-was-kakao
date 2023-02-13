@@ -16,6 +16,7 @@ public class LoginRequest {
     private static void validate(Map<String, String> params) {
         ValidationUtils.checkNotNullAndBlank(params, "userId");
         ValidationUtils.checkNotNullAndBlank(params, "password");
+        ValidationUtils.checkSize(params, 2);
     }
 
     private LoginRequest(String userId, String password) {
