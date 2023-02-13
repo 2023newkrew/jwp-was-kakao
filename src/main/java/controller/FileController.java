@@ -19,7 +19,7 @@ public class FileController implements Controller {
                 if (request.getUri().endsWith(".css")) {
                     response.setHeader(HttpHeader.CONTENT_TYPE, "text/css;charset=utf-8");
                 }
-                if (request.getUri().endsWith(".js")) {
+                else if (request.getUri().endsWith(".js")) {
                     response.setHeader(HttpHeader.CONTENT_TYPE, "text/javascript;charset=utf-8");
                 }
             }

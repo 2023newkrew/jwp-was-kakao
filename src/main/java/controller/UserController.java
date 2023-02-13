@@ -33,23 +33,31 @@ public class UserController implements Controller {
 
         // 요청 url -> method 매핑
         mapping.put("/user/create", this::createUser);
-        mapping.put("/user/login", (req, res) -> {
-            if (authService.isAuthenticated(req)) {
-                setRedirectionResponse(res, HOME_PATH);
-                return;
+        mapping.put("/user/login", (req, res) -> routeWithAuth(req, res, this::loginUser, false));
+        mapping.put("/user/list", (req, res) ->  routeWithAuth(req, res, this::getUserListPage, true));
+    }
+
+    public void routeWithAuth(HttpRequest request, HttpResponse response,
+                              BiConsumer<HttpRequest, HttpResponse> method, boolean authenticated) {
+        if (authenticated) {
+            if (authService.isAuthenticated(request)) {
+                method.accept(request, response);
             }
-            loginUser(req, res);
-        });
-        mapping.put("/user/list", (req, res) ->  {
-            if (!authService.isAuthenticated(req)) {
-                setRedirectionResponse(res, LOGIN_PATH);
-                return;
+            else {
+                setRedirectResponse(response, LOGIN_PATH);
             }
-            getUserListPage(req, res);
-        });
+        }
+        else if (!authenticated) {
+            if (!authService.isAuthenticated(request)) {
+                method.accept(request, response);
+            }
+            else {
+                setRedirectResponse(response, HOME_PATH);
+            }
+        }
     }
     
-    public void setRedirectionResponse(HttpResponse response, String path) {
+    public void setRedirectResponse(HttpResponse response, String path) {
         response.setHttpStatus(HttpStatus.FOUND);
         response.setHeader(HttpHeader.LOCATION, path);
     }
@@ -70,7 +78,7 @@ public class UserController implements Controller {
                     userRequest.getName(),
                     userRequest.getEmail()
             );
-            setRedirectionResponse(response, HOME_PATH);
+            setRedirectResponse(response, HOME_PATH);
         }
     }
 
@@ -81,9 +89,9 @@ public class UserController implements Controller {
                 User user = userService.getUser(loginRequest.getUserId());
                 String sessionId = authService.login(user, loginRequest.getPassword());
                 response.setHeader(HttpHeader.SET_COOKIE, AuthService.SESSION_COOKIE+"="+sessionId+"; path= /;");
-                setRedirectionResponse(response, HOME_PATH);
+                setRedirectResponse(response, HOME_PATH);
             } catch (UserNotFoundException | LoginFailedException e) {
-                setRedirectionResponse(response, LOGIN_FAILED_PATH);
+                setRedirectResponse(response, LOGIN_FAILED_PATH);
             }
         }
     }
