@@ -1,8 +1,14 @@
 package controller;
 
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.session.Session;
+import webserver.session.SessionManager;
 
 public interface Controller {
-    HttpResponse handleRequest(HttpRequest httpRequest);
+    default boolean isLoginUser(String sessionId) {
+        if (sessionId == null || sessionId.isEmpty()) {
+            return false;
+        }
+        Session session = SessionManager.getInstance().findSession(sessionId);
+        return session != null && (boolean) session.getAttribute("logined");
+    }
 }

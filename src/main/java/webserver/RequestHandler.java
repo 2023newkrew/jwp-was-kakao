@@ -1,6 +1,6 @@
 package webserver;
 
-import controller.Controller;
+import support.MethodControllerResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.IOUtils;
@@ -9,8 +9,6 @@ import webserver.http.HttpResponse;
 
 import java.io.*;
 import java.net.Socket;
-
-import static utils.FileIoUtils.exists;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -30,22 +28,14 @@ public class RequestHandler implements Runnable {
             HttpResponse httpResponse = process(httpRequest);
             IOUtils.writeResponse(new DataOutputStream(out), httpResponse);
 
-        } catch (IOException | NumberFormatException | NullPointerException e) {
+        } catch (IOException | NumberFormatException | NullPointerException | IndexOutOfBoundsException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private Controller mapController(String uri) {
-        if (exists(uri)) {
-            return handlerMapping.getController("static");
-        }
-        return handlerMapping.getController("user");
-    }
-
     private HttpResponse process(HttpRequest httpRequest) {
-        String uri = httpRequest.getUri();
-        Controller controller = mapController(uri);
-        return controller.handleRequest(httpRequest);
+        MethodControllerResolver resolver = new MethodControllerResolver();
+        return resolver.process(handlerMapping.map(httpRequest), httpRequest);
     }
 
 }

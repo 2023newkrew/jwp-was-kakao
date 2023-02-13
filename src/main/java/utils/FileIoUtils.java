@@ -14,12 +14,13 @@ public class FileIoUtils {
     public static boolean exists(String filePath) {
         if (filePath.equals("/"))
             return true;
-        return new File("src/main/resources/templates" + filePath).exists() || new File("src/main/resources/static" + filePath).exists();
+        return new File("src/main/resources/templates" + filePath).isFile() ||
+                new File("src/main/resources/static" + filePath).isFile();
     }
 
     /**
-     * @throws IOException: Files.readAllBytes()에서 발생할 수 있는 IO 예외
-     * @throws URISyntaxException: URI.toURI() 실행 시 uri가 제대로 전달되지 않았다면 발생하는 있는 예외
+     * @throws IOException:          Files.readAllBytes()에서 발생할 수 있는 IO 예외
+     * @throws URISyntaxException:   URI.toURI() 실행 시 uri가 제대로 전달되지 않았다면 발생하는 있는 예외
      * @throws NullPointerException: URL.getResource() 실행 시 파일이 존재하지 않는다면 발생하는 예외
      */
     public static byte[] loadFileFromClasspath(String filePath) throws IOException, URISyntaxException, NullPointerException {
@@ -27,10 +28,7 @@ public class FileIoUtils {
         return Files.readAllBytes(path);
     }
 
-    public static byte[] mapBody(String path) throws IOException, URISyntaxException {
-        if (path.equals("/")) {
-            return "Hello world".getBytes();
-        }
+    public static byte[] mapBody(String path) throws IOException, URISyntaxException, NullPointerException {
         if (path.endsWith("html")) {
             return FileIoUtils.loadFileFromClasspath("templates" + path);
         }

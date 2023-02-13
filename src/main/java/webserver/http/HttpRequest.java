@@ -36,4 +36,8 @@ public class HttpRequest {
     public String getBody() {
         return body;
     }
+
+    public boolean hasCookie() {
+        return !"".equals(get("Cookie"));
+    }
 }
