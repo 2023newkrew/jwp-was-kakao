@@ -24,10 +24,6 @@ public class HttpResponse {
         return headers;
     }
 
-    public String getHeader(HttpHeader header) {
-        return headers.get(header);
-    }
-
     public byte[] getBody() {
         return body;
     }
