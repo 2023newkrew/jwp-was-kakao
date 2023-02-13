@@ -1,5 +1,7 @@
 package webserver;
 
+import type.HttpStatusCode;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,6 +31,11 @@ public class HttpResponse {
 
     public void setResponseBody(byte[] responseBody) {
         this.responseBody = responseBody;
+    }
+
+    public void sendRedirect(String url) {
+        this.responseHeader.setHttpStatusCode(HttpStatusCode.REDIRECT);
+        this.responseHeader.setLocation(url);
     }
 
     public void send() throws IOException {
