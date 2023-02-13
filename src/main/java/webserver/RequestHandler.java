@@ -31,23 +31,28 @@ public class RequestHandler implements Runnable {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
-            RequestHeader header = httpRequest.getRequestHeader();
-
             HttpResponse httpResponse = new HttpResponse(out);
 
-            String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
-            String uriWithOutParams = uri.split("\\?")[0];
-            Controller controller = controllerMap.get(uriWithOutParams);
-
-            // URI와 매핑된 컨트롤러를 찾을 수 없음
-            if (controller == null) {
-                controller = new MainController();
-            }
-
-            controller.process(httpRequest, httpResponse);
+            handleRequest(httpRequest, httpResponse);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
+        RequestHeader header = httpRequest.getRequestHeader();
+
+        // URI와 매핑된 컨트롤러 찾기
+        String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
+        String uriWithOutParams = uri.split("\\?")[0];
+        Controller controller = controllerMap.get(uriWithOutParams);
+
+        // URI와 매핑된 컨트롤러를 찾을 수 없음
+        if (controller == null) {
+            controller = new MainController();
+        }
+
+        controller.process(httpRequest, httpResponse);
     }
 
     private void logConnected() {
@@ -58,7 +63,7 @@ public class RequestHandler implements Runnable {
         controllerMap.put("/", new HelloController());
         controllerMap.put("/index.html", new ViewController("/index.html"));
         controllerMap.put("/user/login_failed.html", new ViewController("/user/login_failed.html"));
-        controllerMap.put("/user/list.html", new ViewController("/user/list.html"));
+        controllerMap.put("/user/list.html", new HandlebarsViewController("/user/list.html", "/templates", ".html"));
         controllerMap.put("/user/create", new UserCreateController(db));
         controllerMap.put("/user/login", new UserLoginController(db));
         return null;
