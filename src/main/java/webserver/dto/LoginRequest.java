@@ -6,11 +6,12 @@ import lombok.Getter;
 
 import java.util.Map;
 
+import static webserver.dto.UserConstant.PASSWORD;
+import static webserver.dto.UserConstant.USER_ID;
+
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class LoginRequest {
-    private static final String USER_ID = "userId";
-    private static final String PASSWORD = "password";
     private final String userId;
     private final String password;
 
