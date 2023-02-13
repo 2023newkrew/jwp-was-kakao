@@ -44,7 +44,6 @@ public class RequestHandler implements Runnable {
                 controller = new MainController();
             }
 
-//            controller.process(httpRequest, new HttpResponse(), new DataOutputStream(out));
             controller.process(httpRequest, httpResponse);
         } catch (IOException e) {
             logger.error(e.getMessage());
