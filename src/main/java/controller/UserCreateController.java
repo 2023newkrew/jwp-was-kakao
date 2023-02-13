@@ -2,11 +2,10 @@ package controller;
 
 import db.Database;
 import model.User;
-import type.HttpStatusCode;
 import utils.IOUtils;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
-import webserver.ResponseHeader;
+import webserver.ModelAndView;
 
 import java.util.Map;
 
@@ -23,17 +22,7 @@ public class UserCreateController extends Controller {
     }
 
     @Override
-    public void doGet(HttpRequest request, HttpResponse response) {
-        db.addUser(new User(
-                request.getParam("userId"),
-                request.getParam("password"),
-                request.getParam("name"),
-                request.getParam("email")
-        ));
-    }
-
-    @Override
-    public void doPost(HttpRequest request, HttpResponse response) {
+    protected ModelAndView run(HttpRequest request, HttpResponse response) {
         Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
         db.addUser(new User(
                 createUserReqMap.get("userId"),
@@ -41,16 +30,7 @@ public class UserCreateController extends Controller {
                 createUserReqMap.get("name"),
                 createUserReqMap.get("email")
         ));
+
+        return new ModelAndView("redirect:/index.html");
     }
-
-    @Override
-    public void doFinally(HttpRequest request, HttpResponse response) {
-        ResponseHeader responseHeader = response.getResponseHeader();
-
-        responseHeader.setHttpStatusCode(HttpStatusCode.REDIRECT);
-        responseHeader.setLocation("/index.html");
-
-        response.setResponseHeader(responseHeader);
-    }
-
 }

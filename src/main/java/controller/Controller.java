@@ -11,7 +11,7 @@ public abstract class Controller {
 
     static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-    public void process(HttpRequest request, HttpResponse response) throws IOException {
+    public ModelAndView process(HttpRequest request, HttpResponse response) throws IOException {
         RequestHeader requestHeader = request.getRequestHeader();
 
         // 요청 헤더에 쿠키가 없다면 생성하여 응답 전송
@@ -29,19 +29,9 @@ public abstract class Controller {
             response.setResponseHeader(header);
         }
 
-        String method = requestHeader.get("method").orElseThrow(IllegalArgumentException::new);
-        if (method.equals("GET")) {
-            doGet(request, response);
-        }
-        if (method.equals("POST")) {
-            doPost(request, response);
-        }
-        doFinally(request, response);
-
-        response.send();
+        return run(request, response);
     }
 
-    protected void doGet(HttpRequest request, HttpResponse response) {}
-    protected void doPost(HttpRequest request, HttpResponse response) {}
-    protected void doFinally(HttpRequest request, HttpResponse response) {}
+    protected abstract ModelAndView run(HttpRequest request, HttpResponse response);
+
 }

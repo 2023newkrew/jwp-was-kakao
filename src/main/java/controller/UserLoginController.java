@@ -3,11 +3,10 @@ package controller;
 import db.Database;
 import exception.WasException;
 import model.User;
-import type.HttpStatusCode;
 import utils.IOUtils;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
-import webserver.ResponseHeader;
+import webserver.ModelAndView;
 
 import java.util.Map;
 import java.util.Optional;
@@ -23,8 +22,7 @@ public class UserLoginController extends Controller {
     }
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response) {
-        super.doPost(request, response);
+    protected ModelAndView run(HttpRequest request, HttpResponse response) {
         String requestBody = request.getRequestBody();
         Map<String, String> params = IOUtils.extractParams(requestBody);
 
@@ -34,17 +32,10 @@ public class UserLoginController extends Controller {
         User user = Optional.ofNullable(db.findUserById(userId))
                 .orElseThrow(() -> new WasException(USER_NOT_EXIST));
 
-        ResponseHeader header = response.getResponseHeader();
-
         if (user.checkPassword(password)) {
-            header.setHttpStatusCode(HttpStatusCode.REDIRECT);
-            header.setLocation("/index.html");
-            header.putCookieItem("logined", "true");
-            response.setResponseHeader(header);
-            return;
+            response.getResponseHeader().putCookieItem("logined", "true");
+            return new ModelAndView("redirect:/index.html");
         }
-        header.setHttpStatusCode(HttpStatusCode.REDIRECT);
-        header.setLocation("/users/login_failed.html");
-        response.setResponseHeader(header);
+        return new ModelAndView("redirect:/users/login_failed.html");
     }
 }

@@ -5,6 +5,7 @@ import type.HttpStatusCode;
 import utils.FileIoUtils;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
+import webserver.ModelAndView;
 import webserver.ResponseHeader;
 
 import java.io.IOException;
@@ -15,8 +16,9 @@ import java.net.URISyntaxException;
  * 미리 정의된 URI들을 제외한 모든 요청들(static 파일 등)을 처리하는 컨트롤러
  */
 public class MainController extends Controller {
+
     @Override
-    public void doGet(HttpRequest request, HttpResponse response) {
+    protected ModelAndView run(HttpRequest request, HttpResponse response) {
         String root = "static";
         String uri = request.getRequestHeader().get("URI").orElseThrow(IllegalArgumentException::new);
         String[] split = uri.split("\\.");
@@ -35,7 +37,6 @@ public class MainController extends Controller {
                 responseHeader.setContentType(ContentType.HTML);
             }
 
-            responseHeader.setHttpStatusCode(HttpStatusCode.OK);
             responseHeader.setContentType(ContentType.valueOf(fileType.toUpperCase()));
             responseHeader.setContentLength(body.length);
 
@@ -45,5 +46,6 @@ public class MainController extends Controller {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
+        return null;
     }
 }
