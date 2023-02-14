@@ -16,7 +16,7 @@ public class HttpResponse {
     private final ResponseWriter responseWriter;
 
     private HttpStatus status = HttpStatus.OK;
-    private String contentType;
+    private Map<String, String> headers = new HashMap<>();
     private byte[] body = new byte[0];
 
     public HttpResponse(OutputStream outputStream) {
@@ -24,21 +24,27 @@ public class HttpResponse {
         this.responseWriter = new ResponseWriter();
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void addHeader(String name, String value) {
+        headers.put(name, value);
     }
 
-    public void setBody(byte[] body) {
+    public void setJSessionId(String sessionId) {
+        headers.put("Set-Cookie", "JSESSIONID=" + sessionId + "; Path=/");
+    }
+
+    public void changeBody(byte[] body) {
         this.body = body;
+        headers.put("Content-Length", body.length + "");
     }
 
     public void sendResponse() {
-        responseWriter.write(Map.of("Content-Type", contentType, "Content-Length", String.valueOf(body.length)));
+        responseWriter.write();
     }
 
     public void sendRedirect(String location) {
         status = HttpStatus.FOUND;
-        responseWriter.write(Map.of("Location", location));
+        headers.put("Location", location);
+        responseWriter.write();
     }
 
     public void sendNotFound() {
@@ -48,7 +54,7 @@ public class HttpResponse {
 
     public void sendError(Exception e) {
         status = HttpStatus.INTERNAL_SERVER_ERROR;
-        body = e.getMessage().getBytes();
+        changeBody(e.getMessage().getBytes());
         responseWriter.write();
     }
 
@@ -56,10 +62,6 @@ public class HttpResponse {
         private final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
         private void write() {
-            write(new HashMap<>());
-        }
-
-        private void write(Map<String, String> headers) {
             try {
                 dataOutputStream.writeBytes("HTTP/1.1 " + status.getValue() + " " + status.getReasonPhrase() + " \r\n");
                 headers.forEach(this::writeHeader);

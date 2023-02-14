@@ -21,14 +21,16 @@ class HttpRequestTest {
                 "Content-Length: " + requestBody.getBytes().length + " \r\n" +
                 "Content-Type: application/x-www-form-urlencoded \r\n" +
                 "Accept: */* \r\n" +
+                "Cookie: JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46, aaa=111 \r\n" +
                 "\r\n" +
                 requestBody;
 
         HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(request.getBytes()));
 
-        assertThat(httpRequest.getMethod()).isEqualTo("POST");
+        assertThat(httpRequest.getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(httpRequest.getUrl()).isEqualTo("/user/create");
         assertThat(httpRequest.getHeader("Host")).isEqualTo("localhost:8080");
         assertThat(httpRequest.getParameter("userId")).isEqualTo("cu");
+        assertThat(httpRequest.getCookie("JSESSIONID")).isEqualTo("656cef62-e3c4-40bc-a8df-94732920ed46");
     }
 }

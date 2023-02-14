@@ -15,7 +15,7 @@ public class HttpRequest {
     private final InputStream inputStream;
     private final RequestParser requestParser;
 
-    private String method;
+    private HttpMethod method;
     private String url;
     private String queryString;
     private String protocol;
@@ -23,7 +23,9 @@ public class HttpRequest {
 
     private int contentLength;
     private String contentType;
+    private HttpSession session;
     private Map<String, String> parameterMap = new HashMap<>();
+    private Map<String, String> cookieMap = new HashMap<>();
 
     public HttpRequest(InputStream inputStream) {
         this.inputStream = inputStream;
@@ -31,12 +33,16 @@ public class HttpRequest {
         requestParser.parse();
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public HttpSession getSession() {
+        return session;
     }
 
     public String getHeader(String name) {
@@ -45,6 +51,10 @@ public class HttpRequest {
 
     public String getParameter(String name) {
         return parameterMap.getOrDefault(name, null);
+    }
+
+    public String getCookie(String name) {
+        return cookieMap.getOrDefault(name, null);
     }
 
     private class RequestParser {
@@ -70,7 +80,7 @@ public class HttpRequest {
         private void parseStartLine() throws IOException {
             String[] tokens = bufferedReader.readLine().split(" ");
 
-            method = tokens[0];
+            method = HttpMethod.valueOf(tokens[0]);
             protocol = tokens[2];
 
             String[] requestTarget = tokens[1].split("\\?");
@@ -94,6 +104,15 @@ public class HttpRequest {
                     .map(Integer::parseInt)
                     .orElse(-1);
             contentType = getHeader("Content-Type");
+
+            String cookieToken = headerMap.getOrDefault("Cookie", "");
+            Arrays.stream(cookieToken.split(","))
+                    .map(String::trim)
+                    .map(cookie -> cookie.split("="))
+                    .filter(split -> split.length >= 2)
+                    .forEach(split -> cookieMap.put(split[0], split[1]));
+
+            session = SessionManager.getSession(cookieMap.getOrDefault("JSESSIONID", ""));
         }
 
         private String readBody() throws IOException {

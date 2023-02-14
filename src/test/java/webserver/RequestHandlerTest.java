@@ -1,5 +1,6 @@
 package webserver;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -11,16 +12,24 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+    private String sessionId;
+
+    @BeforeEach
+    void setUp() {
+        sessionId = SessionManager.createSession().getId();
+    }
+
     @DisplayName("GET /")
     @Test
     void socket_out() {
         final var request = "GET / HTTP/1.1 \r\n" +
                 "Host: localhost:8080 \r\n" +
+                "Cookie: JSESSIONID=" + sessionId + " \r\n" +
                 "\r\n";
 
         final var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: 11 \r\n" +
+                "Content-Type: text/plain;charset=utf-8 \r\n" +
                 "\r\n" +
                 "Hello world";
 
@@ -33,12 +42,13 @@ class RequestHandlerTest {
         final var request = "GET /index.html HTTP/1.1 \r\n" +
                 "Host: localhost:8080 \r\n" +
                 "Connection: keep-alive \r\n" +
+                "Cookie: JSESSIONID=" + sessionId + " \r\n" +
                 "\r\n";
 
         final var expectedBody = FileIoUtils.loadFileFromClasspath("templates/index.html");
         final var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "Content-Length: " + expectedBody.length + " \r\n" +
+                "Content-Type: text/html;charset=utf-8 \r\n" +
                 "\r\n" +
                 new String(expectedBody);
 
@@ -52,12 +62,13 @@ class RequestHandlerTest {
                 "Host: localhost:8080 \r\n" +
                 "Accept: text/css,*/*;q=0.1" +
                 "Connection: keep-alive \r\n" +
+                "Cookie: JSESSIONID=" + sessionId + " \r\n" +
                 "\r\n";
 
         final var expectedBody = FileIoUtils.loadFileFromClasspath("static/css/styles.css");
         final var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/css \r\n" +
                 "Content-Length: " + expectedBody.length + " \r\n" +
+                "Content-Type: text/css;charset=utf-8 \r\n" +
                 "\r\n" +
                 new String(expectedBody);
 
@@ -77,6 +88,7 @@ class RequestHandlerTest {
                 "Content-Length: " + requestBody.getBytes().length + " \r\n" +
                 "Content-Type: application/x-www-form-urlencoded \r\n" +
                 "Accept: */* \r\n" +
+                "Cookie: JSESSIONID=" + sessionId + " \r\n" +
                 "\r\n" +
                 requestBody;
 

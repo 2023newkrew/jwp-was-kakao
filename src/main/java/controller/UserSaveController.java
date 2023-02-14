@@ -1,23 +1,24 @@
 package controller;
 
-import db.DataBase;
+import exception.RedirectException;
 import model.User;
+import service.UserService;
 import webserver.HttpRequest;
 import webserver.HttpResponse;
 
-import java.io.IOException;
-
-public class UserSaveController implements PostMethodController {
+public class UserSaveController implements Controller {
     @Override
-    public void process(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
-        DataBase.addUser(new User(
+    public void process(HttpRequest httpRequest, HttpResponse httpResponse) throws RedirectException {
+        User newUser = new User(
                 httpRequest.getParameter("userId"),
                 httpRequest.getParameter("password"),
                 httpRequest.getParameter("name"),
                 httpRequest.getParameter("email")
-        ));
+        );
+        UserService.saveUser(newUser);
 
-        httpResponse.sendRedirect("/index.html");
-        throw new BreakException();
+        String location = "/index.html";
+        httpResponse.sendRedirect(location);
+        throw new RedirectException(location);
     }
 }
