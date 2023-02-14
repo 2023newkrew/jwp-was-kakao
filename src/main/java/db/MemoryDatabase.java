@@ -3,11 +3,14 @@ package db;
 import model.User;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryDatabase implements Database {
-    private Map<String, User> users = new HashMap<>();
+    private final Map<String, User> users;
+
+    public MemoryDatabase(Map<String, User> users) {
+        this.users = users;
+    }
 
     public void addUser(User user) {
         users.put(user.getUserId(), user);

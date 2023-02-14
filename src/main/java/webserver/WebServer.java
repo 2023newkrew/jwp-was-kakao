@@ -2,13 +2,11 @@ package webserver;
 
 import db.Database;
 import db.MemoryDatabase;
-import org.apache.logging.log4j.core.impl.MementoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WebServer {
@@ -16,7 +14,7 @@ public class WebServer {
     private static final int DEFAULT_PORT = 8080;
 
     public static void main(String args[]) throws Exception {
-        Database db = new MemoryDatabase();
+        Database db = new MemoryDatabase(new ConcurrentHashMap<>());
         SessionStorage sessionStorage = new MemoryHttpSessionStorage(new ConcurrentHashMap<>());
         SessionManager sessionManager = new SessionManager(sessionStorage);
 
