@@ -2,6 +2,7 @@ package webserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -103,9 +104,7 @@ public class UserListRequestHandleTest {
         var output = socket.output();
         String[] splitOutput = output.split("\r\n");
         StringBuilder sessionId = new StringBuilder();
-        for (int i = 1; i < splitOutput.length; i++) {
-            sessionId.append(getSetCookieString(splitOutput[i]));
-        }
+        Arrays.stream(splitOutput).forEach(line -> sessionId.append(getSetCookieString(line)));
         return sessionId.toString();
     }
 
