@@ -25,7 +25,7 @@ public class HandleBarView implements View {
     }
 
     @Override
-    public void render(Map<String, Object> models, HttpResponse httpResponse) throws IOException {
+    public void render(Map<String, Object> models, HttpResponse httpResponse) {
         try {
             Template template = handlebars.compile(url);
 

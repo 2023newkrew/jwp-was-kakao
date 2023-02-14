@@ -2,6 +2,8 @@ package webserver;
 
 import controller.*;
 import db.Database;
+import exception.ErrorCode;
+import exception.WasException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.View;
@@ -38,20 +40,27 @@ public class RequestHandler implements Runnable {
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
             HttpResponse httpResponse = new HttpResponse(out);
 
-            handleRequest(httpRequest, httpResponse);
+            try {
+                handleRequest(httpRequest, httpResponse);
+                httpResponse.send();
+            } catch (WasException e) {
+                httpResponse.sendError(e.getErrorCode().getHttpStatusCode(), e.getErrorCode().getDescription());
+                logger.error(e.getErrorCode().getDescription());
+            }
 
-            httpResponse.send();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
+    private void handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
         RequestHeader header = httpRequest.getRequestHeader();
 
         // URI와 매핑된 컨트롤러 찾기
-        String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
-        HttpMethod method = HttpMethod.valueOf(header.get("method").orElseThrow(IllegalArgumentException::new));
+        String uri = header.get("URI")
+                .orElseThrow(() -> new WasException(ErrorCode.BAD_REQUEST));
+        HttpMethod method = HttpMethod.valueOf(header.get("method")
+                .orElseThrow(() -> new WasException(ErrorCode.BAD_REQUEST)));
         Controller controller = controllerMap.get(new RequestInfo(uri, method));
 
         // URI와 매핑된 컨트롤러를 찾을 수 없음. 정적 파일 연결 도와주는 컨트롤러를 할당.

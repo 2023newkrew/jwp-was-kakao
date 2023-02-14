@@ -3,10 +3,11 @@ package exception;
 import type.HttpStatusCode;
 
 public enum ErrorCode {
-    QUERY_STRING_NOT_EXIST("쿼리스트링이 존재하지 않습니다."),
-    USER_NOT_EXIST("사용자가 존재하지 않습니다."),
-    UNKNOWN_ERROR("서버 내부 오류가 발생했습니다.", HttpStatusCode.INTERNAL_SERVER_ERROR),
-    CAN_NOT_READ_DATA("요청을 읽는 도중 오류가 발생했습니다", HttpStatusCode.BAD_REQUEST),
+    USER_NOT_EXIST("User does not exist.", HttpStatusCode.BAD_REQUEST),
+    UNKNOWN_ERROR("Internal server error is occured.", HttpStatusCode.INTERNAL_SERVER_ERROR),
+    CAN_NOT_READ_DATA("Can't read data.", HttpStatusCode.BAD_REQUEST),
+    BAD_REQUEST("Your request is invalid.", HttpStatusCode.BAD_REQUEST),
+    CAN_NOT_WRITE_DATA("Can't response.", HttpStatusCode.INTERNAL_SERVER_ERROR),
     ;
 
     private String description;
@@ -26,7 +27,7 @@ public enum ErrorCode {
         return description;
     }
 
-    public Integer getHttpStatusCode() {
-        return httpStatusCode.getCode();
+    public HttpStatusCode getHttpStatusCode() {
+        return httpStatusCode;
     }
 }

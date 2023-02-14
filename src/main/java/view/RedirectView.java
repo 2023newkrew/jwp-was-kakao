@@ -2,7 +2,6 @@ package view;
 
 import webserver.HttpResponse;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class RedirectView implements View {
@@ -14,7 +13,7 @@ public class RedirectView implements View {
     }
 
     @Override
-    public void render(Map<String, Object> models, HttpResponse httpResponse) throws IOException {
+    public void render(Map<String, Object> models, HttpResponse httpResponse) {
         httpResponse.sendRedirect(url);
     }
 

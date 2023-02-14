@@ -19,7 +19,7 @@ public class HttpRequest {
     private Map<String, String> requestParams = new HashMap<>();
     private String requestBody;
 
-    public HttpRequest(BufferedReader bufferedReader) throws IOException {
+    public HttpRequest(BufferedReader bufferedReader) {
         this.bufferedReader = bufferedReader;
         parseHeader();
         parseParams();
@@ -27,7 +27,8 @@ public class HttpRequest {
     }
 
     public void parseParams() {
-        String uri = requestHeader.get("URI").orElseThrow(IllegalArgumentException::new);
+        String uri = requestHeader.get("URI")
+                .orElseThrow(() -> new WasException(ErrorCode.BAD_REQUEST));
         // 요청에 파라미터가 없는 경우 requestParams는 null
         if (!uri.contains("?")) {
             requestParams = null;
@@ -37,21 +38,25 @@ public class HttpRequest {
         requestParams = IOUtils.extractParams(uri.split("\\?")[1]);
     }
 
-    private void parseHeader() throws IOException {
+    private void parseHeader() {
         StringBuilder stringBuilder = new StringBuilder();
-        String line = bufferedReader.readLine();
-        while (!"".equals(line)) { // 공백(헤더와 바디의 구분선)이 나타날 때까지 line을 읽는다
-            if (line == null) {
-                throw new IOException();
+        try {
+            String line = bufferedReader.readLine();
+            while (!"".equals(line)) { // 공백(헤더와 바디의 구분선)이 나타날 때까지 line을 읽는다
+                if (line == null) {
+                    throw new WasException(ErrorCode.BAD_REQUEST);
+                }
+                stringBuilder.append(line).append("\n");
+                line = bufferedReader.readLine();
             }
-            stringBuilder.append(line).append("\n");
-            line = bufferedReader.readLine();
+        } catch (IOException e) {
+            throw new WasException(ErrorCode.BAD_REQUEST);
         }
 
         this.requestHeader = new RequestHeader(stringBuilder.toString());
     }
 
-    private void parseBody() throws WasException {
+    private void parseBody() {
         int contentLength = Integer.parseInt(requestHeader.get("Content-Length").orElse("0"));
         try {
             Optional<String> data = Optional.ofNullable(IOUtils.readData(bufferedReader, contentLength));

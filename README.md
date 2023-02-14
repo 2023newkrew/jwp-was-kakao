@@ -14,8 +14,8 @@
 - [x] 회원가입 완료 후 `index.html`로 Redirect
 
 ## 0208 코드리뷰
-- [ ] Exception 처리
-  - [ ] 로깅
+- [x] Exception 처리
+  - [x] 로깅
 - [ ] 클라이언트가 보내는 요청에 대한 validation
 - [ ] 경로, 확장자에 대한 방어
 - [x] static 보다는 의존성 주입으로 문제 해결
