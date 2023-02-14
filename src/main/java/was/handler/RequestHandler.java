@@ -15,6 +15,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -42,20 +43,26 @@ public class RequestHandler implements Runnable {
     }
 
     private Optional<Response> mapping(Request request) {
+        if(request == null) {
+            return Optional.empty();
+        }
+        PathPattern pathPattern = request.toPathPattern();
+        if(!map.containsKey(pathPattern)) {
+            return Optional.empty();
+        }
         try {
             List<Object> args = new ArrayList<>();
-            if(map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)){
+            if (map.get(request.toPathPattern()).isAnnotationPresent(QueryString.class)) {
                 args.add(request.getParams());
             }
-            if(map.get(request.toPathPattern()).isAnnotationPresent(RequestHeader.class)){
+            if (map.get(request.toPathPattern()).isAnnotationPresent(RequestHeader.class)) {
                 args.add(request.getHeaders());
             }
-            if(map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class)){
+            if (map.get(request.toPathPattern()).isAnnotationPresent(RequestBody.class)) {
                 args.add(request.getBody());
             }
-            Object object = map.get(request.toPathPattern()).invoke(null, args.toArray());
-            return (Optional<Response>) map.get(request.toPathPattern()).invoke(null, args.toArray());
-        } catch (Exception e) {
+            return (Optional<Response>) map.get(pathPattern).invoke(null, args.toArray());
+        } catch (InvocationTargetException | IllegalAccessException e) {
             return Optional.empty();
         }
     }
