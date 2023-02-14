@@ -1,11 +1,11 @@
-package webserver.controller;
+package controller;
 
 import model.User;
 import exception.LoginFailException;
 import utils.HttpResponseUtils;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
-import webserver.service.UserService;
+import service.UserService;
 import webserver.session.HttpSession;
 
 public class UserLoginController implements Controller {

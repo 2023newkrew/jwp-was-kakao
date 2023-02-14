@@ -1,4 +1,4 @@
-package webserver.controller;
+package controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,7 +6,7 @@ import model.User;
 import utils.RenderUtils;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
-import webserver.service.UserService;
+import service.UserService;
 
 public class UserListController implements Controller {
     @Override

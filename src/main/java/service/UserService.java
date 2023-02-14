@@ -1,4 +1,4 @@
-package webserver.service;
+package service;
 
 import db.DataBase;
 import java.net.URLDecoder;

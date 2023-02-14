@@ -11,8 +11,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.controller.Controller;
-import webserver.controller.ControllerMapping;
+import controller.Controller;
+import controller.ControllerMapping;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 

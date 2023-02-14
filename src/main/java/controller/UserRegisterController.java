@@ -1,10 +1,10 @@
-package webserver.controller;
+package controller;
 
 import exception.ExistUserException;
 import utils.HttpResponseUtils;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
-import webserver.service.UserService;
+import service.UserService;
 
 public class UserRegisterController implements Controller {
     @Override
