@@ -30,16 +30,16 @@ public class TemplateService {
             body = "index".getBytes();
         }
         if (httpParser.getPath().startsWith(USER_PROFILE_URL)) {
-            body = getUserProfileTemplate(httpParser);
+            body = getUserProfileHtml(httpParser);
         }
         if (httpParser.getPath().startsWith(USER_LIST_URL)) {
-            body = getUserListTemplate(httpParser);
+            body = getUserListHtml(httpParser);
         }
 
         return body;
     }
 
-    private byte[] getUserProfileTemplate(HttpParser httpParser) throws IOException, URISyntaxException {
+    private byte[] getUserProfileHtml(HttpParser httpParser) throws IOException, URISyntaxException {
         if (AuthUtils.checkInvalidSession(httpParser.getCookie())) {
             return FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + USER_LOGIN_PATH);
         }
@@ -53,7 +53,7 @@ public class TemplateService {
         return profileHtml.getBytes();
     }
 
-    private byte[] getUserListTemplate(HttpParser httpParser) throws IOException, URISyntaxException {
+    private byte[] getUserListHtml(HttpParser httpParser) throws IOException, URISyntaxException {
         if (AuthUtils.checkInvalidSession(httpParser.getCookie())) {
             return FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + USER_LOGIN_PATH);
         }
