@@ -51,11 +51,5 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
 
         }
-
-        headers.put("method", method);
-        headers.put("path", path);
-        params.put("extension", getExtensionFromPath(path));
-
-        return true;
     }
 }
