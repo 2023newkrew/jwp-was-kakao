@@ -26,6 +26,6 @@ public class HttpCookie {
 
     @Override
     public String toString() {
-        return "JSESSIONID=" + this.cookie.toString() + "; Path=" + this.path;
+        return "JSESSIONID=" + this.cookie + "; Path=" + this.path;
     }
 }
