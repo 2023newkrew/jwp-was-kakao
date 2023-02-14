@@ -1,9 +1,10 @@
 package webserver.controller;
 
 import exception.ExistUserException;
-import webserver.service.UserService;
+import utils.HttpResponseUtils;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
+import webserver.service.UserService;
 
 public class UserRegisterController implements Controller {
     @Override
@@ -12,7 +13,7 @@ public class UserRegisterController implements Controller {
             UserService.registerUser(httpRequest);
             return HttpResponse.redirect(httpRequest, "http://localhost:8080/index.html");
         } catch (ExistUserException e) {
-            return HttpResponse.redirect(httpRequest, "http://localhost:8080/user/register_failed.html");
+            return HttpResponseUtils.responseTemplatePage(httpRequest, "/user/form", true);
         }
     }
 }

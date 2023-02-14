@@ -64,12 +64,11 @@ public class UserLoginRequestTest {
         handler.run();
 
         // then
+        String[] outputs = socket.output().split("\r\n");
 
-        var expected = "HTTP/1.1 302 Found \r\n" +
-                "Location: http://localhost:8080/user/login_failed.html \r\n"
-                + "\r\n";
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(outputs[0]).isEqualTo("HTTP/1.1 200 OK ");
+        assertThat(outputs[1]).isEqualTo("Content-Type: text/html;charset=utf-8 ");
+        assertThat(outputs[2]).isEqualTo("Content-Length: 5026 ");
     }
 
     @Test

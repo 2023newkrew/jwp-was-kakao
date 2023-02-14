@@ -62,11 +62,11 @@ public class UserRegisterRequestHandleTest {
         handler.run();
 
         // then
-        var expected = "HTTP/1.1 302 Found \r\n" +
-                "Location: http://localhost:8080/user/register_failed.html \r\n"
-                + "\r\n";
+        String[] outputs = socket.output().split("\r\n");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(outputs[0]).isEqualTo("HTTP/1.1 200 OK ");
+        assertThat(outputs[1]).isEqualTo("Content-Type: text/html;charset=utf-8 ");
+        assertThat(outputs[2]).isEqualTo("Content-Length: 5452 ");
     }
 
     private void userRegisterRequest() {

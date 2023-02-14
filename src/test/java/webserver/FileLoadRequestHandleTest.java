@@ -58,14 +58,11 @@ public class FileLoadRequestHandleTest {
         handler.run();
 
         // then
+        String[] outputs = socket.output().split("\r\n");
 
-        var expected = "HTTP/1.1 200 OK \r\n" +
-                "Content-Type: text/html \r\n" +
-                "Content-Length: 5297 \r\n" +
-                "\r\n" +
-                new String(FileIoUtils.loadFileFromClasspath("templates/user/form.html"));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(outputs[0]).isEqualTo("HTTP/1.1 200 OK ");
+        assertThat(outputs[1]).isEqualTo("Content-Type: text/html;charset=utf-8 ");
+        assertThat(outputs[2]).isEqualTo("Content-Length: 5310 ");
     }
 
 }

@@ -10,7 +10,8 @@ public enum ControllerMapping {
     USER_LOGIN(HttpMethod.POST, "/user/login", new UserLoginController()),
     USER_LIST(HttpMethod.GET, "/user/list.html", new UserListController()),
     FILE_LOAD(HttpMethod.GET, "", new FileLoadController()),
-    USER_LOGIN_PAGE(HttpMethod.GET, "/user/login.html", new UserLoginPageController());
+    USER_LOGIN_PAGE(HttpMethod.GET, "/user/login.html", new UserLoginPageController()),
+    USER_REGISTER_PAGE(HttpMethod.GET, "/user/form.html", new UserRegisterPageController());
 
     private final HttpMethod httpMethod;
     private final String path;
