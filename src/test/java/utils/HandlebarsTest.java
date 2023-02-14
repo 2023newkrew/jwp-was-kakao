@@ -4,13 +4,12 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import model.User;
+import lombok.extern.slf4j.Slf4j;
+import webserver.model.User;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class HandlebarsTest {
-    private static final Logger log = LoggerFactory.getLogger(HandlebarsTest.class);
 
     @Test
     void name() throws Exception {
@@ -20,8 +19,12 @@ public class HandlebarsTest {
         Handlebars handlebars = new Handlebars(loader);
 
         Template template = handlebars.compile("user/profile");
-
-        User user = new User("javajigi", "password", "자바지기", "javajigi@gmail.com");
+        User user = User.builder()
+                .userId("javajigi")
+                .password("password")
+                .name("자바지기")
+                .email("javajigi@gmail.com")
+                .build();
         String profilePage = template.apply(user);
         log.debug("ProfilePage : {}", profilePage);
     }

@@ -1,9 +1,9 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.0.RELEASE'
+//    id 'org.springframework.boot' version '2.3.0.RELEASE'
     id 'java'
 }
 
-apply plugin: 'io.spring.dependency-management'
+//apply plugin: 'io.spring.dependency-management'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -16,16 +16,23 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    springVersion = '5.2.6.RELEASE'
-}
+//ext {
+//    springVersion = '5.2.6.RELEASE'
+//}
 
 dependencies {
     implementation 'ch.qos.logback:logback-classic:1.4.5'
     implementation 'com.github.jknack:handlebars:4.3.1'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation 'ch.qos.logback:logback-classic:1.4.5'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
     testImplementation 'org.assertj:assertj-core:3.23.1'
+    testCompileOnly 'org.projectlombok:lombok:1.18.26'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
 
 test {
