@@ -1,25 +1,22 @@
 package application.controller;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import webserver.handler.controller.Controller;
-import webserver.http.content.Content;
-import webserver.http.content.ContentData;
-import webserver.http.content.ContentType;
-import webserver.http.request.Request;
-import webserver.http.response.Response;
+import webserver.handler.controller.AbstractController;
+import webserver.handler.resolver.Resolver;
+import webserver.request.Request;
+import webserver.response.Response;
+import webserver.response.ResponseBody;
 
-public class RootController extends Controller {
+public class RootController extends AbstractController {
 
-    public RootController() {
-        methodHandlers.put(HttpMethod.GET, "/", this::helloWorld);
+    public RootController(Resolver viewResolver) {
+        super(viewResolver);
+        addGetHandler("/", this::index);
     }
 
-    private Response helloWorld(Request request) {
-        byte[] data = "Hello world".getBytes();
-        ContentData contentData = new ContentData(data);
-        Content content = new Content(ContentType.TEXT_HTML, contentData);
+    private Response index(Request request) {
+        ResponseBody body = resolve("/index.html");
 
-        return new Response(HttpStatus.OK, content);
+        return createResponse(HttpStatus.OK, null, body);
     }
 }

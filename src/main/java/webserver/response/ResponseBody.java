@@ -1,12 +1,15 @@
-package webserver.http.content;
+package webserver.response;
 
-public class Content {
+import webserver.http.content.ContentData;
+import webserver.http.content.ContentType;
+
+public class ResponseBody {
 
     private final ContentType contentType;
 
     private final ContentData data;
 
-    public Content(ContentType contentType, ContentData data) {
+    public ResponseBody(ContentType contentType, ContentData data) {
         this.contentType = contentType;
         this.data = data;
     }
@@ -19,7 +22,8 @@ public class Content {
         return data.size();
     }
 
-    public byte[] getBytes() {
-        return data.getBytes();
+    @Override
+    public String toString() {
+        return data.toString();
     }
 }

@@ -1,11 +1,9 @@
-package webserver.handler;
+package webserver.handler.controller;
 
 import webserver.request.Request;
 import webserver.response.Response;
 
-public interface Handler {
-
-    boolean canHandle(Request request);
-
+@FunctionalInterface
+public interface RequestHandler {
     Response handle(Request request);
 }

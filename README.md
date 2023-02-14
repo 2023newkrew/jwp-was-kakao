@@ -34,6 +34,28 @@
 * [*] Redirect
     * 현재는 “회원가입”을 완료 후, URL이 /user/create 로 유지되는 상태로 읽어서 전달할 파일이 없다. redirect 방식처럼 회원가입을 완료한 후 index.html로 이동해야 한다.
 
+## step 2
+
+* 로그인 기능 구현
+    * “로그인” 메뉴를 클릭하면 http://localhost:8080/user/login.html 으로 이동해 로그인할 수 있다.
+    * 로그인이 성공하면 index.html로 이동하고, 로그인이 실패하면 /user/login_failed.html로 이동해야 한다.
+    * 회원가입한 사용자로 로그인할 수 있어야 한다.
+    * 자바 진영에서 세션 아이디를 전달하는 이름으로 JSESSIONID를 사용한다.
+    * 서버에서 HTTP 응답을 전달할 때 응답 헤더에 Set-Cookie를 추가하고
+      JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46 형태로
+      값을 전달하면 클라이언트 요청 헤더의 Cookie 필드에 값이 추가된다.
+    * Cookie 클래스를 추가하고 HTTP Request Header의 Cookie에 JSESSIONID가 없으면 HTTP Response Header에 Set-Cookie를 반환해주는 기능을 구현한다.
+
+* 템플릿 엔진 활용하기
+    * 접근하고 있는 사용자가 “로그인” 상태일 경우(Cookie 값이 logined=true) 경우 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다.
+        * 만약 로그인하지 않은 상태라면 로그인 페이지(login.html)로 이동한다.
+    * 동적으로 html을 생성하기 위해 handlebars.java template engine을 활용한다.
+
+* Session 구현하기
+    * 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
+    * 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.
+    * 로그인된 상태에서 /user/login 페이지에 HTTP GET method로 접근하면 이미 로그인한 상태니 index.html 페이지로 리다이렉트 처리한다.
+
 ## 기능 목록
 
 ### step 1
@@ -50,3 +72,19 @@
     * 로그인 요청 처리
 * 응답 생성
     * 헤더 추가
+
+### step2
+
+* 쿠키 기능
+    * [*] request 쿠키 파싱
+    * [*] response 쿠키 추가
+
+* /user/login 요청 처리
+    * [*] 로그인 성공 시 index.html 로 이동
+        * JSESSIONID 추가
+    * [*] 로그인 실패 시 /user/login_failed.html로 이동
+    * [*] 가입된 사용자인지 확인
+
+* /user/list 요청 처리
+    * [*] 로그인된 사용자가 접근 시 사용자 목록 출력
+    * [*] 로그인 안 된 사용자가 접근 시 login.html로 이동

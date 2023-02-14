@@ -1,7 +1,7 @@
 package webserver.handler;
 
-import webserver.http.request.Request;
-import webserver.http.response.Response;
+import webserver.request.Request;
+import webserver.response.Response;
 
 import java.util.List;
 

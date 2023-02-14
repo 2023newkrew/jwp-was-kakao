@@ -3,16 +3,18 @@ package webserver;
 import application.controller.RootController;
 import application.controller.UserController;
 import application.db.DataBase;
-import application.handler.ResourceHandler;
-import application.handler.resolver.ResourceResolver;
-import application.handler.resolver.ViewResolver;
+import application.enums.ApplicationContentType;
 import application.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
+import utils.FileIoUtils;
 import webserver.handler.Handlers;
-import webserver.handler.resolver.Resolvers;
-import webserver.utils.FileIoUtils;
+import webserver.handler.resolver.statics.StaticResolver;
+import webserver.handler.resolver.statics.StaticType;
+import webserver.handler.resolver.statics.StaticTypes;
+import webserver.handler.resolver.view.ViewResolver;
+import webserver.handler.resource.ResourceHandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,34 +22,30 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
-    Resolvers resolvers = new Resolvers(
-            new ResourceResolver(),
-            new ViewResolver()
+
+    private static final StaticTypes STATIC_TYPES = new StaticTypes(
+            new StaticType("/css", ApplicationContentType.TEXT_CSS),
+            new StaticType("/fonts", ApplicationContentType.FONT_TTF),
+            new StaticType("/images", ApplicationContentType.IMAGE_PNG),
+            new StaticType("/js", ApplicationContentType.TEXT_JAVASCRIPT)
     );
 
-
-    Handlers handlers = new Handlers(
-            new RootController(),
-            new UserController(),
-            new ResourceHandler(resolvers)
+    private static final StaticResolver STATIC_RESOLVER = new StaticResolver(
+            "./static",
+            STATIC_TYPES,
+            ApplicationContentType.TEXT_HTML
     );
 
-    @Test
-    void socket_out() {
-        // given
-        final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket, handlers);
+    private static final ViewResolver VIEW_RESOLVER = new ViewResolver(
+            "./templates",
+            ApplicationContentType.TEXT_HTML
+    );
 
-        // when
-        handler.run();
-
-        // then
-        assertThat(socket.output())
-                .contains("HTTP/1.1 200 OK")
-                .contains("Content-Type: text/html;charset=utf-8")
-                .contains("Content-Length: 11")
-                .contains("Hello world");
-    }
+    private static final Handlers HANDLERS = new Handlers(
+            new RootController(VIEW_RESOLVER),
+            new UserController(VIEW_RESOLVER),
+            new ResourceHandler(STATIC_RESOLVER, VIEW_RESOLVER)
+    );
 
     @Test
     void index() throws IOException, URISyntaxException {
@@ -62,7 +60,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
         // when
         handler.run();
 
@@ -70,7 +68,7 @@ class RequestHandlerTest {
         assertThat(socket.output())
                 .contains("HTTP/1.1 200 OK")
                 .contains("Content-Type: text/html;charset=utf-8")
-                .contains("Content-Length: 6902")
+                .contains("Content-Length: 7162")
                 .contains(new String(FileIoUtils.loadFileFromClasspath("templates/index.html")));
     }
 
@@ -87,7 +85,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
 
         // when
         handler.run();
@@ -124,7 +122,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final var handler = new RequestHandler(socket, handlers);
+        final var handler = new RequestHandler(socket, HANDLERS);
 
         // when
         handler.run();
