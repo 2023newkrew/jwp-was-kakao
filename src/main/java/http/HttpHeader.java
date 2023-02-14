@@ -29,7 +29,7 @@ public class HttpHeader {
     }
 
     public CookieList getCookieList() {
-        String cookieString = headers.getOrDefault(COOKIE, "");
+        String cookieString = headers.get(COOKIE);
         return CookieList.parse(cookieString);
     }
 
