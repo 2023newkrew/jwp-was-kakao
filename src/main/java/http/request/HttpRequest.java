@@ -1,12 +1,17 @@
 package http.request;
 
+import http.Cookie;
 import http.HttpHeader;
 import http.HttpMethod;
+import http.session.Session;
+import http.session.SessionManager;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.IOUtils;
 
 import java.io.BufferedReader;
+import java.util.Optional;
 
 public class HttpRequest {
     private final static Logger logger = LoggerFactory.getLogger(HttpRequest.class);
@@ -55,5 +60,16 @@ public class HttpRequest {
 
     public String getPath() {
         return getRequestLine().getRequestURI().getPath();
+    }
+
+    public boolean isLoggedIn() {
+        return getLoggedInUser().isPresent();
+    }
+
+    public Optional<User> getLoggedInUser() {
+        if (!httpHeader.getCookieList().hasCookie(SessionManager.SESSION_ID_NAME)) return Optional.empty();
+        Cookie cookie = (Cookie) httpHeader.getCookieList().getCookie(SessionManager.SESSION_ID_NAME);
+        Optional<Session> session = SessionManager.findSession(cookie.getValue());
+        return session.map(value -> (User) value.getAttribute(SessionManager.USER_NAME));
     }
 }

@@ -2,10 +2,7 @@ package webserver;
 
 import http.HttpResponse;
 import http.request.HttpRequest;
-import webserver.controller.Controller;
-import webserver.controller.HomeController;
-import webserver.controller.StaticResourceController;
-import webserver.controller.UserSaveController;
+import webserver.controller.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +19,8 @@ public class FrontController {
     private void initHandlerMappingMap() {
         handlerMappingMap.put("/", new HomeController());
         handlerMappingMap.put("/user/create", new UserSaveController());
+        handlerMappingMap.put("/user/login", new UserLoginController());
+        handlerMappingMap.put("/user/list", new UserListController());
     }
 
     public void service(HttpRequest request, HttpResponse response) {
