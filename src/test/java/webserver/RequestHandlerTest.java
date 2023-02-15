@@ -3,6 +3,8 @@ package webserver;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import model.User;
+import model.http.CustomHttpSession;
+import model.http.SessionManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -171,6 +173,21 @@ class RequestHandlerTest {
                 "\r\n";
 
         assertTrue(output.startsWith(prefix) && output.endsWith(suffix));
+    }
+
+    @DisplayName("세션에 저장하는 회원 정보 테스트")
+    @Test
+    void sessionGetAttribute() {
+        // given
+        join();
+        String jSessionId = login();
+
+        // when
+        CustomHttpSession session = SessionManager.getInstance().findSession(jSessionId).get();
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        // then
+        assertThat(loginUser.getUserId()).isEqualTo("cu");
     }
 
     @DisplayName("로그인 실패 테스트")
