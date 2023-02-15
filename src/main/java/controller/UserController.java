@@ -10,7 +10,7 @@ import service.UserService;
 
 import java.io.IOException;
 
-public class UserController extends BaseController {
+public class UserController implements BaseController {
 
     private final UserService userService = new UserService();
 

@@ -2,6 +2,7 @@ package controller;
 
 import controller.annotation.CustomRequestBody;
 import controller.annotation.CustomRequestHeader;
+import controller.annotation.CustomRequestMapping;
 import controller.annotation.CustomRequestParams;
 import exception.UnsupportedRequestException;
 import exception.UnsupportedResponseException;
@@ -36,12 +37,28 @@ public class FrontController {
 
     public CustomHttpResponse getHttpResponse(CustomHttpRequest request) throws NoSuchMethodException {
         BaseController controller = controllerMapping.getOrDefault(request.getHttpRequestLine().getUrl(), new ViewController());
-        Method foundMethod = controller.getProperMethod(request);
+        Method foundMethod = getProperMethod(controller, request);
         try {
             return getResponse(foundMethod, controller, request);
         } catch (Exception e) {
             throw new UnsupportedResponseException("HttpResponse 생성에 실패했습니다.");
         }
+    }
+
+    private Method getProperMethod(BaseController controller, CustomHttpRequest request) throws NoSuchMethodException {
+        if (controller instanceof ViewController) {
+            return Arrays.stream(controller.getClass().getDeclaredMethods())
+                    .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
+                            && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getHttpRequestLine().getUrl())
+                            && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpRequestLine().getHttpMethod())
+                    ).findFirst()
+                    .orElse(controller.getClass().getDeclaredMethod("resource", CustomHttpRequest.class));
+        }
+        return Arrays.stream(controller.getClass().getDeclaredMethods())
+                .filter(method -> method.isAnnotationPresent(CustomRequestMapping.class)
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).url().equals(request.getHttpRequestLine().getUrl())
+                        && method.getDeclaredAnnotation(CustomRequestMapping.class).httpMethod().equals(request.getHttpRequestLine().getHttpMethod())
+                ).findFirst().orElseThrow(NoSuchMethodException::new);
     }
 
     private CustomHttpResponse getResponse(Method method, BaseController controller, CustomHttpRequest request) throws InvocationTargetException, IllegalAccessException {
