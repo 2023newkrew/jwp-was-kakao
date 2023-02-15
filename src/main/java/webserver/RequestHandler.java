@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 
 public class RequestHandler implements Runnable {
-    public static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    public final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
 
@@ -19,7 +19,7 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.info("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -27,10 +27,8 @@ public class RequestHandler implements Runnable {
             String httpRequest = IOUtils.getHttpRequest(br);
 
             HttpParser httpParser = new HttpParser(httpRequest);
-            String path = httpParser.getPath();
-
             PathBinder pathBinder = new PathBinder();
-            pathBinder.bind(path, out, br, httpParser);
+            pathBinder.bind(out, br, httpParser);
 
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());

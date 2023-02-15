@@ -1,6 +1,8 @@
 package utils;
 
-import webserver.RequestHandler;
+import auth.HttpCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ResponseUtils {
+    public static final Logger logger = LoggerFactory.getLogger(ResponseUtils.class);
 
     public static void responseOkHeader(DataOutputStream dos, int lengthOfBodyContent, String filePath) {
         try {
@@ -20,7 +23,7 @@ public class ResponseUtils {
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
-            RequestHandler.logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -30,7 +33,18 @@ public class ResponseUtils {
             dos.writeBytes("Location: " + redirectPath + " \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
-            RequestHandler.logger.error(e.getMessage());
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static void responseLoginHeader(DataOutputStream dos, HttpCookie httpCookie) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 OK \r\n");
+            dos.writeBytes("Set-Cookie: " + httpCookie + " \r\n");
+            dos.writeBytes("Location: /index.html \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -39,7 +53,7 @@ public class ResponseUtils {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
-            RequestHandler.logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 }
