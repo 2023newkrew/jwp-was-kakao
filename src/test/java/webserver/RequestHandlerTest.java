@@ -3,6 +3,7 @@ package webserver;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import model.User;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RequestHandlerTest {
+    @DisplayName("기본 소켓 통신 테스트")
     @Test
     void socket_out() {
         // given
@@ -34,6 +36,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("인덱스 html 테스트")
     @Test
     void index() {
         // given
@@ -60,6 +63,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("css 테스트")
     @Test
     void css() {
         // given
@@ -86,6 +90,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("회원 가입 GET 방식 테스트")
     @Test
     void addUserWithGetMethod() {
         // given
@@ -109,6 +114,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("회원 가입 POST 방식 테스트")
     @Test
     void addUserWithPostMethod() {
         // given
@@ -136,6 +142,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("로그인 성공 테스트")
     @Test
     void loginSuccess() {
         // given
@@ -166,6 +173,7 @@ class RequestHandlerTest {
         assertTrue(output.startsWith(prefix) && output.endsWith(suffix));
     }
 
+    @DisplayName("로그인 실패 테스트")
     @Test
     void loginFail() {
         // given
@@ -193,6 +201,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("유저 목록 조회 성공 테스트")
     @Test
     void userListSuccess() throws IOException {
         // given
@@ -223,6 +232,7 @@ class RequestHandlerTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+    @DisplayName("유저 목록 조회 실패 테스트")
     @Test
     void userListFail() {
         // given
