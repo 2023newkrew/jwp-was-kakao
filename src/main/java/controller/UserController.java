@@ -29,10 +29,6 @@ import static webserver.session.SessionManager.*;
 public class UserController  implements MyController {
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private int status = 200;
-    private String redirectUrl = "";
-    private String cookie;
-    private byte[] body = null;
 
     @Override
     public boolean canHandle(HttpRequest httpRequest) {
@@ -43,83 +39,71 @@ public class UserController  implements MyController {
     @Override
     public ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream) {
         String path = httpRequest.getPath();
-        String contentType = httpRequest.getContentType();
-        cookie = httpRequest.getCookie().toString();
-        status = 200;
 
         if(path.equals("/user/form.html") && httpRequest.compareMethod("GET")){
-            createForm(path);
+            return createForm(httpRequest);
         }
 
         if(path.equals("/user/login.html") && httpRequest.compareMethod("GET")){
-            loginForm(path);
+            return loginForm(httpRequest);
         }
 
         if(path.equals("/user/list") && httpRequest.compareMethod("GET")){
-            getUserList(contentType, cookie, dataOutputStream);
+            return getUserList(httpRequest);
         }
 
         if(path.equals("/user/login_failed.html") && httpRequest.compareMethod("GET")){
-            loginFailForm(path);
+            return loginFailForm(httpRequest);
         }
 
         if(path.equals("/user/login") && httpRequest.compareMethod("GET")){
-            alreadyLogin();
+            return alreadyLogin(httpRequest);
         }
 
         if(path.equals("/user/create") && httpRequest.compareMethod("POST")){
-            createUser(httpRequest.getParams());
+            return createUser(httpRequest);
         }
 
         if(path.equals("/user/login") && httpRequest.compareMethod("POST")){
-            login(httpRequest.getParams());
+            return login(httpRequest);
         }
 
         return ResponseEntity.builder()
-                .status(status)
-                .cookie(cookie)
-                .contentType(contentType)
-                .redirectUrl(redirectUrl)
-                .body(body)
                 .build();
     }
 
-    // Cookie가 없다면, Session에서 찾아서 넣어주기
-    private void findCookieInSession(String userId){
-        if(Objects.isNull(cookie) || cookie.startsWith("JSESSIONID")) return;
-        Session session = findSession(cookie);
-        if(!Objects.isNull(session)){
-            this.cookie = session.getId();
-        }
+    private ResponseEntity setRedirectResponse(HttpRequest httpRequest, String redirectUrl){
+        String cookie = httpRequest.getCookie().toString();
+        return ResponseEntity.builder()
+                .status(302)
+                .redirectUrl(redirectUrl)
+                .cookie(cookie)
+                .build();
+    }
+    private ResponseEntity alreadyLogin(HttpRequest httpRequest) {
+        return setRedirectResponse(httpRequest, "/index.html");
     }
 
-    private void setRedirectResponse(String redirectUrl){
-        this.status = 302;
-        this.redirectUrl = redirectUrl;
-    }
-    private void alreadyLogin() {
-        setRedirectResponse("/index.html");
-    }
-
-    private void login(MyParams params) {
+    private ResponseEntity login(HttpRequest httpRequest) {
+        MyParams params = httpRequest.getParams();
         String userId = params.get("userId");
         String password = params.get("password");
 
         if(isUser(userId, password)){
-            loginSuccess(userId);
-            return;
+            return loginSuccess(httpRequest, userId);
         }
-        loginFail();
+        return loginFail(httpRequest);
     }
 
-    private void loginSuccess(String userId){
+    private ResponseEntity loginSuccess(HttpRequest httpRequest, String userId){
         // 쿠키 생성
         Cookie cookie = new Cookie();
         cookie.generateUUID();
-        this.cookie = cookie.toString();
+        httpRequest.setCookie(cookie);
+
         // 세션 저장
         saveSession(cookie.toString(), userId);
-        setRedirectResponse("/index.html");
+        return setRedirectResponse(httpRequest,"/index.html");
     }
 
     private void saveSession(String sessionId, String userId){
@@ -128,12 +112,12 @@ public class UserController  implements MyController {
         add(session);
     }
 
-    private void loginFail(){
-        setRedirectResponse("/user/login_failed.html");
+    private ResponseEntity loginFail(HttpRequest httpRequest){
+        return setRedirectResponse(httpRequest, "/user/login_failed.html");
     }
 
-    private void loginFailForm(String path){
-        setTemplatePathToBody(path);
+    private ResponseEntity loginFailForm(HttpRequest httpRequest){
+        return setTemplatePathToBody(httpRequest);
     }
 
     // 로그인 검증 로직
@@ -143,26 +127,29 @@ public class UserController  implements MyController {
         return true;
     }
 
-    private void getUserList(String contentType, String cookie, DataOutputStream dataOutputStream){
+    private ResponseEntity getUserList(HttpRequest httpRequest){
+        String cookie = httpRequest.getCookie().toString();
         // login이 안되어있다면
         if(!cookie.startsWith("JSESSIONID")){
             String path = "/user/login.html";
-            loginForm(path);
-            return;
+            httpRequest.setPath(path);
+            return loginForm(httpRequest);
         }
-        userList();
+        return userList(cookie);
     }
 
-    private void loginForm(String path){
+    private ResponseEntity loginForm(HttpRequest httpRequest){
+        String cookie = httpRequest.getCookie().toString();
         if(!cookie.startsWith("JSESSIONID")) {
-            setTemplatePathToBody(path);
-            return;
+            return setTemplatePathToBody(httpRequest);
         }
         // 로그인이 되어 있다면, index.html로 redirect
-        setRedirectResponse("/index.html");
+        return setRedirectResponse(httpRequest, "/index.html");
     }
 
-    private void userList() {
+    private ResponseEntity userList(String cookie) {
+        byte[] body = null;
+
         try{
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/templates");
@@ -179,20 +166,31 @@ public class UserController  implements MyController {
         } catch(IOException e){
             logger.error(e.getMessage());
         }
+
+        return ResponseEntity.builder()
+                .status(200)
+                .body(body)
+                .cookie(cookie)
+                .build();
     }
 
-    private void createUser(MyParams params){
+    private ResponseEntity createUser(HttpRequest httpRequest){
+        MyParams params = httpRequest.getParams();
         // Memory DB에 유저 데이터 저장
         addUser(UserFactory.createUser(params));
         // 회원가입 시 자동 로그인이 되어야 되기 때문에, login 설정
-        loginSuccess(params.get("userId"));
+        return loginSuccess(httpRequest, params.get("userId"));
     }
 
-    private void createForm(String path){
-        setTemplatePathToBody(path);
+    private ResponseEntity createForm(HttpRequest httpRequest){
+        return setTemplatePathToBody(httpRequest);
     }
 
-    private void setTemplatePathToBody(String path){
+    private ResponseEntity setTemplatePathToBody(HttpRequest httpRequest){
+        String path = httpRequest.getPath();
+        String cookie = httpRequest.getCookie().toString();
+        byte[] body = null;
+
         try {
             body = FileIoUtils.loadFileFromClasspath("templates" + path);
         } catch (IOException e) {
@@ -200,5 +198,11 @@ public class UserController  implements MyController {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+
+        return ResponseEntity.builder()
+                .status(200)
+                .body(body)
+                .cookie(cookie)
+                .build();
     }
 }

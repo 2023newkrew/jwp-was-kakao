@@ -2,6 +2,7 @@ package webserver.request;
 
 import controller.HomeController;
 import lombok.Getter;
+import lombok.Setter;
 import model.dto.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,6 +148,12 @@ public class HttpRequest {
 
     public Cookie getCookie(){
         return this.getHeaders().getCookie();
+    }
+    public void setCookie(Cookie cookie){
+        this.getHeaders().setCookie(cookie);
+    }
+    public void setPath(String path){
+        this.getHeaders().put("path", path);
     }
 
     public void putParams(String key, String value){
