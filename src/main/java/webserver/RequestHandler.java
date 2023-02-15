@@ -43,8 +43,8 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
 
             // Handler Mapping (FrontController는 Dispatcher Servlet의 역할을 수행)
-            MyController myController = dispatcherServlet.handlerMapping(httpRequest, dos);
-            ResponseEntity responseEntity = myController.handle(httpRequest, dos);
+            MyController myController = dispatcherServlet.handlerMapping(httpRequest);
+            ResponseEntity responseEntity = myController.handle(httpRequest);
             responseEntity.response(dos);
 
         } catch (IOException e) {

@@ -11,13 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import webserver.request.HttpRequest;
-import webserver.request.MyHeaders;
 import webserver.request.MyParams;
 import utils.UserFactory;
 import webserver.response.ResponseEntity;
 import webserver.session.Session;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -37,7 +35,7 @@ public class UserController  implements MyController {
     }
 
     @Override
-    public ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream) {
+    public ResponseEntity handle(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
 
         if(path.equals("/user/form.html") && httpRequest.compareMethod("GET")){

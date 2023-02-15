@@ -23,7 +23,7 @@ public class StaticController implements MyController{
     }
 
     @Override
-    public ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream) {
+    public ResponseEntity handle(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
         String contentType = httpRequest.getContentType();
 

@@ -1,14 +1,10 @@
 package controller;
 
 import webserver.request.HttpRequest;
-import webserver.request.MyHeaders;
-import webserver.request.MyParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.*;
 import webserver.response.ResponseEntity;
-
-import java.io.DataOutputStream;
 
 public class HomeController implements MyController{
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
@@ -20,7 +16,7 @@ public class HomeController implements MyController{
     }
 
     @Override
-    public ResponseEntity handle(HttpRequest httpRequest, DataOutputStream dataOutputStream) {
+    public ResponseEntity handle(HttpRequest httpRequest) {
         String path = httpRequest.getPath();
         String cookie = httpRequest.getCookie().toString();
         String contentType = httpRequest.getContentLength();

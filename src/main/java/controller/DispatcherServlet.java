@@ -1,10 +1,6 @@
 package controller;
 
 import webserver.request.HttpRequest;
-import webserver.request.MyHeaders;
-import webserver.request.MyParams;
-
-import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +18,7 @@ public class DispatcherServlet {
         controllers.addAll(List.of(myControllers));
     }
 
-    public MyController handlerMapping(HttpRequest httpRequest, DataOutputStream dataOutputStream){
+    public MyController handlerMapping(HttpRequest httpRequest){
         return controllers.stream()
                 .filter((con) -> con.canHandle(httpRequest))
                 .findFirst()
