@@ -9,6 +9,7 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
 import utils.FileIoUtils;
+import utils.TemplatePathCheckUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,13 +27,13 @@ public class TemplateService {
     public byte[] createHtmlBody(HttpParser httpParser) throws IOException, URISyntaxException {
         byte[] body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + httpParser.getPath());
 
-        if (httpParser.getPath().startsWith(USER_LOGIN_PATH) && !AuthUtils.checkInvalidSession(httpParser.getCookie())) {
+        if (TemplatePathCheckUtils.isLoginAndValidSession(httpParser)) {
             body = "index".getBytes();
         }
-        if (httpParser.getPath().startsWith(USER_PROFILE_URL)) {
+        if (TemplatePathCheckUtils.isProfile(httpParser)) {
             body = getUserProfileHtml(httpParser);
         }
-        if (httpParser.getPath().startsWith(USER_LIST_URL)) {
+        if (TemplatePathCheckUtils.isUserList(httpParser)) {
             body = getUserListHtml(httpParser);
         }
 
