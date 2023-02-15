@@ -2,10 +2,10 @@ package webserver;
 
 import controller.FrontController;
 import model.http.CustomHttpRequest;
+import model.http.CustomHttpRequestFactory;
 import model.http.CustomHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.HttpUtils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -28,9 +28,13 @@ public class RequestHandler implements Runnable {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
-            CustomHttpRequest request = HttpUtils.createHttpRequest(br);
+            CustomHttpRequest request = CustomHttpRequestFactory.generateHttpRequest(br);
             CustomHttpResponse response = FrontController.getInstance().getHttpResponse(request);
-            HttpUtils.respond(dos, response);
+            dos.writeBytes(response.getHttpStatus().getLine() + " \r\n");
+            response.getHeaders().respond(dos);
+            dos.writeBytes("\r\n");
+            dos.write(response.getBody().getBytes(), 0, response.getBody().getBytes().length);
+            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (NoSuchMethodException e) {

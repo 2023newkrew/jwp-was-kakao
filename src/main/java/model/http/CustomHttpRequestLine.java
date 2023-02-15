@@ -5,8 +5,8 @@ import exception.EmptyHeaderException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static utils.HttpUtils.KEY_VALUE_DELIMITER;
-import static utils.HttpUtils.QUERY_DELIMITER;
+import static model.http.CustomHttpRequestFactory.KEY_VALUE_DELIMITER;
+import static model.http.CustomHttpRequestFactory.QUERY_DELIMITER;
 
 public class CustomHttpRequestLine {
 
