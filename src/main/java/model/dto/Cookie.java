@@ -1,6 +1,7 @@
 package model.dto;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class Cookie {
 
@@ -12,9 +13,11 @@ public class Cookie {
 
     @Override
     public String toString() {
-        if(Objects.isNull(cookies.get("JSESSIONID"))) return "";
-        return "JSESSIONID=" + cookies.get("JSESSIONID") +
-                "; Path=/";
+        String str = "";
+        for(Entry<String, String> entry : cookies.entrySet()){
+            str = entry.getKey() + "=" + entry.getValue() + "; " + str;
+        }
+        return str;
     }
 
     public void parseCookie(String line){
@@ -27,6 +30,7 @@ public class Cookie {
 
     public void generateUUID(){
         UUID uuid = UUID.randomUUID();
+        cookies.put("Path", "/");
         cookies.put("JSESSIONID", uuid.toString());
     }
 }
