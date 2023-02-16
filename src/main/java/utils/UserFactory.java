@@ -1,7 +1,7 @@
 package utils;
 
 import model.User;
-import model.dto.MyParams;
+import webserver.request.MyParams;
 
 public class UserFactory {
 

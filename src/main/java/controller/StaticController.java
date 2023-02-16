@@ -3,43 +3,46 @@ package controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
-import model.dto.MyHeaders;
-import model.dto.MyParams;
+import webserver.request.HttpRequest;
+import webserver.request.MyHeaders;
+import webserver.request.MyParams;
+import webserver.response.ResponseEntity;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static model.dto.ResponseBodies.responseBody;
-import static model.dto.ResponseHeaders.response200Header;
 
 public class StaticController implements MyController{
 
     private final Logger logger = LoggerFactory.getLogger(StaticController.class);
 
+    private byte[] body;
+
     @Override
-    public boolean canHandle(MyHeaders headers, MyParams params) {
-        return isStatic(params.get("extension"));
+    public boolean canHandle(HttpRequest httpRequest) {
+        String extension = getExtensionFromPath(httpRequest.getPath());
+        return isStatic(extension);
     }
 
     @Override
-    public void handle(MyHeaders headers, MyParams params, DataOutputStream dataOutputStream) {
-        String path = headers.get("path");
-        String contentType = headers.get("contentType");
+    public ResponseEntity handle(HttpRequest httpRequest) {
+        String path = httpRequest.getPath();
+        String contentType = httpRequest.getContentType();
 
-        handleStatic(path, contentType, dataOutputStream);
+        return handleStatic(path, 200, contentType);
     }
 
-    private void handleStatic(String path, String contentType, DataOutputStream dataOutputStream){
+    private ResponseEntity handleStatic(String path, int status, String contentType){
+
         try {
-            byte[] body = FileIoUtils.loadFileFromClasspath("static" + path);
-            response200Header(dataOutputStream, contentType, body.length);
-            responseBody(dataOutputStream, body);
-        } catch (IOException e) {
+            body = FileIoUtils.loadFileFromClasspath("static" + path);
+        } catch (Exception e){
             logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
+
+        return ResponseEntity.builder()
+                .status(status)
+                .contentType(contentType)
+                .body(body)
+                .build();
     }
 
     private boolean isStatic(String extension){
@@ -47,5 +50,11 @@ public class StaticController implements MyController{
             return false;
         }
         return true;
+    }
+
+    private String getExtensionFromPath(String path){
+        String[] tokens = path.split("\\.");
+        if(tokens.length == 0) return "";
+        return tokens[tokens.length - 1];
     }
 }
