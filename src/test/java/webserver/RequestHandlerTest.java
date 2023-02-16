@@ -1,17 +1,31 @@
 package webserver;
 
-import db.DataBase;
+import web.controller.UserController;
+import web.db.DataBase;
+import web.exception.handler.GlobalExceptionHandler;
+import framework.RequestHandler;
+import framework.requestmapper.ExceptionHandlerMapper;
+import framework.requestmapper.HandlerMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import utils.FileIoUtils;
+import framework.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    @BeforeEach
+    void setUp() {
+        HandlerMapper.getInstance().setHandlers(List.of(UserController.getInstance()));
+        ExceptionHandlerMapper.getInstance().setHandlers(List.of(GlobalExceptionHandler.getInstance()));
+    }
+
     @Test
     void 안녕세상() {
         // given
@@ -86,7 +100,7 @@ class RequestHandlerTest {
     @Test
     void 유저를_생성할_수_있다() {
         // given
-        final String httpBody = "userId=test&" +
+        final String httpBody = "userId=testtest&" +
                 "password=passtest&" +
                 "name=Sanghwa&" +
                 "email=sss@ss.ss";
