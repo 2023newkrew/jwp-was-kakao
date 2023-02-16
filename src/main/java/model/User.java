@@ -43,12 +43,4 @@ public class User {
         return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
     }
 
-    public Map<String, String> toMap() {
-        return Stream.of(
-                new AbstractMap.SimpleEntry<>("userId", userId),
-                new AbstractMap.SimpleEntry<>("password", password),
-                new AbstractMap.SimpleEntry<>("name", name),
-                new AbstractMap.SimpleEntry<>("email", email)
-        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
 }

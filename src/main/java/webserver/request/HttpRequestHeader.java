@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.util.StringUtils;
 
 public class HttpRequestHeader {
 
@@ -21,7 +22,7 @@ public class HttpRequestHeader {
     public static HttpRequestHeader parse(BufferedReader bufferedReader) throws IOException {
         String line = bufferedReader.readLine();
         Map<String, String> headers = new HashMap<>();
-        while (!isNullOrEmpty(line)) {
+        while (!StringUtils.isEmpty(line)) {
             String[] tokens = line.split(":", 2);
             headers.put(tokens[0], tokens[1].trim());
             line = bufferedReader.readLine();
@@ -29,11 +30,7 @@ public class HttpRequestHeader {
         Cookie cookie = Cookie.parse(headers.getOrDefault(COOKIE, ""));
         return new HttpRequestHeader(headers, cookie);
     }
-
-    private static boolean isNullOrEmpty(String line) {
-        return line == null || "".equals(line);
-    }
-
+    
     public int getContentLength() {
         return Integer.parseInt(headers.getOrDefault(CONTENT_LENGTH, "0"));
     }

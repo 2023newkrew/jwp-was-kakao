@@ -9,7 +9,7 @@ public class LoginListHandler implements Handler {
 
     @Override
     public HttpResponse applyRequest(HttpRequest request) {
-        if (request.getHeaders().getCookie().get("JSESSIONID") != null) {
+        if (request.getHeaders().getCookie().get("JSESSIONID").isBlank()) {
             return TemplateEngine
                     .getTemplateResponse("/user/list", DataBase.findAll());
         }
