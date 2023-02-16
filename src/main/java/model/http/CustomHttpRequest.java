@@ -2,42 +2,18 @@ package model.http;
 
 public class CustomHttpRequest {
 
-    private final CustomHttpMethod customHttpMethod;
-    private final String url;
-    private final CustomHttpRequestQuery query;
-    private final String protocol;
+    private final CustomHttpRequestLine line;
     private final CustomHttpHeader headers;
     private final CustomHttpRequestBody body;
 
-    public CustomHttpRequest(
-            CustomHttpMethod customHttpMethod,
-            String url,
-            CustomHttpRequestQuery query,
-            String protocol,
-            CustomHttpHeader headers,
-            CustomHttpRequestBody body) {
-        this.customHttpMethod = customHttpMethod;
-        this.url = url;
-        this.query = query;
-        this.protocol = protocol;
+    public CustomHttpRequest(CustomHttpRequestLine line, CustomHttpHeader headers, CustomHttpRequestBody body) {
+        this.line = line;
         this.headers = headers;
         this.body = body;
     }
 
-    public CustomHttpMethod getHttpMethod() {
-        return customHttpMethod;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public CustomHttpRequestQuery getQuery() {
-        return query;
-    }
-
-    public String getProtocol() {
-        return protocol;
+    public CustomHttpRequestLine getHttpRequestLine() {
+        return line;
     }
 
     public CustomHttpHeader getHeaders() {

@@ -1,4 +1,5 @@
 package controller;
 
-public abstract class BaseController {
+public interface BaseController {
+    
 }
