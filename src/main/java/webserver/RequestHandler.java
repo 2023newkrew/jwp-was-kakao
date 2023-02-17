@@ -1,7 +1,6 @@
 package webserver;
 
 import static utils.FileIoUtils.loadFileFromClasspath;
-import static utils.IOUtils.parseHttpRequest;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,6 +15,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import webserver.handler.HandlerMapping;
 import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
 
@@ -33,7 +33,7 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            HttpRequest httpRequest = parseHttpRequest(bufferedReader);
+            HttpRequest httpRequest = HttpRequest.parse(bufferedReader);
 
             DataOutputStream dos = new DataOutputStream(out);
 
@@ -50,13 +50,32 @@ public class RequestHandler implements Runnable {
     private HttpResponse execute(HttpRequest request) throws IOException, URISyntaxException{
         String requestPath = request.getPath();
         FilenameExtension extension = request.getFilenameExtension();
-        if (extension.isExistStaticFolder()) {
+        if (isExistStaticFolder(extension)) {
             return HttpResponse.ok(loadFileFromClasspath("./static" + requestPath), extension);
         }
-        if (extension.isExistTemplateFolder()) {
+        if (isExistTemplateFolder(extension)) {
             return HttpResponse.ok(loadFileFromClasspath("./templates" + requestPath), extension);
         }
         return HandlerMapping.handle(request);
+    }
+
+    private boolean isFont(FilenameExtension extension) {
+        return extension == FilenameExtension.EOT ||
+                extension == FilenameExtension.SVG ||
+                extension == FilenameExtension.TTF ||
+                extension == FilenameExtension.WOFF ||
+                extension == FilenameExtension.WOFF2;
+    }
+
+    public boolean isExistStaticFolder(FilenameExtension extension) {
+        return extension == FilenameExtension.CSS ||
+                extension == FilenameExtension.PNG ||
+                extension == FilenameExtension.JS ||
+                isFont(extension);
+    }
+
+    public boolean isExistTemplateFolder(FilenameExtension extension) {
+        return extension == FilenameExtension.HTML || extension == FilenameExtension.ICO;
     }
 
 }

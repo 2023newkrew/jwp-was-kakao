@@ -1,7 +1,7 @@
 package webserver.handler;
 
 import webserver.request.HttpRequest;
-import webserver.HttpResponse;
+import webserver.response.HttpResponse;
 
 public class BaseHandler implements Handler {
 
