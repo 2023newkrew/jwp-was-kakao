@@ -7,3 +7,21 @@ String.prototype.format = function() {
         ;
   });
 };
+
+$(document).ready(function() {
+  $("#loginForm").submit(function(event) {
+    event.preventDefault();
+    const formData = $(this).serialize();
+    $.ajax({
+      type: "POST",
+      url: "/user/login",
+      data: formData,
+      success: function(response) {
+        window.location.href = "/index.html";
+      },
+      error: function(response) {
+        window.location.href = "/user/login.html";
+      }
+    });
+  });
+});

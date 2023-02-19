@@ -1,10 +1,10 @@
 package webserver;
 
-import db.DataBase;
-import model.User;
+import Controller.ResourceController;
+import Controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
+import session.HttpCookie;
 import utils.HttpParser;
 import utils.IOUtils;
 
@@ -15,13 +15,15 @@ import java.util.HashMap;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private static final String TEMPLATE_ROOT_PATH = "./templates";
-    private static final String STATIC_ROOT_PATH = "./static";
 
     private final Socket connection;
+    private final UserController userController;
+    private final ResourceController resourceController;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.userController = UserController.getInstance();
+        this.resourceController = ResourceController.getInstance();
     }
 
     public void run() {
@@ -32,19 +34,19 @@ public class RequestHandler implements Runnable {
 
             HttpParser httpParser = new HttpParser(IOUtils.readHeader(br));
             String path = httpParser.getPath();
-            byte[] body = new byte[0];
+            HttpCookie httpCookie = httpParser.getCookie();
+
             switch (httpParser.getHttpMethod()){
                 case POST:
                     Integer contentLength = httpParser.getContentLength();
                     HashMap<String, String> requestBody = parseQueryString(IOUtils.readData(br, contentLength));
 
-                    if(path.startsWith("/user/create")){
-                        User user = new User(requestBody.get("userId"), requestBody.get("password"), requestBody.get("name"), requestBody.get("email"));
-                        DataBase.addUser(user);
-                        System.out.println("[USER CREATED] - " + DataBase.findUserById(user.getUserId()));
-                        ResponseUtils.response302Header(dos, "/index.html");
+                    if(path.equals("/user/create")){
+                        userController.createUser(dos, requestBody);
+                    }else if(path.equals("/user/login")){
+                        userController.login(dos, requestBody);
                     }else{
-                        ResponseUtils.response404Header(dos);
+                        ResponseUtils.response404(dos);
                     }
                     break;
 
@@ -53,27 +55,28 @@ public class RequestHandler implements Runnable {
                     if(path.contains("?")) queryParam = parseQueryString(path.substring(path.indexOf('?') + 1));
 
                     if(path.equals("/")){
-                        ResponseUtils.response302Header(dos, "/index.html");
+                        ResponseUtils.response302(dos, "/index.html");
+                    }else if(path.equals("/user/list.html")){
+                        userController.getUserList(dos, path, httpCookie);
+                    }else if(path.equals("/user/login.html")){
+                        resourceController.getLoginTemplate(dos, path, httpCookie);
                     }else if(path.endsWith(".html") || path.endsWith("/favicon.ico")){
-                        body = FileIoUtils.loadFileFromClasspath(TEMPLATE_ROOT_PATH + path);
-                        ResponseUtils.response200Header(dos, body.length, path);
+                        resourceController.getCommonTemplate(dos, path);
                     }else if(path.startsWith("/css") || path.startsWith("/fonts") || path.startsWith("/images") || path.startsWith("/js")){
-                        body = FileIoUtils.loadFileFromClasspath(STATIC_ROOT_PATH + path);
-                        ResponseUtils.response200Header(dos, body.length, path);
+                        resourceController.getStatic(dos, path);
                     }else{
-                        ResponseUtils.response404Header(dos);
+                        ResponseUtils.response404(dos);
                     }
                     break;
 
                 case PUT:
                 case DELETE:
-                    ResponseUtils.response404Header(dos);
+                    ResponseUtils.response404(dos);
                     break;
 
                 default:
-                    ResponseUtils.response400Header(dos);
+                    ResponseUtils.response400(dos);
             }
-            ResponseUtils.responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
