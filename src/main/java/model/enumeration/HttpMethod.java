@@ -6,13 +6,4 @@ public enum HttpMethod {
     PUT,
     PATCH,
     DELETE;
-
-    public static boolean isExist(String string) {
-        try {
-            HttpMethod.valueOf(string);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
 }

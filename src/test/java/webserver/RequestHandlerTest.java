@@ -4,13 +4,13 @@ import db.DataBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import utils.FileIoUtils;
+import utils.utils.FileIoUtils;
 import webserver.infra.RequestHandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class RequestHandlerTest {
     @Test
@@ -52,7 +52,7 @@ class RequestHandlerTest {
         // then
         var expected = "HTTP/1.1 200 OK \r\n" +
                 "Content-Type: text/html;charset=utf-8 \r\n" +
-                "Content-Length: 6902 \r\n" +
+                "Content-Length: 7153 \r\n" +
                 "\r\n" +
                 new String(FileIoUtils.loadFileFromClasspath("templates/index.html"));
 
@@ -71,6 +71,7 @@ class RequestHandlerTest {
                 "POST /user/create HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
+                "Content-Type: " + "application/x-www-form-urlencoded",
                 "Content-Length: " + contentLength + " ",
                 "",
                 "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com",
@@ -84,6 +85,6 @@ class RequestHandlerTest {
         handler.run();
 
         // then
-        assertThat(DataBase.findUserById("cu").getEmail()).isEqualTo("brainbackdoor%40gmail.com");
+        assertThat(DataBase.findUserById("cu").get().getEmail()).isEqualTo("brainbackdoor%40gmail.com");
     }
 }

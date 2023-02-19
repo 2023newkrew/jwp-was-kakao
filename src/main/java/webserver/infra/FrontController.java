@@ -2,41 +2,40 @@ package webserver.infra;
 
 import lombok.experimental.UtilityClass;
 import model.request.HttpRequest;
-import webserver.controller.ApiController;
-import webserver.controller.UserController;
-import webserver.controller.ViewController;
+import model.response.HttpResponse;
+import utils.builder.ResponseBuilder;
 
-import java.io.DataOutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 import static webserver.infra.ControllerHandlerAdapter.*;
 
 @UtilityClass
 public class FrontController {
-    private final Map<String, ApiController> handleControllerMap = new HashMap<>();
+    private final String INSTANTIATE_METHOD_NAME = "getInstance";
 
     static {
-        handleControllerMap.put("/user/create", UserController.getInstance());
+        ControllerHandlerAdapter.mappingControllerByURL();
     }
 
-    public void handleRequest(HttpRequest request, DataOutputStream dos) {
+    public HttpResponse handleRequest(HttpRequest request) {
         try {
-            ApiController apiController = handleControllerMap.getOrDefault(request.getURL(), ViewController.getInstance());
+            Optional<Class<?>> controller = RequestMapping.get(request.getURL());
 
-            if (isViewController(apiController)) {
-                ViewResolver.resolve(request, dos);
-                return;
+            if (controller.isEmpty()) {
+                return ViewResolver.resolve(request);
             }
-            findMethodToExecute(request, apiController).invoke(apiController, request, dos);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+
+            return (HttpResponse) findMethodToExecute(controller.get(), request)
+                    .invoke(getInstance(controller.get()), request);
+        } catch (Exception e) {
+            return ResponseBuilder.notFound();
         }
     }
 
-    private boolean isViewController(ApiController apiController) {
-        return apiController.getClass()
-                .isAssignableFrom(ViewController.class);
+    private Object getInstance(Class<?> controller) throws Exception {
+        return controller.getMethod(INSTANTIATE_METHOD_NAME)
+                .invoke(controller);
     }
 }

@@ -2,6 +2,7 @@ package utils;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import utils.parser.QueryStringParser;
 
 import java.util.Map;
 

@@ -1,6 +1,5 @@
 package webserver.infra;
 
-import model.request.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +7,8 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-import static utils.RequestBuilder.*;
+import static utils.builder.RequestBuilder.*;
+import static utils.utils.ResponseUtils.*;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -25,7 +25,7 @@ public class RequestHandler implements Runnable {
              DataOutputStream dos = new DataOutputStream(out);
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 
-            FrontController.handleRequest(getHttpRequest(bufferedReader), dos);
+            doResponse(dos, FrontController.handleRequest(getHttpRequest(bufferedReader)));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

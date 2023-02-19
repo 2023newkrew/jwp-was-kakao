@@ -1,5 +1,6 @@
 package model.annotation;
 
+import model.enumeration.ContentType;
 import model.enumeration.HttpMethod;
 
 import java.lang.annotation.ElementType;
@@ -13,4 +14,6 @@ public @interface Api {
     HttpMethod method() default HttpMethod.GET;
 
     String url() default "/";
+
+    ContentType consumes() default ContentType.ANY;
 }

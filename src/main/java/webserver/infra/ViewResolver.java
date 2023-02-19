@@ -1,45 +1,80 @@
 package webserver.infra;
 
+import exception.TemplateCannotLoadedException;
 import lombok.experimental.UtilityClass;
+import model.dto.view.TemplateLoadResult;
 import model.request.HttpRequest;
+import model.response.HttpResponse;
+import model.response.properties.ResponseBody;
+import model.response.properties.ResponseHeader;
+import utils.builder.ResponseBuilder;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static constant.DefaultConstant.DEFAULT_BODY;
-import static constant.DefaultConstant.DEFAULT_URL;
-import static constant.PathConstant.STATIC;
-import static constant.PathConstant.TEMPLATES;
-import static utils.FileIoUtils.*;
-import static utils.ResponseUtils.*;
+import static constant.DefaultConstant.*;
+import static constant.HeaderConstant.*;
+import static constant.PathConstant.*;
+import static utils.utils.FileIoUtils.*;
 
 @UtilityClass
 public class ViewResolver {
-    public void resolve(HttpRequest request, DataOutputStream dos) {
-        byte[] body = DEFAULT_BODY;
+    private final String CONTENT_TYPE_DELIMITER = ",";
+    private final String REQUEST_PATH_DELIMITER = "/";
 
-        if (request.isNotDefaultURL()) {
-            body = getBody(request, request.getURL(), dos);
-        }
+    public HttpResponse resolve(HttpRequest request) {
+        ResponseBody responseBody = getBody(request.getURL());
 
-        response200Header(dos, request, body.length);
-        responseBody(dos, body);
+        ResponseHeader header = new ResponseHeader();
+        header.setAttribute(CONTENT_TYPE, getMostPreferredAcceptContentType(request));
+        header.setAttribute(CONTENT_LENGTH, String.valueOf(responseBody.length()));
+
+        return ResponseBuilder.ok()
+                .header(header)
+                .body(responseBody)
+                .build();
     }
 
-    private byte[] getBody(HttpRequest httpRequest, String requestURL, DataOutputStream dos) {
+
+    public HttpResponse resolve(TemplateLoadResult templateLoadResult) {
+        ResponseBody responseBody = new ResponseBody(templateLoadResult.getContent().getBytes());
+
+        ResponseHeader header = new ResponseHeader();
+        header.setAttribute(CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
+        header.setAttribute(CONTENT_LENGTH, String.valueOf(responseBody.length()));
+
+        return ResponseBuilder.ok()
+                .header(header)
+                .body(responseBody)
+                .build();
+    }
+
+    private ResponseBody getBody(String requestURL) {
         try {
-            if (isStaticPath(requestURL)) {
-                return loadFileFromClasspath(STATIC + httpRequest.getURL());
+            if (requestURL.equals(DEFAULT_URL)) {
+                return new ResponseBody(DEFAULT_BODY);
             }
-            return loadFileFromClasspath(TEMPLATES + httpRequest.getURL());
+
+            if (isStaticPath(requestURL)) {
+                return new ResponseBody(loadFileFromClasspath(STATIC + requestURL));
+            }
+
+            return new ResponseBody(loadFileFromClasspath(TEMPLATES + requestURL));
         } catch (IOException | URISyntaxException | NullPointerException e) {
-            response404Header(dos);
-            throw new RuntimeException(e);
+            throw new TemplateCannotLoadedException(e);
         }
     }
 
     private boolean isStaticPath(String requestURL) {
-        return getStaticFolderNames().contains(requestURL.split("/")[1]);
+        return getStaticFolderNames().contains(getPath(requestURL));
+    }
+
+    private String getPath(String requestURL) {
+        return requestURL.split(REQUEST_PATH_DELIMITER)[1];
+    }
+
+    private String getMostPreferredAcceptContentType(HttpRequest request) {
+        return request.findHeaderValue(ACCEPT, DEFAULT_CONTENT_TYPE)
+                .split(CONTENT_TYPE_DELIMITER)[0];
     }
 }
