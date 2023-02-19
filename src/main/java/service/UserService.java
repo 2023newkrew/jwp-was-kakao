@@ -2,6 +2,10 @@ package service;
 
 import db.DataBase;
 import model.User;
+import support.UserNotFoundException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserService {
 
@@ -10,4 +14,15 @@ public class UserService {
         DataBase.addUser(user);
     }
 
+    public List<User> getUsers() {
+        return new ArrayList<>(DataBase.findAll());
+    }
+
+    public User getUser(String userId) {
+        User user = DataBase.findUserById(userId);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
+    }
 }

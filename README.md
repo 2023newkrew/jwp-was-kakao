@@ -1,17 +1,9 @@
 # 웹 애플리케이션 서버
-## 진행 방법
-* 웹 애플리케이션 서버 요구사항을 파악한다.
-* 요구사항에 대한 구현을 완료한 후 자신의 github 아이디에 해당하는 브랜치에 Pull Request(이하 PR)를 통해 코드 리뷰 요청을 한다.
-* 코드 리뷰 피드백에 대한 개선 작업을 하고 다시 PUSH한다.
-* 모든 피드백을 완료하면 다음 단계를 도전하고 앞의 과정을 반복한다.
-
-## 온라인 코드 리뷰 과정
-* [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
 ## 요구사항
+### 1단계
 1. GET /index.html 응답 
     - http://localhost:8080/index.html 접근 가능
-    - 해당하는 파일 src/main/resources 디렉토리에서 읽어 전달
+    - 해당하는 파일 `src/main/resources` 디렉토리에서 읽어 전달
        ```http request
        GET /index.html HTTP/1.1
        Host: localhost:8080
@@ -20,7 +12,7 @@
         ```
 2. CSS 지원 
    - stylesheet 파일 지원하도록 구현
-   - 해당하는 파일 src/main/resources 디렉토리에서 읽어 전달
+   - 해당하는 파일 `src/main/resources` 디렉토리에서 읽어 전달
      ```http request
      GET ./css/style.css HTTP/1.1
      Host: localhost:8080
@@ -50,5 +42,18 @@
      userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com
      ```
 5. Redirect
-   - 회원가입 완료 후, URL이 /user/create로 유지되는 상황에서
-   - 회원가입 완료한 후 index.html로 이동하도록 함
+   - 회원가입 완료 후, URL이 `/user/create`로 유지되는 상황에서
+   - 회원가입 완료한 후 `index.html`로 이동하도록 함
+### 2단계
+1. 로그인 기능 구현
+   - 로그인 성공시 `index.html`으로 이동
+   - 로그인 실패시 `/user/login_failed.html`로 이동
+   - 로그인 성공시 `JSESSIONID` 이름으로 쿠키 설정 (모든 요청에 대해 쿠키 처리 가능하도록 Path `/`로 설정)
+2. 템플릿 엔진 활용
+   - 사용자가 로그인 상태일 경우 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력
+   - 사용자가 로그인 상태가 아닐 경우 로그인 페이지(`login.html`)로 이동
+   - 동적 html 생성을 위해 handlerbars.java template engine 활용
+3. Session 구현
+   - 쿠키에 전달 받은 `JSESSIONID` 값으로 로그인 여부 체크
+   - 로그인 성공시 Session 객체 값으로 User 객체 저장
+   - 로그인 상태에서 `/user/login` 페이지 접근시 이미 로그인 상태이므로 `index.html`로 리다이렉트

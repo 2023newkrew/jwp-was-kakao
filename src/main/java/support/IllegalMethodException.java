@@ -1,7 +1,10 @@
 package support;
 
-public class IllegalMethodException extends RuntimeException {
+import common.HttpStatus;
+
+public class IllegalMethodException extends CustomException {
+
     public IllegalMethodException() {
-        super("요청에 해당하는 HTTP Method가 존재하지 않습니다.");
+        super(HttpStatus.BAD_REQUEST, "요청에 해당하는 HTTP Method가 존재하지 않습니다.");
     }
 }
