@@ -13,4 +13,8 @@ public class User {
     private final String password;
     private final String name;
     private final String email;
+
+    public boolean isPassword(String password) {
+        return this.password.endsWith(password);
+    }
 }

@@ -1,12 +1,12 @@
-package webserver;
+package was.handler;
 
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
-import was.handler.RequestHandler;
 import was.utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -105,5 +105,44 @@ class RequestHandlerTest {
                 "Location: /index.html";
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+
+    @Test
+    void loginUser(){
+        final String createHttpRequest = String.join("\r\n",
+                "POST /user/create HTTP/1.1",
+                "Host: localhost:8080",
+                "Accept: */*",
+                "Connection: keep-alive",
+                "",
+                "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com");
+
+        final var createSocket = new StubSocket(createHttpRequest);
+        final RequestHandler createHandler = new RequestHandler(createSocket);
+
+        // when
+        createHandler.run();
+
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1",
+                "Host: localhost:8080",
+                "Accept: */*",
+                "Connection: keep-alive",
+                "",
+                "userId=cu&password=password");
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket);
+
+        // when
+        handler.run();
+
+        Pattern pattern = Pattern.compile(
+                "HTTP/1.1 302 FOUND\r\n" +
+                        "Set-Cookie: JSESSIONID=[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\r\n" +
+                        "Location: /index.html");
+
+        assertThat(socket.output()).containsPattern(pattern);
     }
 }

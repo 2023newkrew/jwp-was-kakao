@@ -3,27 +3,57 @@ package controller;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import service.UserService;
-import was.annotation.Controller;
-import was.annotation.Mapping;
-import was.annotation.RequestBody;
-import was.annotation.RequestMethod;
+import was.annotation.*;
 import was.domain.response.Response;
-import was.domain.response.StatusCode;
-import was.domain.response.Version;
+import was.utils.SessionUtils;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("unused")
 public class UserController {
+
+    @Mapping(method = RequestMethod.GET, path = "/user/form.html")
+    public static Optional<Response> form() {
+        return Response.htmlFromFile("./templates/user/form.html");
+    }
+
     @RequestBody
     @Mapping(method = RequestMethod.POST, path="/user/create")
     public static Optional<Response> createUser(String body){
         UserService.createUser(body);
-        return Optional.of(Response.builder()
-                .version(Version.HTTP_1_1)
-                .statusCode(StatusCode.FOUND)
-                .location("/index.html")
-                .build());
+        return Response.redirection("/index.html");
+    }
+
+    @RequestHeader
+    @Mapping(method = RequestMethod.GET, path = "/user/login.html")
+    public static Optional<Response> login(Map<String, String> headers) {
+        if (SessionUtils.getSession(headers) != null) {
+            return Response.redirection("/index.html");
+        }
+        return Response.htmlFromFile("./templates/user/login.html");
+    }
+
+    @RequestBody
+    @Mapping(method = RequestMethod.POST, path = "/user/login")
+    public static Optional<Response> submit(String body) {
+        String uuid = UserService.login(body).orElse(null);
+        if (uuid == null) {
+            return Response.redirection("/user/login_failed.html");
+        }
+        return Response.redirection("/index.html", "JSESSIONID=" + uuid);
+    }
+
+    @RequestHeader
+    @Mapping(method = RequestMethod.GET, path = "/user/list")
+    public static Optional<Response> list(Map<String, String> headers) throws IOException {
+        String body = UserService.list(headers).orElse(null);
+        if (body == null) {
+            return Response.redirection("/user/login.html");
+        }
+        return Response.html(body);
     }
 }
