@@ -1,6 +1,6 @@
 package http.request;
 
-import utils.ParsingUtils;
+import utils.RequestParsingUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +14,7 @@ public final class RequestParams extends RequestData {
 
     public static RequestParams fromQueryString(String queryString) {
         return new RequestParams(
-                ParsingUtils.parseQueryString(queryString)
+                RequestParsingUtils.parseQueryString(queryString)
         );
     }
 

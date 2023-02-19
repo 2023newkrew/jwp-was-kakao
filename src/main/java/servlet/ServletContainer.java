@@ -1,12 +1,15 @@
 package servlet;
 
+import exception.AuthorizedException;
 import exception.BadRequestException;
 import exception.NotFoundException;
+import exception.UnauthorizedException;
+import filter.FilterManager;
 import http.ContentType;
-import http.HttpMethod;
 import http.HttpStatus;
 import http.request.Request;
 import http.response.Response;
+import http.response.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,29 +19,32 @@ import java.util.Optional;
 
 public class ServletContainer {
     private static final Logger logger = LoggerFactory.getLogger(ServletContainer.class);
-    private static ServletContainer instance;
-    private final Map<String, Servlet> servlets;
+
+    private static class ServletContainerHolder {
+        private static final ServletContainer instance = new ServletContainer();
+    }
+
+    private static final ResourceServlet resourceServlet = ResourceServlet.getInstance();
+
+    private static final FilterManager filterManager = FilterManager.getInstance();
+
+    private static final Map<String, Servlet> servlets;
 
     private ServletContainer() {
-        servlets = initiateContainer();
+
+    }
+
+    static {
+        servlets = ServletLoader.load();
     }
 
     public static ServletContainer getInstance() {
-        if (Objects.isNull(instance)) {
-            instance = new ServletContainer();
-        }
-        return instance;
-    }
-
-    private Map<String, Servlet> initiateContainer() {
-        return Map.of(
-                HomeServlet.REQUEST_PATH, HomeServlet.getInstance(),
-                UserCreateServlet.REQUEST_PATH, UserCreateServlet.getInstance()
-        );
+        return ServletContainerHolder.instance;
     }
 
     public Response serve(Request request) {
         try {
+            filterManager.mapFilter(request);
             return mapRequest(request);
         } catch (RuntimeException e) {
             return handleException(request, e);
@@ -47,31 +53,54 @@ public class ServletContainer {
 
     private Response mapRequest(Request request) {
         if (isStaticResourceRequest(request)) {
-            return ResourceServlet.getInstance().doGet(request);
+            return resourceServlet.handle(request);
         }
-        Servlet servlet = servlets.getOrDefault(request.getUri().getPath(), null);
+        Servlet servlet = getServlet(request);
+        return servlet.handle(request);
+    }
+
+    private Servlet getServlet(Request request) {
+        Servlet servlet = servlets.getOrDefault(request.getStartLine().getUri().getPath(), null);
         if (Objects.isNull(servlet)) {
             throw new NotFoundException();
         }
-        if (request.getMethod().equals(HttpMethod.GET)) {
-            return servlet.doGet(request);
-        }
-        return servlet.doPost(request);
+        return servlet;
     }
 
     private boolean isStaticResourceRequest(Request request) {
-        Optional<String> extension = request.getUri().getExtension();
+        Optional<String> extension = request.getStartLine().getUri().getExtension();
         return extension.isPresent() && ContentType.isFileExtension(extension.get());
     }
 
     private Response handleException(Request request, RuntimeException e) {
+        ResponseBuilder commonBuilder = Response.builder()
+                .httpVersion(request.getStartLine().getVersion());
+
         if (e instanceof BadRequestException) {
-            return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.BAD_REQUEST).build();
+            return commonBuilder
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .build();
         }
         if (e instanceof NotFoundException) {
-            return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.NOT_FOUND).build();
+            return commonBuilder
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        if (e instanceof UnauthorizedException) {
+            return commonBuilder
+                    .httpStatus(HttpStatus.FOUND)
+                    .location("/user/login.html")
+                    .build();
+        }
+        if (e instanceof AuthorizedException) {
+            return commonBuilder
+                    .httpStatus(HttpStatus.FOUND)
+                    .location("/index.html")
+                    .build();
         }
         logger.error("InternalServerError : {}", e.getMessage());
-        return Response.builder().httpVersion(request.getVersion()).httpStatus(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return commonBuilder
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
     }
 }

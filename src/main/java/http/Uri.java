@@ -6,15 +6,14 @@ import java.util.Optional;
 
 public class Uri {
     private final String uri;
-    private final String path;
+    private String path;
     private final Optional<String> extension;
     private final Optional<RequestParams> params;
 
     public Uri(String uri) {
-        this.uri = uri;
-        this.extension = extractExtension();
+        this.uri = this.path = uri;
         this.params = extractParams();
-        this.path = extractPath();
+        this.extension = extractExtension();
     }
 
     public String getUri() {
@@ -33,8 +32,18 @@ public class Uri {
         return path;
     }
 
+    private Optional<RequestParams> extractParams() {
+        String[] splittedUri = uri.split("\\?", 2);
+        if (!isSplitted(splittedUri)) {
+            return Optional.empty();
+        }
+        this.path = splittedUri[0];
+        String queryString = splittedUri[1];
+        return Optional.of(RequestParams.fromQueryString(queryString));
+    }
+
     private Optional<String> extractExtension() {
-        String[] splittedUri = uri.split("\\.");
+        String[] splittedUri = path.split("\\.");
         if (!isSplitted(splittedUri)) {
             return Optional.empty();
         }
@@ -45,26 +54,7 @@ public class Uri {
         return Optional.of(extention);
     }
 
-    private Optional<RequestParams> extractParams() {
-        String[] splittedUri = uri.split("\\?", 2);
-        if (!isSplitted(splittedUri)) {
-            return Optional.empty();
-        }
-        String queryString = splittedUri[1];
-        return Optional.of(RequestParams.fromQueryString(queryString));
-    }
-
     private boolean isSplitted(String[] splittedUri) {
         return splittedUri.length > 1;
-    }
-
-    private String extractPath() {
-        if (extension.isEmpty() && params.isEmpty()) {
-            return uri;
-        }
-        if (extension.isPresent()) {
-            return uri.substring(0, uri.lastIndexOf("/"));
-        }
-        return uri.substring(0, uri.lastIndexOf("?"));
     }
 }

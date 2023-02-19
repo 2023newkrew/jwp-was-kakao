@@ -9,6 +9,7 @@
 - [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 ---
+## 1단계
 
 ### 1. GET /index.html 응답하기
 - "http://localhost:8080/index.html" 에 접근할 수 있도록 구현한다.
@@ -17,10 +18,8 @@
   - [x] 요청에 맞는 URL로 연결한다.
   - [x] 파일 읽어 응답만들기
 
-
 ### 2. CSS 지원하기
 - Stylesheet 파일을 지원하도록 구현하도록 한다.
-
 
 ### 3. Query String 파싱
 - “회원가입” 메뉴를 클릭하면 http://localhost:8080/user/form.html 으로 이동하면서 회원가입할 수 있다.
@@ -31,11 +30,9 @@
   - [x] User 객체를 만든다.
   - [x] User 객체를 데이터베이스에 저장한다.
 
-
 ### 4. POST 방식으로 회원가입
 - "http://localhost:8080/user/form.html" 파일의 form 태그 method를 get에서 post로 수정한 후 회원가입 기능이 정상적으로 동작하도록 구현한다.
   - [x] request body 를 파싱하여 3번과 같은 동작을 하도록 한다.
-
 
 ### 5. Redirect
 - 현재는 “회원가입”을 완료 후, URL이 /user/create 로 유지되는 상태로 읽어서 전달할 파일이 없다. redirect 방식처럼 회원가입을 완료한 후 index.html로 이동해야 한다.
@@ -52,3 +49,41 @@
   - [x] ServletContainer - Servlet 들을 등록하고 매핑시키는 객체. Servlet 에서 발생하는 예외에 대한 try catch.
   - [x] Container 초기화
 - [x] 메소드당 10 라인 내로 고치기
+
+- [x] 싱글톤 패턴에 thread safe 한 holder 적용하기
+- [x] HttpHeader enum 빼내기
+- [x] HttpMethod 한테 어떤 method 인지 물어볼 수 있음 (ex. isPost)
+- [x] reflection api 사용해서 ServletMapping 어노테이션 만들고 활용해보기
+- [x] 가독성 위해 stream api 개행 개선하기
+- [x] 로직분기 - 예외처리 혼용하지 않도록 수정하기 - ContentType.isFileExtension
+- [x] StartLine 클래스로 분리하기
+- [?] ExceptionHandler 에서 instanceof 대신 catch 문 활용하기 - 예외처리 로직을 분리하고 싶어서 그렇게 했는데.. try-catch 를 써서 좋은점이 있을까요?
+- [x] Uri, ParsingUtils 등 단위테스트 작성하기
+
+
+## 2단계
+
+### 로그인 기능 구현
+- “로그인” 메뉴를 클릭하면 http://localhost:8080/user/login.html 으로 이동해 로그인할 수 있다.
+  - [x] ResourceServlet 에서 담당 중
+- 회원가입한 사용자로 로그인할 수 있어야 한다.
+- 로그인이 성공하면 index.html로 이동하고, 로그인이 실패하면 /user/login_failed.html로 이동해야 한다.
+- 자바 진영에서 세션 아이디를 전달하는 이름으로 JSESSIONID를 사용한다.
+- 서버에서 HTTP 응답을 전달할 때 응답 헤더에 Set-Cookie를 추가하고 JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46 형태로 값을 전달하면 클라이언트 요청 헤더의 Cookie 필드에 값이 추가된다.
+  - [x] UserLoginServlet 생성
+  - [x] 회원 확인 및 회원 여부에 따른 redirection 응답
+  - [x] 로그인 성공시 Set-Cookie 로 JSESSIONID 전달
+
+### 템플릿 엔진 활용하기
+- 접근하고 있는 사용자가 “로그인” 상태일 경우(Cookie 값이 logined=true) 경우 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다. 만약 로그인하지 않은 상태라면 로그인 페이지(login.html)로 이동한다.
+- 동적으로 html을 생성하기 위해 handlebars.java template engine을 활용한다.
+  - [x] login 되지 않은 경우 filter 에서 login 페이지로 exception 발생시켜 login page 로 redirect 시키기
+  - [x] html 파일의 경우 handlebars 사용해서 template 적용되게 하기 
+
+### Session 구현하기
+- 쿠키에서 전달 받은 JSESSIONID의 값으로 로그인 여부를 체크할 수 있어야 한다.
+- 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.
+- 로그인된 상태에서 /user/login 페이지에 HTTP GET method로 접근하면 이미 로그인한 상태니 index.html 페이지로 리다이렉트 처리한다.
+  - [x] session 정보를 담는 Session 객체 생성
+  - [x] session id 와 Session 을 매핑할 SessionManager 객체 생성
+  - [x] 인가를 담당하는 AuthorizationFilter 객체 생성

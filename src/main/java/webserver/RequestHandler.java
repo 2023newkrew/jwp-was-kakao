@@ -1,21 +1,19 @@
 package webserver;
 
-import http.HttpMethod;
-import http.HttpStartLine;
-import http.Uri;
+import http.HttpRequestHeader;
 import http.request.Request;
 import http.request.RequestBody;
 import http.request.RequestHeaders;
+import http.request.RequestStartLine;
 import http.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import servlet.ServletContainer;
 import utils.IOUtils;
-import utils.ParsingUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Map;
+import java.util.List;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -36,42 +34,32 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             Request request = createRequest(in);
             Response response = servletContainer.serve(request);
-            DataOutputStream dos = new DataOutputStream(out);
-            sendResponse(response, dos);
+            sendResponse(out, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
+
 
     private Request createRequest(InputStream in) throws IOException {
         BufferedReader bufferReader = new BufferedReader(new InputStreamReader(in));
 
-        Map<HttpStartLine, String> startLine = ParsingUtils.parseStartLine(IOUtils.readStartLine(bufferReader));
-        HttpMethod method = HttpMethod.valueOf(startLine.get(HttpStartLine.METHOD));
-        Uri uri = new Uri(startLine.get(HttpStartLine.URI));
-        String version = startLine.get(HttpStartLine.VERSION);
+        String rawStartLine = IOUtils.readStartLine(bufferReader);
+        RequestStartLine startLine = RequestStartLine.fromRawStartLine(rawStartLine);
 
-        Map<String, String> headers = ParsingUtils.parseHeader(IOUtils.readRequestHeader(bufferReader));
-        RequestHeaders requestHeaders = new RequestHeaders(headers);
+        List<String> rawHeaders = IOUtils.readRequestHeader(bufferReader);
+        RequestHeaders requestHeaders = RequestHeaders.fromRawHeaders(rawHeaders);
 
         RequestBody requestBody = null;
-        if (requestHeaders.get("Content-Length").isPresent()) {
-            String body = IOUtils.readData(bufferReader, Integer.parseInt(requestHeaders.get("Content-Length").get()));
+        if (requestHeaders.get(HttpRequestHeader.CONTENT_LENGTH).isPresent()) {
+            String body = IOUtils.readData(bufferReader, Integer.parseInt(requestHeaders.get(HttpRequestHeader.CONTENT_LENGTH).get()));
             requestBody = RequestBody.fromQueryString(body);
         }
 
-        return new Request(method, uri, version, requestHeaders, requestBody);
+        return new Request(startLine, requestHeaders, requestBody);
     }
 
-    private void sendResponse(Response response, DataOutputStream dos) {
-        try {
-            dos.writeBytes(response.getStatusLine() + " \r\n");
-            dos.writeBytes(response.getHeaders());
-            dos.writeBytes("\r\n");
-            dos.write(response.getBody(), 0, response.getBody().length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    private void sendResponse(OutputStream out, Response response) {
+        response.send(new DataOutputStream(out));
     }
 }

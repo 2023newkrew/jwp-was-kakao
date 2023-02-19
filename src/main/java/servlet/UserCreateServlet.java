@@ -11,29 +11,27 @@ import http.response.Response;
 import model.User;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
+@ServletMapping(uri = "/user/create")
 public class UserCreateServlet implements Servlet {
-    public static final String REQUEST_PATH = "/user/create";
-    private static UserCreateServlet instance;
+    private static class UserCreateServletHolder {
+        private static final UserCreateServlet instance = new UserCreateServlet();
+    }
 
     private UserCreateServlet() {
     }
 
     public static UserCreateServlet getInstance() {
-        if (Objects.isNull(instance)) {
-            instance = new UserCreateServlet();
-        }
-        return instance;
+        return UserCreateServletHolder.instance;
     }
 
     @Override
     public Response doGet(Request request) {
-        RequestParams params = request.getUri().getParams().orElseThrow(BadRequestException::new);
+        RequestParams params = request.getStartLine().getUri().getParams().orElseThrow(BadRequestException::new);
         User newUser = createNewUser(params);
         DataBase.addUser(newUser);
         return Response.builder()
-                .httpVersion(request.getVersion())
+                .httpVersion(request.getStartLine().getVersion())
                 .httpStatus(HttpStatus.FOUND)
                 .location("/index.html")
                 .build();
@@ -45,7 +43,7 @@ public class UserCreateServlet implements Servlet {
         User newUser = createNewUser(body);
         DataBase.addUser(newUser);
         return Response.builder()
-                .httpVersion(request.getVersion())
+                .httpVersion(request.getStartLine().getVersion())
                 .httpStatus(HttpStatus.FOUND)
                 .location("/index.html")
                 .build();

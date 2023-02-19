@@ -2,17 +2,24 @@ package http.response;
 
 import exception.InternalServerErrorException;
 import http.ContentType;
+import http.HttpResponseHeader;
 import http.HttpStatus;
+import http.cookie.HttpCookie;
 
 import java.util.Objects;
 
 public class ResponseBuilder {
+    private static final String NONE = "";
+    private static final String SPACE = " ";
+    private static final String COLON = ": ";
+    private static final String NEW_LINE = " \r\n";
     private String version;
     private HttpStatus httpStatus;
     private ContentType contentType;
     private Integer contentLength;
     private String connection;
     private String location;
+    private HttpCookie cookie;
 
     private byte[] body;
 
@@ -44,6 +51,11 @@ public class ResponseBuilder {
         return this;
     }
 
+    public ResponseBuilder setCookie(HttpCookie cookie) {
+        this.cookie = cookie;
+        return this;
+    }
+
     public ResponseBuilder location(String location) {
         this.location = location;
         return this;
@@ -58,13 +70,33 @@ public class ResponseBuilder {
         if (Objects.isNull(version) || Objects.isNull(httpStatus)) {
             throw new InternalServerErrorException("http version 과 httpStatus 는 반드시 입력되어야 합니다.");
         }
-        String statusLine = version + " " + httpStatus.getCode() + " " + httpStatus.getMessage();
-        String headers = (contentType != null ? ("Content-Type: " + contentType.getValue() + " \r\n") : "")
-                + (contentLength != null ? ("Content-Length: " + contentLength + " \r\n") : "")
-                + (connection != null ? ("Connection: " + connection + " \r\n") : "")
-                + (location != null ? ("Location: " + location + " \r\n") : "");
-        byte[] body = Objects.isNull(this.body) ? new byte[]{} : this.body;
+        String statusLine = makeStartLine();
+        String headers = makeHeaders();
+        byte[] body = makeBody();
 
         return new Response(statusLine, headers, body);
+    }
+
+    private String makeStartLine() {
+        return version + SPACE + httpStatus.getCode() + SPACE + httpStatus.getMessage();
+    }
+
+    private String makeHeaders() {
+        return String.join(
+                NONE,
+                Objects.isNull(contentType) ? NONE : makeOneHeader(HttpResponseHeader.CONTENT_TYPE, contentType.getValue()),
+                Objects.isNull(contentLength) ? NONE : makeOneHeader(HttpResponseHeader.CONTENT_LENGTH, contentLength.toString()),
+                Objects.isNull(connection) ? NONE : makeOneHeader(HttpResponseHeader.CONNECTION, connection),
+                Objects.isNull(location) ? NONE : makeOneHeader(HttpResponseHeader.LOCATION, location),
+                Objects.isNull(cookie) ? NONE : makeOneHeader(HttpResponseHeader.SET_COOKIE, cookie.toSetCookieValue())
+        );
+    }
+
+    private String makeOneHeader(HttpResponseHeader httpResponseHeader, String value) {
+        return httpResponseHeader + COLON + value + NEW_LINE;
+    }
+
+    private byte[] makeBody() {
+        return Objects.isNull(this.body) ? new byte[]{} : this.body;
     }
 }

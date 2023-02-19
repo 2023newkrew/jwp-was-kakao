@@ -5,6 +5,13 @@ import http.request.Request;
 import http.response.Response;
 
 public interface Servlet {
+    default Response handle(Request request) {
+        if (request.getStartLine().getMethod().isGet()) {
+            return doGet(request);
+        }
+        return doPost(request);
+    }
+
     default Response doGet(Request request) {
         throw new NotFoundException();
     }
