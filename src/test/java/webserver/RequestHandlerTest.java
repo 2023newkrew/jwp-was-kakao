@@ -1,5 +1,8 @@
 package webserver;
 
+import db.Database;
+import db.MemoryDatabase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
@@ -10,11 +13,19 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+
+    private Database db;
+
+    @BeforeEach
+    void setup_db() {
+        db = new MemoryDatabase();
+    }
+
     @Test
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, db);
 
         // when
         handler.run();
@@ -41,7 +52,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, db);
 
         // when
         handler.run();

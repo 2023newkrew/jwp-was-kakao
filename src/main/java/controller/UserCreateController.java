@@ -1,49 +1,36 @@
 package controller;
 
-import db.DataBase;
+import db.Database;
 import model.User;
-import type.HttpStatusCode;
 import utils.IOUtils;
 import webserver.HttpRequest;
-import webserver.ResponseHeader;
+import webserver.HttpResponse;
+import webserver.ModelAndView;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Map;
 
 /**
  * 관련 URI: /user/create
  * 유저 생성 후 index.html로 리다이렉트
  */
-public class UserCreateController extends Controller {
+public class UserCreateController implements Controller {
 
-    @Override
-    public void process(HttpRequest request, DataOutputStream dos) throws IOException {
-        String reqMethod = request.getRequestHeader().get("method").orElseThrow(IllegalArgumentException::new);
+    private final Database db;
 
-        if (reqMethod.equals("GET")) {
-            DataBase.addUser(new User(
-                    request.getParam("userId"),
-                    request.getParam("password"),
-                    request.getParam("name"),
-                    request.getParam("email")
-            ));
-        }
-
-        if (reqMethod.equals("POST")) {
-            Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
-            DataBase.addUser(new User(
-                    createUserReqMap.get("userId"),
-                    createUserReqMap.get("password"),
-                    createUserReqMap.get("name"),
-                    createUserReqMap.get("email")
-            ));
-        }
-
-        // index로 redirect
-        dos.writeBytes(ResponseHeader.of(HttpStatusCode.REDIRECT, "/index.html").getValue());
-        responseBody(dos, new byte[0]);
-
+    public UserCreateController(Database db) {
+        this.db = db;
     }
 
+    @Override
+    public ModelAndView run(HttpRequest request, HttpResponse response) {
+        Map<String, String> createUserReqMap = IOUtils.extractParams(request.getRequestBody());
+        db.addUser(new User(
+                createUserReqMap.get("userId"),
+                createUserReqMap.get("password"),
+                createUserReqMap.get("name"),
+                createUserReqMap.get("email")
+        ));
+
+        return new ModelAndView("redirect:/index.html");
+    }
 }

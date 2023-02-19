@@ -25,4 +25,15 @@ public class RequestHeader {
     public Optional<String> get(String key) {
         return Optional.ofNullable(header.get(key));
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RequestHeader{");
+        for (String key : header.keySet()) {
+            sb.append(key).append("=").append(header.get(key)).append(", ");
+        }
+        sb.append('}');
+        return sb.toString();
+    }
 }

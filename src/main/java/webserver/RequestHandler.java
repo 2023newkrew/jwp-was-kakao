@@ -1,8 +1,13 @@
 package webserver;
 
 import controller.*;
+import db.Database;
+import exception.ErrorCode;
+import exception.WasException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.View;
+import view.ViewResolver;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,13 +18,16 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final Map<String, Controller> controllerMap = new HashMap<>();
+    private final Database db;
+    private final SessionManager sessionManager;
+    Map<RequestInfo, Controller> controllerMap = new HashMap<>();
+    private final ViewResolver viewResolver = new ViewResolver();
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, Database db, SessionManager sessionManager) {
         this.connection = connectionSocket;
-        controllerMap.put("/", new HelloController());
-        controllerMap.put("/index.html", new IndexController());
-        controllerMap.put("/user/create", new UserCreateController());
+        this.db = db;
+        this.sessionManager = sessionManager;
+        setControllerMap();
     }
 
     public void run() {
@@ -30,24 +38,54 @@ public class RequestHandler implements Runnable {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
-            RequestHeader header = httpRequest.getRequestHeader();
+            HttpResponse httpResponse = new HttpResponse(out);
 
-            String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
-            String uriWithOutParams = uri.split("\\?")[0];
-            Controller controller = controllerMap.get(uriWithOutParams);
-
-            // URI와 매핑된 컨트롤러를 찾을 수 없음
-            if (controller == null) {
-                controller = new MainController();
+            try {
+                handleRequest(httpRequest, httpResponse);
+                httpResponse.send();
+            } catch (WasException e) {
+                httpResponse.sendError(e.getErrorCode().getHttpStatusCode(), e.getErrorCode().getDescription());
+                logger.error(e.getErrorCode().getDescription());
             }
 
-            controller.process(httpRequest, new DataOutputStream(out));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
+    private void handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
+        RequestHeader header = httpRequest.getRequestHeader();
+
+        // URI와 매핑된 컨트롤러 찾기
+        String uri = header.get("URI")
+                .orElseThrow(() -> new WasException(ErrorCode.BAD_REQUEST));
+        HttpMethod method = HttpMethod.valueOf(header.get("method")
+                .orElseThrow(() -> new WasException(ErrorCode.BAD_REQUEST)));
+        Controller controller = controllerMap.get(new RequestInfo(uri, method));
+
+        // URI와 매핑된 컨트롤러를 찾을 수 없음. 정적 파일 연결 도와주는 컨트롤러를 할당.
+        if (controller == null) {
+            controller = new MainController(sessionManager);
+        }
+
+        ModelAndView modelAndView = controller.run(httpRequest, httpResponse);
+
+        if (modelAndView == null) {
+            return;
+        }
+
+        View view = viewResolver.resolve(modelAndView.getView());
+        view.render(modelAndView.getModel(), httpResponse);
+    }
+
     private void logConnected() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+    }
+
+    private void setControllerMap() {
+        controllerMap.put(new RequestInfo("/", HttpMethod.GET), new HelloController());
+        controllerMap.put(new RequestInfo("/user/list", HttpMethod.GET), new UserListController(db, sessionManager));
+        controllerMap.put(new RequestInfo("/user/create", HttpMethod.POST), new UserCreateController(db));
+        controllerMap.put(new RequestInfo("/user/login", HttpMethod.POST), new UserLoginController(db, sessionManager));
     }
 }

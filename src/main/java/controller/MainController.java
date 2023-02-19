@@ -3,11 +3,8 @@ package controller;
 import type.ContentType;
 import type.HttpStatusCode;
 import utils.FileIoUtils;
-import webserver.HttpRequest;
-import webserver.RequestHeader;
-import webserver.ResponseHeader;
+import webserver.*;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -15,44 +12,52 @@ import java.net.URISyntaxException;
  * 관련 URI: -
  * 미리 정의된 URI들을 제외한 모든 요청들(static 파일 등)을 처리하는 컨트롤러
  */
-public class MainController extends Controller {
+public class MainController implements Controller {
+    private final SessionManager sessionManager;
+
+    public MainController(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+
     @Override
-    public void process(HttpRequest request, DataOutputStream dos) throws IOException {
-        RequestHeader header = request.getRequestHeader();
-        String reqMethod = header.get("method").orElseThrow(IllegalArgumentException::new);
-        String uri = header.get("URI").orElseThrow(IllegalArgumentException::new);
+    public ModelAndView run(HttpRequest request, HttpResponse response) {
 
-        if (reqMethod.equals("GET")) {
-            String root = "static";
-            String[] split = uri.split("\\.");
-            String fileType = split[split.length - 1];
+        HttpSession session = sessionManager.getSession(request, response);
 
-            if (fileType.equals("html")) {
-                root = "templates";
-            }
+        String root = "static";
+        String uri = request.getRequestHeader().get("URI").orElseThrow(IllegalArgumentException::new);
+        String[] split = uri.split("\\.");
+        String fileType = split[split.length - 1];
 
-            try {
-                byte[] returnBody = FileIoUtils.loadFileFromClasspath(root + uri);
+        if (fileType.equals("html")) {
+            root = "templates";
+        }
 
-                if (returnBody == null) {
-                    dos.writeBytes(ResponseHeader.of(HttpStatusCode.NOT_FOUND, ContentType.HTML).getValue());
-                    dos.flush();
-                    return;
-                }
-
-                dos.writeBytes(
-                        ResponseHeader.of(HttpStatusCode.OK,
-                                        ContentType.valueOf(fileType.toUpperCase()),
-                                        returnBody.length)
-                                .getValue()
-                );
-
-                responseBody(dos, returnBody);
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
+        // 로그인 상태로 /user/login.html 접근시 redirect
+        Object logined = session.getAttribute("logined");
+        if (uri.equals("/user/login.html")) {
+            if (logined != null && logined.equals(true)) {
+                return new ModelAndView("redirect:/index.html");
             }
         }
 
+        try {
+            byte[] body = FileIoUtils.loadFileFromClasspath(root + uri);
+            ResponseHeader responseHeader = response.getResponseHeader();
+
+            if (body == null) {
+                responseHeader.setHttpStatusCode(HttpStatusCode.NOT_FOUND);
+                responseHeader.setContentType(ContentType.HTML);
+            }
+
+            responseHeader.setContentType(ContentType.valueOf(fileType.toUpperCase()));
+            responseHeader.setContentLength(body.length);
+
+            response.setResponseHeader(responseHeader);
+            response.setResponseBody(body);
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
