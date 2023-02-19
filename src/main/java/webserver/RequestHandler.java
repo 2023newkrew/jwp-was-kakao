@@ -3,7 +3,7 @@ package webserver;
 import logics.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import logics.RootController;
+import logics.controller.RootController;
 import utils.requests.HttpRequest;
 import utils.requests.HttpRequestVersion1;
 import utils.response.HttpResponseVersion1;
@@ -38,8 +38,7 @@ public class RequestHandler implements Runnable {
     private void proceed(BufferedReader br, DataOutputStream dos) throws IOException{
         try{
             HttpRequest httpRequest = HttpRequestVersion1.readFrom(br);
-            Controller rootController = new RootController();
-            rootController.makeResponse(httpRequest).respond(dos);
+            RootController.instance.makeResponse(httpRequest).respond(dos);
         } catch(RuntimeException e){ // If RuntimeException Occurs,
             e.printStackTrace();
             new HttpResponseVersion1().setResponseCode(400).respond(dos); // Respond 400(Bad Request)

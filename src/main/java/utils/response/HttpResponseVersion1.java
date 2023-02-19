@@ -33,8 +33,14 @@ public class HttpResponseVersion1 implements HttpResponse{
 
     @Override
     public HttpResponse setBody(byte[] body) {
-        header.put("Content-Length", Integer.toString(body.length));
-        this.body = body;
+//        try {
+//            Handlebars handlebars = new Handlebars();
+//            handlebars.compileInline(new String(body, StandardCharsets.UTF_8));
+            setHeader("Content-Length", Integer.toString(body.length));
+            this.body = body;
+//        } catch(IOException e){
+//            e.printStackTrace();
+//        }
         return this;
     }
 
@@ -42,7 +48,7 @@ public class HttpResponseVersion1 implements HttpResponse{
      * Respond made-response through dos.
      * @param dos which DataOutStream to write.
      * @throws IOException when writing through dos has problem.
-     * @throws IllegalStateException when insufficient information is provided by setter.
+     * @throws IllegalStateException when insufficient information is provided.
      */
     @Override
     public void respond(DataOutputStream dos) throws IOException {
@@ -52,10 +58,10 @@ public class HttpResponseVersion1 implements HttpResponse{
     }
 
     private void respondFirstLine(DataOutputStream dos) throws IOException {
-        dos.writeBytes("HTTP/1.1 ");
         if (Objects.isNull(responseCode)){
             throw new IllegalStateException("Response Code should be designated.");
         }
+        dos.writeBytes("HTTP/1.1 ");
         dos.writeBytes(responseCode + " \r\n");
     }
 
