@@ -1,147 +1,119 @@
 package webserver.http;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
+import webserver.cookie.CookieJar;
 import webserver.form.Form;
 import webserver.mime.Mime;
+import webserver.resource.Context;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URLDecoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-@Getter
 @ToString
-@AllArgsConstructor
-public class HttpRequest {
+public class HttpRequest extends Context {
     private static final Pattern REQUEST_START = Pattern.compile("^(HEAD|GET|POST|PATCH|DELETE) (.+) (HTTP/[0-9]+(\\.[0-9]+))$");
-    private static final Pattern REQUEST_HEADER = Pattern.compile("^(.+):[ \t]*(.+)$");
-    private String method;
-    private String path;
+    //
+    public final HttpMethod method;
+    public final HttpRequestURI uri;
+    public final String version;
+    public final HttpHeader headers;
+    public final ByteBuffer body;
     @Getter(AccessLevel.NONE)
-    private Map<String, String> query;
-    private String version;
-    @Getter(AccessLevel.NONE)
-    private Map<String, List<String>> header;
-    private String body;
+    public final CookieJar jar;
 
-    public static HttpRequest from(InputStream input) {
-        try {
-            var reader = new BufferedReader(new InputStreamReader(input));
-            var start = REQUEST_START.matcher(reader.readLine());
-            if (!start.matches()) {
-                throw new RuntimeException("올바르지 않은 HTTP 형식");
-            }
-            var method = start.group(1);
-            var pathQuery = start.group(2);
-            var sepIndex = pathQuery.lastIndexOf("?");
+    private HttpRequest(Context parent, HttpMethod method, HttpRequestURI uri, String version, HttpHeader headers, ByteBuffer body, CookieJar jar) {
+        super(parent);
+        this.method = method;
+        this.uri = uri;
+        this.version = version;
+        this.headers = headers;
+        this.body = body;
+        this.jar = jar;
+    }
 
-            String path = "";
-            Map<String, String> query = Map.of();
-            if (sepIndex == -1) {
-                path = pathQuery;
-            } else {
-                path = pathQuery.substring(0, sepIndex);
-                var eachQueryElems = start.group(sepIndex + 1).split("&");
-                query = Arrays.stream(eachQueryElems)
-                              .map(v -> {
+    @SneakyThrows(IOException.class)
+    public static HttpRequest from(Context parent, InputStream input) {
+        // 시간이 너무 길어지면 드롭시키는 코드도 추가하면 좋을텐데.
+        var buffered = new BufferedInputStream(input);
+        var start = REQUEST_START.matcher(readcrlf(buffered));
+        if (!start.matches()) {
+            throw new RuntimeException("올바르지 않은 HTTP 형식");
+        }
+        var method = HttpMethod.valueOf(start.group(1));
+        var uri = HttpRequestURI.parse(start.group(2));
+        var version = start.group(3);
+        //
+        String line;
+        var headerBuilder = HttpHeader.builder();
+        while (!(line = readcrlf(buffered)).isEmpty()) {
+            headerBuilder.parseLine(line);
+        }
+        var header = headerBuilder.build();
+        // FIXME: 컨턴츠 길이가 주어지지 않으면 가능한 데이터를 전체 읽음 이는 문제가 발생할 소지가 큼 다만 이는 수정하기에는 너무 어렵고 과제의 범위를 일부 벗어날 것이라 생각해 이는 제외하고 구현함.
+        var expectSize = header.getFirst("Content-Length").map(Integer::parseInt).orElse(input.available());
+        var body = new byte[expectSize];
+        var actualSize = buffered.read(body);
+        return new HttpRequest(
+                parent,
+                method,
+                uri,
+                version,
+                header,
+                ByteBuffer.wrap(body, 0, actualSize),
+                CookieJar.parse(header.getAll("Cookie").toArray(String[]::new))
+        );
+    }
 
-                                  var keyval = v.split("=");
-                                  return Map.entry(
-                                          URLDecoder.decode(keyval[0], StandardCharsets.UTF_8),
-                                          URLDecoder.decode(keyval[1], StandardCharsets.UTF_8));
-                              })
-                              .collect(Collectors.toMap(
-                                      Map.Entry::getKey,
-                                      Map.Entry::getValue
-                              ));
-            }
-
-            var version = start.group(3);
-
-            //
-            var header = new HashMap<String, List<String>>();
-            while (reader.ready()) {
-                var line = reader.readLine();
-                if (line.isEmpty()) {
+    private static String readcrlf(InputStream stream) throws IOException {
+        try (var buffer = new ByteArrayOutputStream()) {
+            int ch;
+            while ((ch = stream.read()) != -1) {
+                if (ch == '\r' && (ch = stream.read()) == '\n') {
                     break;
                 }
-                var field = REQUEST_HEADER.matcher(line);
-                if (!field.matches()) {
-                    throw new RuntimeException("올바르지 않은 HTTP 형식");
-                }
-                if (!header.containsKey(field.group(1))) {
-                    header.put(field.group(1), new ArrayList<>());
-                }
-                header.get(field.group(1)).add(field.group(2));
+                buffer.write(ch);
             }
-            int size = 0;
-            if (header.get("Content-Length") != null && header.get("Content-Length").size() == 1) {
-                size = Integer.parseInt(header.get("Content-Length").get(0));
-            } else {
-                size = input.available();
-            }
-            var buffer = new char[size];
-            reader.read(buffer);
-            var body = new String(buffer);
-            //
-
-            return new HttpRequest(
-                    method,
-                    path,
-                    query,
-                    version,
-                    header,
-                    body
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return buffer.toString(StandardCharsets.US_ASCII);
         }
     }
 
-    public Optional<String> query(String key) {
-        if (!query.containsKey(key)) {
-            return Optional.empty();
-        }
-        return Optional.of(query.get(key));
-    }
-
-    public Optional<String> header(String key) {
-        if (!header.containsKey(key)) {
-            return Optional.empty();
-        }
-        return header.get(key).stream().findFirst();
-    }
-
-    public List<String> headers(String key) {
-        if (!header.containsKey(key)) {
-            return List.of();
-        }
-        return List.copyOf(header.get(key));
+    public String toText(Charset charset) {
+        return new String(body.array(), charset);
     }
 
     public Optional<Form> toForm() {
-        if (header("Content-Type").map(v -> v.equals(Mime.APPLICATION_FORM_URLENCODED.getValue())).orElse(false)) {
-            return Optional.of(Form.from(body));
+        if (headers.getFirst("Content-Type")
+                   .map(v -> v.equals(Mime.APPLICATION_FORM_URLENCODED.getValue()))
+                   .orElse(false)) {
+            return Optional.of(Form.from(toText(StandardCharsets.UTF_8)));
         }
         return Optional.empty();
     }
 
-    public HttpRequest withPath(String path) {
+    public Form mustForm() {
+        return toForm().orElseThrow(() -> HttpResponse.builder().status(HttpStatus.BAD_REQUEST).build().toException());
+    }
+
+    public HttpRequest subpath(String path) {
         return new HttpRequest(
+                this.parent,
                 this.method,
-                path,
-                this.query,
+                this.uri.subpath(path),
                 this.version,
-                this.header,
-                this.body
+                this.headers,
+                this.body,
+                this.jar
         );
     }
 }

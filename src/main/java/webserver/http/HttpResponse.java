@@ -1,9 +1,11 @@
 package webserver.http;
 
 import org.springframework.http.HttpStatus;
+import webserver.cookie.Cookie;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -26,6 +28,15 @@ public class HttpResponse {
             header.get(key).add(value);
         }
         return this;
+    }
+
+    public HttpResponse addCookie(Cookie cookie) {
+        addHeader("Set-Cookie", cookie.format());
+        return this;
+    }
+
+    public HttpResponseException toException() {
+        return HttpResponseException.from(this);
     }
 
     public void writeStream(DataOutputStream outputStream) {
@@ -89,15 +100,25 @@ public class HttpResponse {
             return this;
         }
 
+        public Builder cookie(Cookie cookie) {
+            header("Set-Cookie", cookie.format());
+            return this;
+        }
+
+        public Builder deleteCookie(String name) {
+            header("Set-Cookie", String.format("%s=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT", name));
+            return this;
+        }
+
         public Builder body(String body) {
-            result.body = body.getBytes();
-            result.header.put("Content-Length", List.of(Integer.toString(body.length())));
+            result.body = body.getBytes(StandardCharsets.UTF_8);
+            result.header.put("Content-Length", List.of(Integer.toString(result.body.length)));
             return this;
         }
 
         public Builder body(byte[] body) {
             result.body = body;
-            result.header.put("Content-Length", List.of(Integer.toString(body.length)));
+            result.header.put("Content-Length", List.of(Integer.toString(result.body.length)));
             return this;
         }
 
