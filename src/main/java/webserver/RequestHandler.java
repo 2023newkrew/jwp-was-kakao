@@ -9,7 +9,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.Objects;
-import model.RequestInfo;
+import java.util.UUID;
+import model.Request;
+import model.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.IOUtils;
@@ -29,34 +31,48 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            RequestInfo requestInfo = getRequestInfo(bufferedReader);
-            requestAdapter.mapHandler(requestInfo, new DataOutputStream(out));
+            Request request = getRequest(bufferedReader);
+            Response response = new Response(new DataOutputStream(out));
+            checkOrCreateSession(request, response);
+            requestAdapter.mapHandler(request, response);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private RequestInfo getRequestInfo(BufferedReader bufferedReader) throws IOException {
-        RequestInfo requestInfo = new RequestInfo(bufferedReader.readLine());
-        getRequestHeader(requestInfo, bufferedReader);
-        getRequestBody(requestInfo, bufferedReader);
-        return requestInfo;
+    private void checkOrCreateSession(Request request, Response response) {
+        String sessionId = request.getCookie("JSESSIONID");
+        if (Objects.nonNull(sessionId) && Objects.nonNull(SessionManager.findSession(sessionId))) {
+            request.setSession(SessionManager.findSession(sessionId));
+            return;
+        }
+        Session newSession = new Session(UUID.randomUUID().toString());
+        SessionManager.add(newSession.getId(), newSession);
+        request.setSession(newSession);
+        response.setCookie("JSESSIONID", newSession.getId() + "; Path=/");
     }
 
-    private void getRequestHeader(RequestInfo requestInfo, BufferedReader bufferedReader) throws IOException {
+    private Request getRequest(BufferedReader bufferedReader) throws IOException {
+        Request request = new Request(bufferedReader.readLine());
+        getRequestHeader(request, bufferedReader);
+        getRequestBody(request, bufferedReader);
+        return request;
+    }
+
+    private void getRequestHeader(Request request, BufferedReader bufferedReader) throws IOException {
         String line = bufferedReader.readLine();
         while (!"".equals(line) && Objects.nonNull(line)) {
             System.out.println(line);
-            requestInfo.readNextLine(line);
+            request.readNextLine(line);
             line = bufferedReader.readLine();
         }
     }
 
-    private void getRequestBody(RequestInfo requestInfo, BufferedReader bufferedReader) throws IOException {
-        String bodyLengthString = requestInfo.getHeaderValue("Content-Length");
+    private void getRequestBody(Request request, BufferedReader bufferedReader) throws IOException {
+        String bodyLengthString = request.getHeaderValue("Content-Length");
         if (Objects.nonNull(bodyLengthString)) {
             String body = IOUtils.readData(bufferedReader, Integer.parseInt(bodyLengthString));
-            requestInfo.setBodyParams(body);
+            request.setBodyParams(body);
         }
     }
 }

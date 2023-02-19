@@ -1,19 +1,25 @@
 package controller;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
 import db.DataBase;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import model.RequestInfo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import model.Request;
+import model.Response;
 import model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import utils.FileIoUtils;
 
 public class RequestController {
-    private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
+    private final TemplateLoader loader = new ClassPathTemplateLoader();
 
-    public void createUser(RequestInfo request, DataOutputStream dos) throws URISyntaxException {
+    public void createUser(Request request, Response response) throws URISyntaxException, IOException {
         User user = new User(
                 request.getBodyValue("userId"),
                 request.getBodyValue("password"),
@@ -21,42 +27,95 @@ public class RequestController {
                 request.getBodyValue("email")
         );
         DataBase.addUser(user);
-        response302Header(dos, new URI("http://localhost:8080/index.html"));
+        response.found(new URI("/index.html"));
+        response.send();
     }
 
-    public void sendPage(RequestInfo request, DataOutputStream dos) {
+    public void login(Request request, Response response) throws URISyntaxException, IOException {
+        String userId = request.getBodyValue("userId");
+        String password = request.getBodyValue("password");
+        User user = DataBase.findUserById(userId);
+        if (Objects.isNull(user) || !user.getPassword().equals(password)) {
+            sendLoginFailPage(response);
+            return;
+        }
+        request.getSession().setAttribute("user", user);
+        response.found(new URI("/index.html"));
+        response.send();
+    }
+
+    // Main
+
+    public void sendMainPage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/index.html");
+        sendPage(request, response, body);
+    }
+
+    // User
+
+    public void sendLoginPage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/user/login.html");
+        sendPage(request, response, body);
+    }
+
+    public void sendLoginFailedPage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/user/login_failed.html");
+        sendPage(request, response, body);
+    }
+
+    public void sendSignupPage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/user/form.html");
+        sendPage(request, response, body);
+    }
+
+    public void sendProfilePage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/user/profile.html");
+        sendPage(request, response, body);
+    }
+
+    public void sendUserListPage(Request request, Response response) throws IOException {
+        Template template = getTemplate(request, "/user/list");
+        List<User> users = new ArrayList<>(DataBase.findAll());
+        byte[] body = template.apply(users).getBytes();
+        sendPage(request, response, body);
+    }
+
+    // Qna
+
+    public void sendQnaShowPage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/qna/show.html");
+        sendPage(request, response, body);
+    }
+
+    public void sendQnaFormPage(Request request, Response response) throws URISyntaxException, IOException {
+        byte[] body = FileIoUtils.loadFileFromClasspath(request.getRoot() + "/qna/form.html");
+        sendPage(request, response, body);
+    }
+
+    // Static
+
+    public void sendPage(Request request, Response response) throws IOException {
         byte[] body = request.getResponse();
-        response200Header(dos, body.length, request.getAccept());
-        responseBody(dos, body);
+        response.setBody(body, request.getAccept());
+        response.send();
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + type + ";charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    private void sendPage(Request request, Response response, byte[] body) throws IOException {
+        response.setBody(body, request.getAccept());
+        response.send();
     }
 
-    private void response302Header(DataOutputStream dos, URI uri) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 FOUND \r\n");
-            dos.writeBytes("Location: " + uri + " \r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    // Private
+
+    private void sendLoginFailPage(Response response) throws URISyntaxException, IOException {
+        response.found(new URI("/user/login_failed.html"));
+        response.send();
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    private Template getTemplate(Request request, String path) throws IOException {
+        loader.setPrefix("/templates");
+        loader.setSuffix(".html");
+        Handlebars handlebars = new Handlebars(loader);
+        return handlebars.compile(path);
     }
 }
