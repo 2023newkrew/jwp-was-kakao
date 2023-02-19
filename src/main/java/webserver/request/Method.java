@@ -7,8 +7,8 @@ public enum Method {
 
     public static Method of(String input) {
         return Arrays.stream(values())
-                .filter(method -> method.toString().equalsIgnoreCase(input))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
+            .filter(method -> method.toString().equalsIgnoreCase(input))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
     }
 }

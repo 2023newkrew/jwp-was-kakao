@@ -1,4 +1,4 @@
-package webserver;
+package webserver.common;
 
 import java.util.Arrays;
 
@@ -24,13 +24,21 @@ public enum FileType {
 
     public static FileType findType(String extension) {
         return Arrays.stream(values())
-                .filter(fileType -> fileType.fileExtension.equalsIgnoreCase(extension))
-                .findAny()
-                .orElse(HANDLER);
+            .filter(fileType -> fileType.fileExtension.equalsIgnoreCase(extension))
+            .findAny()
+            .orElse(HANDLER);
     }
 
     public String getContentType() {
         return contentType;
+    }
+
+    public boolean isTemplatePath() {
+        return this.equals(HTML) || this.equals(ICO);
+    }
+
+    public boolean isStaticPath() {
+        return this.equals(CSS) || this.equals(JS) || isFont();
     }
 
     public boolean isFont() {

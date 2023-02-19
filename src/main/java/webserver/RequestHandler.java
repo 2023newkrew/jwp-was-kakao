@@ -3,6 +3,7 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
+import webserver.common.FileType;
 import webserver.handler.HandlerMapping;
 import webserver.request.Request;
 import webserver.response.Response;
@@ -22,12 +23,12 @@ public class RequestHandler implements Runnable {
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+            connection.getPort());
 
         try (
-                InputStream in = connection.getInputStream();
-                OutputStream out = connection.getOutputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in))
+            InputStream in = connection.getInputStream();
+            OutputStream out = connection.getOutputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in))
         ) {
             Request request = Request.parse(reader);
             Response response = findResponseByPath(request);
@@ -41,11 +42,11 @@ public class RequestHandler implements Runnable {
         String path = request.getPath();
         FileType fileType = request.findRequestedFileType();
 
-        if (fileType == FileType.HTML || fileType == FileType.ICO) {
+        if (fileType.isTemplatePath()) {
             return Response.ok(FileIoUtils.loadFileFromClasspath("./templates" + path), fileType);
         }
 
-        if (fileType == FileType.CSS || fileType == FileType.JS || fileType.isFont()) {
+        if (fileType.isStaticPath()) {
             return Response.ok(FileIoUtils.loadFileFromClasspath("./static" + path), fileType);
         }
 
