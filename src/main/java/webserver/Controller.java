@@ -1,10 +1,10 @@
 package webserver;
 
-import model.HttpRequest;
+import model.MyHttpRequest;
+import model.MyHttpResponse;
+import model.MyModelAndView;
 
 public interface Controller {
 
-    String process(HttpRequest httpRequest);
-
-    boolean isRedirectRequired();
+    MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse);
 }

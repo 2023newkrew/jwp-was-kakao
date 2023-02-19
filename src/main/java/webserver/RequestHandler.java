@@ -10,11 +10,15 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import model.HttpRequest;
+import model.MyHttpRequest;
+import model.MyHttpResponse;
+import model.MyModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import webserver.controller.StaticController;
+import webserver.controller.UserListController;
+import webserver.controller.UserLoginController;
 import webserver.controller.UserSaveController;
 import webserver.controller.ViewController;
 
@@ -22,14 +26,17 @@ public class RequestHandler implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+
     private final Socket connection;
     private final Map<String, Controller> controllerMap = new HashMap<>();
-    private final Controller viewController = new ViewController();
-    private final Controller staticController = new StaticController();
+    private final Controller viewController = ViewController.getInstance();
+    private final Controller staticController = StaticController.getInstance();
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        controllerMap.put("/user/create", new UserSaveController());
+        controllerMap.put(UserSaveController.URL, UserSaveController.getInstance());
+        controllerMap.put(UserLoginController.URL, UserLoginController.getInstance());
+        controllerMap.put(UserListController.URL, UserListController.getInstance());
     }
 
     public void run() {
@@ -40,67 +47,40 @@ public class RequestHandler implements Runnable {
                 new InputStreamReader(in))) {
             RequestParser requestParser = new RequestParser(br);
 
-            HttpRequest httpRequest = requestParser.buildHttpRequest();
+            MyHttpRequest httpRequest = requestParser.buildHttpRequest();
+            MyHttpResponse httpResponse = new MyHttpResponse();
+
+            new MyFilterChain().doChain(httpRequest, httpResponse);
 
             Controller controller = handleControllerMapping(httpRequest);
-            String viewName = controller.process(httpRequest);
+            MyModelAndView mav = controller.process(httpRequest, httpResponse);
 
             DataOutputStream dos = new DataOutputStream(out);
-
-            if (controller.isRedirectRequired()) {
-                responseRedirectHome(dos);
-                return;
-            }
-            sendBody(httpRequest, viewName, dos);
+            sendResponse(dos, httpResponse, mav);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private Controller handleControllerMapping(HttpRequest httpRequest) {
+
+
+    private Controller handleControllerMapping(MyHttpRequest httpRequest) {
         if (httpRequest.isStaticRequest()) {
             return this.staticController;
         }
         return this.controllerMap.getOrDefault(httpRequest.getUrl(), this.viewController);
     }
 
-    private void responseRedirectHome(DataOutputStream dos) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
-            dos.writeBytes("Content-Type: text/html; charset=utf-8 \r\n");
-            dos.writeBytes("Location: /index.html \r\n");
-            dos.writeBytes("\r\n");
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void sendBody(HttpRequest httpRequest, String viewName, DataOutputStream dos)
+    private void sendResponse(DataOutputStream dos, MyHttpResponse httpResponse, MyModelAndView mav)
             throws IOException, URISyntaxException {
+        dos.writeBytes(httpResponse.toString());
 
-        byte[] body = FileIoUtils.loadFileFromClasspath(viewName);
-        response200Header(dos, httpRequest.getContentType(), body.length);
-        responseBody(dos, body);
-    }
-
-    private void response200Header(DataOutputStream dos, String contentType, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + "; charset=utf-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + " \r\n");
+        if (!mav.hasView()) {
+            byte[] body = FileIoUtils.loadTemplate(mav);
+            dos.writeBytes(String.format("Content-Length: %d\r%n", body.length));
             dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            dos.write(body);
         }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        dos.flush();
     }
 }

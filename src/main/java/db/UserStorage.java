@@ -1,12 +1,14 @@
 package db;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import model.User;
 
-import java.util.Collection;
-import java.util.Map;
-
-public class DataBase {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class UserStorage {
 
     private static Map<String, User> users = new HashMap<>();
 

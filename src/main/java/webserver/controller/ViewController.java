@@ -1,17 +1,24 @@
 package webserver.controller;
 
-import model.HttpRequest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import model.MyHttpRequest;
+import model.MyHttpResponse;
+import model.MyModelAndView;
 import webserver.Controller;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ViewController implements Controller {
 
-    @Override
-    public String process(HttpRequest httpRequest) {
-        return "./templates" + httpRequest.getUrl();
+    private static final ViewController INSTANCE = new ViewController();
+
+    public static ViewController getInstance() {
+        return INSTANCE;
     }
 
     @Override
-    public boolean isRedirectRequired() {
-        return false;
+    public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
+        httpResponse.setContentType(httpRequest.getContentType());
+        return new MyModelAndView("./templates", httpRequest.getUrl());
     }
 }

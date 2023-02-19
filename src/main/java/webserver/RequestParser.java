@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import model.HttpRequest;
+import model.MyHttpRequest;
 import org.springframework.util.StringUtils;
 import utils.IOUtils;
 
@@ -13,31 +13,48 @@ public class RequestParser {
     private static final String CONTENT_LENGTH = "Content-Length";
     private final BufferedReader br;
 
+    private final Map<String, String> queryParams = new HashMap<>();
+    private final Map<String, String> headerMap = new HashMap<>();
+    private final Map<String, String> requestBody = new HashMap<>();
+    private final Map<String, String> cookies = new HashMap<>();
+
     public RequestParser(BufferedReader br) {
         this.br = br;
     }
 
-    public HttpRequest buildHttpRequest() throws IOException {
+    public MyHttpRequest buildHttpRequest() throws IOException {
         String line = br.readLine();
         String[] tokens = line.split(" ");
         String httpMethod = tokens[0];
         String requestUrl = tokens[1];
-        Map<String, String> queryParams = new HashMap<>();
-        Map<String, String> headerMap = new HashMap<>();
-        Map<String, String> requestBody = new HashMap<>();
 
-        // url parsing
         requestUrl = parseQueryParams(requestUrl, queryParams);
 
-        // header parsing
         while (!StringUtils.isEmpty(line)) {
-            parseHeaders(line, headerMap);
+            parseHeaders(line);
             line = br.readLine();
         }
 
         parseBody(headerMap, requestBody);
+        return new MyHttpRequest(httpMethod, requestUrl, queryParams, headerMap, cookies, requestBody);
+    }
 
-        return new HttpRequest(httpMethod, requestUrl, queryParams, headerMap, requestBody);
+    private void parseHeaders(String line) {
+        String[] headers = line.split(" ");
+        if (headers[0].equals("Cookie:")) {
+            parseCookie(line);
+            return;
+        }
+        headerMap.put(headers[0].substring(0, headers[0].length() - 1), headers[1]);
+    }
+
+    private void parseCookie(String line) {
+        String rawCookies = line.split(":")[1].trim();
+        for (String cookie : rawCookies.split(";")) {
+            String key = cookie.split("=")[0];
+            String value = cookie.split("=")[1];
+            this.cookies.put(key, value);
+        }
     }
 
     private void parseBody(Map<String, String> headerMap, Map<String, String> requestBody) throws IOException {
@@ -66,10 +83,5 @@ public class RequestParser {
         }
 
         return requestUrl;
-    }
-
-    private void parseHeaders(String line, Map<String, String> headerMap) {
-        String[] headers = line.split(" ");
-        headerMap.put(headers[0].substring(0, headers[0].length() - 1), headers[1]);
     }
 }

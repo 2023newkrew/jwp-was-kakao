@@ -1,17 +1,24 @@
 package webserver.controller;
 
-import model.HttpRequest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import model.MyHttpRequest;
+import model.MyHttpResponse;
+import model.MyModelAndView;
 import webserver.Controller;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StaticController implements Controller {
 
-    @Override
-    public String process(HttpRequest httpRequest) {
-        return "./static" + httpRequest.getUrl();
+    private static final StaticController INSTANCE = new StaticController();
+
+    public static StaticController getInstance() {
+        return INSTANCE;
     }
 
     @Override
-    public boolean isRedirectRequired() {
-        return false;
+    public MyModelAndView process(MyHttpRequest httpRequest, MyHttpResponse httpResponse) {
+        httpResponse.setContentType(httpRequest.getContentType());
+        return new MyModelAndView("./static", httpRequest.getUrl());
     }
 }
