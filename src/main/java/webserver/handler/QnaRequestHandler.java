@@ -5,18 +5,16 @@ import utils.FileIoUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 public class QnaRequestHandler implements UrlMappingHandler {
 
     private static final String URL_MAPPING_REGEX = "/qna/.+";
-    private static final String CHARSET_UTF_8 = "charset=utf-8";
     private static final String TEMPLATES_FILEPATH = "./templates";
 
     @Override
-    public HttpResponse handle(HttpRequest httpRequest) {
+    public void handle(HttpRequest httpRequest, HttpResponse httpResponse) {
         byte[] bytes;
         try {
             bytes = FileIoUtils.loadFileFromClasspath(TEMPLATES_FILEPATH + httpRequest.getURL());
@@ -26,12 +24,9 @@ public class QnaRequestHandler implements UrlMappingHandler {
             throw new IllegalArgumentException(e);
         }
 
-        return HttpResponse.HttpResponseBuilder.aHttpResponse()
-                .withStatus(HttpStatus.OK)
-                .withVersion("HTTP/1.1")
-                .withHeaders(generateHeaders(httpRequest, bytes))
-                .withBody(bytes)
-                .build();
+        httpResponse.setStatus(HttpStatus.OK);
+        httpResponse.addHeaders(generateHeaders(httpRequest, bytes));
+        httpResponse.setBody(bytes);
     }
 
     @Override
@@ -44,17 +39,17 @@ public class QnaRequestHandler implements UrlMappingHandler {
         return URL_MAPPING_REGEX;
     }
 
-    private Map<String, List<String>> generateHeaders(HttpRequest httpRequest, byte[] body) {
-        Map<String, List<String>> headers = new LinkedHashMap<>();
+    private HttpHeaders generateHeaders(HttpRequest httpRequest, byte[] body) {
+        HttpHeaders headers = new HttpHeaders();
 
         String url = httpRequest.getURL();
         int extensionIndex = url.lastIndexOf(".") + 1;
         String extension = url.substring(extensionIndex);
 
-        headers.put(HttpHeader.CONTENT_TYPE,
-                List.of(HttpContentType.extensionToContentType(extension) + ";" + CHARSET_UTF_8));
+        headers.setHeader(HttpHeaders.CONTENT_TYPE,
+                List.of(HttpContentType.fromExtensionAndCharset(extension, StandardCharsets.UTF_8)));
 
-        headers.put(HttpHeader.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
+        headers.setHeader(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(body.length)));
 
         return headers;
     }

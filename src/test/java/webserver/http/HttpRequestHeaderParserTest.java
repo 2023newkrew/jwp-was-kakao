@@ -1,5 +1,6 @@
 package webserver.http;
 
+import http.HttpHeaders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,9 +21,9 @@ class HttpRequestHeaderParserTest {
                         "Header-3: ";
 
         HttpRequestHeaderParser httpRequestHeaderParser = new HttpRequestHeaderParser();
-        Map<String, List<String>> headers = httpRequestHeaderParser.parse(headerString);
+        HttpHeaders headers = httpRequestHeaderParser.parse(headerString);
 
-        assertThat(headers)
+        assertThat(headers.getHeaders())
                 .hasSize(3)
                 .containsEntry("Header1", List.of("value1"))
                 .containsEntry("Header2", List.of("value2", "value3"))

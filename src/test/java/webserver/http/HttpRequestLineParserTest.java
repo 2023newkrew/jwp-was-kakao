@@ -1,5 +1,6 @@
 package webserver.http;
 
+import http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,7 +29,7 @@ class HttpRequestLineParserTest {
             @DisplayName("첫 번째 토큰을 추출해서 반환한다")
             void returnHttpMethod() {
                 assertThat(httpRequestLineParser.extractHttpMethod(requestLine))
-                        .isEqualTo("GET");
+                        .isEqualTo(HttpMethod.GET);
             }
         }
     }
@@ -61,7 +62,7 @@ class HttpRequestLineParserTest {
             @Test
             @DisplayName("쿼리 파라미터를 추출해서 Map 형태로 반환한다")
             void returnParamMap() {
-                assertThat(httpRequestLineParser.extractParams(requestLine))
+                assertThat(httpRequestLineParser.extractParams(requestLine).getParameters())
                         .hasSize(3)
                         .containsEntry("a", "1")
                         .containsEntry("b", "")

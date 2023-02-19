@@ -1,41 +1,58 @@
 package http;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class HttpContentType {
-    public static final String TEXT_HTML = "text/html";
-    public static final String TEXT_CSS = "text/css";
-    public static final String TEXT_JAVASCRIPT = "text/javascript";
+public enum HttpContentType {
+    TEXT_HTML("text/html", List.of("html")),
+    TEXT_CSS("text/css", List.of("css")),
+    TEXT_JAVASCRIPT("text/javascript", List.of("js")),
 
-    public static final String FONT_WOFF = "font/woff";
-    public static final String FONT_WOFF2 = "font/woff2";
-    public static final String FONT_TTF = "font/ttf";
-    public static final String FONT_EOT = "application/vnd.ms-fontobject";
+    FONT_WOFF("font/woff", List.of("woff")),
+    FONT_WOFF2("font/woff2", List.of("woff2")),
+    FONT_TTF("font/ttf", List.of("ttf")),
+    FONT_EOT("application/vnd.ms-fontobject", List.of("eot")),
 
-    public static final String IMAGE_SVG = "image/svg+xml";
-    public static final String IMAGE_PNG = "image/png";
-    public static final String IMAGE_ICON = "image/vnd.microsoft.icon";
+    IMAGE_SVG("image/svg+xml", List.of("svg")),
+    IMAGE_PNG("image/png", List.of("png")),
+    IMAGE_ICON("image/vnd.microsoft.icon", List.of("ico")),
 
-    private static final Map<String, String> extensionContentTypeMap = new HashMap<>();
+    APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded", List.of());
+
+    private static final Map<String, HttpContentType> extensionMapping = new HashMap<>();
+
+    private final String value;
+    private final List<String> extensions;
 
     static {
-        extensionContentTypeMap.put("html", TEXT_HTML);
-        extensionContentTypeMap.put("css", TEXT_CSS);
-        extensionContentTypeMap.put("js", TEXT_JAVASCRIPT);
-
-        extensionContentTypeMap.put("woff", FONT_WOFF);
-        extensionContentTypeMap.put("woff2", FONT_WOFF2);
-        extensionContentTypeMap.put("ttf", FONT_TTF);
-
-        extensionContentTypeMap.put("eot", FONT_EOT);
-
-        extensionContentTypeMap.put("svg", IMAGE_SVG);
-        extensionContentTypeMap.put("png", IMAGE_PNG);
-        extensionContentTypeMap.put("ico", IMAGE_ICON);
+        Arrays.stream(values())
+                .forEach(httpContentType ->
+                    httpContentType.extensions.forEach(extension -> extensionMapping.put(extension, httpContentType)));
     }
 
-    public static String extensionToContentType(String fileExtension) {
-        return extensionContentTypeMap.getOrDefault(fileExtension, TEXT_HTML);
+    HttpContentType(String value, List<String> extension) {
+        this.value = value;
+        this.extensions = extension;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    public static HttpContentType fromExtension(String extension) {
+        return extensionMapping.getOrDefault(extension, TEXT_HTML);
+    }
+
+    public static String fromExtensionAndCharset(String extension, Charset charset) {
+        return extensionMapping.getOrDefault(extension, TEXT_HTML).value +
+                ";charset=" +
+                charset.name().toLowerCase();
     }
 }

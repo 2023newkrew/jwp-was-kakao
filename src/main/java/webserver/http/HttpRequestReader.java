@@ -1,13 +1,14 @@
 package webserver.http;
 
+import http.HttpHeaders;
 import http.HttpMethod;
 import http.HttpRequest;
+import http.HttpRequestParams;
 import utils.IOUtils;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class HttpRequestReader implements Closeable {
 
@@ -17,9 +18,9 @@ public class HttpRequestReader implements Closeable {
 
     private HttpMethod httpMethod;
     private String url;
-    private Map<String, String> parameters;
+    private HttpRequestParams parameters;
     private String httpVersion;
-    private Map<String, List<String>> headers;
+    private HttpHeaders headers;
 
     public HttpRequestReader(InputStream in) {
         this.br = new BufferedReader(new InputStreamReader(in));
@@ -39,14 +40,7 @@ public class HttpRequestReader implements Closeable {
 
         String body = readBody();
 
-        return HttpRequest.HttpRequestBuilder.aHttpRequest()
-                .withMethod(httpMethod)
-                .withURL(url)
-                .withParameters(parameters)
-                .withVersion(httpVersion)
-                .withHeaders(headers)
-                .withBody(body)
-                .build();
+        return new HttpRequest(httpMethod, url, httpVersion, parameters, headers, body);
     }
 
     private String readBody() {
@@ -63,7 +57,7 @@ public class HttpRequestReader implements Closeable {
     }
 
     private Integer getContentLength() {
-        String headerName = headers.keySet().stream()
+        String headerName = headers.getHeaderNames().stream()
                 .filter(header -> header.equalsIgnoreCase("content-length"))
                 .findFirst()
                 .orElse(null);
@@ -72,7 +66,7 @@ public class HttpRequestReader implements Closeable {
             return null;
         }
 
-        return Integer.parseInt(headers.get(headerName).get(0));
+        return Integer.parseInt(headers.getHeader(headerName).get(0));
     }
 
     private void parseHeader(List<String> headerLines) {
@@ -94,7 +88,7 @@ public class HttpRequestReader implements Closeable {
     }
 
     private void parseRequestLine(String requestLine) {
-        httpMethod = HttpMethod.valueOf(httpRequestLineParser.extractHttpMethod(requestLine));
+        httpMethod = httpRequestLineParser.extractHttpMethod(requestLine);
         url = httpRequestLineParser.extractUrl(requestLine);
         parameters = httpRequestLineParser.extractParams(requestLine);
         httpVersion = httpRequestLineParser.extractHttpVersion(requestLine);

@@ -1,5 +1,6 @@
 package webserver.http;
 
+import http.HttpHeaders;
 import http.HttpMethod;
 import http.HttpRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,9 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,17 +41,13 @@ class HttpRequestReaderTest {
             @Test
             @DisplayName("InputStream을 읽어서 body가 빈 문자열인 Request 객체로 파싱해서 반환한다")
             void returnHttpRequest() {
-                Map<String, List<String>> headers = new HashMap<>();
-                headers.put("Host", List.of("localhost:8080"));
-                headers.put("Connection", List.of("keep-alive"));
-                headers.put("Accept", List.of("text/html", "application/xhtml+xml"));
+                HttpHeaders headers = new HttpHeaders();
+                headers.setHeader("Host", List.of("localhost:8080"));
+                headers.setHeader("Connection", List.of("keep-alive"));
+                headers.setHeader("Accept", List.of("text/html", "application/xhtml+xml"));
 
-                HttpRequest expected = HttpRequest.HttpRequestBuilder.aHttpRequest()
-                        .withMethod(HttpMethod.GET)
-                        .withURL("/index.html")
-                        .withVersion("HTTP/1.1")
-                        .withHeaders(headers)
-                        .build();
+                HttpRequest expected =
+                        new HttpRequest(HttpMethod.GET, "/index.html", "HTTP/1.1", headers);
 
                 HttpRequest request;
                 try (HttpRequestReader httpRequestReader = new HttpRequestReader(inputStream)) {
@@ -89,18 +84,13 @@ class HttpRequestReaderTest {
             @Test
             @DisplayName("InputStream을 읽어서 body가 빈 문자열인 Request 객체로 파싱해서 반환한다")
             void returnHttpRequest() {
-                Map<String, List<String>> headers = new HashMap<>();
-                headers.put("Host", List.of("localhost:8080"));
-                headers.put("Connection", List.of("keep-alive"));
-                headers.put("Content-Length", List.of(String.valueOf(body.length())));
+                HttpHeaders headers = new HttpHeaders();
+                headers.setHeader("Host", List.of("localhost:8080"));
+                headers.setHeader("Connection", List.of("keep-alive"));
+                headers.setHeader("Content-Length", List.of(String.valueOf(body.length())));
 
-                HttpRequest expected = HttpRequest.HttpRequestBuilder.aHttpRequest()
-                        .withMethod(HttpMethod.POST)
-                        .withURL("/user/create")
-                        .withVersion("HTTP/1.1")
-                        .withHeaders(headers)
-                        .withBody(body)
-                        .build();
+                HttpRequest expected =
+                        new HttpRequest(HttpMethod.POST, "/user/create", "HTTP/1.1", headers, body);
 
                 HttpRequest request;
                 try (HttpRequestReader httpRequestReader = new HttpRequestReader(inputStream)) {

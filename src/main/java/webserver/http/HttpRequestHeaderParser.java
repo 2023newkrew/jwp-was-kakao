@@ -1,5 +1,6 @@
 package webserver.http;
 
+import http.HttpHeaders;
 import http.exception.HttpRequestFormatException;
 
 import java.util.*;
@@ -8,21 +9,21 @@ import java.util.stream.Stream;
 
 public class HttpRequestHeaderParser {
 
-    public Map<String, List<String>> parse(String headerString) {
+    public HttpHeaders parse(String headerString) {
         return parse(List.of(headerString.split("\r\n")));
     }
 
-    public Map<String, List<String>> parse(List<String> headerLines) {
+    public HttpHeaders parse(List<String> headerLines) {
         if (headerLines == null || headerLines.isEmpty()) {
-            return Map.of();
+            return new HttpHeaders();
         }
 
-        Map<String, List<String>> headers = new LinkedHashMap<>();
+        HttpHeaders headers = new HttpHeaders();
 
         headerLines.stream()
                 .filter(headerLine -> !headerLine.isBlank())
                 .map(this::parseHeaderLine)
-                .forEach(header -> headers.put(header.getKey(), header.getValue()));
+                .forEach(header -> headers.setHeader(header.getKey(), header.getValue()));
 
         return headers;
     }
