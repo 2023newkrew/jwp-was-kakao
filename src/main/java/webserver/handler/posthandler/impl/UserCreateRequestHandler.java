@@ -31,11 +31,10 @@ public class UserCreateRequestHandler extends PostRequestHandler {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
+    public void handle(HttpRequest request, HttpResponse.Builder responseBuilder) {
         QueryParams queryParams = new QueryParams(request.getBody());
         addUser(queryParams);
-        return new HttpResponse.Builder()
-                .setStatus(HttpStatus.FOUND)
+        responseBuilder.setStatus(HttpStatus.FOUND)
                 .addHeader(HttpHeaderProperties.LOCATION.getKey(), "http://localhost:8080/index.html")
                 .build();
     }

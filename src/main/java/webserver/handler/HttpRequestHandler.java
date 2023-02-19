@@ -7,5 +7,5 @@ public interface HttpRequestHandler {
 
     boolean canHandle(HttpRequest request);
 
-    HttpResponse handle(HttpRequest request);
+    void handle(HttpRequest request, HttpResponse.Builder responseBuilder);
 }

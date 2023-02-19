@@ -1,9 +1,11 @@
 package webserver;
 
 import lombok.extern.slf4j.Slf4j;
+import webserver.filter.MyFilterChain;
 import webserver.handler.HttpRequestHandler;
 import webserver.handler.resolver.HandlerResolver;
 import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 import java.io.*;
 import java.net.Socket;
@@ -26,12 +28,18 @@ public class RequestDispatcher implements Runnable {
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             HttpRequest httpRequest = new HttpRequest(bufferedReader);
-            HttpRequestHandler handler = HandlerResolver.getInstance()
-                    .resolve(httpRequest);
-            handler.handle(httpRequest)
-                    .send(dos);
+            dispatch(httpRequest).send(dos);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private HttpResponse dispatch(HttpRequest request) {
+        HttpResponse.Builder responseBuilder = new HttpResponse.Builder();
+        new MyFilterChain().doFilter(request, responseBuilder);
+        HttpRequestHandler mappedHandler = HandlerResolver.getInstance()
+                .resolve(request);
+        mappedHandler.handle(request, responseBuilder);
+        return responseBuilder.build();
     }
 }
