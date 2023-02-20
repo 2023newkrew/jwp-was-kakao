@@ -13,6 +13,7 @@ public class QueryStringParser {
         String queryString = query.content;
         return Arrays.stream(queryString.split(separator))
                 .map(param -> param.split("="))
+                .filter(param -> param.length == 2)
                 .collect(Collectors.toMap(split -> split[0], split -> split[1]));
     }
 
