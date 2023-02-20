@@ -5,11 +5,12 @@ import java.util.Map;
 
 public class Session {
 
-    private final Map<String, Object> values = new HashMap<>();
+    private final Map<String, Object> values;
     private final String id;
 
-    public Session(String id) {
+    public Session(String id, Map<String, Object> attributes) {
         this.id = id;
+        this.values = new HashMap<>(attributes);
     }
 
     public String getId() {
@@ -18,10 +19,6 @@ public class Session {
 
     public Object getAttribute(final String name) {
         return values.get(name);
-    }
-
-    public void setAttribute(final String name, final Object value) {
-        values.put(name, value);
     }
 
     public void removeAttribute(final String name) {

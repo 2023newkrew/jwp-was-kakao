@@ -29,8 +29,7 @@ public class LoginController implements Controller {
         }
 
         String sessionKey = UUID.randomUUID().toString();
-        Session session = new Session(sessionKey);
-        session.setAttribute(user.getUserId(), user);
+        Session session = new Session(sessionKey, Map.of(user.getUserId(), user));
         SessionManager.getInstance().add(sessionKey, session);
         response.addCookie(new Cookie("JSESSIONID", sessionKey));
         ResponseUtil.response302(response, "/index.html");
