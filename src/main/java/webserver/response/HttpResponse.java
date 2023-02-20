@@ -14,6 +14,7 @@ import java.util.Map;
 public class HttpResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+    public static final String CRLF = "\r\n";
 
     private final Map<HttpResponseHeader, String> headers = new HashMap<>();
     private final List<Cookie> cookies = new ArrayList<>();
@@ -58,14 +59,14 @@ public class HttpResponse {
             throw new RuntimeException("Response Status Line은 비어있을 수 없습니다.");
         }
         try {
-            dos.writeBytes(httpVersion.getHttpVersion() + " " + status.getStatus() + " \r\n");
+            dos.writeBytes(httpVersion.getHttpVersion() + " " + status.getStatus() + " " + CRLF);
             for (Cookie cookie : cookies) {
-                dos.writeBytes("Set-Cookie: " + cookie.getName() + "=" + cookie.getValue() + "\r\n");
+                dos.writeBytes("Set-Cookie: " + cookie.getName() + "=" + cookie.getValue() + CRLF);
             }
             for (final var entry : headers.entrySet()) {
-                dos.writeBytes(entry.getKey().getHeader() + ": " + entry.getValue() + " \r\n");
+                dos.writeBytes(entry.getKey().getHeader() + ": " + entry.getValue() + " " + CRLF);
             }
-            dos.writeBytes("\r\n");
+            dos.writeBytes(CRLF);
             if (body != null) {
                 dos.write(body, 0, body.length);
             }
