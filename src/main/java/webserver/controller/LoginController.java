@@ -11,7 +11,6 @@ import webserver.utils.ResponseUtil;
 
 import javax.servlet.http.Cookie;
 import java.util.Map;
-import java.util.UUID;
 
 import static webserver.request.HttpRequestMethod.POST;
 import static webserver.request.QueryStringParser.getQuery;
@@ -28,10 +27,9 @@ public class LoginController implements Controller {
             return;
         }
 
-        String sessionKey = UUID.randomUUID().toString();
-        Session session = new Session(sessionKey, Map.of(user.getUserId(), user));
-        SessionManager.getInstance().add(sessionKey, session);
-        response.addCookie(new Cookie("JSESSIONID", sessionKey));
+        Session session = new Session(Map.of(user.getUserId(), user));
+        SessionManager.getInstance().add(session.getKey(), session);
+        response.addCookie(new Cookie("JSESSIONID", session.getKey()));
         ResponseUtil.response302(response, "/index.html");
     }
 

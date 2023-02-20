@@ -2,19 +2,20 @@ package webserver.security;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Session {
 
     private final Map<String, Object> values;
-    private final String id;
+    private final String key;
 
-    public Session(String id, Map<String, Object> attributes) {
-        this.id = id;
+    public Session(Map<String, Object> attributes) {
+        this.key = UUID.randomUUID().toString();
         this.values = new HashMap<>(attributes);
     }
 
-    public String getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
     public Object getAttribute(final String name) {
