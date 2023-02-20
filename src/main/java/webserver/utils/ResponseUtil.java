@@ -19,4 +19,11 @@ public class ResponseUtil {
         response.addHeader(CONTENT_LENGTH, String.valueOf(body.length));
         response.addBody(body);
     }
+
+    public static void response400(HttpResponse response, String message) {
+        response.setStatusLine(HttpResponseStatus.BAD_REQUEST);
+        response.addHeader(CONTENT_TYPE, HttpResponseContentType.PLAIN.getContentType());
+        response.addHeader(CONTENT_LENGTH, String.valueOf(message.length()));
+        response.addBody(message.getBytes());
+    }
 }

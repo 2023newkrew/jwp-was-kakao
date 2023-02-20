@@ -35,24 +35,30 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            final HttpRequest request = HttpRequestParser.parse(in);
-            final HttpResponse response = HttpResponse.of(new DataOutputStream(out));
-            final Controller controller = handlerMapper.getController(request);
+            try {
+                final HttpRequest request = HttpRequestParser.parse(in);
+                final HttpResponse response = HttpResponse.of(new DataOutputStream(out));
+                final Controller controller = handlerMapper.getController(request);
 
-            if (securityHandler.isNeedAuthentication(request.getUri().getPath()) && securityHandler.isNotAuthenticated(request)) {
-                ResponseUtil.response302(response, "/user/login.html");
+                if (securityHandler.isNeedAuthentication(request.getUri().getPath()) && securityHandler.isNotAuthenticated(request)) {
+                    ResponseUtil.response302(response, "/user/login.html");
+                    response.send();
+                    return;
+                }
+
+                if (isUserTryLoginAgain(request)) {
+                    ResponseUtil.response302(response, "/index.html");
+                    response.send();
+                    return;
+                }
+
+                controller.service(request, response);
                 response.send();
-                return;
-            }
-
-            if (isUserTryLoginAgain(request)) {
-                ResponseUtil.response302(response, "/index.html");
+            } catch (RuntimeException e) {
+                final HttpResponse response = HttpResponse.of(new DataOutputStream(out));
+                ResponseUtil.response400(response, e.getMessage());
                 response.send();
-                return;
             }
-
-            controller.service(request, response);
-            response.send();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

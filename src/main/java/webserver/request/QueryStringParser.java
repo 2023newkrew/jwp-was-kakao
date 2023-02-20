@@ -1,5 +1,7 @@
 package webserver.request;
 
+import webserver.request.exception.QueryParseException;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,14 +19,14 @@ public class QueryStringParser {
                 .collect(Collectors.toMap(split -> split[0], split -> split[1]));
     }
 
-    public static Query getQuery(HttpRequest request) {
+    public static Query getQuery(HttpRequest request) throws QueryParseException {
         if (request.getMethod() == POST) {
             return Query.from(request.getBody());
         }
         if (request.getMethod() == GET) {
             return Query.from(request.getUri().getQuery());
         }
-        throw new RuntimeException();
+        throw new QueryParseException("지원하지 않는 HTTP Method 입니다.");
     }
 
     public static class Query {
