@@ -19,6 +19,6 @@ public class HandlerMapper {
         return controllers.stream()
                 .filter(controller -> controller.isMatch(request))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new NoSuchControllerException("컨트롤러가 존재하지 않습니다."));
     }
 }
