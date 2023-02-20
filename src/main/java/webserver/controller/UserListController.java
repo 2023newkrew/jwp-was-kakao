@@ -9,14 +9,12 @@ import model.User;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 import webserver.response.HttpResponseContentType;
-import webserver.response.HttpResponseStatus;
 import webserver.utils.ResponseUtil;
 
 import java.io.IOException;
 import java.util.Collection;
 
 import static webserver.request.HttpRequestMethod.GET;
-import static webserver.response.HttpResponseStatus.OK;
 
 public class UserListController implements Controller {
 
@@ -38,10 +36,5 @@ public class UserListController implements Controller {
     public boolean isMatch(HttpRequest request) {
         return request.getMethod() == GET
                 && request.getUri().getPath().equals("/user/list");
-    }
-
-    @Override
-    public HttpResponseStatus getSuccessCode() {
-        return OK;
     }
 }

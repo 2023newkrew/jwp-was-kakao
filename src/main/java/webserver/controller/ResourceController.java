@@ -4,14 +4,12 @@ import utils.FileIoUtils;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 import webserver.response.HttpResponseContentType;
-import webserver.response.HttpResponseStatus;
 import webserver.utils.ResponseUtil;
 
 import java.util.Arrays;
 
 import static webserver.request.HttpRequestMethod.GET;
 import static webserver.response.HttpResponseContentType.*;
-import static webserver.response.HttpResponseStatus.OK;
 
 public class ResourceController implements Controller {
 
@@ -54,10 +52,5 @@ public class ResourceController implements Controller {
     public boolean isMatch(HttpRequest request) {
         return request.getMethod() == GET &&
                 isStaticFiles(request.getUri().getPath()) || isHtml(request.getUri().getPath());
-    }
-
-    @Override
-    public HttpResponseStatus getSuccessCode() {
-        return OK;
     }
 }

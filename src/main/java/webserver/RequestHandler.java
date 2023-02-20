@@ -7,7 +7,6 @@ import webserver.handler.HandlerMapper;
 import webserver.request.HttpRequest;
 import webserver.request.HttpRequestParser;
 import webserver.response.HttpResponse;
-import webserver.response.HttpResponseStatus;
 import webserver.security.SecurityHandler;
 import webserver.security.SessionManager;
 import webserver.utils.ResponseUtil;
@@ -36,21 +35,20 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            HttpRequest request = HttpRequestParser.parse(in);
-            Controller controller = handlerMapper.getController(request);
-            HttpResponse response = HttpResponse.of(new DataOutputStream(out), controller.getSuccessCode());
+            final HttpRequest request = HttpRequestParser.parse(in);
+            final HttpResponse response = HttpResponse.of(new DataOutputStream(out));
+            final Controller controller = handlerMapper.getController(request);
 
             if (securityHandler.isNeedAuthentication(request.getUri().getPath()) && securityHandler.isNotAuthenticated(request)) {
-                response = HttpResponse.of(new DataOutputStream(out), HttpResponseStatus.REDIRECT);
                 ResponseUtil.response302(response, "/user/login.html");
                 response.send();
                 return;
             }
 
             if (isUserTryLoginAgain(request)) {
-                response = HttpResponse.of(new DataOutputStream(out), HttpResponseStatus.REDIRECT);
                 ResponseUtil.response302(response, "/index.html");
                 response.send();
+                return;
             }
 
             controller.service(request, response);

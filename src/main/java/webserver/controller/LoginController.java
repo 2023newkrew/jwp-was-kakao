@@ -5,7 +5,6 @@ import model.User;
 import webserver.request.HttpRequest;
 import webserver.request.QueryStringParser;
 import webserver.response.HttpResponse;
-import webserver.response.HttpResponseStatus;
 import webserver.security.Session;
 import webserver.security.SessionManager;
 import webserver.utils.ResponseUtil;
@@ -16,7 +15,6 @@ import java.util.UUID;
 
 import static webserver.request.HttpRequestMethod.POST;
 import static webserver.request.QueryStringParser.getQuery;
-import static webserver.response.HttpResponseStatus.REDIRECT;
 
 public class LoginController implements Controller {
 
@@ -41,10 +39,5 @@ public class LoginController implements Controller {
     @Override
     public boolean isMatch(HttpRequest request) {
         return request.getMethod() == POST && request.getUri().getPath().equals("/user/login");
-    }
-
-    @Override
-    public HttpResponseStatus getSuccessCode() {
-        return REDIRECT;
     }
 }
