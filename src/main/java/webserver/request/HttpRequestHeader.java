@@ -8,18 +8,17 @@ import java.util.Optional;
 public class HttpRequestHeader {
 
     private final Map<String, String> headers = new HashMap<>();
-    private final String method;
-    private final URI uri;
+    private final Map<String, String> cookies = new HashMap<>();
+    private final HttpEndPoint httpEndPoint;
     private final String httpVersion;
 
-    private HttpRequestHeader(String method, URI uri, String httpVersion) {
-        this.method = method;
-        this.uri = uri;
+    private HttpRequestHeader(HttpRequestMethod method, URI uri, String httpVersion) {
+        this.httpEndPoint = HttpEndPoint.of(method, uri);
         this.httpVersion = httpVersion;
     }
 
     public static HttpRequestHeader of(String method, String uri, String httpVersion) {
-        return new HttpRequestHeader(method, URI.create(uri), httpVersion);
+        return new HttpRequestHeader(HttpRequestMethod.from(method), URI.create(uri), httpVersion);
     }
 
     public Optional<String> getAttribute(String key) {
@@ -30,12 +29,20 @@ public class HttpRequestHeader {
         headers.put(key, value);
     }
 
-    public String getMethod() {
-        return method;
+    public Optional<String> getCookie(String name) {
+        return Optional.ofNullable(cookies.get(name));
+    }
+
+    public void setCookies(Map<String, String> cookies) {
+        this.cookies.putAll(cookies);
+    }
+
+    public HttpRequestMethod getMethod() {
+        return httpEndPoint.getMethod();
     }
 
     public URI getUri() {
-        return uri;
+        return httpEndPoint.getUri();
     }
 
     public String getHttpVersion() {

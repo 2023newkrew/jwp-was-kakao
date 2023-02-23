@@ -1,6 +1,7 @@
 package webserver.request;
 
 import utils.IOUtils;
+import webserver.request.QueryStringParser.Query;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +33,11 @@ public class HttpRequestParser {
             String[] header = line.split(": ");
             String key = header[0];
             String value = header[1].trim();
+
+            if (key.equals("Cookie")) {
+                httpRequestHeader.setCookies(QueryStringParser.parseQueryString(Query.from(value), "; "));
+                continue;
+            }
 
             httpRequestHeader.addAttribute(key, value);
         }

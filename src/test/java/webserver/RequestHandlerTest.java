@@ -5,9 +5,8 @@ import model.User;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 import utils.FileIoUtils;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import webserver.handler.HandlerMapper;
+import webserver.security.SecurityHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +16,7 @@ class RequestHandlerTest {
     void socket_out() {
         // given
         final var socket = new StubSocket();
-        final var handler = new RequestHandler(socket);
+        final var handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -31,7 +30,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void index() throws IOException, URISyntaxException {
+    void index() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /index.html HTTP/1.1 ",
@@ -41,7 +40,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -55,7 +54,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void css() throws IOException, URISyntaxException {
+    void css() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /css/styles.css HTTP/1.1 ",
@@ -66,7 +65,7 @@ class RequestHandlerTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -80,7 +79,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserGet() throws IOException, URISyntaxException {
+    void createUserGet() {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /user/create?userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com HTTP/1.1 ",
@@ -99,7 +98,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -113,7 +112,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserPost() throws IOException, URISyntaxException {
+    void createUserPost() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
@@ -134,7 +133,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -148,7 +147,7 @@ class RequestHandlerTest {
     }
 
     @Test
-    void createUserRedirect() throws IOException, URISyntaxException {
+    void createUserRedirect() {
         // given
         final String httpRequest = String.join("\r\n",
                 "POST /user/create HTTP/1.1 ",
@@ -162,7 +161,7 @@ class RequestHandlerTest {
         );
 
         final var socket = new StubSocket(httpRequest);
-        final RequestHandler handler = new RequestHandler(socket);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
 
         // when
         handler.run();
@@ -173,5 +172,62 @@ class RequestHandlerTest {
                 "\r\n";
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void loginFailedRedirect() {
+        // given
+        DataBase.addUser(new User("cu", "password", "name", "email"));
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 32 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=hyeonmo&password=password"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
+
+        // when
+        handler.run();
+
+        // then
+        var expected = "HTTP/1.1 302 Found \r\n" +
+                "Location: /user/login_failed.html \r\n" +
+                "\r\n";
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void loginRedirect() {
+        // given
+        DataBase.addUser(new User("cu", "password", "name", "email"));
+        final String httpRequest = String.join("\r\n",
+                "POST /user/login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 27 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
+                "",
+                "userId=cu&password=password"
+        );
+
+        final var socket = new StubSocket(httpRequest);
+        final RequestHandler handler = new RequestHandler(socket, new HandlerMapper(), new SecurityHandler());
+
+        // when
+        handler.run();
+
+        // then
+        assertThat(socket.output()).contains("HTTP/1.1 302 Found \r\n",
+                "Set-Cookie: JSESSIONID=",
+                "Location: /index.html \r\n",
+                "\r\n");
     }
 }

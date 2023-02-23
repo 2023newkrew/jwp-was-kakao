@@ -21,7 +21,7 @@ public class HttpRequest {
         return httpRequestHeader.getAttribute(key);
     }
 
-    public String getMethod() {
+    public HttpRequestMethod getMethod() {
         return httpRequestHeader.getMethod();
     }
 
@@ -35,5 +35,9 @@ public class HttpRequest {
 
     public String getBody() {
         return httpRequestBody.getContent();
+    }
+
+    public Optional<String> getCookie(String name) {
+        return httpRequestHeader.getCookie(name);
     }
 }
